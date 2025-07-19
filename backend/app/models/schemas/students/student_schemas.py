@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from sqlalchemy import Column, String, Text
+from typing import Optional
 from uuid import UUID
 
 class StudentBase(SQLModel):
@@ -17,3 +18,24 @@ class StudentBase(SQLModel):
     status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
+
+class StudentPublic(StudentBase):
+    id: UUID
+
+class StudentCreate(StudentBase):
+    pass
+class StudentUpdate(StudentBase):
+    student_code: Optional[str] = Field(default = None, sa_column = Column(String(12), nullable = True))
+    name: Optional[str] = Field(default = None, sa_column = Column(String(100), nullable = True))
+    email: Optional[str] = Field(default=None, sa_column=Column(String(100), nullable=False, unique=True))
+    phone: Optional[str] = Field(default=None, sa_column=Column(String(20), nullable=True))
+    address: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
+    class_id: Optional[UUID] = Field(default=None, foreign_key="classes.id")
+    training_program: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
+    course: Optional[str] = Field(default=None, sa_column=Column(String(20), nullable=True))
+    status: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
+    updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
+
+class StudentDeleteResponse(SQLModel):
+    message: str
+    id: UUID

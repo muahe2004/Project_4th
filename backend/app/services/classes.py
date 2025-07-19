@@ -115,5 +115,4 @@ class ClassServices:
 
         return results
 
-
 class_service = ClassServices()

@@ -12,6 +12,6 @@ def on_startup():
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello Minh"}
+    return {"message": "Zalo: 033426636"}
 
 app.include_router(api_router)
