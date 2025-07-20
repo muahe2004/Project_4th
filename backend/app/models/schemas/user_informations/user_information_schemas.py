@@ -12,3 +12,5 @@ class UserInformationBase(SQLModel):
     insurance_number: str | None = Field(default=None, sa_column=Column(String(20), nullable=True))
     student_id: UUID | None = Field(default=None, foreign_key="students.id")
     teacher_id: UUID | None = Field(default=None, foreign_key="teachers.id")
+    bank_name: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
+    bank_account_number: str | None = Field(default=None, sa_column=Column(String(30), nullable=True))
