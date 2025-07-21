@@ -5,8 +5,10 @@ from app.api.deps import SessionDep
 from app.models.schemas.students.student_schemas import (
     StudentPublic,
     StudentCreate,
+    StudentCreateWithUserInfor,
     StudentUpdate,
-    StudentDeleteResponse
+    StudentDeleteResponse,
+    StudentWithCitizenID
 )
 from app.services.students import StudentServices
 from typing import List
@@ -31,12 +33,13 @@ def get_student_by_id(
 # =========================== add student ===========================
 @router.post(
     "",
-    response_model = StudentPublic
-) 
+    response_model=StudentWithCitizenID
+)
 def create_student(
-    request: Request, session: SessionDep, data: StudentCreate
-) -> StudentPublic:
+    request: Request, session: SessionDep, data: StudentCreateWithUserInfor
+) -> StudentWithCitizenID:
     return StudentServices.create(session=session, student=data)
+
 
 # =========================== update student ===========================
 @router.patch(

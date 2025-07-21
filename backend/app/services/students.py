@@ -6,11 +6,17 @@ from starlette import status
 from typing import List
 
 from app.models.models import Students
+from app.models.models import UserInformations
 from app.models.schemas.students.student_schemas import (
     StudentPublic,
     StudentCreate,
+    StudentCreateWithUserInfor,
     StudentUpdate,
-    StudentDeleteResponse
+    StudentDeleteResponse,
+    StudentWithCitizenID
+)
+from app.models.schemas.user_informations.user_information_schemas import (
+    UserInformationCreate
 )
 
 from app.enums.status import StatusEnum
@@ -25,8 +31,8 @@ class StudentServices:
     def create(
         *,
         session: Session,
-        student: StudentCreate,
-    ) -> StudentPublic:
+        student: StudentCreateWithUserInfor
+    ) -> StudentWithCitizenID:
         existing = session.exec(
             select(Students).where(Students.student_code == student.student_code)
         ).first()
@@ -35,13 +41,29 @@ class StudentServices:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Student {student.student_code} already exists.",
             )
-        new_student = Students(**student.dict())
+
+        student_data = student.model_dump(exclude={"citizen_id"})
+        new_student = Students(**student_data)
         session.add(new_student)
         session.commit()
         session.refresh(new_student)
 
-        return StudentPublic.model_validate(new_student)
-    
+        user_info = UserInformations(
+            student_id=new_student.id,
+            citizen_id=student.citizen_id
+        )
+        session.add(user_info)
+        session.commit()
+
+        user_info = session.exec(
+            select(UserInformations).where(UserInformations.student_id == new_student.id)
+        ).first()
+
+        return StudentWithCitizenID(
+            **new_student.dict(),
+            citizen_id=user_info.citizen_id
+        )
+
     @staticmethod
     def get_by_id(
         *, session: Session, student_id: uuid.UUID, request: Request

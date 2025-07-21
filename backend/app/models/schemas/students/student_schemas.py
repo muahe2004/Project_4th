@@ -22,8 +22,16 @@ class StudentBase(SQLModel):
 class StudentPublic(StudentBase):
     id: UUID
 
+class StudentWithCitizenID(StudentPublic):
+    citizen_id: str
+
 class StudentCreate(StudentBase):
     pass
+
+class StudentCreateWithUserInfor(StudentBase):
+    citizen_id: str
+    pass
+
 class StudentUpdate(StudentBase):
     student_code: Optional[str] = Field(default = None, sa_column = Column(String(12), nullable = True))
     name: Optional[str] = Field(default = None, sa_column = Column(String(100), nullable = True))
