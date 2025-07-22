@@ -16,6 +16,7 @@ class TeacherBase(SQLModel):
     department_id: UUID | None = Field(default=None, foreign_key="departments.id")
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
+    password: str = Field(sa_column=Column(String(100), nullable=False))
 
 class TeacherPublic(TeacherBase):
     id: UUID

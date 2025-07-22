@@ -18,6 +18,7 @@ class StudentBase(SQLModel):
     status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
+    password: str = Field(sa_column=Column(String(100), nullable=False))
 
 class StudentPublic(StudentBase):
     id: UUID
@@ -32,7 +33,7 @@ class StudentCreateWithUserInfor(StudentBase):
     citizen_id: str
     pass
 
-class StudentUpdate(StudentBase):
+class StudentUpdate(SQLModel):
     student_code: Optional[str] = Field(default = None, sa_column = Column(String(12), nullable = True))
     name: Optional[str] = Field(default = None, sa_column = Column(String(100), nullable = True))
     email: Optional[str] = Field(default=None, sa_column=Column(String(100), nullable=False, unique=True))
