@@ -20,7 +20,14 @@ class TeacherBase(SQLModel):
 class TeacherPublic(TeacherBase):
     id: UUID
 
+class TeacherWithCitizenID(TeacherPublic):
+    citizen_id: str
+
 class TeacherCreate(TeacherBase):
+    pass
+
+class TeacherCreateWithUserInfor(TeacherBase):
+    citizen_id: str
     pass
 
 class TeacherUpdate(SQLModel):

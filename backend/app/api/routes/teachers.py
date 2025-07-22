@@ -6,7 +6,9 @@ from app.models.schemas.teachers.teacher_schemas import (
     TeacherPublic,
     TeacherCreate,
     TeacherUpdate,
-    TeacherDeleteResponse
+    TeacherDeleteResponse,
+    TeacherWithCitizenID,
+    TeacherCreateWithUserInfor
 )
 from app.services.teachers import TeacherServices
 from typing import List
@@ -31,11 +33,11 @@ def get_teacher_by_id(
 # =========================== add teacher ===========================
 @router.post(
     "",
-    response_model=TeacherPublic,
+    response_model=TeacherWithCitizenID,
 )
 def create_teacher(
-    request: Request, session: SessionDep, data: TeacherCreate
-) -> TeacherPublic:
+    request: Request, session: SessionDep, data: TeacherCreateWithUserInfor
+) -> TeacherWithCitizenID:
     return TeacherServices.create(session=session, teacher=data)
 
 # =========================== update specialization ===========================

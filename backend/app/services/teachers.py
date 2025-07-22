@@ -7,11 +7,14 @@ from starlette import status
 from typing import List
 
 from app.models.models import Teachers
+from app.models.models import UserInformations
 from app.models.schemas.teachers.teacher_schemas import (
     TeacherPublic,
     TeacherCreate,
     TeacherUpdate,
-    TeacherDeleteResponse
+    TeacherDeleteResponse,
+    TeacherCreateWithUserInfor,
+    TeacherWithCitizenID
 )
 from app.models.models import Classes
 
@@ -33,13 +36,50 @@ class TeacherServices:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Teacher does not exist"
             )
         return TeacherPublic.model_validate(teacher)
+    
+    # @staticmethod
+    # def create(
+    #     *,
+    #     session: Session,
+    #     student: StudentCreateWithUserInfor
+    # ) -> StudentWithCitizenID:
+    #     existing = session.exec(
+    #         select(Students).where(Students.student_code == student.student_code)
+    #     ).first()
+    #     if existing:
+    #         raise HTTPException(
+    #             status_code=status.HTTP_400_BAD_REQUEST,
+    #             detail=f"Student {student.student_code} already exists.",
+    #         )
+
+    #     student_data = student.model_dump(exclude={"citizen_id"})
+    #     new_student = Students(**student_data)
+    #     session.add(new_student)
+    #     session.commit()
+    #     session.refresh(new_student)
+
+    #     user_info = UserInformations(
+    #         student_id=new_student.id,
+    #         citizen_id=student.citizen_id
+    #     )
+    #     session.add(user_info)
+    #     session.commit()
+
+    #     user_info = session.exec(
+    #         select(UserInformations).where(UserInformations.student_id == new_student.id)
+    #     ).first()
+
+    #     return StudentWithCitizenID(
+    #         **new_student.dict(),
+    #         citizen_id=user_info.citizen_id
+    #     )
 
     @staticmethod
     def create(
         *,
         session: Session,
-        teacher: TeacherCreate,
-    ) -> TeacherPublic:
+        teacher: TeacherCreateWithUserInfor,
+    ) -> TeacherWithCitizenID:
         existing = session.exec(
             select(Teachers).where(Teachers.teacher_code == teacher.teacher_code)
         ).first()
@@ -48,12 +88,28 @@ class TeacherServices:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Teacher {teacher.teacher_code} already exists.",
             )
-        new_teacher = Teachers(**teacher.dict())
+        
+        teacher_data = teacher.model_dump(exclude={"citizen_id"})
+        new_teacher = Teachers(**teacher_data)
         session.add(new_teacher)
         session.commit()
         session.refresh(new_teacher)
 
-        return TeacherPublic.model_validate(new_teacher)
+        user_info = UserInformations(
+            teacher_id=new_teacher.id,
+            citizen_id=teacher.citizen_id
+        )
+        session.add(user_info)
+        session.commit()
+
+        user_info = session.exec(
+            select(UserInformations).where(UserInformations.teacher_id == new_teacher.id)
+        ).first()
+
+        return TeacherWithCitizenID(
+            **new_teacher.dict(),
+            citizen_id=user_info.citizen_id
+        )
 
     @staticmethod
     def update(
