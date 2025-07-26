@@ -4,6 +4,7 @@ from fastapi import HTTPException, Request
 from sqlmodel import Session, select
 from starlette import status
 from typing import List
+from app.middleware.hashing import hash_password
 
 from app.models.models import Students
 from app.models.models import UserInformations
@@ -43,6 +44,10 @@ class StudentServices:
             )
 
         student_data = student.model_dump(exclude={"citizen_id"})
+
+        # hash password
+        student_data["password"] = hash_password(student_data["password"])
+
         new_student = Students(**student_data)
         session.add(new_student)
         session.commit()

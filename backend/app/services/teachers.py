@@ -5,6 +5,7 @@ from fastapi import HTTPException, Request
 from sqlmodel import Session, select
 from starlette import status
 from typing import List
+from app.middleware.hashing import hash_password
 
 from app.models.models import Teachers
 from app.models.models import UserInformations
@@ -36,43 +37,6 @@ class TeacherServices:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Teacher does not exist"
             )
         return TeacherPublic.model_validate(teacher)
-    
-    # @staticmethod
-    # def create(
-    #     *,
-    #     session: Session,
-    #     student: StudentCreateWithUserInfor
-    # ) -> StudentWithCitizenID:
-    #     existing = session.exec(
-    #         select(Students).where(Students.student_code == student.student_code)
-    #     ).first()
-    #     if existing:
-    #         raise HTTPException(
-    #             status_code=status.HTTP_400_BAD_REQUEST,
-    #             detail=f"Student {student.student_code} already exists.",
-    #         )
-
-    #     student_data = student.model_dump(exclude={"citizen_id"})
-    #     new_student = Students(**student_data)
-    #     session.add(new_student)
-    #     session.commit()
-    #     session.refresh(new_student)
-
-    #     user_info = UserInformations(
-    #         student_id=new_student.id,
-    #         citizen_id=student.citizen_id
-    #     )
-    #     session.add(user_info)
-    #     session.commit()
-
-    #     user_info = session.exec(
-    #         select(UserInformations).where(UserInformations.student_id == new_student.id)
-    #     ).first()
-
-    #     return StudentWithCitizenID(
-    #         **new_student.dict(),
-    #         citizen_id=user_info.citizen_id
-    #     )
 
     @staticmethod
     def create(
@@ -90,6 +54,10 @@ class TeacherServices:
             )
         
         teacher_data = teacher.model_dump(exclude={"citizen_id"})
+
+        # hash password
+        teacher_data["password"] = hash_password(teacher_data["password"])
+
         new_teacher = Teachers(**teacher_data)
         session.add(new_teacher)
         session.commit()
