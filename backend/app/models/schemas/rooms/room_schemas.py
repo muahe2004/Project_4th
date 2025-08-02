@@ -17,7 +17,7 @@ class RoomsPublic(RoomBase):
 class RoomCreate(RoomBase):
     pass
 
-class RoomUpdate(RoomBase):
+class RoomUpdate(SQLModel):
     room_number: Optional[int] = Field(sa_column=Column(Integer, nullable=False, unique=True))
     type: Optional[str] = Field(sa_column=Column(String(50), nullable=False)) 
     status: Optional[str] | None = Field(default=None, sa_column=Column(String(50), nullable=True)) 

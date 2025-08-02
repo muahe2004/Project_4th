@@ -18,7 +18,7 @@ class SubjectPublic(SubjectBase):
 class SubjectCreate(SubjectBase):
     pass
 
-class SubjectUpdate(SubjectBase):
+class SubjectUpdate(SQLModel):
     name: Optional[str] = Field(sa_column=Column(String(100), nullable=False))
     credit: Optional[int] = Field(sa_column=Column(Integer, nullable=False))  
     description: Optional[str] | None = Field(default=None, sa_column=Column(Text, nullable=True))

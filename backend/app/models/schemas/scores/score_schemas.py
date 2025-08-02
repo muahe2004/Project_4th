@@ -20,7 +20,8 @@ class ScoresPublic(ScoresBase):
 class ScoresCreate(ScoresBase):
     pass
 
-class ScoresUpdate(ScoresBase):
+class ScoresUpdate(SQLModel):
+    student_id: Optional[UUID] = Field(foreign_key="students.id")
     score_component_id: Optional[UUID] = Field(foreign_key="score_components.id")
     score: float = Field(sa_column=Column(Float, nullable=False))
     attempt: Optional[int] = Field(default=1, sa_column=Column(Integer, default=1))
