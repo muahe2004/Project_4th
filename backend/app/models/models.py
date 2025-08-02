@@ -14,7 +14,7 @@ from app.models.schemas.rooms.room_schemas import RoomBase
 from app.models.schemas.tuition_fees.tuition_fee_schemas import TuitionFeeBase
 from app.models.schemas.user_informations.user_information_schemas import UserInformationBase
 from app.models.schemas.score_components.score_component_schemas import ScoreComponentBase
-from app.models.schemas.scores.score_schemas import ScoreBase
+from app.models.schemas.scores.score_schemas import ScoresBase
 from app.models.schemas.relatives.relative_schemas import RelativeBase
 
 class Departments(DepartmentBase, table=True):
@@ -73,7 +73,7 @@ class ScoreComponents(ScoreComponentBase, table=True):
     __tablename__ = "score_components"
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
-class Scores(ScoreBase, table=True):
+class Scores(ScoresBase, table=True):
     __tablename__ = "scores"
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
