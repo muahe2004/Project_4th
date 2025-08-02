@@ -12,6 +12,7 @@ from app.api.routes import (
     subjects,
     scores,
     score_components,
+    tuition_fees,
 )
 
 api_router = APIRouter()
@@ -26,3 +27,4 @@ api_router.include_router(rooms.router, prefix="/rooms", tags=["rooms"])
 api_router.include_router(subjects.router, prefix="/subjects", tags=["subjects"])
 api_router.include_router(scores.router, prefix="/scores", tags=["scores"])
 api_router.include_router(score_components.router, prefix="/score_components", tags=["score_components"])
+api_router.include_router(tuition_fees.router, prefix="/tuition_fees", tags=["tuition_fees"])

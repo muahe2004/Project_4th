@@ -8,6 +8,7 @@ from app.middleware.hashing import hash_password
 
 from app.models.models import Students
 from app.models.models import UserInformations
+from app.models.models import TuitionFees
 from app.models.schemas.students.student_schemas import (
     StudentPublic,
     StudentCreate,
@@ -122,7 +123,13 @@ class StudentServices:
                 )
                 continue
 
-            # check relationship
+            check_related_entities = select(TuitionFees).where(TuitionFees.student_id == student.id)
+            tuition_fees = session.exec(check_related_entities).all()
+            if tuition_fees:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Student fees has related Tuition Fees and cannot be deleted.",
+                )
 
             if student.status == StatusEnum.ACTIVE:
                 student.status = StatusEnum.INACTIVE

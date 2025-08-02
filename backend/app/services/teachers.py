@@ -115,17 +115,13 @@ class TeacherServices:
                 )
                 continue
 
-            classes = session.exec(
-                select(Classes).where(Classes.teacher_id == teacher_id)
-            ).all()
+            check_related_entities = select(Classes).where(Classes.teacher_id == teacher.id)
+            classes = session.exec(check_related_entities).all()
             if classes:
-                results.append(
-                    TeacherDeleteResponse(
-                        id=str(teacher_id),
-                        message="Teacher has classes and cannot be deleted."
-                    )
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Teacher fees has related Classes Fees and cannot be deleted.",
                 )
-                continue
 
             if teacher.status == StatusEnum.ACTIVE:
                 teacher.status = StatusEnum.INACTIVE
