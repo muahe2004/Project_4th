@@ -12,6 +12,7 @@ from typing import List
 
 router = APIRouter()
 
+# # =========================== get all score ===========================
 @router.get("", response_model = List[ScoresPublic])
 def get_scores(session: SessionDep) -> List[ScoresPublic]:
     return ScoresServices.get_all(session=session)
@@ -33,7 +34,7 @@ def get_score_by_id(
     "",
     response_model=ScoresPublic,   
 ) 
-def create_room(
+def create_score(
     request: Request,
     session: SessionDep,
     data: ScoresCreate
@@ -57,7 +58,7 @@ def update_score(
     "/{id}",
     response_model=ScoresDeleteResponse,  
 )
-def delete_room(
+def delete_score(
     session: SessionDep,
     id: uuid.UUID
 ) -> ScoresDeleteResponse:
