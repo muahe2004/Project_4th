@@ -1,0 +1,18 @@
+@import url("../../assets/styles/theme.css");
+
+.button-primary {
+    background: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    outline: none;
+    transition: .25s;
+}
+
+.button-primary:hover {
+    opacity: 0.9;
+    border-color: var(--primary-color);
+}
+
+.button-primary:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
