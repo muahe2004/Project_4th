@@ -103,5 +103,3 @@ class DepartmentServices:
         session.delete(department)
         session.commit()
         return DepartmentDeleteResponse(id=str(department.id), message="Department deleted successfully")
-
-department_service = DepartmentServices()

@@ -142,6 +142,3 @@ class StudentServices:
             results.append(StudentDeleteResponse(id=str(student_id), message=message))
 
         return results
-
-
-student_services = StudentServices()

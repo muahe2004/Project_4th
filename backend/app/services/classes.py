@@ -114,5 +114,3 @@ class ClassServices:
             results.append(ClassDeleteResponse(id=str(class_id), message=message))
 
         return results
-
-class_service = ClassServices()

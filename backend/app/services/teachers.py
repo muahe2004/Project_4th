@@ -134,5 +134,3 @@ class TeacherServices:
             results.append(TeacherDeleteResponse(id=str(teacher_id), message=message))
 
         return results
-    
-teacher_service = TeacherServices()

@@ -103,5 +103,3 @@ class MajorServices:
         session.delete(major)
         session.commit()
         return MajorDeleteResponse(id=str(major.id), message="Major deleted successfully")
-
-major_service = MajorServices()

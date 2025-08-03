@@ -124,5 +124,3 @@ class SpecializationServices:
         session.delete(specialization)
         session.commit()
         return SpecializationDeleteResponse(id=str(specialization.id), message="Specialization deleted successfully")
-
-specialization_service = SpecializationServices()

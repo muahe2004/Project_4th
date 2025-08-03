@@ -142,6 +142,3 @@ class User_Information_Services:
     #         results.append(StudentDeleteResponse(id=str(student_id), message=message))
 
     #     return results
-
-
-userinformation_services = User_Information_Services()
