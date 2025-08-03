@@ -53,7 +53,7 @@ def update_learning_schedules(
     "/{id}",
     response_model=LearningScheduleDeleteResponse,
 )
-def delete_department(
+def delete_learning_schedule(
     session: SessionDep, id: uuid.UUID
 ) -> LearningScheduleDeleteResponse:
     return LearningScheduleServices.delete(session=session, learning_schedule_id=id)
