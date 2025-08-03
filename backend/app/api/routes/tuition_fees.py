@@ -52,7 +52,7 @@ def update_tuition_fee(
 
 # =========================== delete tuition fee ===========================
 @router.delete(
-    "",
+    "/{id}",
     response_model=TuitionFeeDeleteResponse,
 )
 def delete_tuition_fee(

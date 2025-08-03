@@ -26,7 +26,7 @@ class UserInformationCreate(UserInformationBase):
 
 class UserInformationUpdate(SQLModel):
     citizen_id: Optional[str] = Field(sa_column=Column(String(12), nullable=False, unique=True))
-    issue_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
+    issue_date: Optional[datetime] = Field(default=None, sa_column=Column(DateTime, nullable=True))
     issue_place: Optional[str] | None = Field(default=None, sa_column=Column(String(100), nullable=True))
     nationality: Optional[str] | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     ethnicity: Optional[str] | None = Field(default=None, sa_column=Column(String(50), nullable=True))

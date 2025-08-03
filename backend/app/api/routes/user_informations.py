@@ -28,3 +28,13 @@ def update_student(
     session: SessionDep, id: uuid.UUID, data: UserInformationUpdate
 ) -> UserInformationPublic:
     return User_Information_Services.update(session=session, user_information_id=id, user_information_data=data)
+
+# =========================== delete user information ===========================
+@router.delete(
+    "/{id}",
+    response_model=UserInformationDeleteResponse,
+)
+def delete_user_information(
+    session: SessionDep, user_information_id: uuid.UUID
+) -> List[UserInformationDeleteResponse]:
+    return User_Information_Services.delete(session=session, user_information_id=user_information_id)
