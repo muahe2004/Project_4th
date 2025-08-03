@@ -33,7 +33,7 @@ def get_learning_schedules_by_id(
     "",
     response_model=LearningSchedulePublic,
 )
-def create_department(
+def create_learning_schedule(
     request: Request, session: SessionDep, data: LearningScheduleCreate
 ) -> LearningSchedulePublic:
     return LearningScheduleServices.create(session=session, learning_schedules=data)
