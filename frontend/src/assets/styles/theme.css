@@ -1,5 +1,6 @@
 :root {
-  --primary-color: #334371;
+  --primary-color: #343D60;
+  --secondary-color: #CDA666;
   --font-size-large: 20px;
-  --padding-default: 16px;
+  --font-weight-base: 700;
 }
