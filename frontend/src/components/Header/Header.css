@@ -1,0 +1,24 @@
+@import url("../../assets/styles/theme.css");
+
+.header {
+    background: var(--primary-color) !important;
+    padding: 5px 1%;
+    height: 65px;
+    display: flex;
+    justify-content: center;
+}
+
+.header-logo {
+    width: 40px;
+    height: 40px;
+}
+
+.header-menu {
+    display: flex;
+    min-width: 20%;
+    justify-content: space-between;
+}
+
+.header-avatar {
+    background: var(--secondary-color) !important;
+}

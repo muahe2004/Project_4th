@@ -1,12 +1,12 @@
 import { Outlet } from "react-router-dom";
 import "./styles/index.css"; 
+import Header from "../../components/Header/Header";
 
 export default function Layout() {
   return (
     <div style={{background: "#CDA666", height: "100vh"}}>
-      <header style={{ backgroundColor: "#343D60", padding: "16px", color: "#fff" }}>
-        <h1 style={{ margin: 0 }}>🌐 My App Header</h1>
-      </header>
+      
+      <Header></Header>
 
       <main style={{ padding: "16px" }}>
         <Outlet />

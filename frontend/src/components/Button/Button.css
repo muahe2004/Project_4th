@@ -5,7 +5,7 @@
     border: 1px solid var(--primary-color);
     outline: none;
     transition: .25s !important;
-    padding: 15px 10px !important;
+    padding: 10px !important;
 }
 
 .button-primary:hover {

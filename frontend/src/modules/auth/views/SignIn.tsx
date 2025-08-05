@@ -7,6 +7,7 @@ import "./styles/SignIn.css"
 
 export function SignIn() {
   const [showPassword, setShowPassword] = React.useState(false);
+  const [country, setCountry] = React.useState('VN');
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -18,6 +19,7 @@ export function SignIn() {
     event.preventDefault();
   };
 
+  // Đoạn này cần tách ra 1 file khác.
   const countries = [
     {
       code: 'VN',
@@ -35,8 +37,6 @@ export function SignIn() {
       phone: '81',
     },
   ];
-
-  const [country, setCountry] = React.useState('VN');
 
   const handleChange = (event: SelectChangeEvent) => {
     setCountry(event.target.value);
