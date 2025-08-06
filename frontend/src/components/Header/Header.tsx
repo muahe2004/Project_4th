@@ -8,7 +8,8 @@ import {
   Avatar,
   Box,
   Button,
-  Stack
+  Stack,
+  Typography
 } from '@mui/material';
 
 import "./Header.css"
@@ -29,12 +30,19 @@ const Header: React.FC = () => {
   return (
     <AppBar position="static" className="header">
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <img src={logo} alt="Logo" className="header-logo"/>
+        <Box className="header-flex">
+          <img src={logo} alt="Logo" className="header-logo"/>
+          <Typography variant="h1" className="header-title">UniCore</Typography>
+        </Box>
 
         <Stack className="header-menu" direction="row">
-          <Button color="inherit">Home</Button>
-          <Button color="inherit">About</Button>
-          <Button color="inherit">Contact</Button>
+          <Button className="header-menu__item" disableRipple color="inherit">Home</Button>
+          <Button className="header-menu__item" disableRipple color="inherit">Training Program</Button>
+          <Button className="header-menu__item" disableRipple color="inherit">Registration</Button>
+          <Button className="header-menu__item" disableRipple color="inherit">Class Schedule</Button>
+          <Button className="header-menu__item" disableRipple color="inherit">Exam Schedule</Button>
+          <Button className="header-menu__item" disableRipple color="inherit">Finance</Button>
+          <Button className="header-menu__item" disableRipple color="inherit">Online Learning</Button>
         </Stack>
 
         <Box>
@@ -45,18 +53,21 @@ const Header: React.FC = () => {
             anchorEl={anchorElUser}
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
+            className="header-menu"
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'right',
+              horizontal: 'left',
             }}
             transformOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
+              vertical: 'top',
+              horizontal: 'left',
             }}
           >
-            <MenuItem onClick={handleCloseUserMenu}>Profile</MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>Hồ sơ cá nhân</MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>Cài đặt</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>Logout</MenuItem>
           </Menu>
+
         </Box>
       </Toolbar>
     </AppBar>
