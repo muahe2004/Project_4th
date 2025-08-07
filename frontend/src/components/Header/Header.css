@@ -29,16 +29,15 @@
 .header-menu {
     display: flex;
     min-width: 20%;
-    justify-content: space-between;
 }
 
-.header-menu__item {
+.header-navbar__item {
     transition: .5s !important;
     border-radius: 0 !important;
     border-bottom: 2px solid var(--primary-color) !important;
 }
 
-.header-menu__item:hover {
+.header-navbar__item:hover {
     border-color: var(--secondary-color) !important;
     cursor: pointer;
 }

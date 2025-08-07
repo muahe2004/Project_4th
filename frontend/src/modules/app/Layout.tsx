@@ -4,7 +4,7 @@ import Header from "../../components/Header/Header";
 
 export default function Layout() {
   return (
-    <div style={{background: "#CDA666", height: "100vh"}}>
+    <div style={{background: "", height: "100vh"}}>
       
       <Header></Header>
 

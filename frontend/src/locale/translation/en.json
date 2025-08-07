@@ -1,10 +1,18 @@
 {
-  "menu": {
+  "header_navbar": {
     "home": "Home",
     "trainingProgram": "Training Program",
     "admission": "Admission",
     "scholarship": "Scholarship",
     "register": "Registration",
     "onlineLearning": "Online Learning"
+  },
+  "header_menu": {
+    "profile": "Profile",
+    "academicResults": "Academic Results",
+    "learningSchedule": "Learning Schedule",
+    "examSchedule": "Student Exam Schedule",
+    "tuition": "Tuition",
+    "logout": "Logout"
   }
 }

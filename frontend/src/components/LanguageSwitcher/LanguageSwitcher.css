@@ -1,0 +1,22 @@
+@import url("../../assets/styles/theme.css");
+
+.switcher-group {
+    background: #ccc !important;
+    height: 25px;
+    width: 70px;
+    margin-right: 10px;
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.switcher-group__button {
+    width: 50% !important;
+    border: none;
+    cursor: pointer;
+}
+
+.switcher-group__button.focus {
+    background: var(--secondary-color);
+    color: #fff;
+}

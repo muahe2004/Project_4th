@@ -11,12 +11,17 @@ import {
   Stack,
   Typography
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import type { SelectChangeEvent } from '@mui/material';
 
 import "./Header.css"
 import logo from '../../assets/images/logoUTEHY.png';
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 
 
 const Header: React.FC = () => {
+  const { t } = useTranslation();
+
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
@@ -27,6 +32,7 @@ const Header: React.FC = () => {
     setAnchorElUser(null);
   };
 
+
   return (
     <AppBar position="static" className="header">
       <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -35,17 +41,19 @@ const Header: React.FC = () => {
           <Typography variant="h1" className="header-title">UniCore</Typography>
         </Box>
 
-        <Stack className="header-menu" direction="row">
-          <Button className="header-menu__item" disableRipple color="inherit">Home</Button>
-          <Button className="header-menu__item" disableRipple color="inherit">Training Program</Button>
-          <Button className="header-menu__item" disableRipple color="inherit">Registration</Button>
-          <Button className="header-menu__item" disableRipple color="inherit">Class Schedule</Button>
-          <Button className="header-menu__item" disableRipple color="inherit">Exam Schedule</Button>
-          <Button className="header-menu__item" disableRipple color="inherit">Finance</Button>
-          <Button className="header-menu__item" disableRipple color="inherit">Online Learning</Button>
+        <Stack className="header-navbar" direction="row">
+          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.home')}</Button>
+          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.trainingProgram')}</Button>
+          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.admission')}</Button>
+          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.scholarship')}</Button>
+          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.register')}</Button>
+          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.onlineLearning')}</Button>
         </Stack>
 
-        <Box>
+
+        <Box className="header-flex">
+          <LanguageSwitcher />
+
           <IconButton onClick={handleOpenUserMenu}>
             <Avatar alt="User Avatar" src="" className="header-avatar"/>
           </IconButton>
@@ -63,11 +71,13 @@ const Header: React.FC = () => {
               horizontal: 'left',
             }}
           >
-            <MenuItem onClick={handleCloseUserMenu}>Hồ sơ cá nhân</MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>Cài đặt</MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>Logout</MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.profile')}</MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.academicResults')}</MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.learningSchedule')}</MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.examSchedule')}</MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.tuition')}</MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.logout')}</MenuItem>
           </Menu>
-
         </Box>
       </Toolbar>
     </AppBar>

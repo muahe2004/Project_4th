@@ -1,10 +1,18 @@
 {
-  "menu": {
+  "header_navbar": {
     "home": "Trang chủ",
     "trainingProgram": "Chương trình đào tạo",
     "admission": "Tuyển sinh",
     "scholarship": "Học bổng",
     "register": "Đăng ký",
     "onlineLearning": "Học online"
+  },
+  "header_menu": {
+    "profile": "Hồ sơ cá nhân",
+    "academicResults": "Kết quả học tập",
+    "learningSchedule": "Lịch học",
+    "examSchedule": "Lịch thi sinh viên",
+    "tuition": "Học phí",
+    "logout": "Đăng xuất"
   }
 }
