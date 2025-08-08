@@ -14,9 +14,14 @@
     width: 50% !important;
     border: none;
     cursor: pointer;
+    transition: .25s;
 }
 
 .switcher-group__button.focus {
     background: var(--secondary-color);
     color: #fff;
+}
+
+.language-switch__sign--in.focus {
+    background: var(--primary-color);
 }

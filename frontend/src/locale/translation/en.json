@@ -14,5 +14,11 @@
     "examSchedule": "Student Exam Schedule",
     "tuition": "Tuition",
     "logout": "Logout"
+  },
+  "sign-in": {
+    "username": "Username",
+    "password": "Password",
+    "signIn": "Sign In",
+    "forgetPassword": "Forget Password"
   }
 }

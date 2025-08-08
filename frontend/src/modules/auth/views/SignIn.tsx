@@ -4,8 +4,11 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Button from '../../../components/Button/Button';
 import logo from '../../../assets/images/logoUTEHY.png';
 import "./styles/SignIn.css"
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../../../components/LanguageSwitcher/LanguageSwitcher';
 
 export function SignIn() {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = React.useState(false);
   const [country, setCountry] = React.useState('VN');
 
@@ -30,17 +33,13 @@ export function SignIn() {
       code: 'GB',
       label: 'English',
       phone: '44',
-    },
-    {
-      code: 'JP',
-      label: 'Japanese',
-      phone: '81',
-    },
+    }
   ];
 
   const handleChange = (event: SelectChangeEvent) => {
     setCountry(event.target.value);
   };
+  
   return (
     <div className="sign-in">
       <Container className="sign-in__container">
@@ -53,12 +52,12 @@ export function SignIn() {
           <Box component="form" noValidate autoComplete="off">
             <TextField
               fullWidth
-              label="Username"
+              label={t('sign-in.username')}
               variant="outlined"
               className="sign-in__text-field"
             />
             <FormControl variant="outlined" fullWidth className="sign-in__form-control">
-              <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-password">{t('sign-in.password')}</InputLabel>
               <OutlinedInput
                   id="outlined-adornment-password"
                   type={showPassword ? 'text' : 'password'}
@@ -85,40 +84,18 @@ export function SignIn() {
               variant="contained"
               className="button-primary"
             >
-              Sign In
+              {t('sign-in.signIn')}
             </Button>
           </Box>
 
           <Box className="sign-in__box sign-in__box--flex">
-            <FormControl variant='standard'>
-              <Select
-                labelId="country-select-label"
-                id="country-select"
-                value={country}
-                onChange={handleChange}
-                className="sign-in__select"
-              >
-                {countries.map((option) => (
-                  <MenuItem key={option.code} value={option.code}>
-                    <img
-                      loading="lazy"
-                      width="20"
-                      src={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png`}
-                      srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                      alt=""
-                      style={{ marginRight: 8 }}
-                    />
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <LanguageSwitcher className="language-switch__sign--in"/>
 
             <Button 
               variant='text' 
               disableRipple
               className="button-variant__text sign-button__forget"
-            >Forget Password</Button>
+            >{t('sign-in.forgetPassword')}</Button>
           </Box>
         </Paper>
       </Container>

@@ -14,5 +14,11 @@
     "examSchedule": "Lịch thi sinh viên",
     "tuition": "Học phí",
     "logout": "Đăng xuất"
+  },
+  "sign-in": {
+    "username": "Tên đăng nhập",
+    "password": "Mật khẩu",
+    "signIn": "Đăng nhập",
+    "forgetPassword": "Quên mật khẩu"
   }
 }

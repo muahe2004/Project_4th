@@ -12,8 +12,6 @@ import {
   Typography
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import type { SelectChangeEvent } from '@mui/material';
-
 import "./Header.css"
 import logo from '../../assets/images/logoUTEHY.png';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
