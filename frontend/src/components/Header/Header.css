@@ -44,5 +44,6 @@
 
 .header-avatar {
     background: var(--secondary-color) !important;
+    margin-left: 10px;
 }
 

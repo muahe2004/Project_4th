@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, TextField, Paper, FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Select, MenuItem, type SelectChangeEvent } from '@mui/material';
+import { Container, Box, TextField, Paper, FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Button from '../../../components/Button/Button';
 import logo from '../../../assets/images/logoUTEHY.png';
@@ -10,7 +10,6 @@ import LanguageSwitcher from '../../../components/LanguageSwitcher/LanguageSwitc
 export function SignIn() {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = React.useState(false);
-  const [country, setCountry] = React.useState('VN');
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -20,24 +19,6 @@ export function SignIn() {
 
   const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-  };
-
-  // Đoạn này cần tách ra 1 file khác.
-  const countries = [
-    {
-      code: 'VN',
-      label: 'Vietnamese',
-      phone: '84',
-    },
-    {
-      code: 'GB',
-      label: 'English',
-      phone: '44',
-    }
-  ];
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setCountry(event.target.value);
   };
   
   return (

@@ -4,7 +4,6 @@
     background: #ccc !important;
     height: 25px;
     width: 70px;
-    margin-right: 10px;
     display: flex;
     border-radius: 4px;
     overflow: hidden;
@@ -25,3 +24,4 @@
 .language-switch__sign--in.focus {
     background: var(--primary-color);
 }
+
