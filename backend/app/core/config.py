@@ -33,11 +33,12 @@ class Settings(BaseSettings):
         env_file=dotenv_path
     )
 
+    UNICORE_SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    ALGORITHM: str = "HS256"
+
     # General
     PROJECT_NAME: str = "UMS"
-    API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str = secrets.token_urlsafe(32)
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
     ENVIRONMENT: Literal["local", "staging", "production", "uat", "development"] = "local"
 
     # CORS
