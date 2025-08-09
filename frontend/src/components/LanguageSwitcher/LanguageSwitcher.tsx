@@ -1,6 +1,5 @@
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 import "./LanguageSwitcher.css";
 
 interface LanguageSwitcherProps {
@@ -9,11 +8,11 @@ interface LanguageSwitcherProps {
 
 const LanguageSwitcher = ({ className = '' }: LanguageSwitcherProps) => {
     const { i18n } = useTranslation();
-    const [language, setLanguage] = useState(i18n.language || 'vi');
+
+    const currentLang = i18n.language;
 
     const handleChangeLanguage = (lang: string) => {
         i18n.changeLanguage(lang);
-        setLanguage(lang);
     };
 
     return (
@@ -22,15 +21,15 @@ const LanguageSwitcher = ({ className = '' }: LanguageSwitcherProps) => {
         >
         <button
             onClick={() => handleChangeLanguage('vi')}
-            color={language === 'vi' ? 'primary' : 'inherit'}
-            className={`switcher-group__button ${language === 'vi' ? 'focus' : ''} ${className}`}
+            color={currentLang === 'vi' ? 'primary' : 'inherit'}
+            className={`switcher-group__button ${currentLang === 'vi' ? 'focus' : ''} ${className}`}
         >
             VI
         </button>
         <button
             onClick={() => handleChangeLanguage('en')}
-            color={language === 'en' ? 'primary' : 'inherit'}
-            className={`switcher-group__button ${language === 'en' ? 'focus' : ''} ${className}`}
+            color={currentLang === 'en' ? 'primary' : 'inherit'}
+            className={`switcher-group__button ${currentLang === 'en' ? 'focus' : ''} ${className}`}
         >
             EN
         </button>
