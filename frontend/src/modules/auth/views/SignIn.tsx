@@ -3,12 +3,17 @@ import { Container, Box, TextField, Paper, FormControl, InputLabel, OutlinedInpu
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Button from '../../../components/Button/Button';
 import logo from '../../../assets/images/logoUTEHY.png';
-import "./styles/SignIn.css"
+import "./styles/SignIn.css";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../../../components/LanguageSwitcher/LanguageSwitcher';
+import { isRequired, isEmail } from "../../../utils/validation/validations";
 
 export function SignIn() {
   const { t } = useTranslation();
+
+  const [username, setUsername] = React.useState('');
+  const [usernameError, setUsernameError] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -20,49 +25,82 @@ export function SignIn() {
   const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
-  
+
+  const handleBlurUsername = () => {
+    if (!isRequired(username)) {
+      setUsernameError("Username is required!");
+    } else {
+      setUsernameError("");
+    }
+  };
+
+  const handleSignIn = () => {
+    if (!usernameError || usernameError.trim() === "") {
+      console.log("Login");
+    }
+  }
+
   return (
     <div className="sign-in">
       <Container className="sign-in__container">
         <Paper className="sign-in__paper">
           <Box className="sign-in__box">
-            <img
-              src={logo} alt="Logo" 
-              className="sign-in__logo" />
+            <img src={logo} alt="Logo" className="sign-in__logo" />
           </Box>
-          <Box component="form" noValidate autoComplete="off">
+          <Box component="form" noValidate autoComplete="off"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!usernameError || usernameError.trim() === "") {
+                  handleSignIn();
+                }
+              }
+            }}
+          >
             <TextField
               fullWidth
               label={t('sign-in.username')}
               variant="outlined"
               className="sign-in__text-field"
+              value={username}
+              onChange={(e) => {
+                 setUsername(e.target.value),
+                 setUsernameError("")
+              }}
+              onBlur={handleBlurUsername}
+              error={!!usernameError}
+              helperText={usernameError}
             />
+
             <FormControl variant="outlined" fullWidth className="sign-in__form-control">
               <InputLabel htmlFor="outlined-adornment-password">{t('sign-in.password')}</InputLabel>
               <OutlinedInput
-                  id="outlined-adornment-password"
-                  type={showPassword ? 'text' : 'password'}
-                  endAdornment={
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+                id="outlined-adornment-password"
+                type={showPassword ? 'text' : 'password'}
+                endAdornment={
                   <InputAdornment position="end">
-                      <IconButton
-                      aria-label={
-                          showPassword ? 'hide the password' : 'display the password'
-                      }
+                    <IconButton
+                      aria-label={showPassword ? 'hide the password' : 'display the password'}
                       onClick={handleClickShowPassword}
                       onMouseDown={handleMouseDownPassword}
                       onMouseUp={handleMouseUpPassword}
                       edge="end"
-                      >
+                    >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
+                    </IconButton>
                   </InputAdornment>
-                  }
-                  label="Password"
+                }
+                label="Password"
               />
-              </FormControl>
-            <Button
-              fullWidth
-              variant="contained"
+            </FormControl>
+
+            <Button 
+              onClick={handleSignIn}
+              fullWidth variant="contained" 
               className="button-primary"
             >
               {t('sign-in.signIn')}
@@ -70,13 +108,15 @@ export function SignIn() {
           </Box>
 
           <Box className="sign-in__box sign-in__box--flex">
-            <LanguageSwitcher className="language-switch__sign--in"/>
+            <LanguageSwitcher className="language-switch__sign--in" />
 
-            <Button 
-              variant='text' 
+            <Button
+              variant='text'
               disableRipple
               className="button-variant__text sign-button__forget"
-            >{t('sign-in.forgetPassword')}</Button>
+            >
+              {t('sign-in.forgetPassword')}
+            </Button>
           </Box>
         </Paper>
       </Container>

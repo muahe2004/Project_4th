@@ -34,11 +34,11 @@
 }
 
 .sign-in__text-field {
-    margin-bottom: 20px !important;
+    margin-bottom: 15px !important;
 }
 
 .sign-in__form-control {
-    margin-bottom: 20px !important;
+    margin-bottom: 15px !important;
 }
 
 .sign-in__select {
@@ -52,4 +52,8 @@
 .sign-button__forget:hover {
     color: var(--primary-color) !important;
     text-decoration: underline !important;
+}
+
+.MuiFormHelperText-root {
+    margin: 0 !important;
 }

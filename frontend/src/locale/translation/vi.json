@@ -5,7 +5,7 @@
     "admission": "Tuyển sinh",
     "scholarship": "Học bổng",
     "register": "Đăng ký",
-    "onlineLearning": "Học online"
+    "onlineLearning": "Học trực tuyến"
   },
   "header_menu": {
     "profile": "Hồ sơ cá nhân",
@@ -20,5 +20,31 @@
     "password": "Mật khẩu",
     "signIn": "Đăng nhập",
     "forgetPassword": "Quên mật khẩu"
+  },
+  "footer": {
+    "unicores": "UNICORE",
+    "trainingProgram": "Chương trình đào tạo",
+    "admission": "Tuyển sinh",
+    "scholarship": "Học bổng",
+    "registration": "Đăng ký",
+    "onlineLearning": "Học trực tuyến",
+    
+    "contactUs": "LIÊN HỆ",
+    "contact": {
+      "branch1Phone": "CS1: 0221.3689.888",
+      "branch2Phone": "CS2: 0221.3689.555",
+      "branch3Phone": "CS3: 0221.3689.333",
+      "email": "Email: dhspkt@utehy.edu.vn",
+      "website": "Website: http://utehy.edu.vn"
+    },
+    
+    "address": "ĐỊA CHỈ",
+    "addresses": {
+      "branch1Adress": "CS1: Khoái Châu - Hưng Yên",
+      "branch2Adress": "CS2: Mỹ Hào - Hưng Yên",
+      "branch3Adress": "CS3: TP Hải Dương - Hải Dương"
+    },
+
+    "copyright": "© 2025 Trường Đại học Sư phạm Kỹ thuật Hưng Yên"
   }
 }

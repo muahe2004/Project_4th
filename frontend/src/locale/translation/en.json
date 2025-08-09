@@ -20,5 +20,31 @@
     "password": "Password",
     "signIn": "Sign In",
     "forgetPassword": "Forget Password"
+  },
+  "footer": {
+    "unicores": "UNICORE",
+    "trainingProgram": "Training Program",
+    "admission": "Admission",
+    "scholarship": "Scholarship",
+    "registration": "Registration",
+    "onlineLearning": "Online Learning",
+    
+    "contactUs": "CONTACT US",
+    "contact": {
+      "branch1Phone": "BR1: 0221.3689.888",
+      "branch2Phone": "BR2: 0221.3689.555",
+      "branch3Phone": "BR3: 0221.3689.333",
+      "email": "Email: dhspkt@utehy.edu.vn",
+      "website": "Website: http://utehy.edu.vn"
+    },
+    
+    "address": "ADDRESS",
+    "addresses": {
+      "branch1Adress": "BR1: Khoai Chau - Hung Yen",
+      "branch2Adress": "BR2: My Hao - Hung Yen",
+      "branch3Adress": "BR3: Hai Duong City - Hai Duong"
+    },
+
+    "copyright": "© 2025 Hung Yen University Of Technology And Education"
   }
 }
