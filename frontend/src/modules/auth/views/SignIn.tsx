@@ -7,14 +7,20 @@ import "./styles/SignIn.css";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../../../components/LanguageSwitcher/LanguageSwitcher';
 import { isRequired, isEmail } from "../../../utils/validation/validations";
+import { useSignIn } from '../apis/sign-in';
+import { useNavigate } from "react-router-dom";
+import { homeUrl } from "../../../routes/urls";
+
 
 export function SignIn() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [username, setUsername] = React.useState('');
   const [usernameError, setUsernameError] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
+  const mutation = useSignIn();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -37,6 +43,17 @@ export function SignIn() {
   const handleSignIn = () => {
     if (!usernameError || usernameError.trim() === "") {
       console.log("Login");
+      mutation.mutate(
+        { username, password },
+        {
+          onSuccess: (data) => {
+            navigate(homeUrl);
+          },
+          onError: (error) => {
+            alert(error.message);
+          }
+        }
+      );
     }
   }
 

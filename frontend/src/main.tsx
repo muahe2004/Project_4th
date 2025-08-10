@@ -5,7 +5,6 @@ import { createRouterConfig } from "./routes";
 import "./index.css";
 import './locale/i18n';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-// Tạo QueryClient mới
 const queryClient = new QueryClient();
 
 

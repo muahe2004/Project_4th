@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
 
     # General
-    PROJECT_NAME: str = "UMS"
+    PROJECT_NAME: str = "UNICORE"
     ENVIRONMENT: Literal["local", "staging", "production", "uat", "development"] = "local"
 
     # CORS
