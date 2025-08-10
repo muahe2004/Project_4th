@@ -5,11 +5,10 @@ import Footer from "../../components/Footer/Footer";
 
 export default function Layout() {
   return (
-    <div style={{background: "", height: "1000px"}}>
-      
+    <div>
       <Header></Header>
 
-      <main style={{ padding: "16px" }}>
+      <main className="main-layout">
         <Outlet />
       </main>
 

@@ -2,10 +2,18 @@
 
 .header {
     background: var(--primary-color) !important;
-    /* padding: 5px 1%; */
     height: 65px;
     display: flex;
     justify-content: center;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.header-toolbar {
+    display: flex;
+    justify-content: space-between;
 }
 
 .header-flex {
@@ -24,11 +32,6 @@
 .header-title {
     font-size: 18px !important;
     font-weight: 500 !important;
-}
-
-.header-menu {
-    display: flex;
-    min-width: 20%;
 }
 
 .header-navbar__item {

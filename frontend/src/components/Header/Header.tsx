@@ -33,7 +33,7 @@ const Header: React.FC = () => {
 
   return (
     <AppBar position="static" className="header">
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
+      <Toolbar className="header-toolbar">
         <Box className="header-flex">
           <img src={logo} alt="Logo" className="header-logo"/>
           <Typography variant="h1" className="header-title">UniCore</Typography>
@@ -59,15 +59,6 @@ const Header: React.FC = () => {
             anchorEl={anchorElUser}
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
-            className="header-menu"
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
           >
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.profile')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.academicResults')}</MenuItem>

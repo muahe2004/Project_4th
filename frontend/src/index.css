@@ -1,5 +1,9 @@
 @import url("./assets/styles/theme.css");
 
+.main-layout {
+  margin-top: 65px;
+}
+
 /* custom input */
 .MuiInputLabel-root.Mui-focused {
   color: var(--primary-color) !important;

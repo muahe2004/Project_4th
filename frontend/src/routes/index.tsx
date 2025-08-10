@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { homeUrl, layoutUrl } from "./urls";
 import { SignIn } from "../modules/auth/views/SignIn";
+import { HomePage } from "../modules/home/views/HomePage"
 import Layout from "../modules/app/Layout"
 import { useAuthStore } from "../stores/useAuthStore";
 
@@ -44,7 +45,9 @@ export const createRouterConfig = () =>
       children: [
         {
           path: homeUrl,
-          element: <div>Trang chính sau khi login</div>,
+          element: (
+            <HomePage></HomePage>
+          )
         },
       ],
     },
