@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Box, TextField, Paper, FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Button from '../../../components/Button/Button';
@@ -10,6 +10,7 @@ import { isRequired, isEmail } from "../../../utils/validation/validations";
 import { useSignIn } from '../apis/sign-in';
 import { useNavigate } from "react-router-dom";
 import { homeUrl } from "../../../routes/urls";
+import SnackBar from '../../../components/SnackBar/SnackBar';
 
 
 export function SignIn() {
@@ -42,20 +43,49 @@ export function SignIn() {
 
   const handleSignIn = () => {
     if (!usernameError || usernameError.trim() === "") {
-      console.log("Login");
       mutation.mutate(
         { username, password },
         {
           onSuccess: (data) => {
-            navigate(homeUrl);
+            navigate("/");
           },
           onError: (error) => {
-            alert(error.message);
-          }
+            const status = error.response?.status;
+            if (status === 401) {
+              setSnackbar({ open: true, message: "Incorrect username or password", severity: "error" });
+            } else if (status === 403) {
+              setSnackbar({ open: true, message: "Incorrect username or password", severity: "error" });
+            } else {
+              setSnackbar({ open: true, message: error.response?.data?.detail || "An error occurred", severity: "error" });
+            }
+          },
         }
       );
     }
   }
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+
+  const showSuccess = (message: string) => {
+    setSnackbar({
+      open: true,
+      message: message,
+      severity: "success",
+    });
+  };
+
+  const showError = (message: string) => {
+    setSnackbar({
+      open: true,
+      message: message,
+      severity: "error",
+    });
+  };
+
 
   return (
     <div className="sign-in">
@@ -137,6 +167,13 @@ export function SignIn() {
           </Box>
         </Paper>
       </Container>
+
+      <SnackBar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </div>
   );
 }

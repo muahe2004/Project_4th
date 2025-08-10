@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useMutation,  } from '@tanstack/react-query';
 import { URL_API_AUTH } from '../../../constants/config'
 
@@ -25,12 +25,15 @@ const signIn = async (data: LoginRequest): Promise<LoginResponse> => {
     const res = await axios.post<LoginResponse>(`${URL_API_AUTH}`, data, { withCredentials: true });
     return res.data;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || error.message);
+    if (axios.isAxiosError(error)) {
+      throw error; 
+    }
+    throw new Error('Unexpected error');
   }
 };
 
 export const useSignIn = () => {
-  return useMutation<LoginResponse, Error, LoginRequest>({
+  return useMutation<LoginResponse, AxiosError<{ detail?: string }>, LoginRequest>({
     mutationFn: signIn,
   });
 };

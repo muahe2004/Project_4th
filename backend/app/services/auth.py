@@ -38,7 +38,7 @@ class AuthServices:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The username or password you entered is incorrect.")
 
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The username or password you entered is incorrect.")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The username or password you entered is incorrect.")
 
         if user.status == StatusEnum.INACTIVE:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="The username or password you entered is incorrect.")
