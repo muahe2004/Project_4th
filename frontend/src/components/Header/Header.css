@@ -31,7 +31,7 @@
 
 .header-title {
     font-size: 18px !important;
-    font-weight: 500 !important;
+    font-weight: var(--font-weight-base) !important;
 }
 
 .header-navbar__item {

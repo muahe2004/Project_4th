@@ -1,6 +1,7 @@
 :root {
   --primary-color: #343D60;
   --secondary-color: #CDA666;
+  --font-size-base: 14px;
   --font-size-large: 20px;
   --font-weight-base: 700;
   --border-base: 1px solid #ccc;
@@ -10,5 +11,5 @@
   --color-black: #000;
   --color-time: #68696b;
   --color-desc: #5b5c5e;
-  --font-family: Georgia, 'Times New Roman', Times, serif;
+  --font-familybase: 'Montserrat', sans-serif;
 }

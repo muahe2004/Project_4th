@@ -1,5 +1,23 @@
 @import url("./assets/styles/theme.css");
 
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/font/Montserrat-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/font/Montserrat-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+}
+
+* {
+  font-family: var(--font-familybase);
+}
+
 .main-layout {
   margin-top: 65px;
 }
