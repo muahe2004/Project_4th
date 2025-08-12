@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Request
 from sqlmodel import Session, select
 from app.models.models import Students, Teachers
 from app.enums.status import StatusEnum
@@ -7,6 +7,7 @@ from app.middleware.hashing import verify_password
 from jose import jwt
 from datetime import datetime, timedelta
 from app.core.config import settings
+from app.middleware.decodedToken import (get_token_from_header, decode_jwt)
 
 UNICORE_SECRET_KEY = settings.UNICORE_SECRET_KEY
 ALGORITHM = settings.ALGORITHM
@@ -47,8 +48,9 @@ class AuthServices:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The username or password you entered is incorrect.")
 
         access_token = AuthServices.create_access_token({
-            "sub": str(user.id),
-            "username": username,
+            "id": str(user.id),
+            "name": str(user.name),
+            "code": username,
             "role": role
         })
 
@@ -61,4 +63,15 @@ class AuthServices:
                 "code": username,
                 "role": role
             }
+        }
+
+    @staticmethod
+    def get_current_user(request: Request):
+        token = get_token_from_header(request)
+        payload = decode_jwt(token)
+        return {
+            "id": payload.get("id"),
+            "code": payload.get("code"),
+            "name": payload.get("name"),
+            "role": payload.get("role"),
         }
