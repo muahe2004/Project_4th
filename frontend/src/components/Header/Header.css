@@ -18,7 +18,7 @@
 
 .header-flex {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     cursor: pointer;
 }
@@ -50,3 +50,8 @@
     margin-left: 10px;
 }
 
+.header-sign-in__button {
+    margin-left: 10px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}

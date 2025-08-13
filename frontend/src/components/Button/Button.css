@@ -24,3 +24,9 @@
     padding: 0 !important; 
     color: var(--primary-color) !important;
 }
+
+.button-secondary {
+    background: var(--secondary-color) !important;
+    color: #fff !important;
+    font-weight: var(--font-weight-base) !important;
+}

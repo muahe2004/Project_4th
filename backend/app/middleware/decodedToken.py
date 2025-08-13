@@ -18,12 +18,14 @@ def decode_jwt(token: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-def get_token_from_header(request: Request):
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
+def get_token_from_cookie(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token not found!",
+            detail="Token not found in cookies!",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return auth_header.split(" ")[1]
+    return token
+
+

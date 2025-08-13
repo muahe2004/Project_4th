@@ -1,21 +1,52 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import axios from "axios";
 
-interface User {
+type UserInfo = {
   id: string;
-  name: string;
-}
+  full_name: string;
+  code: string;
+  role: string;
+};
 
-interface AuthState {
-  user: User | null;
-  setUser: (user: User) => void;
+type AuthState = {
+  user: UserInfo | null;
+  setUser: (user: UserInfo) => void;
+  fetchMe: () => Promise<void>;
   logout: () => void;
-}
+};
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: {
-    id: "123",
-    name: "Minh",
-  },
-  setUser: (user) => set({ user }),
-  logout: () => set({ user: null }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+
+      setUser: (user) => set({ user }),
+
+      fetchMe: async () => {
+        try {
+          const res = await axios.get(`${import.meta.env.VITE_UNICORE_API_URL}/auth/me`, {
+            withCredentials: true,
+          });
+          set({ user: res.data });
+        } catch (err) {
+          console.error("Fetch /me failed:", err);
+          set({ user: null });
+        }
+      },
+
+      logout: async () => {
+        try {
+          await axios.post(`${import.meta.env.VITE_UNICORE_API_URL}/auth/logout`, {}, { withCredentials: true });
+        } catch (e) {
+          console.error("Logout failed:", e);
+        }
+        set({ user: null });
+      },
+    }),
+    {
+      name: "auth-storage",
+      partialize: (state) => ({ user: state.user }),
+    }
+  )
+);

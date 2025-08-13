@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status, Request
+from fastapi import HTTPException, status, Request, Response
 from sqlmodel import Session, select
 from app.models.models import Students, Teachers
 from app.enums.status import StatusEnum
@@ -7,7 +7,7 @@ from app.middleware.hashing import verify_password
 from jose import jwt
 from datetime import datetime, timedelta
 from app.core.config import settings
-from app.middleware.decodedToken import (get_token_from_header, decode_jwt)
+from app.middleware.decodedToken import (get_token_from_cookie, decode_jwt)
 
 UNICORE_SECRET_KEY = settings.UNICORE_SECRET_KEY
 ALGORITHM = settings.ALGORITHM
@@ -67,7 +67,7 @@ class AuthServices:
 
     @staticmethod
     def get_current_user(request: Request):
-        token = get_token_from_header(request)
+        token = get_token_from_cookie(request)
         payload = decode_jwt(token)
         return {
             "id": payload.get("id"),
@@ -75,3 +75,13 @@ class AuthServices:
             "name": payload.get("name"),
             "role": payload.get("role"),
         }
+    
+    staticmethod
+    def log_out(response: Response):
+        response.delete_cookie(
+            key="access_token",
+            httponly=True,
+            secure=False,  
+            samesite="lax"
+        )
+        return {"message": "Logged out successfully"}

@@ -6,16 +6,16 @@ import logo from '../../../assets/images/logoUTEHY.png';
 import "./styles/SignIn.css";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../../../components/LanguageSwitcher/LanguageSwitcher';
-import { isRequired, isEmail } from "../../../utils/validation/validations";
+import { isRequired } from "../../../utils/validation/validations";
 import { useSignIn } from '../apis/sign-in';
 import { useNavigate } from "react-router-dom";
-import { homeUrl } from "../../../routes/urls";
 import SnackBar from '../../../components/SnackBar/SnackBar';
-
+import { useAuthStore } from "../../../stores/useAuthStore";
 
 export function SignIn() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const fetchMe = useAuthStore((state) => state.fetchMe); 
 
   const [username, setUsername] = React.useState('');
   const [usernameError, setUsernameError] = React.useState('');
@@ -46,17 +46,18 @@ export function SignIn() {
       mutation.mutate(
         { username, password },
         {
-          onSuccess: (data) => {
+          onSuccess: async (data) => {
+            await fetchMe(); 
             navigate("/");
           },
           onError: (error) => {
             const status = error.response?.status;
             if (status === 401) {
-              setSnackbar({ open: true, message: "Incorrect username or password", severity: "error" });
+              showError("Incorrect username or password!");
             } else if (status === 403) {
-              setSnackbar({ open: true, message: "Incorrect username or password", severity: "error" });
+              showError("Incorrect username or password!");
             } else {
-              setSnackbar({ open: true, message: error.response?.data?.detail || "An error occurred", severity: "error" });
+              showError(error.response?.data?.detail || "An error occurred");
             }
           },
         }
@@ -70,13 +71,13 @@ export function SignIn() {
     severity: "success" as "success" | "error",
   });
 
-  const showSuccess = (message: string) => {
-    setSnackbar({
-      open: true,
-      message: message,
-      severity: "success",
-    });
-  };
+  // const showSuccess = (message: string) => {
+  //   setSnackbar({
+  //     open: true,
+  //     message: message,
+  //     severity: "success",
+  //   });
+  // };
 
   const showError = (message: string) => {
     setSnackbar({
@@ -85,7 +86,6 @@ export function SignIn() {
       severity: "error",
     });
   };
-
 
   return (
     <div className="sign-in">
@@ -104,6 +104,7 @@ export function SignIn() {
               }
             }}
           >
+            {/* username */}
             <TextField
               fullWidth
               label={t('sign-in.username')}
@@ -119,6 +120,7 @@ export function SignIn() {
               helperText={usernameError}
             />
 
+            {/* password */}
             <FormControl variant="outlined" fullWidth className="sign-in__form-control">
               <InputLabel htmlFor="outlined-adornment-password">{t('sign-in.password')}</InputLabel>
               <OutlinedInput

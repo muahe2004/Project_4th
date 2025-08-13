@@ -16,7 +16,6 @@ import "./Header.css"
 import logo from '../../assets/images/logoUTEHY.png';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 
-
 const Header: React.FC = () => {
   const { t } = useTranslation();
 
@@ -29,7 +28,6 @@ const Header: React.FC = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
 
   return (
     <AppBar position="static" className="header">
@@ -47,7 +45,6 @@ const Header: React.FC = () => {
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.register')}</Button>
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.onlineLearning')}</Button>
         </Stack>
-
 
         <Box className="header-flex">
           <LanguageSwitcher />

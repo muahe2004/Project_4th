@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import "./styles/index.css"; 
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { useAuthStore } from "../../stores/useAuthStore"
 
 export default function Layout() {
   return (

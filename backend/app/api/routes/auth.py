@@ -35,3 +35,7 @@ def login(response: Response, session: SessionDep, data: LoginRequest):
 @router.get("/me")
 def read_current_user(user=Depends(AuthServices.get_current_user)):
     return user
+
+@router.post("/logout")
+def logout(response: Response):
+    return AuthServices.log_out(response)
