@@ -1,27 +1,33 @@
 @import url("../../assets/styles/theme.css");
 
-.switcher-group {
-    background: #ccc !important;
-    height: 25px;
-    width: 70px;
+.switcher-select .MuiSelect-select {
     display: flex;
-    border-radius: 4px;
-    overflow: hidden;
+    align-items: center;
+    padding: 8px;
+    background: var(--primary-color);
+    min-width: auto;
+    width: fit-content;
 }
 
-.switcher-group__button {
-    width: 50% !important;
-    border: none;
-    cursor: pointer;
-    transition: .25s;
-}
-
-.switcher-group__button.focus {
-    background: var(--secondary-color);
+.switcher-select .MuiSelect-icon {
     color: #fff;
 }
 
-.language-switch__sign--in.focus {
-    background: var(--primary-color);
+.switcher-select::before,
+.switcher-select::after {
+  border-bottom: none !important;
 }
 
+.switcher-menu {
+    padding: 0px !important;
+}
+
+.switcher-image {
+    width: 25px;
+    height: 25px;
+}
+
+.switcher-label {
+    margin-left: 8px;
+    font-size: 13px;
+}

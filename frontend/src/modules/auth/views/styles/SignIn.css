@@ -23,7 +23,7 @@
 }
 
 .sign-in__box--flex {
-    margin-top: 20px;
+    margin-top: 10px;
     align-items: center;
     justify-content: space-between;
 }
@@ -47,6 +47,7 @@
 
 .sign-button__forget {
     font-size: 13px !important;
+    font-weight: 600 !important;
 }
 
 .sign-button__forget:hover {
@@ -56,4 +57,15 @@
 
 .MuiFormHelperText-root {
     margin: 0 !important;
+}
+
+.language-switch__sign--in .switcher-select .MuiSelect-select {
+    background: #fff !important;
+    padding-left: 0;
+    font-size: 13px !important;
+    font-weight: 600 !;
+}
+
+.language-switch__sign--in .switcher-select .MuiSelect-icon {
+    color: var(--primary-color);
 }

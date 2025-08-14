@@ -56,6 +56,7 @@ const Header: React.FC = () => {
             anchorEl={anchorElUser}
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
+            disableScrollLock={true} 
           >
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.profile')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.academicResults')}</MenuItem>

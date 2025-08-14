@@ -47,11 +47,4 @@
 
 .header-avatar {
     background: var(--secondary-color) !important;
-    margin-left: 10px;
-}
-
-.header-sign-in__button {
-    margin-left: 10px !important;
-    padding-left: 15px !important;
-    padding-right: 15px !important;
 }

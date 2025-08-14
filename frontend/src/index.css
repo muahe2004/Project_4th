@@ -34,3 +34,13 @@
 .MuiInput-underline:after {
   border-bottom: 2px solid var(--primary-color) !important;
 }
+
+/* custom select */
+.MuiMenu-paper {
+  min-width: auto !important;
+  padding: 8px;
+}
+
+.MuiMenu-list {
+  padding: 0 !important;
+}
