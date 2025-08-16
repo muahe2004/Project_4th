@@ -18,6 +18,10 @@
   font-family: var(--font-family-base);
 }
 
+body {
+  background: #fafafa !important;
+}
+
 .main-layout {
   margin-top: 65px;
 }

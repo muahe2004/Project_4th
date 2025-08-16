@@ -1,0 +1,13 @@
+@import url("../../assets/styles/theme.css");
+
+.label-primary {
+    display: block;
+    margin-bottom: 5px !important;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+}
+
+.label-primary__required {
+    margin-left: 5px;
+    color: red;
+}
