@@ -15,7 +15,7 @@
 }
 
 * {
-  font-family: var(--font-familybase);
+  font-family: var(--font-family-base);
 }
 
 .main-layout {

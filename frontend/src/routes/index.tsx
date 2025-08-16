@@ -1,8 +1,10 @@
 import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { homeUrl, layoutUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, notFoundUrl, profileUrl } from "./urls";
+import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
+import { NotFound } from "../modules/NotFound/NotFound"
 import Layout from "../modules/app/Layout"
 import { useAuthStore } from "../stores/useAuthStore";
 
@@ -17,18 +19,22 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       console.log(user);
     } else {
       useAuthStore.getState().logout();
-      navigate("/sign-in");
+      navigate(signinUrl);
     }
   }, []);
 
-  return user ? <>{children}</> : <Navigate to="/sign-in" replace />;
+  return user ? <>{children}</> : <Navigate to={signinUrl} replace />;
 };
 
 export const createRouterConfig = () =>
   createBrowserRouter([
     {
-      path: "/sign-in",
+      path: signinUrl,
       element: <SignIn />,
+    },
+    {
+      path: notFoundUrl,
+      element: <NotFound />,
     },
     {
       path: layoutUrl,
@@ -44,6 +50,16 @@ export const createRouterConfig = () =>
             <HomePage></HomePage>
           )
         },
+        {
+          path: profileUrl,
+          element: <MyProfile />,
+        },
       ],
+    },
+
+    // not found
+    {
+      path: "*",
+      element: <NotFound />,
     },
   ]);

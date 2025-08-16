@@ -15,14 +15,22 @@ import { useTranslation } from 'react-i18next';
 import "./Header.css"
 import logo from '../../assets/images/logoUTEHY.png';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
+import { useNavigate } from 'react-router-dom';
+import { profileUrl  } from "../../routes/urls"
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
+  };
+
+  const handleNavigate = (url: string) => {
+    navigate(url);
+    handleCloseUserMenu();
   };
 
   const handleCloseUserMenu = () => {
@@ -58,12 +66,16 @@ const Header: React.FC = () => {
             onClose={handleCloseUserMenu}
             disableScrollLock={true} 
           >
-            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.profile')}</MenuItem>
+            <MenuItem 
+              onClick={() => handleNavigate(profileUrl)}
+            >{t('header_menu.profile')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.academicResults')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.learningSchedule')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.examSchedule')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.tuition')}</MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.logout')}</MenuItem>
+            <MenuItem 
+              onClick={() => handleNavigate("/sign-in")}
+            >{t('header_menu.logout')}</MenuItem>
           </Menu>
         </Box>
       </Toolbar>

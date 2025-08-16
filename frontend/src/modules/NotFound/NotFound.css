@@ -1,0 +1,19 @@
+@import url("../../assets/styles/theme.css");
+
+.notfound-container {
+  text-align: center;
+  padding: 60px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.notfound-title {
+  font-size: 5rem !important;
+  font-weight: bold !important;
+  color: var(--primary-color);
+  margin-bottom: 20px !important;
+}
+
+.notfound-message {
+  margin-bottom: 20px !important;
+  font-size: var(--font-size-large) !important; 
+}

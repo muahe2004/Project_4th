@@ -5,8 +5,8 @@
     border: 1px solid var(--primary-color);
     outline: none;
     transition: .25s !important;
-    padding: 10px !important;
-    font-weight: var(--font-weight-base) !important;
+    padding: 10px 12px !important;
+    font-weight: var(--font-weight-bold) !important;
 }
 
 .button-primary:hover {
@@ -28,5 +28,5 @@
 .button-secondary {
     background: var(--secondary-color) !important;
     color: #fff !important;
-    font-weight: var(--font-weight-base) !important;
+    font-weight: var(--font-weight-bold) !important;
 }

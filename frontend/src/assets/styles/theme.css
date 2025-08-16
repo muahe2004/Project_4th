@@ -3,7 +3,7 @@
   --secondary-color: #CDA666;
   --font-size-base: 14px;
   --font-size-large: 20px;
-  --font-weight-base: 700;
+  --font-weight-bold: 700;
   --border-base: 1px solid #ccc;
   --border-radius-base: 4px;
   --box-shadow-base: 0 8px 20px rgba(52, 61, 96, 0.5);
@@ -11,5 +11,5 @@
   --color-black: #000;
   --color-time: #68696b;
   --color-desc: #5b5c5e;
-  --font-familybase: 'Montserrat', sans-serif;
+  --font-family-base: 'Montserrat', sans-serif;
 }
