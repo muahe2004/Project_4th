@@ -4,6 +4,9 @@ from uuid import UUID
 from typing import Optional
 
 class UserInformationBase(SQLModel):
+    place_of_origin: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
+    exempted_group: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
+    priority_group: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
     citizen_id: str = Field(sa_column=Column(String(12), nullable=False, unique=True))
     issue_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
     issue_place: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
@@ -25,6 +28,9 @@ class UserInformationCreate(UserInformationBase):
     pass
 
 class UserInformationUpdate(SQLModel):
+    place_of_origin: Optional[str] | None = Field(default=None, sa_column=Column(Text, nullable=True))
+    exempted_group: Optional[str] | None = Field(default=None, sa_column=Column(Text, nullable=True))
+    priority_group: Optional[str] | None = Field(default=None, sa_column=Column(Text, nullable=True))
     citizen_id: Optional[str] = Field(sa_column=Column(String(12), nullable=False, unique=True))
     issue_date: Optional[datetime] = Field(default=None, sa_column=Column(DateTime, nullable=True))
     issue_place: Optional[str] | None = Field(default=None, sa_column=Column(String(100), nullable=True))
