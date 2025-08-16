@@ -12,6 +12,7 @@
 
 .sign-in__paper {
     box-shadow: none !important;
+    background: transparent !important;
 }
 
 .sign-in__box {

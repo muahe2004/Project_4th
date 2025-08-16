@@ -9,7 +9,7 @@
   --box-shadow-base: 0 8px 20px rgba(52, 61, 96, 0.5);
   --color-white: #fff;
   --color-black: #000;
-  --color-time: #68696b;
-  --color-desc: #5b5c5e;
+  --text-color-time: #68696b;
+  --text-color-second: #5b5c5e;
   --font-family-base: 'Montserrat', sans-serif;
 }

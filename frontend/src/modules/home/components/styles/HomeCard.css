@@ -7,6 +7,7 @@
     overflow: hidden;
     cursor: pointer;
     transition: .25s;
+    background: #fff;
 }
 
 .home-card:hover {
@@ -33,10 +34,10 @@
 
 .home-card__time {
     padding: 0 20px 10px 20px;
-    color: var(--color-time);
+    color: var(--text-color-time);
 }
 
 .home-card__desc {
     padding: 0 20px 10px 20px;
-    color: var(--color-desc);
+    color: var(--text-color-second);
 }

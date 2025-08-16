@@ -1,0 +1,80 @@
+@import url("../../../../assets/styles/theme.css");
+
+.myprofile {
+    background: #fff;
+    margin: 0 5%;
+    padding: 2% 3%;
+}
+
+.myprofile-title {
+    text-align: center;   
+    font-weight: var(--font-weight-bold) !important;
+    font-size: var(--font-size-large) !important;
+    color: var(--primary-color);
+}
+
+.myprofile-tabs .active-tab {
+    color: var(--primary-color) !important;
+    font-weight: var(--font-weight-bold);
+}
+
+.myprofile-panel__title {
+    font-weight: var(--font-weight-bold) !important;
+    color: var(--primary-color);
+    margin-bottom: 10px !important;
+}
+
+.myprofile-flex {
+    display: flex;
+    padding-bottom: 20px;
+}
+
+.myprofile-box {
+    display: flex;
+    align-items: center;
+}
+
+.myprofile-avatar {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.myprofile-name {
+    font-weight: var(--font-weight-bold) !important;
+}
+
+.myprofile-email {
+    color: var(--text-color-second);
+    font-size: var(--font-size-base) !important;
+}
+
+.myprofile-form {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.myprofile-form__group {
+    margin-bottom: 20px;
+}
+
+.myprofile-form__group:nth-child(4n) {
+    margin-right: 0;
+}
+
+.myprofile-form__actions {
+    text-align: right;
+}
+
+.myprofile-text__field input {
+    font-size: var(--font-size-base) !important;
+    padding: 12px !important; 
+}
+
+.myprofile-text__field .MuiSelect-select {
+    padding: 12px !important;
+    font-size: var(--font-size-base) !important;
+}
