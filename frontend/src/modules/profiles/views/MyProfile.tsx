@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, MenuItem, Select, Tabs, Tab, TextField, Typography, Grid } from "@mui/material";
+import { Box, MenuItem, Select, Tabs, Tab, TextField, Typography, Grid } from "@mui/material";
 import "./styles/MyProfile.css"
 import { useTranslation } from "react-i18next";
 import LabelPrimary from "../../../components/Label/Label"

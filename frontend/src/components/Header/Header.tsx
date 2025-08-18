@@ -16,11 +16,13 @@ import "./Header.css"
 import logo from '../../assets/images/logoUTEHY.png';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import { useNavigate } from 'react-router-dom';
-import { profileUrl  } from "../../routes/urls"
+import { homeUrl, profileUrl, signinUrl  } from "../../routes/urls"
+import { useAuthStore } from "../../stores/useAuthStore";
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout); 
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -37,10 +39,16 @@ const Header: React.FC = () => {
     setAnchorElUser(null);
   };
 
+  const handleLogout = async () => {
+    await logout();            
+    handleCloseUserMenu();     
+    navigate(signinUrl);     
+  };
+
   return (
     <AppBar position="static" className="header">
       <Toolbar className="header-toolbar">
-        <Box className="header-flex">
+        <Box onClick={() => handleNavigate(homeUrl)} className="header-flex">
           <img src={logo} alt="Logo" className="header-logo"/>
           <Typography variant="h1" className="header-title">UniCore</Typography>
         </Box>
@@ -74,7 +82,7 @@ const Header: React.FC = () => {
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.examSchedule')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.tuition')}</MenuItem>
             <MenuItem 
-              onClick={() => handleNavigate("/sign-in")}
+              onClick={handleLogout}
             >{t('header_menu.logout')}</MenuItem>
           </Menu>
         </Box>
