@@ -38,7 +38,7 @@ export function MyProfile() {
 
     return (
         <Box className="myprofile">
-            <Typography className="myprofile-title">
+            <Typography className="primary-title">
                 {t('myprofile.title')}
             </Typography>
 

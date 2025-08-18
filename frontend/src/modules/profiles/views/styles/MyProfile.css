@@ -6,13 +6,6 @@
     padding: 2% 3%;
 }
 
-.myprofile-title {
-    text-align: center;   
-    font-weight: var(--font-weight-bold) !important;
-    font-size: var(--font-size-large) !important;
-    color: var(--primary-color);
-}
-
 .myprofile-tabs .active-tab {
     color: var(--primary-color) !important;
     font-weight: var(--font-weight-bold);

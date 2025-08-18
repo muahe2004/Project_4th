@@ -1,12 +1,13 @@
 import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { homeUrl, layoutUrl, signinUrl, notFoundUrl, profileUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, notFoundUrl, profileUrl, gradesUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
 import { NotFound } from "../modules/NotFound/NotFound"
 import Layout from "../modules/app/Layout"
 import { useAuthStore } from "../stores/useAuthStore";
+import { GradesPage } from "../modules/grades/views/Grades"
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -53,6 +54,10 @@ export const createRouterConfig = () =>
         {
           path: profileUrl,
           element: <MyProfile />,
+        },
+        {
+          path: gradesUrl,
+          element: <GradesPage />,
         },
       ],
     },

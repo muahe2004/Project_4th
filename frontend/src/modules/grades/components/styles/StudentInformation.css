@@ -1,0 +1,10 @@
+@import url("../../../../assets/styles/theme.css");
+
+.grades-student__information {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.grades-student__information--thead {
+    background: var(--primary-color);
+}

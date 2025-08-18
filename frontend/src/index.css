@@ -68,3 +68,45 @@ body {
 .MuiTabs-indicator {
   background: var(--primary-color) !important;
 }
+
+/* ================== Title ================== */
+.primary-title {
+  text-align: center;   
+  font-weight: var(--font-weight-bold) !important;
+  font-size: var(--font-size-large) !important;
+  color: var(--primary-color);
+}
+
+/* ================== Table ================== */
+.primary-table-container {
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.primary-thead {
+  background: var(--primary-color) !important;
+}
+
+.primary-thead__cell {
+  color: #fff !important;
+  font-weight: var(--font-weight-bold) !important;
+  border-right: 1px solid #fff;
+}
+
+.primary-thead__cell:first-child {
+  border-left: 1px solid var(--primary-color);
+}
+
+.primary-thead__cell:last-child {
+  border-right: 1px solid var(--primary-color);
+}
+
+.primary-trow {
+  border-radius: 4px !important;
+}
+
+.primary-tcell{
+  border: 1px solid #ccc;
+  font-size: var(--font-size-base) !important;
+  color: black !important;
+}

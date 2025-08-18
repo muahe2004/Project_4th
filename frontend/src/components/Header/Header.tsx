@@ -12,12 +12,12 @@ import {
   Typography
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import "./Header.css"
-import logo from '../../assets/images/logoUTEHY.png';
-import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import { useNavigate } from 'react-router-dom';
-import { homeUrl, profileUrl, signinUrl  } from "../../routes/urls"
 import { useAuthStore } from "../../stores/useAuthStore";
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
+import { homeUrl, profileUrl, signinUrl, gradesUrl  } from "../../routes/urls"
+import logo from '../../assets/images/logoUTEHY.png';
+import "./Header.css"
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -77,7 +77,7 @@ const Header: React.FC = () => {
             <MenuItem 
               onClick={() => handleNavigate(profileUrl)}
             >{t('header_menu.profile')}</MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.academicResults')}</MenuItem>
+            <MenuItem onClick={() => handleNavigate(gradesUrl)}>{t('header_menu.academicResults')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.learningSchedule')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.examSchedule')}</MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.tuition')}</MenuItem>
