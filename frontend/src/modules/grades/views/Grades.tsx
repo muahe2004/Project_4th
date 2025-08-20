@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { StudentInformation } from "../components/StudentInformation"
 
 import "./styles/Grades.css";
+import ScoresTable from "../components/ScoresTable";
 
 export function GradesPage() {
     const { t } = useTranslation();
@@ -15,6 +16,7 @@ export function GradesPage() {
             </Typography>
 
             <StudentInformation></StudentInformation>
+            <ScoresTable></ScoresTable>
         </main>
     );
 }
