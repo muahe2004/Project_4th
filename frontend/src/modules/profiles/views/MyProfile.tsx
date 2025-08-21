@@ -103,6 +103,9 @@ export function MyProfile() {
                             variant="outlined"
                             className="myprofile-text__field"
                             defaultValue=""
+                            MenuProps={{
+                                disableScrollLock: true,   
+                            }}
                         >
                             <MenuItem value="option1">Male</MenuItem>
                             <MenuItem value="option2">Famale</MenuItem>
@@ -148,6 +151,9 @@ export function MyProfile() {
                             variant="outlined"
                             className="myprofile-text__field"
                             defaultValue=""
+                            MenuProps={{
+                                disableScrollLock: true,   
+                            }}
                         >
                             <MenuItem value="option1">Cử nhân</MenuItem>
                             <MenuItem value="option2">Thạc sĩ</MenuItem>
@@ -163,6 +169,9 @@ export function MyProfile() {
                             variant="outlined"
                             className="myprofile-text__field"
                             defaultValue=""
+                            MenuProps={{
+                                disableScrollLock: true,   
+                            }}
                         >
                             <MenuItem value="option1">CNTT</MenuItem>
                             <MenuItem value="option2">KT</MenuItem>
