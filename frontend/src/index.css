@@ -43,15 +43,24 @@ body {
 .MuiSelect-select {
   height: 1.4375em !important;
   line-height: 1.4375em !important;
+  padding: 12px !important;
+  font-size: var(--font-size-base) !important;
 }
 
 .MuiMenu-paper {
-  /* min-width: auto !important; */
   padding: 8px;
 }
 
 .MuiMenu-list {
   padding: 0 !important;
+}
+
+.select-primary__label {
+  top: -4px !important;
+}
+
+.select-primary__label.MuiInputLabel-shrink {
+  transform: translate(14px, -4px) scale(0.75);
 }
 
 /* datetime picker */
@@ -81,12 +90,10 @@ body {
 .primary-table-container {
   box-shadow: none !important;
   border-radius: 0 !important;
-  /* border: 5px solid red; */
 }
 
 .primary-thead {
   background: var(--primary-color) !important;
-  /* border: 5px solid red; */
 }
 
 .primary-thead__cell {

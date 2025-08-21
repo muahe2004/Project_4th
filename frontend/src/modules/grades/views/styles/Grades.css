@@ -1,4 +1,15 @@
-.academic-results {
+.grades {
     margin: 0 1%;
     padding: 2% 3%;
+}
+
+.grades-flex {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.grades-controller {
+    width: 24%;
 }
