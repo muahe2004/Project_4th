@@ -1,6 +1,10 @@
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import Paper from "@mui/material/Paper";
 
+import getGradeColor from "../utils/gradesColor";
+
+import "./styles/studentTableScore.css"
+
 function createData(
   index: string,
   subject_code: string,
@@ -45,8 +49,8 @@ const rows = [
   createData("16", "211156", "Hệ quản trị cơ sở dữ liệu (2+1*)", "3", "1.0", "6.5", "7.0", "6.8", "-", "-", "-", "6.8", "2.5", "C", ""),
   createData("17", "211131", "Cấu trúc dữ liệu và giải thuật (2+1*)", "3", "1.0", "7.5", "7.0", "7.2", "-", "-", "-", "7.2", "3.0", "B+", ""),
   createData("18", "221190", "Hệ điều hành (2+1*)", "3", "1.0", "9.0", "8.5", "8.8", "-", "-", "-", "8.8", "3.5", "A+", ""),
-  createData("19", "111209", "Giải tích số", "2", "1.0", "8.0", "8.5", "8.3", "-", "-", "-", "8.3", "3.5", "A", ""),
-  createData("20", "211460", "Lập trình hướng đối tượng (2+1*)", "3", "1.0", "7.0", "7.5", "7.3", "-", "-", "-", "7.3", "3.0", "B+", ""),
+  createData("19", "111209", "Giải tích số", "2", "1.0", "8.0", "8.5", "8.3", "-", "-", "-", "8.3", "3.5", "D", ""),
+  createData("20", "211460", "Lập trình hướng đối tượng (2+1*)", "3", "1.0", "7.0", "7.5", "7.3", "-", "-", "-", "7.3", "3.0", "F", ""),
 ];
 
 export function ScoresTable() {
@@ -104,8 +108,11 @@ export function ScoresTable() {
 
                 <TableCell className="primary-tcell" align="center">{row.avg10}</TableCell>
                 <TableCell className="primary-tcell" align="center">{row.avg4}</TableCell>
-                <TableCell className="primary-tcell" align="center">{row.grade}</TableCell>
-
+                <TableCell 
+                  color="red"
+                  className={`primary-tcell ${getGradeColor(row.grade)}`}
+                  align="center">{row.grade}
+                </TableCell>
                 <TableCell className="primary-tcell tcell-note" align="center">{row.note}</TableCell>
               </TableRow>
             ))}

@@ -3,3 +3,28 @@
 .student-tableScore {
     margin-top: 10px;
 }
+
+.primary-tcell.grades-a {
+    color: #2e7d32 !important;
+    font-weight: var(--font-weight-bold);
+}
+
+.primary-tcell.grades-b {
+    color: #0d47a1 !important;
+    font-weight: var(--font-weight-bold);
+}
+
+.primary-tcell.grades-c {
+    color: #b8860b !important;
+    font-weight: var(--font-weight-bold);
+}
+
+.primary-tcell.grades-d {
+    color: #a8a8a8 !important;
+    font-weight: var(--font-weight-bold);
+}
+
+.primary-tcell.grades-f {
+    color: #d32f2f !important;
+    font-weight: var(--font-weight-bold);
+}

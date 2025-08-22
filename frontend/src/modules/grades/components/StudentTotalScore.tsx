@@ -1,5 +1,8 @@
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import Paper from "@mui/material/Paper";
+
+import getGradeColor from "../utils/gradesColor"
+
 import "./styles/studentTableScore.css";
 
 function createData(
@@ -53,8 +56,20 @@ export function StudentTotalScore() {
               <TableRow key={row.student_code} className="primary-trow">
                 <TableCell className="primary-tcell" align="left">{row.student_code}</TableCell>
                 <TableCell className="primary-tcell" align="left">{row.name}</TableCell>
-                <TableCell className="primary-tcell" align="center">{row.grade4}</TableCell>
-                <TableCell className="primary-tcell" align="center">{row.grade10}</TableCell>
+                <TableCell 
+                  className={`primary-tcell ${getGradeColor(row.grade4)}`}
+                  align="center"
+                >
+                  {row.grade4}
+                </TableCell>
+                
+                <TableCell 
+                  className={`primary-tcell ${getGradeColor(row.grade10)}`}
+                  align="center"
+                >
+                  {row.grade10}
+                </TableCell>
+
                 <TableCell className="primary-tcell" align="center">{row.gpa4}</TableCell>
                 <TableCell className="primary-tcell" align="center">{row.accumulated_gpa4}</TableCell>
                 <TableCell className="primary-tcell" align="center">{row.accumulated_gpa10}</TableCell>
