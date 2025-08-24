@@ -7,34 +7,151 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import defaultUser from "../../../assets/images/default-user.png"
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Button from "../../../components/Button/Button";
+import { useAuthStore } from "../../../stores/useAuthStore";
+import { useGetTeacherProfile, useGetStudentProfile } from "../apis/getProfile";
+import { useGetProfileTeacher, useGetProfileStudent } from "../apis/getUserInformation";
+import { useGetDepartment } from "../../department/apis/getDepartments";
+
+import { ROLES } from "../../../constants/roles"
 
 interface TabPanelProps {
-  children?: ReactNode;
-  value: number;
-  index: number;
+    children?: ReactNode;
+    value: number;
+    index: number;
 }
 
 function TabPanel({ children, value, index }: TabPanelProps) {
-  return (
-    <div role="tabpanel" hidden={value !== index}>
-      {value === index && (
-        <Box sx={{ mt: 3 }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
+    return (
+        <div role="tabpanel" hidden={value !== index}>
+            {value === index && (
+                <Box sx={{ mt: 3 }}>
+                {children}
+                </Box>
+            )}
+        </div>
+    );
 }
 
 export function MyProfile() {
     const { t } = useTranslation();
+
     const [value, setValue] = useState<number>(0);
+
+    const user = useAuthStore((state) => state.user); 
+
+    const isTeacher = user?.role === ROLES.TEACHER;
+    const isStudent = user?.role === ROLES.STUDENT;
+
+    const {data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment();
+
+    // Profile
+    const [teacherCode, setTeacherCode] = useState("");
+    const [studentCode, setStudentCode] = useState("");
+    const [name, setName] = useState("");
+    const [dateOfBirth, setDateOfBirth] = useState(""); 
+    const [gender, setGender] = useState("1"); 
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [address, setAddress] = useState("");
+    const [academicRank, setAcademicRank] = useState("");
+    const [classID, setClassID] = useState("");
+    const [course, setCourse] = useState("");
+    const [trainingProgram, setTrainingProgram] = useState("");
+    const [status, setStatus] = useState("");
+    const [departmentId, setDepartmentId] = useState("");
+    const [updatedAt, setUpdatedAt] = useState("");
+    const [id, setId] = useState("");
+    const [password, setPassword] = useState("");
+    
+    // user infomation
+    const [placeOfOrigin, setPlaceOfOrigin] = useState("");
+    const [exemptedGroup, setExemptedGroup] = useState("");
+    const [priorityGroup, setPriorityGroup] = useState("");
+    const [citizenId, setCitizenId] = useState("");
+    const [issueDate, setIssueDate] = useState("");
+    const [issuePlace, setIssuePlace] = useState("");
+    const [nationality, setNationality] = useState("");
+    const [ethnicity, setEthnicity] = useState("");
+    const [religion, setReligion] = useState("");
+    const [insuranceNumber, setInsuranceNumber] = useState("");
+    const [studentId, setStudentId] = useState("");
+    const [teacherId, setTeacherId] = useState("");
+    const [bankName, setBankName] = useState("");
+    const [bankAccountNumber, setBankAccountNumber] = useState("");
+    const [updatedUserInfomationAt, setUpdatedUserInfomationAt] = useState("");
+    const [idUserInformation, setIdUserInformation] = useState("");
+
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
+
+    const { data: profile, isLoading: isLoadingProfile, error } = useGetTeacherProfile(user?.id, isTeacher);
+    const { data: profileStudent, isLoading: isLoadingStudentProfile, error: errStudentProfile } = useGetStudentProfile(user?.id, isStudent); 
+
+    useEffect(() => {
+        if (isTeacher) {
+            if (!isLoadingProfile && profile) {
+                setTeacherCode(profile.teacher_code ?? "");
+                setName(profile.name ?? "");
+                setDateOfBirth(profile.date_of_birth ?? "");
+                setGender(profile.gender ?? "");
+                setEmail(profile.email ?? "");
+                setPhone(profile.phone ?? "");
+                setAddress(profile.address ?? "");
+                setAcademicRank(profile.academic_rank ?? "");
+                setStatus(profile.status ?? "");
+                setDepartmentId(profile.department_id ?? "");
+                setUpdatedAt(profile.updated_at ?? "");
+                setId(profile.id ?? "");
+            }
+        } else {
+            if (!isLoadingStudentProfile && profileStudent) {
+                setStudentCode(profileStudent.student_code ?? "");
+                setName(profileStudent.name ?? "");
+                setDateOfBirth(profileStudent.date_of_birth ?? "");
+                setGender(profileStudent.gender ?? "");
+                setEmail(profileStudent.email ?? "");
+                setPhone(profileStudent.phone ?? "");
+                setAddress(profileStudent.address ?? "");
+                setClassID(profileStudent.class_id ?? "");
+                setStatus(profileStudent.status ?? "");
+                setCourse(profileStudent.course ?? "");
+                setTrainingProgram(profileStudent.training_program ?? "");
+                setUpdatedAt(profileStudent.updated_at ?? "");
+                setId(profileStudent.id ?? "");
+            }
+        }
+    }, [profile, isLoadingProfile, profileStudent, isLoadingStudentProfile]);
+
+    // if (isLoading) return <div>Loading...</div>;
+    // if (error) return <div>Error: {error.message}</div>;
+
+    const { data: teacherInfo, isLoading: isLoadingTeacher, error: errorTeacher } = useGetProfileTeacher(user?.id, isTeacher);
+    
+    useEffect(() => {
+        if (!isLoadingTeacher && teacherInfo) {
+            console.log(teacherInfo);
+            setPlaceOfOrigin(teacherInfo.place_of_origin ?? "");
+            setExemptedGroup(teacherInfo.exempted_group ?? "");
+            setPriorityGroup(teacherInfo.priority_group ?? "");
+            setCitizenId(teacherInfo.citizen_id ?? "");
+            setIssueDate(teacherInfo.issue_date ?? "");
+            setIssuePlace(teacherInfo.issue_place ?? "");
+            setNationality(teacherInfo.nationality ?? "");
+            setEthnicity(teacherInfo.ethnicity ?? "");
+            setReligion(teacherInfo.religion ?? "");
+            setInsuranceNumber(teacherInfo.insurance_number ?? "");
+            setStudentId(teacherInfo.student_id ?? "");
+            setTeacherId(teacherInfo.teacher_id ?? "");
+            setBankName(teacherInfo.bank_name ?? "");
+            setBankAccountNumber(teacherInfo.bank_account_number ?? "");
+            setUpdatedUserInfomationAt(teacherInfo.updated_at ?? "");
+            setIdUserInformation(teacherInfo.id ?? "");
+        }
+    }, [teacherInfo, isLoadingTeacher]);
 
     return (
         <Box className="myprofile">
@@ -57,10 +174,18 @@ export function MyProfile() {
 
                         <div className="myprofile-info">
                             <Typography className="myprofile-name">
-                                Ly Van Minh - 10122256
+                                {isTeacher ? (
+                                    `${profile?.name} - ${profile?.teacher_code}`
+                                ) : (
+                                    `${profileStudent?.name} - ${profileStudent?.student_code}`
+                                )}
                             </Typography>
                             <Typography className="myprofile-email">
-                                lyvanminh280504@gmail.com
+                                {isTeacher ? (
+                                    `${profile?.email}`
+                                ) : (
+                                    `${profileStudent?.email}`
+                                )}
                             </Typography>
                         </div>
                     </div>
@@ -69,28 +194,44 @@ export function MyProfile() {
                 <Grid container spacing={2} className="myprofile-form">
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Quốc tịch"></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={nationality} 
+                            onChange={(e) => setNationality(e.target.value)} 
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid>                    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Dân tộc"></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
-
+                        <TextField 
+                            value={ethnicity}
+                            onChange={(e) => setEthnicity(e.target.value)} 
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Tôn giáo" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={religion}
+                            onChange={(e) => setReligion(e.target.value)} 
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Sinh nhật"></LabelPrimary>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
-                                className="myprofile-text__field"
-                                slotProps={{ 
-                                    textField: { fullWidth: true }
-                                }}
+                                value={dateOfBirth ? new Date(dateOfBirth) : null} 
+                                onChange={(newValue) => setDateOfBirth(newValue ? newValue.toISOString() : "")}
+                                slotProps={{ textField: { fullWidth: true } }}
                             />
                         </LocalizationProvider>
                     </Grid>
@@ -98,6 +239,8 @@ export function MyProfile() {
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Giới tính"></LabelPrimary>
                         <Select
+                            value={gender}
+                            onChange={(e) => setGender(e.target.value)}
                             fullWidth
                             id="outlined-select"
                             variant="outlined"
@@ -107,40 +250,76 @@ export function MyProfile() {
                                 disableScrollLock: true,   
                             }}
                         >
-                            <MenuItem value="option1">Male</MenuItem>
-                            <MenuItem value="option2">Famale</MenuItem>
-                            <MenuItem value="option3">Other</MenuItem>
+                            <MenuItem value="1">Male</MenuItem>
+                            <MenuItem value="2">Famale</MenuItem>
+                            <MenuItem value="3">Other</MenuItem>
                         </Select>
                     </Grid>
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Email"></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={email} 
+                            onChange={(e) => setEmail(e.target.value)} 
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={6} className="myprofile-form__group myprofile-form__group--fullwidth">
                         <LabelPrimary value="Địa chỉ"></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={address} 
+                            onChange={(e) => setAddress(e.target.value)} 
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={6} className="myprofile-form__group">
                         <LabelPrimary value="Quê quán"></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={placeOfOrigin}
+                            onChange={(e) => setPlaceOfOrigin(e.target.value)}
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Số điện thoại" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={phone} 
+                            onChange={(e) => setPhone(e.target.value)} 
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Chương trình đào tạo" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={trainingProgram} 
+                            onChange={(e) => setTrainingProgram(e.target.value)} 
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Niên khoá" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={course} 
+                            onChange={(e) => setCourse(e.target.value)} 
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -173,21 +352,31 @@ export function MyProfile() {
                                 disableScrollLock: true,   
                             }}
                         >
-                            <MenuItem value="option1">CNTT</MenuItem>
-                            <MenuItem value="option2">KT</MenuItem>
-                            <MenuItem value="option3">Other</MenuItem>
+                            {
+                                department?.map((department) => (
+                                    <MenuItem value={department.id}>{department.name}</MenuItem>
+                                ))
+                            }
                         </Select>
                     </Grid>
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Số CCCD" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={citizenId}
+                            onChange={(e) => setCitizenId(e.target.value)}
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Ngày cấp"></LabelPrimary>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
+                                value={issueDate ? new Date(issueDate) : null} 
+                                onChange={(newValue) => setIssueDate(newValue ? newValue.toISOString() : "")}
                                 className="myprofile-text__field"
                                 slotProps={{ 
                                     textField: { fullWidth: true }
@@ -198,32 +387,68 @@ export function MyProfile() {
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Nơi cấp" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={issuePlace}
+                            onChange={(e) => setIssuePlace(e.target.value)}
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Số BHXH" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={insuranceNumber}
+                            onChange={(e) => setInsuranceNumber(e.target.value)}
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Tên ngân hàng" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={bankName}
+                            onChange={(e) => setBankName(e.target.value)}
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Số tài khoản" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={bankAccountNumber}
+                            onChange={(e) => setBankAccountNumber(e.target.value)}
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Đối tượng miễn giảm" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={exemptedGroup}
+                            onChange={(e) => setExemptedGroup(e.target.value)}
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Đối tượng ưu tiên" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField 
+                            value={priorityGroup}
+                            onChange={(e) => setPriorityGroup(e.target.value)}
+                            fullWidth 
+                            id="outlined-basic" 
+                            variant="outlined" 
+                            className="myprofile-text__field"/>
                     </Grid> 
 
                     <Grid size={12} className="myprofile-form__actions">

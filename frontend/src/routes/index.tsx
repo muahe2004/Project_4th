@@ -18,7 +18,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (user) {
       setUser(user);
-      console.log(user);
     } else {
       useAuthStore.getState().logout();
       navigate(signinUrl);
