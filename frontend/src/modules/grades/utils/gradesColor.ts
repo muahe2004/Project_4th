@@ -17,7 +17,6 @@ export default function getGradeColor(grade: string) {
         case "D":
         case "Trung bình":
             return "grades-d";
-        case "D+":
         case "Yếu":
         case "F":
             return "grades-f";

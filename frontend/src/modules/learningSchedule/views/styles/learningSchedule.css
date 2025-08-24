@@ -2,3 +2,13 @@
     margin: 0 1%;
     padding: 2% 3%;
 }
+
+.learning-schedule__flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.learningSchedule-controller {
+    width: 24%;
+}

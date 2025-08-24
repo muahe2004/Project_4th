@@ -100,7 +100,7 @@ body {
   color: #fff !important;
   font-weight: var(--font-weight-bold) !important;
   border-right: 1px solid #fff;
-  padding: 8px !important;
+  padding: 12px !important;
 }
 
 .primary-thead__cell:first-child {

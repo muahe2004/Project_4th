@@ -13,6 +13,8 @@ function createData(
   return { day, periods, code, subject, classId, room, teacher };
 }
 
+const days = ["2", "3", "4", "5", "6", "7", "CN"];
+
 const rows = [
   createData("4", "1 - 4", "211127", "Phát triển ứng dụng Mobile đa nền tảng (2+1*)", "10122256", "302", "Nguyen Van A"),
   createData("4", "7 - 11", "211127", "Phát triển ứng dụng Mobile đa nền tảng (2+1*)", "10122256", "302", "Nguyen Van A"),
@@ -24,10 +26,10 @@ const rows = [
 export function LearningScheduleTable() {
     return (
         <Box className="student-tableScore">
-            <TableContainer className="primary-table-container" component={Paper}>
-                <Table className="primary-table" aria-label="student schedule table">
-                    <TableHead className="primary-thead">
-                        <TableRow className="primary-trow">
+        <TableContainer className="primary-table-container" component={Paper}>
+            <Table className="primary-table" aria-label="student schedule table">
+                <TableHead className="primary-thead">
+                    <TableRow className="primary-trow">
                         <TableCell className="primary-thead__cell" align="center">Thứ</TableCell>
                         <TableCell className="primary-thead__cell" align="center">Tiết</TableCell>
                         <TableCell className="primary-thead__cell" align="center">Mã môn</TableCell>
@@ -35,23 +37,41 @@ export function LearningScheduleTable() {
                         <TableCell className="primary-thead__cell" align="center">Lớp học phần</TableCell>
                         <TableCell className="primary-thead__cell" align="center">Phòng học</TableCell>
                         <TableCell className="primary-thead__cell" align="center">Giảng viên</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody className="primary-tbody">
-                        {rows.map((row, index) => (
-                        <TableRow key={index} className="primary-trow">
-                            <TableCell className="primary-tcell" align="center">{row.day}</TableCell>
-                            <TableCell className="primary-tcell" align="center">{row.periods}</TableCell>
-                            <TableCell className="primary-tcell" align="center">{row.code}</TableCell>
-                            <TableCell className="primary-tcell" align="left">{row.subject}</TableCell>
-                            <TableCell className="primary-tcell" align="center">{row.classId}</TableCell>
-                            <TableCell className="primary-tcell" align="center">{row.room}</TableCell>
-                            <TableCell className="primary-tcell" align="center">{row.teacher}</TableCell>
-                        </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                    </TableRow>
+                </TableHead>
+            <TableBody>
+                {days.map((day, i) => {
+                const dayRows = rows.filter(r => r.day === day);
+
+                if (dayRows.length === 0) {
+                    return (
+                    <TableRow key={i}>
+                        <TableCell className="primary-tcell" align="center">{day}</TableCell>
+                        <TableCell className="primary-tcell" colSpan={6} align="center">Nghỉ</TableCell>
+                    </TableRow>
+                    );
+                }
+
+                return dayRows.map((row, idx) => (
+                    <TableRow key={`${i}-${idx}`}>
+                        {/* Chỉ hiển thị cột "Thứ" ở dòng đầu tiên, và gộp theo số môn trong ngày */}
+                        {idx === 0 && (
+                            <TableCell className="primary-tcell" align="center" rowSpan={dayRows.length}>
+                                {row.day}
+                            </TableCell>
+                        )}
+                        <TableCell className="primary-tcell" align="center">{row.periods}</TableCell>
+                        <TableCell className="primary-tcell" align="center">{row.code}</TableCell>
+                        <TableCell className="primary-tcell" align="left">{row.subject}</TableCell>
+                        <TableCell className="primary-tcell" align="center">{row.classId}</TableCell>
+                        <TableCell className="primary-tcell" align="center">{row.room}</TableCell>
+                        <TableCell className="primary-tcell" align="center">{row.teacher}</TableCell>
+                    </TableRow>
+                ));
+                })}
+            </TableBody>
+            </Table>
+        </TableContainer>
         </Box>
     );
 }

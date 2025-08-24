@@ -24,8 +24,8 @@ export default function WeekPicker() {
     return (
         <Box className="week-picker">
             <Tooltip classes={{ popper: "primary-tooltip" }} placement="top" title="Tuần hiện tại">
-                <Button className="week-picker__button">
-                    <CalendarTodayIcon sx={{fontSize: 16}} />
+                <Button className="week-picker__button" onClick={prevWeek}>
+                    <CalendarTodayIcon />
                 </Button>
             </Tooltip>
             <Tooltip classes={{ popper: "primary-tooltip" }} placement="top" title="Tuần trước">
