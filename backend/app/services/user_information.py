@@ -17,6 +17,40 @@ class User_Information_Services:
     def get_all(*, session: Session) -> List[UserInformationPublic]:
         userinformations = session.exec(select(UserInformations)).all()
         return userinformations
+    
+    @staticmethod
+    def get_teacher_information_by_id(
+        *,
+        session: Session,
+        teacher_id: uuid.UUID,
+        request: Request
+    ) -> UserInformationPublic:
+        user_information = session.execute(
+            select(UserInformations).where(UserInformations.teacher_id == teacher_id)
+        ).scalar_one_or_none()
+        if not user_information:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User information does not exist"
+            )
+    
+        return UserInformationPublic.model_validate(user_information)
+    
+    @staticmethod
+    def get_student_information_by_id(
+        *,
+        session: Session,
+        student_id: uuid.UUID,
+        request: Request
+    ) -> UserInformationPublic:
+        user_information = session.execute(
+            select(UserInformations).where(UserInformations.student_id == student_id)
+        ).scalar_one_or_none()
+        if not user_information:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User information does not exist"
+            )
+    
+        return UserInformationPublic.model_validate(user_information)
 
     @staticmethod
     def update(
