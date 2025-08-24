@@ -130,3 +130,12 @@ body {
   color: black !important;
   padding: 8px !important;
 }
+
+/* tool tip */
+.primary-tooltip .MuiTooltip-tooltip {
+  background-color: #fff !important;
+  color: #000 !important; 
+  border-radius: var(--border-radius-base);
+  padding: 8px; 
+  box-shadow: var(--box-shadow-base);
+}
