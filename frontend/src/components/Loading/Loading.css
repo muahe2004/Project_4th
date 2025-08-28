@@ -1,1 +1,19 @@
 @import url("../../assets/styles/theme.css");
+
+.primary-loading-box {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    background: rgba(255, 255, 255, 0.8) !important;
+}
+
+.primary-loading-spinner {
+    color: var(--primary-color);
+}

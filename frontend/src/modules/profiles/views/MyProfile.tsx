@@ -9,6 +9,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import defaultUser from "../../../assets/images/default-user.png"
 import { useEffect, useState, type ReactNode } from "react";
 import Button from "../../../components/Button/Button";
+import Loading from "../../../components/Loading/Loading";
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useGetTeacherProfile, useGetStudentProfile } from "../apis/getProfile";
 import { useGetProfileTeacher, useGetProfileStudent } from "../apis/getUserInformation";
@@ -36,6 +37,7 @@ function TabPanel({ children, value, index }: TabPanelProps) {
 
 export function MyProfile() {
     const { t } = useTranslation();
+    const isLoading = true;
 
     const [value, setValue] = useState<number>(0);
 
@@ -158,6 +160,10 @@ export function MyProfile() {
             <Typography className="primary-title">
                 {t('myprofile.title')}
             </Typography>
+
+            {
+                isLoading && (<Loading></Loading>)
+            }
 
             {/* Tabs */}
             <Tabs className="myprofile-tabs" value={value} onChange={handleChange}>
