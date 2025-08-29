@@ -29,6 +29,12 @@
 ---
 
 ## Help
+# Run backend:
+1. source venv/bin/activate
+2. uvicorn app.main:app --reload
+
+# Run frontend:
+1. npm run dev
 
 ## 👨‍💻 Author
 
