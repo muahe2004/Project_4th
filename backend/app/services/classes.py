@@ -2,9 +2,9 @@ import uuid
 from datetime import datetime
 
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from starlette import status
-from typing import List
+from typing import List, Optional, Tuple
 
 from app.models.models import Classes
 from app.models.schemas.classes.class_schemas import (
@@ -19,9 +19,38 @@ from app.enums.status import StatusEnum
 
 class ClassServices:
     @staticmethod
-    def get_all(*, session: Session) -> List[ClassPublic]:
-        classes = session.exec(select(Classes)).all()
-        return classes
+    def get_all(
+        *,
+        session: Session,
+        skip: int = 0,
+        limit: int = 10,
+        classcode: Optional[str] = None,
+        teacher_id: Optional[str] = None,
+        status: Optional[str] = None
+    ) -> Tuple[List[ClassPublic], int]:
+        # Câu query gốc
+        statement = select(Classes)
+
+        # Thêm điều kiện lọc nếu có
+        if classcode:
+            statement = statement.where(Classes.classcode == classcode)
+
+        if teacher_id:
+            statement = statement.where(Classes.teacher_id == teacher_id)
+
+        if status:
+            statement = statement.where(Classes.status == status)
+
+        # Query để đếm tổng số bản ghi sau khi filter
+        total = session.exec(
+            select(func.count()).select_from(statement.subquery())
+        ).one()
+
+        # Query lấy dữ liệu phân trang
+        statement = statement.offset(skip).limit(limit)
+        classes = session.exec(statement).all()
+
+        return classes, total
 
     @staticmethod
     def get_by_id(

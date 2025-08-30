@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Query
 from app.api.deps import SessionDep
 from app.models.schemas.classes.class_schemas import (
     ClassPublic,
@@ -9,14 +9,29 @@ from app.models.schemas.classes.class_schemas import (
     ClassDeleteResponse
 )
 from app.services.classes import ClassServices
-from typing import List
+from typing import List, Optional
 
 router = APIRouter()
 
 # =========================== get all classes ===========================
-@router.get("", response_model=List[ClassPublic])
-def get_classes(session: SessionDep) -> List[ClassPublic]:
-    return ClassServices.get_all(session=session)
+@router.get("/")
+def get_classes(
+    session: SessionDep,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
+    classcode: Optional[str] = None,
+    teacher_id: Optional[int] = None,
+    status: Optional[str] = None,
+):
+    classes, total = ClassServices.get_all(
+        session=session,
+        skip=skip,
+        limit=limit,
+        classcode=classcode,
+        teacher_id=teacher_id,
+        status=status,
+    )
+    return {"total": total, "items": classes}
 
 # =========================== get class by id ===========================
 @router.get(
