@@ -18,6 +18,11 @@ router = APIRouter()
 def get_learning_schedules(session: SessionDep) -> List[LearningSchedulePublic]:
     return LearningScheduleServices.get_all(session=session)
 
+# =========================== get by class ===========================
+@router.get("/by-class/{id}", response_model=List[LearningSchedulePublic])
+def get_learning_schedulesPby_class(session: SessionDep, id: uuid.UUID) -> List[LearningSchedulePublic]:
+    return LearningScheduleServices.get_by_class(session=session, class_id=id)
+
 # =========================== get by id ===========================
 @router.get(
     "/{id}",

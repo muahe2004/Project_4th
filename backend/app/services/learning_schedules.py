@@ -22,6 +22,20 @@ class LearningScheduleServices:
     def get_all(*, session: Session) -> List[LearningSchedulePublic]:
         learning_schedules = session.exec(select(LearningSchedules)).all()
         return learning_schedules
+    
+    @staticmethod
+    def get_by_class(
+        *,
+        session: Session,
+        class_id: uuid.UUID,
+    ) -> List[LearningSchedulePublic]:
+        learning_schedules = session.exec(select(LearningSchedules).where(LearningSchedules.class_id == class_id))
+
+        if not learning_schedules:
+            raise HTTPException(
+                status_code = status.HTTP_404_NOT_FOUND, detail =  "Learning Schedules does not exist"
+            )
+        return learning_schedules
 
     @staticmethod
     def get_by_id(
