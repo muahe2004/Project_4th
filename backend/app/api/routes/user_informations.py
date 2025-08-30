@@ -31,7 +31,7 @@ def get_teacher_information_by_id(
 
 # =========================== get user information by user id ===========================
 @router.get(
-    "/teacher/{student_id}",
+    "/student/{student_id}",
     response_model=UserInformationPublic
 )
 def get_student_information_by_id(

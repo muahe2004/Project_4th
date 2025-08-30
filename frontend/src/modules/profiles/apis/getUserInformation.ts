@@ -54,10 +54,10 @@ export const useGetProfileTeacher = (id?: string, enabled: boolean = true) => {
   });
 };
 
-export const useGetProfileStudent = (id: string) => {
+export const useGetProfileStudent = (id?: string, enabled: boolean = true) => {
     return useQuery<UserInformationResponse, AxiosError<{ detail?: string }>>({
         queryKey: ["student-information", id],
-        queryFn: () => getInformationStudent(id),
-        enabled: !!id,
+        queryFn: () => getInformationStudent(id!),
+        enabled: !!id && enabled,
     });
 };

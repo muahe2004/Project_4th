@@ -14,3 +14,6 @@ export const URL_API_USER_INFORMATION = `${BASE_UNICORE_API_URL}/user_informatio
 
 // Department
 export const URL_API_DEPARTMENT = `${BASE_UNICORE_API_URL}/departments`;
+
+// Class
+export const URL_API_CLASS = `${BASE_UNICORE_API_URL}/classes`;

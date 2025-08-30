@@ -37,7 +37,6 @@ function TabPanel({ children, value, index }: TabPanelProps) {
 
 export function MyProfile() {
     const { t } = useTranslation();
-    const isLoading = true;
 
     const [value, setValue] = useState<number>(0);
 
@@ -46,7 +45,13 @@ export function MyProfile() {
     const isTeacher = user?.role === ROLES.TEACHER;
     const isStudent = user?.role === ROLES.STUDENT;
 
-    const {data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment();
+    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment();
+    const { data: teacherInfo, isLoading: isLoadingTeacher, error: errorTeacher } = useGetProfileTeacher(user?.id, isTeacher);
+    const { data: studentInfo, isLoading: isLoadingStudent, error: errorStudent } = useGetProfileStudent(user?.id, isStudent);
+    const { data: profile, isLoading: isLoadingProfile, error } = useGetTeacherProfile(user?.id, isTeacher);
+    const { data: profileStudent, isLoading: isLoadingStudentProfile, error: errStudentProfile } = useGetStudentProfile(user?.id, isStudent); 
+
+    const isLoading = isLoadingProfile || isLoadingStudentProfile || isLoadingTeacher || isLoadingDeparment;
 
     // Profile
     const [teacherCode, setTeacherCode] = useState("");
@@ -64,8 +69,6 @@ export function MyProfile() {
     const [status, setStatus] = useState("");
     const [departmentId, setDepartmentId] = useState("");
     const [updatedAt, setUpdatedAt] = useState("");
-    const [id, setId] = useState("");
-    const [password, setPassword] = useState("");
     
     // user infomation
     const [placeOfOrigin, setPlaceOfOrigin] = useState("");
@@ -85,14 +88,6 @@ export function MyProfile() {
     const [updatedUserInfomationAt, setUpdatedUserInfomationAt] = useState("");
     const [idUserInformation, setIdUserInformation] = useState("");
 
-
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
-    };
-
-    const { data: profile, isLoading: isLoadingProfile, error } = useGetTeacherProfile(user?.id, isTeacher);
-    const { data: profileStudent, isLoading: isLoadingStudentProfile, error: errStudentProfile } = useGetStudentProfile(user?.id, isStudent); 
-
     useEffect(() => {
         if (isTeacher) {
             if (!isLoadingProfile && profile) {
@@ -107,7 +102,6 @@ export function MyProfile() {
                 setStatus(profile.status ?? "");
                 setDepartmentId(profile.department_id ?? "");
                 setUpdatedAt(profile.updated_at ?? "");
-                setId(profile.id ?? "");
             }
         } else {
             if (!isLoadingStudentProfile && profileStudent) {
@@ -123,47 +117,73 @@ export function MyProfile() {
                 setCourse(profileStudent.course ?? "");
                 setTrainingProgram(profileStudent.training_program ?? "");
                 setUpdatedAt(profileStudent.updated_at ?? "");
-                setId(profileStudent.id ?? "");
             }
         }
     }, [profile, isLoadingProfile, profileStudent, isLoadingStudentProfile]);
 
-    // if (isLoading) return <div>Loading...</div>;
     // if (error) return <div>Error: {error.message}</div>;
 
-    const { data: teacherInfo, isLoading: isLoadingTeacher, error: errorTeacher } = useGetProfileTeacher(user?.id, isTeacher);
-    
     useEffect(() => {
-        if (!isLoadingTeacher && teacherInfo) {
-            console.log(teacherInfo);
-            setPlaceOfOrigin(teacherInfo.place_of_origin ?? "");
-            setExemptedGroup(teacherInfo.exempted_group ?? "");
-            setPriorityGroup(teacherInfo.priority_group ?? "");
-            setCitizenId(teacherInfo.citizen_id ?? "");
-            setIssueDate(teacherInfo.issue_date ?? "");
-            setIssuePlace(teacherInfo.issue_place ?? "");
-            setNationality(teacherInfo.nationality ?? "");
-            setEthnicity(teacherInfo.ethnicity ?? "");
-            setReligion(teacherInfo.religion ?? "");
-            setInsuranceNumber(teacherInfo.insurance_number ?? "");
-            setStudentId(teacherInfo.student_id ?? "");
-            setTeacherId(teacherInfo.teacher_id ?? "");
-            setBankName(teacherInfo.bank_name ?? "");
-            setBankAccountNumber(teacherInfo.bank_account_number ?? "");
-            setUpdatedUserInfomationAt(teacherInfo.updated_at ?? "");
-            setIdUserInformation(teacherInfo.id ?? "");
-        }
+        if (isTeacher) {
+            if (!isLoadingTeacher && teacherInfo) {
+                setPlaceOfOrigin(teacherInfo.place_of_origin ?? "");
+                setExemptedGroup(teacherInfo.exempted_group ?? "");
+                setPriorityGroup(teacherInfo.priority_group ?? "");
+                setCitizenId(teacherInfo.citizen_id ?? "");
+                setIssueDate(teacherInfo.issue_date ?? "");
+                setIssuePlace(teacherInfo.issue_place ?? "");
+                setNationality(teacherInfo.nationality ?? "");
+                setEthnicity(teacherInfo.ethnicity ?? "");
+                setReligion(teacherInfo.religion ?? "");
+                setInsuranceNumber(teacherInfo.insurance_number ?? "");
+                setTeacherId(teacherInfo.teacher_id ?? "");
+                setBankName(teacherInfo.bank_name ?? "");
+                setBankAccountNumber(teacherInfo.bank_account_number ?? "");
+                setUpdatedUserInfomationAt(teacherInfo.updated_at ?? "");
+                setIdUserInformation(teacherInfo.id ?? "");
+            }
+        } else {
+            if (!isLoadingStudent && studentInfo) {
+                setPlaceOfOrigin(studentInfo.place_of_origin ?? "");
+                setExemptedGroup(studentInfo.exempted_group ?? "");
+                setPriorityGroup(studentInfo.priority_group ?? "");
+                setCitizenId(studentInfo.citizen_id ?? "");
+                setIssueDate(studentInfo.issue_date ?? "");
+                setIssuePlace(studentInfo.issue_place ?? "");
+                setNationality(studentInfo.nationality ?? "");
+                setEthnicity(studentInfo.ethnicity ?? "");
+                setReligion(studentInfo.religion ?? "");
+                setInsuranceNumber(studentInfo.insurance_number ?? "");
+                setStudentId(studentInfo.student_id ?? "");
+                setBankName(studentInfo.bank_name ?? "");
+                setBankAccountNumber(studentInfo.bank_account_number ?? "");
+                setUpdatedUserInfomationAt(studentInfo.updated_at ?? "");
+                setIdUserInformation(studentInfo.id ?? "");
+            }
+        }        
     }, [teacherInfo, isLoadingTeacher]);
+
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue);
+    };
+
+    const handleSaveInfor = () => {
+        const payload = {
+
+        }
+
+        console.log("Information: ", payload);
+    }
 
     return (
         <Box className="myprofile">
-            <Typography className="primary-title">
-                {t('myprofile.title')}
-            </Typography>
-
             {
                 isLoading && (<Loading></Loading>)
             }
+
+            <Typography className="primary-title">
+                {t('myprofile.title')}
+            </Typography>
 
             {/* Tabs */}
             <Tabs className="myprofile-tabs" value={value} onChange={handleChange}>
@@ -181,17 +201,13 @@ export function MyProfile() {
                         <div className="myprofile-info">
                             <Typography className="myprofile-name">
                                 {isTeacher ? (
-                                    `${profile?.name} - ${profile?.teacher_code}`
+                                    `${name} - ${teacherCode}`
                                 ) : (
-                                    `${profileStudent?.name} - ${profileStudent?.student_code}`
+                                    `${name} - ${studentCode}`
                                 )}
                             </Typography>
                             <Typography className="myprofile-email">
-                                {isTeacher ? (
-                                    `${profile?.email}`
-                                ) : (
-                                    `${profileStudent?.email}`
-                                )}
+                                {email}
                             </Typography>
                         </div>
                     </div>
@@ -235,6 +251,7 @@ export function MyProfile() {
                         <LabelPrimary value="Sinh nhật"></LabelPrimary>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
+                                disabled
                                 value={dateOfBirth ? new Date(dateOfBirth) : null} 
                                 onChange={(newValue) => setDateOfBirth(newValue ? newValue.toISOString() : "")}
                                 slotProps={{ textField: { fullWidth: true } }}
@@ -245,6 +262,7 @@ export function MyProfile() {
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Giới tính"></LabelPrimary>
                         <Select
+                            disabled
                             value={gender}
                             onChange={(e) => setGender(e.target.value)}
                             fullWidth
@@ -306,45 +324,57 @@ export function MyProfile() {
                             className="myprofile-text__field"/>
                     </Grid> 
 
-                    <Grid size={4} className="myprofile-form__group">
-                        <LabelPrimary value="Chương trình đào tạo" required></LabelPrimary>
-                        <TextField 
-                            value={trainingProgram} 
-                            onChange={(e) => setTrainingProgram(e.target.value)} 
-                            fullWidth 
-                            id="outlined-basic" 
-                            variant="outlined" 
-                            className="myprofile-text__field"/>
-                    </Grid> 
+                    {
+                        isStudent && (
+                            <Grid size={4} className="myprofile-form__group">
+                                <LabelPrimary value="Chương trình đào tạo" required></LabelPrimary>
+                                <TextField 
+                                    value={trainingProgram} 
+                                    onChange={(e) => setTrainingProgram(e.target.value)} 
+                                    fullWidth 
+                                    id="outlined-basic" 
+                                    variant="outlined" 
+                                    className="myprofile-text__field"/>
+                            </Grid> 
+                        )
+                    }
 
-                    <Grid size={4} className="myprofile-form__group">
-                        <LabelPrimary value="Niên khoá" required></LabelPrimary>
-                        <TextField 
-                            value={course} 
-                            onChange={(e) => setCourse(e.target.value)} 
-                            fullWidth 
-                            id="outlined-basic" 
-                            variant="outlined" 
-                            className="myprofile-text__field"/>
-                    </Grid> 
+                    {
+                        isStudent && (
+                            <Grid size={4} className="myprofile-form__group">
+                                <LabelPrimary value="Niên khoá" required></LabelPrimary>
+                                <TextField 
+                                    value={course} 
+                                    onChange={(e) => setCourse(e.target.value)} 
+                                    fullWidth 
+                                    id="outlined-basic" 
+                                    variant="outlined" 
+                                    className="myprofile-text__field"/>
+                            </Grid> 
+                        )
+                    }
 
-                    <Grid size={4} className="myprofile-form__group">
-                        <LabelPrimary value="Học vị"></LabelPrimary>
-                        <Select
-                            fullWidth
-                            id="outlined-select"
-                            variant="outlined"
-                            className="myprofile-text__field"
-                            defaultValue=""
-                            MenuProps={{
-                                disableScrollLock: true,   
-                            }}
-                        >
-                            <MenuItem value="option1">Cử nhân</MenuItem>
-                            <MenuItem value="option2">Thạc sĩ</MenuItem>
-                            <MenuItem value="option3">Tiến sĩ</MenuItem>
-                        </Select>
-                    </Grid>
+                    {
+                        isTeacher && (
+                            <Grid size={4} className="myprofile-form__group">
+                                <LabelPrimary value="Học vị"></LabelPrimary>
+                                <Select
+                                    fullWidth
+                                    id="outlined-select"
+                                    variant="outlined"
+                                    className="myprofile-text__field"
+                                    defaultValue=""
+                                    MenuProps={{
+                                        disableScrollLock: true,   
+                                    }}
+                                >
+                                    <MenuItem value="option1">Cử nhân</MenuItem>
+                                    <MenuItem value="option2">Thạc sĩ</MenuItem>
+                                    <MenuItem value="option3">Tiến sĩ</MenuItem>
+                                </Select>
+                            </Grid>
+                        )
+                    }
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Khoa"></LabelPrimary>
@@ -357,6 +387,27 @@ export function MyProfile() {
                             MenuProps={{
                                 disableScrollLock: true,   
                             }}
+                        >
+                            {
+                                department?.map((department) => (
+                                    <MenuItem value={department.id}>{department.name}</MenuItem>
+                                ))
+                            }
+                        </Select>
+                    </Grid>
+
+                    <Grid size={4} className="myprofile-form__group">
+                        <LabelPrimary value="Lớp"></LabelPrimary>
+                        <Select
+                            fullWidth
+                            id="outlined-select"
+                            variant="outlined"
+                            className="myprofile-text__field"
+                            defaultValue=""
+                            MenuProps={{
+                                disableScrollLock: true,   
+                            }}
+                            disabled
                         >
                             {
                                 department?.map((department) => (
