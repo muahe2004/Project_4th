@@ -1,0 +1,82 @@
+@import url("../../assets/styles/theme.css");
+
+.admin-navbar {
+    padding: fixed;
+    top: 0 !important;
+    left: 0 !important;
+    width: 15% !important;
+    height: 100vh;
+    margin-top: 65px;
+    background: #fafafa !important;
+    padding: 12px;
+    transition: .25s !important;
+}
+
+.admin-navbar.closed {
+    width: 60px !important;
+}
+
+.admin-navbar__list {
+    padding: 0;
+}
+
+.admin-navbar__button {
+    display: flex;
+    align-items: center;
+    padding: 8px !important;
+}
+
+.admin-navbar__button.closed {
+    padding: 8px 0 !important;
+    margin-right: 0;
+    width: 36px;
+    height: 36px;
+}
+
+.admin-navbar__icon {
+    color: #000 !important;
+    margin-right: 10px;
+    min-width: 0 !important;
+}
+
+.admin-navbar__icon.closed {
+    margin: 0 auto;
+}
+
+.admin-navbar__icon.closed svg {
+    display: block;
+}
+
+.admin-navbar__text {
+    color: #000;
+}
+
+.admin-navbar__text.closed {
+    display: none;
+}
+
+.admin-navbar__text span {
+    font-size: var(--font-size-label) !important;
+}
+
+.admin-navbar__toggle--button {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    position: absolute;
+    right: -20px;
+    top: 45%;
+    transform: translateY(-50%);
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: .25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+}
+
+.admin-navbar__toggle--button:hover {
+    background: var(--primary-color);
+    color: #fff;
+}

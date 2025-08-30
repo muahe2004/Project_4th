@@ -5,10 +5,13 @@ import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
 import { NotFound } from "../modules/NotFound/NotFound"
-import Layout from "../modules/app/Layout"
+import Layout from "../modules/app/Layout";
+import LayoutAdmin from "../modules/app/Layout-Admin"
 import { useAuthStore } from "../stores/useAuthStore";
 import { GradesPage } from "../modules/grades/views/Grades"
 import { LearningSchedule } from "../modules/learningSchedule/views/LearningSchedule";
+
+import { ROLES } from "../constants/roles";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -18,6 +21,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (user) {
       setUser(user);
+
+      console.log(user.role);
     } else {
       useAuthStore.getState().logout();
       navigate(signinUrl);
@@ -27,8 +32,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return user ? <>{children}</> : <Navigate to={signinUrl} replace />;
 };
 
-export const createRouterConfig = () =>
-  createBrowserRouter([
+export const createRouterConfig = () => {
+  const user = useAuthStore.getState().user;
+
+  return createBrowserRouter([
     {
       path: signinUrl,
       element: <SignIn />,
@@ -37,38 +44,65 @@ export const createRouterConfig = () =>
       path: notFoundUrl,
       element: <NotFound />,
     },
-    {
-      path: layoutUrl,
-      element: (
-        <ProtectedRoute>
-          <Layout/>
-        </ProtectedRoute>
-      ),
-      children: [
-        {
-          path: homeUrl,
-          element: (
-            <HomePage></HomePage>
-          )
-        },
-        {
-          path: profileUrl,
-          element: <MyProfile />,
-        },
-        {
-          path: gradesUrl,
-          element: <GradesPage />,
-        },
-        {
-          path: learningScheduleUrl,
-          element: <LearningSchedule />,
-        },
-      ],
-    },
 
-    // not found
+    ...(user?.role !== ROLES.ADMIN
+      ? [
+          {
+            path: layoutUrl,
+            element: (
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            ),
+            children: [
+              {
+                path: homeUrl,
+                element: <HomePage />,
+              },
+              {
+                path: profileUrl,
+                element: <MyProfile />,
+              },
+              {
+                path: gradesUrl,
+                element: <GradesPage />,
+              },
+              {
+                path: learningScheduleUrl,
+                element: <LearningSchedule />,
+              },
+            ],
+          },
+        ]
+      : []),
+
+    ...(user?.role === ROLES.ADMIN
+      ? [
+          {
+            path: layoutUrl,
+            element: (
+              <ProtectedRoute>
+                <LayoutAdmin />
+              </ProtectedRoute>
+            ),
+            children: [
+              {
+                path: homeUrl,
+              },
+              {
+                path: "/admin/users",
+              },
+              {
+                path: "/admin/settings",
+              },
+            ],
+          },
+        ]
+      : []),
     {
       path: "*",
       element: <NotFound />,
     },
   ]);
+};
+
