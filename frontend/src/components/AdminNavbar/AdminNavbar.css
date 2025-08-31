@@ -34,7 +34,7 @@
 }
 
 .admin-navbar__icon {
-    color: #000 !important;
+    color: var(--primary-color) !important;
     margin-right: 10px;
     min-width: 0 !important;
 }
@@ -48,7 +48,7 @@
 }
 
 .admin-navbar__text {
-    color: #000;
+    color: var(--primary-color);
 }
 
 .admin-navbar__text.closed {
@@ -60,8 +60,8 @@
 }
 
 .admin-navbar__toggle--button {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 999px;
     position: absolute;
     right: -20px;

@@ -1,13 +1,13 @@
 import { Outlet } from "react-router-dom";
 import "./styles/index.css"; 
-import Header from "../../components/Header/Header";
+import AdminHeader from "../../components/Header/AdminHeader";
 import AdminNavbar from "../../components/AdminNavbar/AdminNavbar"
 import { useAuthStore } from "../../stores/useAuthStore"
 
 export default function LayoutAdmin() {
   return (
     <div>
-        <Header></Header>
+        <AdminHeader></AdminHeader>
         <AdminNavbar></AdminNavbar>
 
         <main className="main-layout">
