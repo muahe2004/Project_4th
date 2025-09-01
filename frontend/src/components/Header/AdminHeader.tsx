@@ -42,7 +42,7 @@ const AdminHeader: React.FC = () => {
   const handleLogout = async () => {
     await logout();            
     handleCloseUserMenu();     
-    navigate(signinUrl);     
+    navigate(signinUrl);  
   };
 
   return (

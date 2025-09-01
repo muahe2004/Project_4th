@@ -11,6 +11,8 @@ import { useSignIn } from '../apis/sign-in';
 import { useNavigate } from "react-router-dom";
 import SnackBar from '../../../components/SnackBar/SnackBar';
 import { useAuthStore } from "../../../stores/useAuthStore";
+import { homeUrl, layOutAdminUrl } from '../../../routes/urls';
+import { ROLES } from '../../../constants/roles';
 
 export function SignIn() {
   const { t } = useTranslation();
@@ -46,9 +48,13 @@ export function SignIn() {
       mutation.mutate(
         { username, password },
         {
-          onSuccess: async (data) => {
-            await fetchMe(); 
-            navigate("/");
+          onSuccess: async () => {
+            const user = await fetchMe(); 
+            if (user?.role === ROLES.ADMIN) {
+              navigate(layOutAdminUrl); 
+            } else {
+              navigate(homeUrl); 
+            }
           },
           onError: (error) => {
             const status = error.response?.status;

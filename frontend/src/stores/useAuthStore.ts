@@ -12,7 +12,7 @@ type UserInfo = {
 type AuthState = {
   user: UserInfo | null;
   setUser: (user: UserInfo) => void;
-  fetchMe: () => Promise<void>;
+  fetchMe: () => Promise<UserInfo | null>;
   logout: () => void;
 };
 
@@ -29,9 +29,11 @@ export const useAuthStore = create<AuthState>()(
             withCredentials: true,
           });
           set({ user: res.data });
+          return res.data;
         } catch (err) {
           console.error("Fetch /me failed:", err);
           set({ user: null });
+          return null;
         }
       },
 

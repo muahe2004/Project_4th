@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { homeUrl, layoutUrl, signinUrl, notFoundUrl, profileUrl, gradesUrl, learningScheduleUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, notFoundUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -10,8 +10,7 @@ import LayoutAdmin from "../modules/app/Layout-Admin"
 import { useAuthStore } from "../stores/useAuthStore";
 import { GradesPage } from "../modules/grades/views/Grades"
 import { LearningSchedule } from "../modules/learningSchedule/views/LearningSchedule";
-
-import { ROLES } from "../constants/roles";
+import DashBoard from "../modules/dashboard/views/DashBoard";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -33,76 +32,54 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const createRouterConfig = () => {
-  const user = useAuthStore.getState().user;
-
   return createBrowserRouter([
     {
       path: signinUrl,
       element: <SignIn />,
     },
     {
-      path: notFoundUrl,
-      element: <NotFound />,
+      path: layoutUrl,
+      element: (
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      ),
+      children: [
+        {
+          path: homeUrl,
+          element: <HomePage />,
+        },
+        {
+          path: profileUrl,
+          element: <MyProfile />,
+        },
+        {
+          path: gradesUrl,
+          element: <GradesPage />,
+        },
+        {
+          path: learningScheduleUrl,
+          element: <LearningSchedule />,
+        },
+      ],
     },
-
-    ...(user?.role !== ROLES.ADMIN
-      ? [
-          {
-            path: layoutUrl,
-            element: (
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            ),
-            children: [
-              {
-                path: homeUrl,
-                element: <HomePage />,
-              },
-              {
-                path: profileUrl,
-                element: <MyProfile />,
-              },
-              {
-                path: gradesUrl,
-                element: <GradesPage />,
-              },
-              {
-                path: learningScheduleUrl,
-                element: <LearningSchedule />,
-              },
-            ],
-          },
-        ]
-      : []),
-
-    ...(user?.role === ROLES.ADMIN
-      ? [
-          {
-            path: layoutUrl,
-            element: (
-              <ProtectedRoute>
-                <LayoutAdmin />
-              </ProtectedRoute>
-            ),
-            children: [
-              {
-                path: homeUrl,
-              },
-              {
-                path: "/admin/users",
-              },
-              {
-                path: "/admin/settings",
-              },
-            ],
-          },
-        ]
-      : []),
+    {
+      path: layOutAdminUrl,
+      element: (
+        <ProtectedRoute>
+          <LayoutAdmin />
+        </ProtectedRoute>
+      ),
+      children: [
+        {
+          path: dashBoardUrl,
+          element: <DashBoard />,
+        },
+      ],
+    },
     {
       path: "*",
       element: <NotFound />,
-    },
+    }
   ]);
 };
-
