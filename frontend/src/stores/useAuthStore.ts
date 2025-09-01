@@ -4,7 +4,7 @@ import axios from "axios";
 
 type UserInfo = {
   id: string;
-  full_name: string;
+  name: string;
   code: string;
   role: string;
 };

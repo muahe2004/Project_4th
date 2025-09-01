@@ -1,0 +1,12 @@
+@import url("../../../../assets/styles/theme.css");
+
+.dash-board {
+    width: auto;
+    height: 100px;
+    padding: 20px;
+}
+
+.dash-board__welcome {
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-bold) !important;
+}

@@ -26,6 +26,18 @@ body {
   margin-top: 65px;
 }
 
+.main-layout-admin {
+  margin-top: 65px;
+  min-height: 1000px;
+  margin-left: 70px;
+  transition: .25s;
+}
+
+.main-layout-admin.openNav {
+  margin-left: calc(15% + 10px);
+  transition: .25s;
+}
+
 /* custom input */
 .MuiInputLabel-root.Mui-focused {
   color: var(--primary-color) !important;

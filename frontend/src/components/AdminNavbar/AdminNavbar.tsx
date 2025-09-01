@@ -18,14 +18,17 @@ import { useState } from "react";
 
 import "./AdminNavbar.css";
 
-export default function Navbar() {
-    const navigate = useNavigate();
+type NavbarProps = {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-    const [isOpen, setIsOpen] = useState(true);
+export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
+  const navigate = useNavigate();
 
-    const handleToggle = () => {
-        setIsOpen((prev) => !prev);
-    };
+  const handleToggle = () => {
+    setIsOpen((prev) => !prev);
+  };
 
     return (
         <AppBar className={`admin-navbar ${isOpen ? "open" : "closed"}`}>
