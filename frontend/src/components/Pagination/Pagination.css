@@ -1,0 +1,33 @@
+@import url("../../assets/styles/theme.css");
+
+.pagination-unicore {
+    margin-left: auto !important;
+    display: flex;
+    justify-content: right;
+    margin-top: 20px;
+}
+
+.MuiPaginationItem-root {
+    border-radius: var(--border-radius-base) !important;
+}
+
+.MuiPaginationItem-root.Mui-selected {
+    background: var(--primary-color) !important;
+    color: #fff;
+}
+
+.pagination-unicore__select {
+    display: flex !important;
+    width: 70px;
+    height: 32px;
+    padding: 0px !important;
+}
+
+.pagination-unicore__select fieldset {
+    height: 37px;
+}
+
+.pagination-unicore__select .MuiSelect-select {
+    padding: 7px 12px!important;
+    border: none !important;
+}
