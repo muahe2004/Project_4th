@@ -1,0 +1,9 @@
+@import url("../../assets/styles/theme.css");
+
+.search-engine__input {
+    min-width: 30% !important;
+}
+
+.search-engine__icon svg {
+    color: var(--primary-color) !important;
+}
