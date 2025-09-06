@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Query
 from app.api.deps import SessionDep
 from app.models.schemas.departments.department_schemas import (
     DepartmentPublic,
@@ -9,14 +9,25 @@ from app.models.schemas.departments.department_schemas import (
     DepartmentDeleteResponse
 )
 from app.services.departments import DepartmentServices
-from typing import List
+from typing import List, Optional, Tuple
 
 router = APIRouter()
 
 # =========================== get all department ===========================
-@router.get("", response_model=List[DepartmentPublic])
-def get_departments(session: SessionDep) -> List[DepartmentPublic]:
-    return DepartmentServices.get_all(session=session)
+@router.get("/")
+def get_departments(
+    session: SessionDep,
+    skip: int = Query(0, ge=0),     
+    limit: int = Query(10, ge=1),
+    status: Optional[str] = None,
+):
+    departments, total = DepartmentServices.get_all(
+        session=session,
+        skip=skip,
+        limit=limit,
+        status=status,
+    )
+    return {"total": total, "items": departments}
 
 # =========================== get department by id ===========================
 @router.get(

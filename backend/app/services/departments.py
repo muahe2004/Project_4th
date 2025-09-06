@@ -2,9 +2,9 @@ import uuid
 from datetime import datetime
 
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from starlette import status
-from typing import List
+from typing import List, Optional, Tuple
 
 from app.models.models import Departments
 from app.models.schemas.departments.department_schemas import (
@@ -19,9 +19,25 @@ from app.enums.status import StatusEnum
 
 class DepartmentServices:
     @staticmethod
-    def get_all(*, session: Session) -> List[DepartmentPublic]:
-        depts = session.exec(select(Departments)).all()
-        return depts
+    def get_all(
+        *, session: Session,
+        skip: int = 0,
+        limit: int = 10,
+        status: Optional[str] = None
+    ) -> Tuple[List[DepartmentPublic], int]:
+        statement = select(Departments)
+
+        if status:
+            statement = statement.where(Departments.status == status)
+
+        total = session.exec(
+            select(func.count()).select_from(statement.subquery())
+        ).one()
+
+        statement = statement.offset(skip).limit(limit)
+        departments = session.exec(statement).all()
+
+        return departments, total
 
     @staticmethod
     def get_by_id(
