@@ -28,7 +28,6 @@ body {
 
 .main-layout-admin {
   margin-top: 65px;
-  min-height: 1000px;
   margin-left: 70px;
   transition: .25s;
 }
@@ -102,6 +101,14 @@ body {
 .primary-table-container {
   box-shadow: none !important;
   border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.sticky-table-container {
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  height: 55vh;
+  background: transparent !important;
 }
 
 .primary-thead {
@@ -115,12 +122,20 @@ body {
   padding: 12px !important;
 }
 
+.MuiTableCell-stickyHeader {
+  background: var(--primary-color) !important;
+}
+
 .primary-thead__cell:first-child {
   border-left: 1px solid var(--primary-color);
 }
 
 .primary-thead__cell:last-child {
   border-right: 1px solid var(--primary-color);
+}
+
+.sticky-table {
+  border-left: 1px solid var(--primary-color) !important;
 }
 
 .thead-cell__border--right{
@@ -141,6 +156,32 @@ body {
   font-size: var(--font-size-base) !important;
   color: black !important;
   padding: 8px !important;
+}
+
+.sticky-tcell {
+  padding: 8px !important;
+  font-size: var(--font-size-base) !important;
+  border-right: 1px solid var(--primary-color) !important;
+  border-bottom: 1px solid var(--primary-color) !important;
+}
+
+.primary-tcell__button--icon {
+  color: var(--primary-color) !important;
+  padding: 0 8px!important;
+  transition: .25s;
+}
+
+.primary-tcell__button--icon:hover {
+  background: transparent !important;
+  transform: scale(1.1);
+}
+
+.primary-tcell__button--icon svg {
+  font-size: 20px;
+}
+
+.primary-tcell__button--delete {
+  color: var(--delete-color) !important;
 }
 
 /* tool tip */

@@ -1,6 +1,6 @@
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import SchoolIcon from "@mui/icons-material/School";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -14,9 +14,9 @@ import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import { Home, People, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import { useState } from "react";
 
 import "./AdminNavbar.css";
+import { dashBoardUrl, departmentUrl } from "../../routes/urls";
 
 type NavbarProps = {
   isOpen: boolean;
@@ -25,109 +25,56 @@ type NavbarProps = {
 
 export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleToggle = () => {
     setIsOpen((prev) => !prev);
   };
 
-    return (
-        <AppBar className={`admin-navbar ${isOpen ? "open" : "closed"}`}>
-            <List className="admin-navbar__list">
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`} >
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <Home />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Trang chủ" />
-                </ListItemButton>
+  // danh sách menu
+  const menuItems = [
+    { label: "Trang chủ", icon: <Home />, path: `${dashBoardUrl}` },
+    { label: "Khoa", icon: <SchoolIcon />, path: `${dashBoardUrl}/${departmentUrl}` },
+    { label: "Ngành", icon: <MenuBookIcon />, path: "/admin/nganh" },
+    { label: "Chuyên ngành", icon: <AccountTreeIcon />, path: "/admin/chuyen-nganh" },
+    { label: "Môn học", icon: <AutoStoriesIcon />, path: "/admin/mon-hoc" },
+    { label: "Lịch học", icon: <EventIcon />, path: "/admin/lich-hoc" },
+    { label: "Lịch dạy", icon: <EditCalendarIcon />, path: "/admin/lich-day" },
+    { label: "Lịch thi", icon: <AssignmentIcon />, path: "/admin/lich-thi" },
+    { label: "Sinh viên", icon: <GroupsIcon />, path: "/admin/sinh-vien" },
+    { label: "Giảng viên", icon: <PersonIcon />, path: "/admin/giang-vien" },
+    { label: "Lớp", icon: <ClassIcon />, path: "/admin/lop" },
+    { label: "Phòng học", icon: <MeetingRoomIcon />, path: "/admin/phong-hoc" },
+    { label: "Người dùng", icon: <People />, path: "/admin/nguoi-dung" },
+  ];
 
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <SchoolIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Khoa" />
-                </ListItemButton>
+  return (
+    <AppBar className={`admin-navbar ${isOpen ? "open" : "closed"}`}>
+      <List className="admin-navbar__list">
+        {menuItems.map((item) => (
+          <ListItemButton
+            key={item.path}
+            className={`admin-navbar__button ${isOpen ? "open" : "closed"} ${
+              location.pathname === item.path ? "active" : ""
+            }`}
+            onClick={() => navigate(item.path)}
+          >
+            <ListItemIcon
+              className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}
+            >
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText
+              className={`admin-navbar__text ${isOpen ? "open" : "closed"}`}
+              primary={item.label}
+            />
+          </ListItemButton>
+        ))}
+      </List>
 
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <MenuBookIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Ngành" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <AccountTreeIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Chuyên ngành" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <AutoStoriesIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Môn học" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <EventIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Lịch học" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <EditCalendarIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Lịch dạy" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <AssignmentIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Lịch thi" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <GroupsIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Sinh viên" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <PersonIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Giảng viên" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <ClassIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Lớp" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <MeetingRoomIcon />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Phòng học" />
-                </ListItemButton>
-
-                <ListItemButton className={`admin-navbar__button ${isOpen ? "open" : "closed"}`}>
-                    <ListItemIcon className={`admin-navbar__icon ${isOpen ? "open" : "closed"}`}>
-                        <People />
-                    </ListItemIcon>
-                    <ListItemText className={`admin-navbar__text ${isOpen ? "open" : "closed"}`} primary="Người dùng" />
-                </ListItemButton>
-            </List>
-
-            <button onClick={handleToggle} className="admin-navbar__toggle--button">
-                {isOpen ? <ChevronLeft /> : <ChevronRight />}    
-            </button>
-        </AppBar>
-    );
+      <button onClick={handleToggle} className="admin-navbar__toggle--button">
+        {isOpen ? <ChevronLeft /> : <ChevronRight />}
+      </button>
+    </AppBar>
+  );
 }

@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { homeUrl, layoutUrl, signinUrl, notFoundUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, notFoundUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -11,6 +11,7 @@ import { useAuthStore } from "../stores/useAuthStore";
 import { GradesPage } from "../modules/grades/views/Grades"
 import { LearningSchedule } from "../modules/learningSchedule/views/LearningSchedule";
 import DashBoard from "../modules/dashboard/views/DashBoard";
+import Departments from "../modules/department/views/Departments";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -74,6 +75,10 @@ export const createRouterConfig = () => {
         {
           path: dashBoardUrl,
           element: <DashBoard />,
+        },
+        {
+          path: layOutAdminUrl + departmentUrl,
+          element: <Departments />,
         },
       ],
     },

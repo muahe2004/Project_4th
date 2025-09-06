@@ -10,3 +10,4 @@ export const learningScheduleUrl = "/learning-schedule";
 // ADMIN
 export const layOutAdminUrl = "/admin"
 export const dashBoardUrl = "/admin";
+export const departmentUrl = "departments";
