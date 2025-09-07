@@ -60,7 +60,7 @@ export function Departments() {
         console.log("value: ", value);
     }
 
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
 
     return (
@@ -72,7 +72,14 @@ export function Departments() {
                         searchDepartment(val);
                     }} 
                 />
-                <Button className="departments-button__add">Add Department</Button>
+                <Button
+                    onClick={() => {
+                        setMode("add");
+                        setOpen(true);
+                    }}
+                    className="departments-button__add">
+                    Add Department
+                </Button>
             </Box>
 
             <TableContainer

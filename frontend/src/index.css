@@ -192,3 +192,10 @@ body {
   padding: 8px; 
   box-shadow: var(--box-shadow-base);
 }
+
+/* form */
+.form-model-title {
+  text-align: center;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: var(--font-size-large) !important;
+}

@@ -7,6 +7,7 @@
     transition: .25s !important;
     padding: 10px 12px !important;
     font-weight: var(--font-weight-bold) !important;
+    min-width: 100px !important;
 }
 
 .button-primary:hover {
@@ -29,4 +30,10 @@
     background: var(--secondary-color) !important;
     color: #fff !important;
     font-weight: var(--font-weight-bold) !important;
+}
+
+.button-cancel {
+    background: #ccc !important;
+    color: #000 !important;
+    border-color: #000 !important;
 }
