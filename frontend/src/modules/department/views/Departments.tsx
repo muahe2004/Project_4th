@@ -17,6 +17,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import Button from "../../../components/Button/Button";
 import { useState } from "react";
+import DepartmentForm from "../components/DepartmentFormModel";
 
 type Department = {
     id: string;
@@ -58,6 +59,9 @@ export function Departments() {
     const searchDepartment = (value: string) => {
         console.log("value: ", value);
     }
+
+    const [open, setOpen] = useState(true);
+    const [mode, setMode] = useState<"add" | "edit">("add");
 
     return (
         <main className="departments">
@@ -125,6 +129,15 @@ export function Departments() {
             </TableContainer>
 
             <PaginationUniCore></PaginationUniCore>
+
+            <DepartmentForm 
+                open={open} 
+                mode={mode} 
+                onClose={() => setOpen(false)} 
+                onSubmit={(values) => {
+                console.log("Submit:", values);
+                }} 
+            />
         </main>
     );
 }
