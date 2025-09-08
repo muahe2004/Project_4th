@@ -55,7 +55,6 @@ body {
   height: 1.4375em !important;
   line-height: 1.4375em !important;
   padding: 12px !important;
-  font-size: var(--font-size-base) !important;
 }
 
 .MuiMenu-paper {
@@ -194,8 +193,22 @@ body {
 }
 
 /* form */
-.form-model-title {
+
+/* dialog */
+.primary-dialog-title {
+  padding: 16px !important;
   text-align: center;
   font-weight: var(--font-weight-bold) !important;
-  font-size: var(--font-size-large) !important;
+}
+
+.primary-dialog-content {
+  padding: 0 16px 16px 16px !important;
+}
+
+.primary-dialog-actions {
+  padding: 0 16px 16px 16px !important;
+}
+
+.primary-dialog-input {
+  margin-bottom: 25px !important; 
 }

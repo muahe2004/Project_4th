@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Button from "../../../components/Button/Button";
 
 import "./styles/DepartmentFormModel.css"
+import LabelPrimary from "../../../components/Label/Label";
 
 interface DepartmentFormProps {
     open: boolean;
@@ -29,32 +30,30 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
     };
 
     return (
-        <Dialog open={open} onClose={onClose} className="department-form" maxWidth="sm" fullWidth>
-            <DialogTitle className="form-model-title">
-                {mode === "add" ? "THÊM KHOA" : "Sửa Khoa"}
+        <Dialog open={open} onClose={onClose} className="primary-dialog department-form" maxWidth="sm" fullWidth>
+            <DialogTitle className="primary-dialog-title">
+                {mode === "add" ? "ADD DEPARTMENT" : "Sửa Khoa"}
             </DialogTitle>
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Mã khoa"
-                    fullWidth
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    // className="myprofile-text__field"
-                />
+            <DialogContent className="primary-dialog-content">
+                <LabelPrimary value="Mã Khoa"></LabelPrimary>
+                <TextField 
+                    // value={ethnicity}
+                    // onChange={(e) => setEthnicity(e.target.value)} 
+                    fullWidth 
+                    id="outlined-basic" 
+                    variant="outlined" 
+                    className="myprofile-text__field primary-dialog-input"/>
 
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Tên Khoa"
-                    fullWidth
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    // className="myprofile-text__field"
-                />
+                <LabelPrimary value="Tên Khoa"></LabelPrimary>
+                <TextField 
+                    // value={ethnicity}
+                    // onChange={(e) => setEthnicity(e.target.value)} 
+                    fullWidth 
+                    id="outlined-basic" 
+                    variant="outlined" 
+                    className="myprofile-text__field primary-dialog-input"/>
             </DialogContent>
-            <DialogActions>
+            <DialogActions className="primary-dialog-actions">
                 <Button onClick={onClose} className="button-cancel">Hủy</Button>
                 <Button onClick={handleSubmit} variant="contained">
                     {mode === "add" ? "Thêm" : "Lưu"}
