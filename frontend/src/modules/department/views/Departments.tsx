@@ -16,8 +16,9 @@ import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import Button from "../../../components/Button/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DepartmentForm from "../components/DepartmentFormModel";
+import { useGetDepartment } from "../apis/getDepartments";
 
 type Department = {
     id: string;
@@ -62,6 +63,13 @@ export function Departments() {
 
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
+
+    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment();
+
+    useEffect(() => {
+        console.log("Department:", department);
+        console.log("Loading:", isLoadingDeparment);
+        }, [department, isLoadingDeparment]);
 
     return (
         <main className="departments">
