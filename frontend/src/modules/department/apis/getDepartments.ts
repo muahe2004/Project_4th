@@ -2,7 +2,6 @@ import axios, { AxiosError } from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { URL_API_DEPARTMENT } from '../../../constants/config';
 
-// Kiểu dữ liệu của 1 department
 export interface DepartmentResponse {
   id: string;
   department_code: string;
@@ -14,10 +13,9 @@ export interface DepartmentResponse {
   updated_at: string;
 }
 
-// Kiểu dữ liệu trả về từ API
 export interface DepartmentListResponse {
   total: number;
-  items: DepartmentResponse[];
+  data: DepartmentResponse[];
 }
 
 const getDepartments = async (): Promise<DepartmentListResponse> => {

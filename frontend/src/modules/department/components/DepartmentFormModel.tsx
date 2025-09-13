@@ -4,6 +4,9 @@ import Button from "../../../components/Button/Button";
 
 import "./styles/DepartmentFormModel.css"
 import LabelPrimary from "../../../components/Label/Label";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 interface DepartmentFormProps {
     open: boolean;
@@ -52,6 +55,18 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                     id="outlined-basic" 
                     variant="outlined" 
                     className="myprofile-text__field primary-dialog-input"/>
+                
+                <LabelPrimary value="Ngày thành lập"></LabelPrimary>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                        // value={issueDate ? new Date(issueDate) : null} 
+                        // onChange={(newValue) => setIssueDate(newValue ? newValue.toISOString() : "")}
+                        className="myprofile-text__field primary-dialog-input"
+                        slotProps={{ 
+                            textField: { fullWidth: true }
+                        }}
+                    />
+                </LocalizationProvider>
             </DialogContent>
             <DialogActions className="primary-dialog-actions">
                 <Button onClick={onClose} className="button-cancel">Hủy</Button>

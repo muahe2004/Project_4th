@@ -14,7 +14,7 @@ from typing import List, Optional, Tuple
 router = APIRouter()
 
 # =========================== get all department ===========================
-@router.get("/")
+@router.get("")
 def get_departments(
     session: SessionDep,
     skip: int = Query(0, ge=0),     
@@ -27,7 +27,7 @@ def get_departments(
         limit=limit,
         status=status,
     )
-    return {"total": total, "items": departments}
+    return {"total": total, "data": departments}
 
 # =========================== get department by id ===========================
 @router.get(

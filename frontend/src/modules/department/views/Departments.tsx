@@ -19,6 +19,8 @@ import Button from "../../../components/Button/Button";
 import { useEffect, useState } from "react";
 import DepartmentForm from "../components/DepartmentFormModel";
 import { useGetDepartment } from "../apis/getDepartments";
+import dayjs from "dayjs";
+import Loading from "../../../components/Loading/Loading";
 
 type Department = {
     id: string;
@@ -66,6 +68,8 @@ export function Departments() {
 
     const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment();
 
+    const isLoading = isLoadingDeparment;
+
     useEffect(() => {
         console.log("Department:", department);
         console.log("Loading:", isLoadingDeparment);
@@ -73,6 +77,10 @@ export function Departments() {
 
     return (
         <main className="departments">
+            {
+                isLoading && (<Loading></Loading>)
+            }
+            
             <Box className="departments-box">
                 <SearchEngine 
                     placeholder="Tìm khoa..." 
@@ -115,7 +123,7 @@ export function Departments() {
                         </TableRow>
                     </TableHead>
                     <TableBody className="sticky-tbody">
-                        {rows.map((row) => (
+                        {department?.data.map((row) => (
                             <TableRow key={row.id} className="sticky-trow">
                                 <TableCell  className="sticky-tcell" align="center">
                                 {row.department_code}
@@ -124,7 +132,7 @@ export function Departments() {
                                 {row.name}
                                 </TableCell>
                                 <TableCell className="sticky-tcell" align="center">
-                                {row.established_date}
+                                    {dayjs(row.established_date).format("DD-MM-YYYY")}
                                 </TableCell>
                                 <TableCell className="sticky-tcell" align="center">
                                 {row.status}

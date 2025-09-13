@@ -106,8 +106,9 @@ body {
 .sticky-table-container {
   box-shadow: none !important;
   border-radius: 0 !important;
-  height: 55vh;
+  max-height: 55vh;
   background: transparent !important;
+  margin-bottom: 10px;
 }
 
 .primary-thead {
