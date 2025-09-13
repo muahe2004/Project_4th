@@ -14,3 +14,7 @@
 .departments-button__add {
     margin-left: 10px !important;
 }
+
+.department-name-tcell {
+    width: 30%;
+}

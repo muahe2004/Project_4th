@@ -18,11 +18,19 @@ export interface DepartmentListResponse {
   data: DepartmentResponse[];
 }
 
-const getDepartments = async (): Promise<DepartmentListResponse> => {
+export interface Params {
+  limit: number;
+  skip: number;
+}
+
+const getDepartments = async (params: Params): Promise<DepartmentListResponse> => {
   try {
     const res = await axios.get<DepartmentListResponse>(
       `${URL_API_DEPARTMENT}`,
-      { withCredentials: true }
+      {
+        params, 
+        withCredentials: true,
+      }
     );
     return res.data;
   } catch (error: any) {
@@ -33,9 +41,9 @@ const getDepartments = async (): Promise<DepartmentListResponse> => {
   }
 };
 
-export const useGetDepartment = () => {
+export const useGetDepartment = (params: Params) => {
   return useQuery<DepartmentListResponse, AxiosError<{ detail?: string }>>({
-    queryKey: ['departments'],
-    queryFn: () => getDepartments(),
+    queryKey: ['departments', params],
+    queryFn: () => getDepartments(params),
   });
 };

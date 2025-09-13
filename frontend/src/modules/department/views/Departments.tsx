@@ -21,43 +21,12 @@ import DepartmentForm from "../components/DepartmentFormModel";
 import { useGetDepartment } from "../apis/getDepartments";
 import dayjs from "dayjs";
 import Loading from "../../../components/Loading/Loading";
-
-type Department = {
-    id: string;
-    department_code: string;
-    name: string;
-    description: string;       
-    established_date: string;  
-    status: string;
-};
-
-function createData(
-    id: string,
-    department_code: string,
-    name: string,
-    description: string,
-    established_date: string,
-    status: string
-): Department {
-    return { id, department_code, name, description, established_date, status };
-}
-
-const rows: Department[] = [
-    createData("1", "000000", "Công nghệ thông tin", "Quản lý đào tạo CNTT", "2005-09-01", "Active"),
-    createData("2", "000001", "Kinh tế", "Quản lý đào tạo kinh tế", "2008-03-15", "Active"),
-    createData("3", "000002", "May", "Quản lý đào tạo ngành May", "2009-07-20", "Active"),
-    createData("4", "000003", "Cơ khí", "Quản lý đào tạo ngành Cơ khí", "2010-11-05", "Active"),
-    createData("5", "000004", "Ngoại ngữ", "Quản lý đào tạo Ngoại ngữ", "2012-02-10", "Active"),
-    createData("6", "000005", "Điện - Điện tử", "Quản lý đào tạo ngành Điện - Điện tử", "2013-06-18", "Active"),
-    createData("7", "000006", "Quản trị kinh doanh", "Quản lý đào tạo ngành Quản trị kinh doanh", "2014-04-12", "Active"),
-    createData("8", "000007", "Du lịch", "Quản lý đào tạo ngành Du lịch", "2015-09-30", "Active"),
-    createData("9", "000008", "Kiến trúc", "Quản lý đào tạo ngành Kiến trúc", "2016-01-22", "Active"),
-    createData("10", "000009", "Y tế", "Quản lý đào tạo ngành Y tế", "2017-12-14", "Active"),
-    
-];
-
+import { getStatusColor } from "../../../utils/status/status-color";
+import { getStatusDisplay } from "../../../utils/status/status-display";
 
 export function Departments() {
+    const [page, setPage] = useState(1);
+
 
     const searchDepartment = (value: string) => {
         console.log("value: ", value);
@@ -66,14 +35,17 @@ export function Departments() {
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
 
-    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment();
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    const Params = {
+        limit: rowsPerPage,
+        skip: (page - 1) * rowsPerPage,
+        // Cần bổ sung thêm search
+    };
+
+    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment(Params);
 
     const isLoading = isLoadingDeparment;
-
-    useEffect(() => {
-        console.log("Department:", department);
-        console.log("Loading:", isLoadingDeparment);
-        }, [department, isLoadingDeparment]);
 
     return (
         <main className="departments">
@@ -108,7 +80,7 @@ export function Departments() {
                             <TableCell className="primary-thead__cell" align="center">
                                 Mã khoa
                             </TableCell>
-                            <TableCell className="primary-thead__cell" align="center">
+                            <TableCell className="primary-thead__cell department-name-tcell" align="center">
                                 Tên khoa
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
@@ -126,16 +98,16 @@ export function Departments() {
                         {department?.data.map((row) => (
                             <TableRow key={row.id} className="sticky-trow">
                                 <TableCell  className="sticky-tcell" align="center">
-                                {row.department_code}
+                                    {row.department_code}
                                 </TableCell>
-                                <TableCell className="sticky-tcell" align="center">
-                                {row.name}
+                                <TableCell className="sticky-tcell" align="left">
+                                    {row.name}
                                 </TableCell>
                                 <TableCell className="sticky-tcell" align="center">
                                     {dayjs(row.established_date).format("DD-MM-YYYY")}
                                 </TableCell>
-                                <TableCell className="sticky-tcell" align="center">
-                                {row.status}
+                                <TableCell className="sticky-tcell" align="center" sx={{ color: getStatusColor(row.status)}}>
+                                    {getStatusDisplay(row.status)}
                                 </TableCell>
                                 <TableCell className="sticky-tcell" align="center">
                                     <IconButton className="primary-tcell__button--icon" >
@@ -151,7 +123,16 @@ export function Departments() {
                 </Table>
             </TableContainer>
 
-            <PaginationUniCore></PaginationUniCore>
+            <PaginationUniCore
+                totalItems={department?.total || 0}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                onPageChange={(p) => setPage(p)}
+                onRowsPerPageChange={(r) => {
+                setRowsPerPage(r);
+                setPage(1); 
+            }}
+            ></PaginationUniCore>
 
             <DepartmentForm 
                 open={open} 
