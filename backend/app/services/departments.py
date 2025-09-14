@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select, func
+from sqlmodel import Session, desc, select, func
 from starlette import status
 from typing import List, Optional, Tuple
 
@@ -34,6 +34,7 @@ class DepartmentServices:
             select(func.count()).select_from(statement.subquery())
         ).one()
 
+        statement = statement.order_by(desc(Departments.created_at))
         statement = statement.offset(skip).limit(limit)
         departments = session.exec(statement).all()
 

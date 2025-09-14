@@ -1,21 +1,11 @@
 import axios, { AxiosError } from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { URL_API_DEPARTMENT } from '../../../constants/config';
-
-export interface DepartmentResponse {
-  id: string;
-  department_code: string;
-  name: string;
-  description: string;
-  established_date: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-}
+import type { IDepartments } from '../types';
 
 export interface DepartmentListResponse {
   total: number;
-  data: DepartmentResponse[];
+  data: IDepartments[];
 }
 
 export interface Params {
