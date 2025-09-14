@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import Loading from "../../../components/Loading/Loading";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
+import type { IDepartments } from "../types";
 
 export function Departments() {
     const [page, setPage] = useState(1);
@@ -34,6 +35,7 @@ export function Departments() {
 
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
+    const [selectedDepartment, setSelectedDepartment] = useState<IDepartments | undefined>(undefined); 
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -110,7 +112,14 @@ export function Departments() {
                                     {getStatusDisplay(row.status)}
                                 </TableCell>
                                 <TableCell className="sticky-tcell" align="center">
-                                    <IconButton className="primary-tcell__button--icon" >
+                                    <IconButton 
+                                        className="primary-tcell__button--icon" 
+                                        onClick={() => {
+                                            setMode("edit");
+                                            setSelectedDepartment(row);
+                                            setOpen(true);
+                                        }}
+                                    >
                                         <EditSquareIcon/>
                                     </IconButton>
                                     <IconButton className="primary-tcell__button--icon primary-tcell__button--delete">
@@ -137,10 +146,8 @@ export function Departments() {
             <DepartmentForm 
                 open={open} 
                 mode={mode} 
-                onClose={() => setOpen(false)} 
-                onSubmit={(values) => {
-                console.log("Submit:", values);
-                }} 
+                initialValues={selectedDepartment}
+                onClose={() => setOpen(false)}
             />
         </main>
     );

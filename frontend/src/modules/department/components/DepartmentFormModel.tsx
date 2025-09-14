@@ -12,46 +12,70 @@ import { STATUS } from "../../../constants/status";
 import type { IDepartments } from "../types";
 
 import { useCreateDepartment } from "../apis/addDepartment";
+import { useEditDepartment } from "../apis/editDepartment";
 
 interface DepartmentFormProps {
     open: boolean;
     mode: "add" | "edit";
-    initialValues?: { name: string };
+    initialValues?: IDepartments;
     onClose: () => void;
-    onSubmit: (values: { name: string }) => void;
 }
 
-const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValues, onClose, onSubmit }) => {
-    const [name, setName] = useState("");
-    
+const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValues, onClose }) => {    
+    const ID = initialValues?.id;
+
     const [departmentCode, setDepartmentCode] = useState("");
     const [departmentName, setDepartmentName] = useState("");
     const [establishedDate, setEstablishedDate] = useState<Date | null>(new Date()); 
     const [description, setDescription] = useState("");
 
     const { mutateAsync: createDepartment } = useCreateDepartment({});
+    const { mutateAsync: editDepartment } = useEditDepartment({});
+
 
     useEffect(() => {
         if (mode === "edit" && initialValues) {
-            setName(initialValues.name);
+            setDepartmentCode(initialValues.department_code || "");
+            setDepartmentName(initialValues.name || "");
+            setEstablishedDate(
+                initialValues.established_date
+                ? new Date(initialValues.established_date)
+                : null
+            );
+            setDescription(initialValues.description || "");
         } else {
-            setName("");
+            setDepartmentCode("");
+            setDepartmentName("");
+            setEstablishedDate(new Date());
+            setDescription("");
         }
     }, [mode, initialValues, open]);
 
     const handleSubmit = async () => {
-        const payload: IDepartments = {
-            department_code: departmentCode,
-            name: departmentName,
-            established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
-            status: STATUS.ACTIVE,
-            description: description
+        if (mode === "add") {
+            const payload: IDepartments = {
+                department_code: departmentCode,
+                name: departmentName,
+                established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
+                status: STATUS.ACTIVE,
+                description: description
+            }
+
+            await createDepartment(payload);
+            onClose();
+        } else if (mode === "edit") {
+            const payload: IDepartments = {
+                department_code: departmentCode,
+                name: departmentName,
+                established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
+                status: STATUS.ACTIVE,
+                description: description,
+                updated_at: dayjs().format("YYYY-MM-DD")
+            }
+            await editDepartment({ id: ID as string, data: payload})
+        } else {
+            console.error("Unknown");
         }
-
-        console.log(payload);
-
-        await createDepartment(payload);
-        onClose();
     };
 
     return (
