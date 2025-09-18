@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select, func, desc
+from sqlmodel import Session, or_, select, func, desc
 from starlette import status
 from typing import List, Optional, Tuple
 
@@ -16,24 +16,36 @@ from app.models.schemas.majors.major_schemas import (
 from app.models.models import Specializations
 
 from app.enums.status import StatusEnum
+from app.models.schemas.common.query import BaseQueryParams
 
 class MajorServices:
     @staticmethod
     def get_all(
         *, session: Session,
-        skip: int = 0,
-        limit: int = 10,
-        status: Optional[str] = None
+        query: BaseQueryParams
     ) -> Tuple[List[MajorPublic], int]:
         statement = select(Majors)
 
-        if status:
-            statement.where(Majors.status == status)
+        conditions = []
+        if query.status:
+            conditions.append(Majors.status == query.status)
+
+        if query.search:
+            conditions.append(
+                or_(
+                    Majors.major_code.ilike(f"%{query.search}%"),
+                    Majors.name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
 
         total = session.exec(select(func.count()).select_from(statement.subquery())).one()
 
         statement = statement.order_by(desc(Majors.created_at))
-        statement = statement.offset(skip).limit(limit)
+        statement = statement.offset(query.skip).limit(query.limit)
+
         majors = session.exec(statement).all()
 
         return majors, total

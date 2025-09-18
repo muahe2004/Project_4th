@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from fastapi import HTTPException, Request
-from sqlmodel import Session, desc, select, func
+from sqlmodel import Session, desc, or_, select, func
 from starlette import status
 from typing import List, Optional, Tuple
 
@@ -16,26 +16,36 @@ from app.models.schemas.departments.department_schemas import (
 from app.models.models import Majors
 
 from app.enums.status import StatusEnum
+from app.models.schemas.common.query import BaseQueryParams
 
 class DepartmentServices:
     @staticmethod
     def get_all(
         *, session: Session,
-        skip: int = 0,
-        limit: int = 10,
-        status: Optional[str] = None
+        query: BaseQueryParams
     ) -> Tuple[List[DepartmentPublic], int]:
         statement = select(Departments)
 
-        if status:
-            statement = statement.where(Departments.status == status)
+        conditions = []
+        if query.status:
+            conditions.append(Departments.status == query.status)
 
-        total = session.exec(
-            select(func.count()).select_from(statement.subquery())
-        ).one()
+        if query.search:
+            conditions.append(
+                or_(
+                    Departments.department_code.ilike(f"%{query.search}%"),
+                    Departments.name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        total = session.exec(select(func.count()).select_from(statement.subquery())).one()
 
         statement = statement.order_by(desc(Departments.created_at))
-        statement = statement.offset(skip).limit(limit)
+        statement = statement.offset(query.skip).limit(query.limit)
+
         departments = session.exec(statement).all()
 
         return departments, total

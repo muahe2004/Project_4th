@@ -12,22 +12,14 @@ from app.models.schemas.departments.department_schemas import (
 from app.services.departments import DepartmentServices
 from typing import List, Optional, Tuple
 
+from app.models.schemas.common.query import BaseQueryParams
+
 router = APIRouter()
 
 # =========================== get all department ===========================
 @router.get("")
-def get_departments(
-    session: SessionDep,
-    skip: int = Query(0, ge=0),     
-    limit: int = Query(10, ge=1),
-    status: Optional[str] = None,
-):
-    departments, total = DepartmentServices.get_all(
-        session=session,
-        skip=skip,
-        limit=limit,
-        status=status,
-    )
+def get_departments(session: SessionDep, query: BaseQueryParams = Depends()):
+    departments, total = DepartmentServices.get_all(session=session, query=query)
     return DepartmentListResponse(total=total, data=departments)
 
 # =========================== get department by id ===========================

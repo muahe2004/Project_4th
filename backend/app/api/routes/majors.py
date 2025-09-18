@@ -12,21 +12,13 @@ from app.models.schemas.majors.major_schemas import (
 from app.services.majors import MajorServices
 from typing import List, Optional
 
+from app.models.schemas.common.query import BaseQueryParams
+
 router = APIRouter()
 
 @router.get("")
-def get_majors(
-    session: SessionDep,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1),
-    status: Optional[str] = None
-):
-    majors, total = MajorServices.get_all(
-        session=session,
-        skip=skip,
-        limit=limit,
-        status=status
-    )
+def get_majors(session: SessionDep, query: BaseQueryParams = Depends()):
+    majors, total = MajorServices.get_all(session=session,query=query)
     return MajorListResponse(total=total, data=majors)
 
 # =========================== get major by id ===========================
