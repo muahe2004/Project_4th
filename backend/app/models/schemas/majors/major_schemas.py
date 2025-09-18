@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from uuid import UUID
 class MajorBase(SQLModel):
@@ -14,7 +15,9 @@ class MajorPublic(MajorBase):
     id: UUID
 class MajorCreate(MajorBase):
     pass
-
+class MajorListResponse(SQLModel):
+    total: int
+    data: List[MajorPublic]
 class MajorUpdate(SQLModel):
     major_code: str | None = Field(default=None, sa_column=Column(String(12), nullable=True))
     name: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))

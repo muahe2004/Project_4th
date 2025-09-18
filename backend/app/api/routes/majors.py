@@ -1,22 +1,33 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from app.api.deps import SessionDep
 from app.models.schemas.majors.major_schemas import (
+    MajorListResponse,
     MajorPublic,
     MajorCreate,
     MajorUpdate,
     MajorDeleteResponse
 )
 from app.services.majors import MajorServices
-from typing import List
+from typing import List, Optional
 
 router = APIRouter()
 
-# =========================== get all major ===========================
-@router.get("", response_model=List[MajorPublic])
-def get_majors(session: SessionDep) -> List[MajorPublic]:
-    return MajorServices.get_all(session=session)
+@router.get("")
+def get_majors(
+    session: SessionDep,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
+    status: Optional[str] = None
+):
+    majors, total = MajorServices.get_all(
+        session=session,
+        skip=skip,
+        limit=limit,
+        status=status
+    )
+    return MajorListResponse(total=total, data=majors)
 
 # =========================== get major by id ===========================
 @router.get(

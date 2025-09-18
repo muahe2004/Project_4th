@@ -2,9 +2,9 @@ import uuid
 from datetime import datetime
 
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func, desc
 from starlette import status
-from typing import List
+from typing import List, Optional, Tuple
 
 from app.models.models import Majors
 from app.models.schemas.majors.major_schemas import (
@@ -19,9 +19,24 @@ from app.enums.status import StatusEnum
 
 class MajorServices:
     @staticmethod
-    def get_all(*, session: Session) -> List[MajorPublic]:
-        majors = session.exec(select(Majors)).all()
-        return majors
+    def get_all(
+        *, session: Session,
+        skip: int = 0,
+        limit: int = 10,
+        status: Optional[str] = None
+    ) -> Tuple[List[MajorPublic], int]:
+        statement = select(Majors)
+
+        if status:
+            statement.where(Majors.status == status)
+
+        total = session.exec(select(func.count()).select_from(statement.subquery())).one()
+
+        statement = statement.order_by(desc(Majors.created_at))
+        statement = statement.offset(skip).limit(limit)
+        majors = session.exec(statement).all()
+
+        return majors, total
 
     @staticmethod
     def get_by_id(
