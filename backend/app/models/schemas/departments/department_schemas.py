@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 import uuid
 
@@ -13,6 +14,10 @@ class DepartmentBase(SQLModel):
 
 class DepartmentPublic(DepartmentBase):
     id: uuid.UUID
+
+class DepartmentListResponse(SQLModel):
+    total: int
+    data: List[DepartmentPublic]
 
 class DepartmentCreate(DepartmentBase):
     pass

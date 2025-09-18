@@ -193,8 +193,6 @@ body {
   box-shadow: var(--box-shadow-base);
 }
 
-/* form */
-
 /* dialog */
 .primary-dialog-title {
   padding: 16px !important;

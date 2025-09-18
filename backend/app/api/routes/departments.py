@@ -3,6 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, Request, Query
 from app.api.deps import SessionDep
 from app.models.schemas.departments.department_schemas import (
+    DepartmentListResponse,
     DepartmentPublic,
     DepartmentCreate,
     DepartmentUpdate,
@@ -27,7 +28,7 @@ def get_departments(
         limit=limit,
         status=status,
     )
-    return {"total": total, "data": departments}
+    return DepartmentListResponse(total=total, data=departments)
 
 # =========================== get department by id ===========================
 @router.get(

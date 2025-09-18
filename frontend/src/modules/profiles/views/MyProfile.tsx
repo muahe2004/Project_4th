@@ -45,13 +45,15 @@ export function MyProfile() {
     const isTeacher = user?.role === ROLES.TEACHER;
     const isStudent = user?.role === ROLES.STUDENT;
 
-    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment();
+    // const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment();
     const { data: teacherInfo, isLoading: isLoadingTeacher, error: errorTeacher } = useGetProfileTeacher(user?.id, isTeacher);
     const { data: studentInfo, isLoading: isLoadingStudent, error: errorStudent } = useGetProfileStudent(user?.id, isStudent);
     const { data: profile, isLoading: isLoadingProfile, error } = useGetTeacherProfile(user?.id, isTeacher);
     const { data: profileStudent, isLoading: isLoadingStudentProfile, error: errStudentProfile } = useGetStudentProfile(user?.id, isStudent); 
 
-    const isLoading = isLoadingProfile || isLoadingStudentProfile || isLoadingTeacher || isLoadingDeparment;
+    const isLoading = isLoadingProfile || isLoadingStudentProfile || isLoadingTeacher;
+    // const isLoading = isLoadingProfile || isLoadingStudentProfile || isLoadingTeacher || isLoadingDeparment;
+
 
     // Profile
     const [teacherCode, setTeacherCode] = useState("");
@@ -388,11 +390,11 @@ export function MyProfile() {
                                 disableScrollLock: true,   
                             }}
                         >
-                            {
+                            {/* {
                                 department?.map((department) => (
                                     <MenuItem value={department.id}>{department.name}</MenuItem>
                                 ))
-                            }
+                            } */}
                         </Select>
                     </Grid>
 
@@ -409,11 +411,11 @@ export function MyProfile() {
                             }}
                             disabled
                         >
-                            {
+                            {/* {
                                 department?.map((department) => (
                                     <MenuItem value={department.id}>{department.name}</MenuItem>
                                 ))
-                            }
+                            } */}
                         </Select>
                     </Grid>
 
