@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -12,6 +12,7 @@ import { GradesPage } from "../modules/grades/views/Grades"
 import { LearningSchedule } from "../modules/learningSchedule/views/LearningSchedule";
 import DashBoard from "../modules/dashboard/views/DashBoard";
 import Departments from "../modules/department/views/Departments";
+import Majors from "../modules/majors/views/Majors";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -79,6 +80,10 @@ export const createRouterConfig = () => {
         {
           path: layOutAdminUrl + departmentUrl,
           element: <Departments />,
+        },
+        {
+          path: layOutAdminUrl + majorUrl,
+          element: <Majors />,
         },
       ],
     },
