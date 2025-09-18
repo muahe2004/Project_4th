@@ -16,8 +16,9 @@ export default function SearchEngine({ placeholder = "Tìm kiếm...", onSearch 
     const [value, setValue] = React.useState("");
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(event.target.value);
-        onSearch(value.trim());
+        const newValue = event.target.value;
+        setValue(newValue);
+        onSearch(newValue.trim()); 
     };
 
     const handleClear = () => {

@@ -27,7 +27,7 @@ import type { IDepartments } from "../types";
 
 export function Departments() {
     const [page, setPage] = useState(1);
-
+    const [search, setSearch] = useState("");
 
     const searchDepartment = (value: string) => {
         console.log("value: ", value);
@@ -42,7 +42,7 @@ export function Departments() {
     const Params = {
         limit: rowsPerPage,
         skip: (page - 1) * rowsPerPage,
-        // Cần bổ sung thêm search
+        search: search || undefined
     };
 
     const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment(Params);
@@ -59,8 +59,9 @@ export function Departments() {
                 <SearchEngine 
                     placeholder="Tìm khoa..." 
                     onSearch={(val) => {
-                        searchDepartment(val);
-                    }} 
+                        setSearch(val);
+                        setPage(1);
+                    }}
                 />
                 <Button
                     onClick={() => {
