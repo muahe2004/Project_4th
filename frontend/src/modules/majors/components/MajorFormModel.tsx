@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
@@ -7,21 +7,21 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import dayjs from "dayjs";
 import { STATUS } from "../../../constants/status";
-import type { IDepartments } from "../types";
-import { useCreateDepartment } from "../apis/addDepartment";
-import { useEditDepartment } from "../apis/editDepartment";
+import type { IMajors } from "../types";
+// import { useCreateDepartment } from "../apis/addDepartment";
+// import { useEditDepartment } from "../apis/editDepartment";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
 
-interface DepartmentFormProps {
+interface MajorFormProps {
     open: boolean;
     mode: "add" | "edit";
-    initialValues?: IDepartments;
+    initialValues?: IMajors;
     onClose: () => void;
 }
 
-const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValues, onClose }) => {
+const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClose }) => {
     const ID = initialValues?.id;
     const { showSnackbar } = useSnackbar();
 
@@ -32,12 +32,12 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
 
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
 
-    const { mutateAsync: createDepartment } = useCreateDepartment({});
-    const { mutateAsync: editDepartment } = useEditDepartment({});
+    // const { mutateAsync: createDepartment } = useCreateDepartment({});
+    // const { mutateAsync: editDepartment } = useEditDepartment({});
 
     useEffect(() => {
         if (mode === "edit" && initialValues) {
-            setDepartmentCode(initialValues.department_code || "");
+            setDepartmentCode(initialValues.major_code || "");
             setDepartmentName(initialValues.name || "");
             setEstablishedDate(
                 initialValues.established_date
@@ -68,17 +68,18 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
     });
 
     const handleSubmitClick = () => {
-        const payload: IDepartments = {
-            department_code: departmentCode,
+        const payload: IMajors = {
+            major_code: departmentCode,
             name: departmentName,
             established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
             status: STATUS.ACTIVE,
             description,
             updated_at: dayjs().format("YYYY-MM-DD"),
+            department_id: ""
         };
 
         const hasChanges = Object.keys(payload).some(
-            key => payload[key as keyof IDepartments] !== initialValues?.[key as keyof IDepartments]
+            key => payload[key as keyof IMajors] !== initialValues?.[key as keyof IMajors]
         );
 
         if (mode === "edit" && !hasChanges) {
@@ -91,36 +92,37 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
         setOpenConfirmSave(true);
     };
 
-    const handleConfirmSave = async () => {
-        try {
-            const payload: IDepartments = {
-                department_code: departmentCode,
-                name: departmentName,
-                established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
-                status: STATUS.ACTIVE,
-                description,
-                updated_at: dayjs().format("YYYY-MM-DD"),
-            };
+    // const handleConfirmSave = async () => {
+    //     try {
+    //         const payload: IMajors = {
+    //             major_code: departmentCode,
+    //             name: departmentName,
+    //             established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
+    //             status: STATUS.ACTIVE,
+    //             description,
+    //             updated_at: dayjs().format("YYYY-MM-DD"),
+    //             department_id: ""
+    //         };
 
-            if (mode === "add") await createDepartment(payload);
-            else if (mode === "edit") await editDepartment({ id: ID as string, data: payload });
+    //         if (mode === "add") await createDepartment(payload);
+    //         else if (mode === "edit") await editDepartment({ id: ID as string, data: payload });
 
-            showSnackbar(mode === "add" ? "Thêm khoa thành công!" : "Cập nhật khoa thành công!", "success");
-            setOpenConfirmSave(false);
-            onClose();
-        } catch (error: any) {
-            console.error(error);
-            showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
-        }
-    };
+    //         showSnackbar(mode === "add" ? "Thêm khoa thành công!" : "Cập nhật khoa thành công!", "success");
+    //         setOpenConfirmSave(false);
+    //         onClose();
+    //     } catch (error: any) {
+    //         console.error(error);
+    //         showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+    //     }
+    // };
 
     return (
         <Dialog open={open} onClose={handleCloseClick} className="primary-dialog department-form" maxWidth="sm" fullWidth>
             <DialogTitle className="primary-dialog-title">
-                {mode === "add" ? "ADD DEPARTMENT" : "Sửa Khoa"}
+                {mode === "add" ? "ADD DEPARTMENT" : "Sửa ngành"}
             </DialogTitle>
             <DialogContent className="primary-dialog-content">
-                <LabelPrimary value="Mã Khoa" required />
+                <LabelPrimary value="Mã ngành" required />
                 <TextField
                     value={departmentCode}
                     onChange={(e) => setDepartmentCode(e.target.value)}
@@ -129,7 +131,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                     className="myprofile-text__field primary-dialog-input"
                 />
 
-                <LabelPrimary value="Tên Khoa" required />
+                <LabelPrimary value="Tên ngành" required />
                 <TextField
                     value={departmentName}
                     onChange={(e) => setDepartmentName(e.target.value)}
@@ -147,6 +149,25 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                         slotProps={{ textField: { fullWidth: true } }}
                     />
                 </LocalizationProvider>
+
+                <LabelPrimary value="Khoa" required />
+                <Select
+                    disabled
+                    // value={gender}
+                    // onChange={(e) => setGender(e.target.value)}
+                    fullWidth
+                    id="outlined-select"
+                    variant="outlined"
+                    className="myprofile-text__field primary-dialog-input"
+                    defaultValue=""
+                    MenuProps={{
+                        disableScrollLock: true,   
+                    }}
+                >
+                    <MenuItem value="1">Cong nghe thong tin</MenuItem>
+                    <MenuItem value="2">Ngon ngu</MenuItem>
+                    <MenuItem value="3">Other</MenuItem>
+                </Select>
 
                 <LabelPrimary value="Mô tả" />
                 <TextField
@@ -183,11 +204,12 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                 open={openConfirmSave}
                 title="Xác nhận lưu"
                 message="Bạn có chắc muốn lưu các thay đổi?"
-                onConfirm={handleConfirmSave}
+                // onConfirm={handleConfirmSave}
+                onConfirm={() => console.log("Aaaaaaa")}
                 onCancel={() => setOpenConfirmSave(false)}
             />
         </Dialog>
     );
 };
 
-export default DepartmentForm;
+export default MajorForm;

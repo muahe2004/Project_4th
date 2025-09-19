@@ -25,6 +25,7 @@ import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 import type { IMajors } from "../types";
 import { useGetMajor } from "../apis/getMajors";
+import MajorForm from "../components/MajorFormModel";
 
 export function Majors() {
     const [page, setPage] = useState(1);
@@ -145,12 +146,12 @@ export function Majors() {
             }}
             ></PaginationUniCore>
 
-            {/* <DepartmentForm 
+            <MajorForm 
                 open={open} 
                 mode={mode} 
                 initialValues={selectedDepartment}
                 onClose={() => setOpen(false)}
-            /> */}
+            />
         </main>
     );
 }

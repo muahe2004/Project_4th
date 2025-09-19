@@ -57,7 +57,7 @@ export function Departments() {
             
             <Box className="departments-box">
                 <SearchEngine 
-                    placeholder="Tìm khoa..." 
+                    placeholder="Tìm theo tên khoa, mã " 
                     onSearch={(val) => {
                         setSearch(val);
                         setPage(1);
