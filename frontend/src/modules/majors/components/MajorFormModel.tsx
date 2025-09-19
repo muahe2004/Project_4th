@@ -8,8 +8,6 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import dayjs from "dayjs";
 import { STATUS } from "../../../constants/status";
 import type { IMajors } from "../types";
-// import { useCreateDepartment } from "../apis/addDepartment";
-// import { useEditDepartment } from "../apis/editDepartment";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
