@@ -23,10 +23,10 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
     const ID = initialValues?.id;
     const { showSnackbar } = useSnackbar();
 
-    const [departmentCode, setDepartmentCode] = useState("");
-    const [departmentName, setDepartmentName] = useState("");
+    const [majorCode, setMajorCode] = useState("");
+    const [majorName, setMajorName] = useState("");
     const [establishedDate, setEstablishedDate] = useState<Date | null>(new Date());
-    const [description, setDescription] = useState("");
+    const [description, setDescription] = useState(""); 
 
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
 
@@ -35,8 +35,8 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
 
     useEffect(() => {
         if (mode === "edit" && initialValues) {
-            setDepartmentCode(initialValues.major_code || "");
-            setDepartmentName(initialValues.name || "");
+            setMajorCode(initialValues.major_code || "");
+            setMajorName(initialValues.name || "");
             setEstablishedDate(
                 initialValues.established_date
                 ? new Date(initialValues.established_date)
@@ -44,16 +44,16 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
             );
             setDescription(initialValues.description || "");
         } else {
-            setDepartmentCode("");
-            setDepartmentName("");
+            setMajorCode("");
+            setMajorName("");
             setEstablishedDate(new Date());
             setDescription("");
         }
     }, [mode, initialValues, open]);
 
     const currentValues = {
-        department_code: departmentCode,
-        name: departmentName,
+        department_code: majorCode,
+        name: majorName,
         established_date: establishedDate,
         description,
     };
@@ -67,8 +67,8 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
 
     const handleSubmitClick = () => {
         const payload: IMajors = {
-            major_code: departmentCode,
-            name: departmentName,
+            major_code: majorCode,
+            name: majorName,
             established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
             status: STATUS.ACTIVE,
             description,
@@ -93,7 +93,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
     // const handleConfirmSave = async () => {
     //     try {
     //         const payload: IMajors = {
-    //             major_code: departmentCode,
+    //             major_code: majorCode,
     //             name: departmentName,
     //             established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
     //             status: STATUS.ACTIVE,
@@ -122,8 +122,8 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
             <DialogContent className="primary-dialog-content">
                 <LabelPrimary value="Mã ngành" required />
                 <TextField
-                    value={departmentCode}
-                    onChange={(e) => setDepartmentCode(e.target.value)}
+                    value={majorCode}
+                    onChange={(e) => setMajorCode(e.target.value)}
                     fullWidth
                     variant="outlined"
                     className="myprofile-text__field primary-dialog-input"
@@ -131,8 +131,8 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
 
                 <LabelPrimary value="Tên ngành" required />
                 <TextField
-                    value={departmentName}
-                    onChange={(e) => setDepartmentName(e.target.value)}
+                    value={majorName}
+                    onChange={(e) => setMajorName(e.target.value)}
                     fullWidth
                     variant="outlined"
                     className="myprofile-text__field primary-dialog-input"
