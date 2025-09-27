@@ -1,7 +1,8 @@
 export const BASE_UNICORE_API_URL = import.meta.env.VITE_UNICORE_API_URL;
+export const UNIUSERS_PREFIX = import.meta.env.VITE_UNIUSERS_PREFIX;
 
 // Auth
-export const URL_API_AUTH = `${BASE_UNICORE_API_URL}/auth/login`;
+export const URL_API_AUTH = `${BASE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/auth/login`;
 
 // Teacher
 export const URL_API_TEACHER = `${BASE_UNICORE_API_URL}/teachers`;

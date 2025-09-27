@@ -30,7 +30,7 @@
 
 ## Help
 # Run backend:
-1. source venv/bin/activate
+1. source venv/bin/activate (MacOS) source venv/Scripts/activate (Win)
 2. uvicorn app.main:app --reload
 
 # Run frontend:
@@ -45,3 +45,12 @@
 - Zalo: 0334266636
 
 # TEST SSHs
+
+# MAI SỬA CÁI NÀY NEHS
+# Gateway
+VITE_UNICORE_API_URL=http://localhost:8386
+
+# Prefix
+VITE_UNICORE_PREFIX=unicore/api
+VITE_UNIUSERS_PREFIX=uniusers/api
+VITE_UNILEARN_PREFIX=
