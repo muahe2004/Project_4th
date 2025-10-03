@@ -5,13 +5,13 @@ export const UNIUSERS_PREFIX = import.meta.env.VITE_UNIUSERS_PREFIX;
 export const URL_API_AUTH = `${BASE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/auth/login`;
 
 // Teacher
-export const URL_API_TEACHER = `${BASE_UNICORE_API_URL}/teachers`;
+export const URL_API_TEACHER = `${BASE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/teachers`;
 
 // Student
-export const URL_API_STUTDENT = `${BASE_UNICORE_API_URL}/students`;
+export const URL_API_STUTDENT = `${BASE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/students`;
 
 // User information
-export const URL_API_USER_INFORMATION = `${BASE_UNICORE_API_URL}/user_information`;
+export const URL_API_USER_INFORMATION = `${BASE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/user_information`;
 
 // Department
 export const URL_API_DEPARTMENT = `${BASE_UNICORE_API_URL}/departments`;
