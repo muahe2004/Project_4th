@@ -44,13 +44,9 @@
 - Instagram: [@lyvanminh_]
 - Zalo: 0334266636
 
-# TEST SSHs
-
-# MAI SỬA CÁI NÀY NEHS
-# Gateway
+# ENV FE:
 VITE_UNICORE_API_URL=http://localhost:8386
 
-# Prefix
 VITE_UNICORE_PREFIX=unicore/api
 VITE_UNIUSERS_PREFIX=uniusers/api
 VITE_UNILEARN_PREFIX=
