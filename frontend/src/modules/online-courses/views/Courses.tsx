@@ -11,6 +11,8 @@ import { getStatusColor } from "../../../utils/status/status-color";
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useGetCourses } from "../apis/getCourses";
+import CourseFormModal from "../components/CourseFormModel";
+import type { ICourses } from "../types";
 
 
 interface TabPanelProps {
@@ -46,7 +48,7 @@ export function Courses() {
 
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
-    const [selectedDepartment, setSelectedDepartment] = useState<IDepartments | undefined>(undefined); 
+    const [selectedDepartment, setSelectedCourse] = useState<ICourses | undefined>(undefined); 
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -97,10 +99,10 @@ export function Courses() {
                         <TableHead className="primary-thead">
                             <TableRow className="primary-trow">
                                 <TableCell className="primary-thead__cell" align="center">
-                                    Mã khoa
+                                    Mã khoá học
                                 </TableCell>
                                 <TableCell className="primary-thead__cell department-name-tcell" align="center">
-                                    Tên khoa
+                                    Tên khoá học
                                 </TableCell>
                                 <TableCell className="primary-thead__cell" align="center">
                                     Độ khó
@@ -120,10 +122,17 @@ export function Courses() {
                                         {row.maKhoaHoc}
                                     </TableCell>
                                     <TableCell className="sticky-tcell" align="left">
-                                        {row.tenKhoaHoc}
-                                    </TableCell>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                            <img
+                                            src={row.hinhAnh}
+                                            alt={row.tenKhoaHoc}
+                                            style={{ width: 70, height: 40, objectFit: "cover", borderRadius: 4 }}
+                                            />
+                                            <span>{row.tenKhoaHoc}</span>
+                                        </div>
+                                        </TableCell>
+
                                     <TableCell className="sticky-tcell" align="center">
-                                        {/* {dayjs(row.established_date).format("DD-MM-YYYY")} */}
                                         {row.doKho}
                                     </TableCell>
                                     <TableCell className="sticky-tcell" align="center" sx={{ color: getStatusColor(row.trangThai)}}>
@@ -133,9 +142,9 @@ export function Courses() {
                                         <IconButton 
                                             className="primary-tcell__button--icon" 
                                             onClick={() => {
-                                                // setMode("edit");
-                                                // setSelectedDepartment(row);
-                                                // setOpen(true);
+                                                setMode("edit");
+                                                setSelectedCourse(row);
+                                                setOpen(true);
                                             }}
                                         >
                                             <EditSquareIcon/>
@@ -161,6 +170,13 @@ export function Courses() {
                     }}
                 ></PaginationUniCore>
             </TabPanel>
+
+            <CourseFormModal 
+                open={open} 
+                mode={mode} 
+                initialValues={selectedDepartment}
+                onClose={() => setOpen(false)}
+            />
         </Box>
     );
 }

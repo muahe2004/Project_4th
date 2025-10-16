@@ -25,4 +25,7 @@ export const URL_API_MAJOR = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/majors`;
 export const URL_API_CLASS = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/classes`;
 
 // Course
-export const URL_API_COURSE = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/courses`
+export const URL_API_COURSE = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/courses`;
+
+// Upload
+export const URL_API_UPLOAD = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/upload`;

@@ -1,0 +1,12 @@
+.department-form .MuiDialog-paper {
+    width: 60% !important;
+}
+
+.flex-dialog-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dialog-content-box {
+    width: calc(50% - 8px);
+}
