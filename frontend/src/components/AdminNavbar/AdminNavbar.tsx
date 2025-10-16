@@ -16,7 +16,7 @@ import { Home, People, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 
 import "./AdminNavbar.css";
-import { dashBoardUrl, departmentUrl, majorUrl } from "../../routes/urls";
+import { dashBoardUrl, departmentUrl, majorUrl, onlineCourse } from "../../routes/urls";
 
 type NavbarProps = {
   isOpen: boolean;
@@ -31,7 +31,6 @@ export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
     setIsOpen((prev) => !prev);
   };
 
-  // danh sách menu
   const menuItems = [
     { label: "Trang chủ", icon: <Home />, path: `${dashBoardUrl}` },
     { label: "Khoa", icon: <SchoolIcon />, path: `${dashBoardUrl}/${departmentUrl}` },
@@ -46,6 +45,7 @@ export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
     { label: "Lớp", icon: <ClassIcon />, path: "/admin/lop" },
     { label: "Phòng học", icon: <MeetingRoomIcon />, path: "/admin/phong-hoc" },
     { label: "Người dùng", icon: <People />, path: "/admin/nguoi-dung" },
+    { label: "Khoá học", icon: <AutoStoriesIcon />, path: `${dashBoardUrl}/${onlineCourse}` },
   ];
 
   return (

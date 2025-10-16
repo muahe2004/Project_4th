@@ -3,13 +3,13 @@ import "./styles/Department.css";
 import {
     Box,
     IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
 } from "@mui/material";
 
 import EditSquareIcon from '@mui/icons-material/EditSquare';
