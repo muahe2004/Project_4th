@@ -45,7 +45,7 @@ export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
     { label: "Lớp", icon: <ClassIcon />, path: "/admin/lop" },
     { label: "Phòng học", icon: <MeetingRoomIcon />, path: "/admin/phong-hoc" },
     { label: "Người dùng", icon: <People />, path: "/admin/nguoi-dung" },
-    { label: "Khoá học", icon: <AutoStoriesIcon />, path: `${dashBoardUrl}/${onlineCourse}` },
+    { label: "UniLearning", icon: <AutoStoriesIcon />, path: `${dashBoardUrl}/${onlineCourse}` },
   ];
 
   return (

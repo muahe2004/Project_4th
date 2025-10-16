@@ -49,6 +49,9 @@ const CourseFormModal: React.FC<CourseFormProps> = ({ open, mode, initialValues,
             setMaKhoaHoc("");
             setTenKhoaHoc("");
             setMoTa("");
+            setGiaBan("");
+            setDoKho("");
+            setImageUrl("");
         }
     }, [mode, initialValues, open]);
 
@@ -66,8 +69,6 @@ const CourseFormModal: React.FC<CourseFormProps> = ({ open, mode, initialValues,
     });
 
     const handleSubmitClick = async () => {
-        
-
         try {
             const payload: ICourses = {
                 maKhoaHoc: maKhoaHoc,
