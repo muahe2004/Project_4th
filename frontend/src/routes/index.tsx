@@ -13,7 +13,7 @@ import { LearningSchedule } from "../modules/learningSchedule/views/LearningSche
 import DashBoard from "../modules/dashboard/views/DashBoard";
 import Departments from "../modules/department/views/Departments";
 import Majors from "../modules/majors/views/Majors";
-import Courses from "../modules/online-courses/views/Courses";
+import Courses from "../modules/online-courses/views/Index";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();

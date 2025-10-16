@@ -10,3 +10,12 @@ export interface ICourses {
     updatedAt?: string;
     createdAt?: string;
 }
+
+export interface ILessons {
+    id?: string;
+    khoaHocId?: string;
+    tenChuong: string;
+    trangThai: string;
+    updatedAt?: string;
+    createdAt?: string;
+}

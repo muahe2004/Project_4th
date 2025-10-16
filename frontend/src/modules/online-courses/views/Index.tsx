@@ -1,6 +1,7 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { useState, type ReactNode } from "react";
 import { CoursePanel } from "../components/panels/CoursePanel";
+import { LessonsPanel } from "../components/panels/LessonsPanel";
 
 interface TabPanelProps {
     children?: ReactNode;
@@ -42,6 +43,7 @@ export function Courses() {
             </TabPanel>
 
             <TabPanel value={value} index={1}>
+                <LessonsPanel></LessonsPanel>
             </TabPanel>
         </Box>
     );

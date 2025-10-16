@@ -27,5 +27,8 @@ export const URL_API_CLASS = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/classes`
 // Course
 export const URL_API_COURSE = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/courses`;
 
+// Lesson
+export const URL_API_LESSON = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/lessons`;
+
 // Upload
 export const URL_API_UPLOAD = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/upload`;
