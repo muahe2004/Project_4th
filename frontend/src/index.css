@@ -184,7 +184,7 @@ body {
   color: var(--delete-color) !important;
 }
 
-/* tool tip */
+/* ================== tool tip ==================*/
 .primary-tooltip .MuiTooltip-tooltip {
   background-color: #fff !important;
   color: #000 !important; 
@@ -193,7 +193,7 @@ body {
   box-shadow: var(--box-shadow-base);
 }
 
-/* dialog */
+/* ================== dialog ==================*/
 .primary-dialog-title {
   padding: 16px !important;
   text-align: center;
@@ -210,4 +210,9 @@ body {
 
 .primary-dialog-input {
   margin-bottom: 25px !important; 
+}
+
+/*  ================== checkbox ==================*/
+.primary-checkbox svg {
+  color: var(--primary-color);
 }

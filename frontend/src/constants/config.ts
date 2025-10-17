@@ -33,5 +33,11 @@ export const URL_API_LESSON = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/lesson
 // Lecture
 export const URL_API_LECTURE = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/lectures`;
 
+// Question
+export const URL_API_QUESTION = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/questions`;
+
+// Answer
+export const URL_API_ANSWER = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/answers`;
+
 // Upload
 export const URL_API_UPLOAD = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/upload`;

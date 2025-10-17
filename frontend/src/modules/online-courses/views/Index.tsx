@@ -3,6 +3,7 @@ import { useState, type ReactNode } from "react";
 import { CoursePanel } from "../components/panels/CoursePanel";
 import { LessonsPanel } from "../components/panels/LessonsPanel";
 import { LecturesPanel } from "../components/panels/LecturesPanel";
+import { QuestionPanel } from "../components/panels/QuestionPanel";
 
 interface TabPanelProps {
     children?: ReactNode;
@@ -49,6 +50,10 @@ export function Courses() {
 
             <TabPanel value={value} index={2}>
                 <LecturesPanel></LecturesPanel>
+            </TabPanel>
+
+            <TabPanel value={value} index={3}>
+                <QuestionPanel></QuestionPanel>
             </TabPanel>
         </Box>
     );

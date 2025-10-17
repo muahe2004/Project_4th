@@ -2,12 +2,12 @@ import { Box } from "@mui/material";
 import { useState } from "react";
 import SearchEngine from "../../../../components/SearchEngine/SearchEngine";
 import Button from "../../../../components/Button/Button";
-import type { ILectures } from "../../types";
-import { LecturesTable } from "../tables/LecturesTable";
-import LectureFormModal from "../LectureFormModel";
-import { useGetLectures } from "../../apis/lectures/getLecture";
+import type { QuestionResponse } from "../../types";
+import QuestionFormModal from "../QuestionFormModel";
+import { QuestionTable } from "../tables/QuestionTable";
+import { useGetQuestion } from "../../apis/questions/getQuestion";
 
-export const LecturesPanel: React.FC = () => {
+export const QuestionPanel: React.FC = () => {
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [search, setSearch] = useState("");
@@ -18,20 +18,20 @@ export const LecturesPanel: React.FC = () => {
         search: search || undefined
     };
 
-    const { data: lectures, isLoading } = useGetLectures(Params);
+    const { data: questions, isLoading } = useGetQuestion(Params);
 
-    const [selectedLecture, setSelectedLecture] = useState<ILectures | undefined>(undefined);
+    const [selectedQuestion, setSelectedQuestion] = useState<QuestionResponse | undefined>(undefined);
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
 
-    const handleEdit = (lecture: ILectures) => {
+    const handleEdit = (question: QuestionResponse) => {
         setMode("edit");
-        setSelectedLecture(lecture);
+        setSelectedQuestion(question);
         setOpen(true);
     };
 
-    const handleDelete = (lecture: ILectures) => {
-        console.log("Xoá bài học:", lecture);
+    const handleDelete = (question: QuestionResponse) => {
+        console.log("Xoá bài học:", question);
     };
 
     return (
@@ -51,12 +51,12 @@ export const LecturesPanel: React.FC = () => {
                     }}
                     className="departments-button__add"
                 >
-                    Add Lecture
+                    Thêm câu hỏi mới
                 </Button>
             </Box>
 
-            <LecturesTable
-                lectures={lectures}
+            <QuestionTable
+                questions={questions}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 page={page}
@@ -65,10 +65,10 @@ export const LecturesPanel: React.FC = () => {
                 onRowsPerPageChange={setRowsPerPage}
             />
 
-            <LectureFormModal
+            <QuestionFormModal
                 open={open}
                 mode={mode}
-                initialValues={selectedLecture}
+                initialValues={selectedQuestion}
                 onClose={() => setOpen(false)}
             />
         </Box>
