@@ -19,3 +19,14 @@ export interface ILessons {
     updatedAt?: string;
     createdAt?: string;
 }
+
+export interface ILectures {
+    id?: string;
+    chuongHocId?: string;
+    tenBaiHoc: string;
+    moTaBaiHoc: string;
+    video: string;
+    trangThai: string;
+    updatedAt?: string;
+    createdAt?: string;
+}
