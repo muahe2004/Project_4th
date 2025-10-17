@@ -13,6 +13,7 @@ import { useEditLesson } from "../apis/lessons/editLesson";
 import { useCreateLecture } from "../apis/lectures/addLecture";
 import { useEditLecture } from "../apis/lectures/editLecture";
 import { useGetLessons } from "../apis/lessons/getLessons";
+import { convertYouTubeURL } from "../utils/convertYoutubeURL";
 
 interface LectureFormProps {
     open: boolean;
@@ -25,22 +26,32 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
     const ID = initialValues?.id;
     const { showSnackbar } = useSnackbar();
 
-    const [page, setPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(100);
-    const [search, setSearch] = useState("");
-
-    const Params = {
-        page: page,
-        pageSize: rowsPerPage,
-        search: search || undefined
-    };
-
-    const { data: courses, isLoading: isLoadingCourses } = useGetCourses(Params);
-    const { data: lessons, isLoading } = useGetLessons(Params);
-
     const [tenBaiHoc, setTenBaiHoc] = useState("");
     const [khoaHocId, setKhoaHocId] = useState("");
     const [chuongHocId, setChuongHocId] = useState("");
+    const [video, setVideo] = useState("");
+    const [motaBaiHoc, setMoTaBaiHoc] = useState("");
+
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(100);
+    const [searchCourse, setSearchCourse] = useState("");
+    const [searchLesson, setSearchLesson] = useState("");
+
+    const ParamsCourse = {
+        page: page,
+        pageSize: rowsPerPage,
+        search: searchCourse || undefined,
+    };
+
+    const ParamsLesson = {
+        page: page,
+        pageSize: rowsPerPage,
+        search: searchLesson || undefined,
+        khoaHocId: khoaHocId || ""
+    };
+
+    const { data: courses, isLoading: isLoadingCourses } = useGetCourses(ParamsCourse);
+    const { data: lessons, isLoading } = useGetLessons(ParamsLesson);
 
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
 
@@ -51,9 +62,13 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
         if (mode === "edit" && initialValues) {
             setTenBaiHoc(initialValues.tenBaiHoc || "");
             setChuongHocId(initialValues.chuongHocId || "");
+            setVideo(initialValues.video || "");
+            setMoTaBaiHoc(initialValues.moTaBaiHoc || "");
         } else {
             setTenBaiHoc("");
             setChuongHocId("");
+            setVideo("");
+            setMoTaBaiHoc("");
         }
     }, [mode, initialValues, open]);
 
@@ -74,19 +89,17 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
                 tenBaiHoc: tenBaiHoc,
                 chuongHocId: chuongHocId,
                 trangThai: STATUS.ACTIVE,
-                moTaBaiHoc: "",
-                video: ""
+                moTaBaiHoc: motaBaiHoc,
+                video: convertYouTubeURL(video) || "",
             };
-
-            console.log(payload);
 
             if (mode === "add") await createLecture(payload);
             else if (mode === "edit") await editLecture({ id: ID as string, data: payload });
 
-            showSnackbar(mode === "add" ? "Thêm chương học thành công!" : "Cập nhật chương học thành công!", "success");
+            showSnackbar(mode === "add" ? "Thêm bài học thành công!" : "Cập nhật bài học thành công!", "success");
             onClose();
         } catch (error) {
-            console.error("Lỗi khi thêm chương học.", error);
+            console.error("Lỗi khi thêm bài học.", error);
             showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
         }
     };
@@ -97,7 +110,7 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
                 {mode === "add" ? "ADD COURSE" : "UPDATE COURSE"}
             </DialogTitle>
             <DialogContent className="primary-dialog-content">
-                <LabelPrimary value="Tên Chương Học" required />
+                <LabelPrimary value="Tên bài Học" required />
                 <TextField
                     value={tenBaiHoc}
                     onChange={(e) => setTenBaiHoc(e.target.value)}
@@ -126,7 +139,7 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
                     </Select>
                 )}
 
-                <LabelPrimary value="Chương Học"></LabelPrimary>
+                <LabelPrimary value="Chương Học" required></LabelPrimary>
                 {!isLoading && (
                     <Select
                         value={chuongHocId}
@@ -145,6 +158,26 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
                         ))}
                     </Select>
                 )}
+
+                <LabelPrimary value="Video Bài Học" required />
+                <TextField
+                    value={video}
+                    onChange={(e) => setVideo(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    className="myprofile-text__field primary-dialog-input"
+                />
+
+                <LabelPrimary value="Mô tả" />
+                <TextField
+                    value={motaBaiHoc}
+                    onChange={(e) => setMoTaBaiHoc(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    multiline
+                    rows={3}
+                    className="myprofile-text__field"
+                />
             </DialogContent>
 
             <DialogActions className="primary-dialog-actions">
