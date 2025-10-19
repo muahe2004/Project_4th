@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from pydantic import (
     AnyUrl,
     BeforeValidator,
+    Field,
     PostgresDsn,
     computed_field,
 )
@@ -56,6 +57,9 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
+
+    UNICORE_HOST: str = "0.0.0.0"
+    UNICORE_PORT: int = 8000
 
     @computed_field  # type: ignore[prop-decorator]
     @property

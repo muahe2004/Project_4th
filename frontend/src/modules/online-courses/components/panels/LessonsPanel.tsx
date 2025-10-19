@@ -51,7 +51,7 @@ export const LessonsPanel: React.FC = () => {
                     }}
                     className="departments-button__add"
                 >
-                    Add Lesson
+                    Thêm chương học
                 </Button>
             </Box>
 

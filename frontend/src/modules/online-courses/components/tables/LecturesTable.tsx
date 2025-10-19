@@ -88,7 +88,7 @@ export const LecturesTable: React.FC<LectureTableProps> = ({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={5} align="center">
-                                    Không có dữ liệu chương học
+                                    Không có dữ liệu bài học
                                 </TableCell>
                             </TableRow>
                         )}
