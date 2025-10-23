@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import SearchEngine from "../../../../components/SearchEngine/SearchEngine";
 import Button from "../../../../components/Button/Button";
@@ -6,16 +6,30 @@ import { LessonsTable } from "../tables/LessonsTable";
 import { useGetLessons } from "../../apis/lessons/getLessons";
 import type { ILessons } from "../../types";
 import LessonFormModal from "../LessonFormModel";
+import { useGetCourses } from "../../apis/getCourses";
 
 export const LessonsPanel: React.FC = () => {
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [search, setSearch] = useState("");
 
+    const [khoaHocId, setKhoaHocId] = useState("");
+
+    const ParamsCourse = {
+        page: 1,
+        pageSize: 100,
+        search: search || undefined
+    };
+
+    
+    
+    const { data: courses, isLoading: isLoadingCourses } = useGetCourses(ParamsCourse);
+
     const Params = {
         page: page,
         pageSize: rowsPerPage,
-        search: search || undefined
+        search: search || undefined,
+        khoaHocId: khoaHocId || ""
     };
 
     const { data: lessons, isLoading } = useGetLessons(Params);
@@ -37,6 +51,22 @@ export const LessonsPanel: React.FC = () => {
     return (
         <Box>
             <Box className="departments-box">
+                <Select
+                    value={khoaHocId}
+                    onChange={(e) => setKhoaHocId(e.target.value)}
+                    id="outlined-select"
+                    variant="outlined"
+                    className="myprofile-text__field filter-text__field"
+                    defaultValue=""
+                    MenuProps={{ disableScrollLock: true }}
+                >
+                    {courses?.data?.map((course) => (
+                        <MenuItem key={course.id} value={course.id}>
+                            {course.tenKhoaHoc}
+                        </MenuItem>
+                    ))}
+                </Select>
+
                 <SearchEngine
                     placeholder="Tìm theo tên chương học"
                     onSearch={(val) => {
@@ -44,6 +74,7 @@ export const LessonsPanel: React.FC = () => {
                         setPage(1);
                     }}
                 />
+                
                 <Button
                     onClick={() => {
                         setMode("add");

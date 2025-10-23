@@ -37,7 +37,7 @@ body {
   transition: .25s;
 }
 
-/* custom input */
+/* ================== custom input ================== */
 .MuiInputLabel-root.Mui-focused {
   color: var(--primary-color) !important;
 }
@@ -50,7 +50,7 @@ body {
   border-bottom: 2px solid var(--primary-color) !important;
 }
 
-/* custom select */
+/* ================== custom select ================== */
 .MuiSelect-select {
   height: 1.4375em !important;
   line-height: 1.4375em !important;
@@ -73,7 +73,12 @@ body {
   transform: translate(14px, -4px) scale(0.75);
 }
 
-/* datetime picker */
+.filter-text__field {
+  min-width: 250px;
+  margin-left: 10px;
+}
+
+/* ================== datetime picker ================== */
 .MuiPickersSectionList-root  {
   padding: 12px 0 !important;
   font-size: var(--font-size-base) !important;
@@ -83,7 +88,7 @@ body {
   border-color: var(--primary-color) !important; 
 }
 
-/* tab */
+/* ================== tab ================== */
 .MuiTabs-indicator {
   background: var(--primary-color) !important;
 }

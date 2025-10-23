@@ -37,10 +37,6 @@ const LessonFormModal: React.FC<LessonFormProps> = ({ open, mode, initialValues,
 
     const { data: courses, isLoading } = useGetCourses(Params);
 
-    useEffect(() => {
-        console.log(courses);
-    }, [ID])
-
     const [tenChuong, setTenChuong] = useState("");
     const [khoaHocId, setKhoaHocId] = useState("");
 
