@@ -11,6 +11,10 @@ import type { IMajors } from "../types";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
+import { useGetDepartment } from "../../department/apis/getDepartments";
+import { useCreateMajor } from "../apis/addMajor";
+import { useEditMajor } from "../apis/editMajor";
+import { hasObjectChanged } from "../../../utils/checkChangeValues";
 
 interface MajorFormProps {
     open: boolean;
@@ -22,16 +26,37 @@ interface MajorFormProps {
 const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClose }) => {
     const ID = initialValues?.id;
     const { showSnackbar } = useSnackbar();
-
+    
     const [majorCode, setMajorCode] = useState("");
     const [majorName, setMajorName] = useState("");
     const [establishedDate, setEstablishedDate] = useState<Date | null>(new Date());
     const [description, setDescription] = useState(""); 
-
+    const [departmentId, setDepartmentId] = useState("");
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
+    const [isChanged, setIsChanged] = useState(false);
+    const [pendingPayload, setPendingPayload] = useState<IMajors | null>(null);
+    const [searchDepartMent, setSearchDepartMent] = useState("");
 
-    // const { mutateAsync: createDepartment } = useCreateDepartment({});
-    // const { mutateAsync: editDepartment } = useEditDepartment({});
+    const currentValues: IMajors = {
+        major_code: majorCode.trim(),
+        name: majorName.trim(),
+        established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
+        status: STATUS.ACTIVE,
+        description: description.trim(),
+        department_id: departmentId,
+        ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
+    };
+
+    const Params = {
+        limit: 5,
+        skip: 0,
+        search: searchDepartMent || undefined
+    };
+
+    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment(Params);
+    const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({mode, isChanged, onClose});
+    const { mutateAsync: createMajor } = useCreateMajor({});
+    const { mutateAsync: editMajor } = useEditMajor({});
 
     useEffect(() => {
         if (mode === "edit" && initialValues) {
@@ -42,77 +67,79 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                 ? new Date(initialValues.established_date)
                 : null
             );
+            setDepartmentId(initialValues.department_id || "");
             setDescription(initialValues.description || "");
         } else {
             setMajorCode("");
             setMajorName("");
             setEstablishedDate(new Date());
             setDescription("");
+            setDepartmentId("");
         }
     }, [mode, initialValues, open]);
 
-    const currentValues = {
-        department_code: majorCode,
-        name: majorName,
-        established_date: establishedDate,
-        description,
-    };
+    useEffect(() => {
+        if (mode === "edit" && initialValues) {
+            const payload: IMajors = {
+                major_code: majorCode.trim(),
+                name: majorName.trim(),
+                established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
+                status: STATUS.ACTIVE,
+                description: description.trim(),
+                updated_at: dayjs().format("YYYY-MM-DD"),
+                department_id: departmentId
+            };
 
-    const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({
-        mode,
-        initialValues,
-        currentValues,
-        onClose,
-    });
+            const hasChanges = hasObjectChanged(payload, initialValues, ["established_date"], ["updated_at"]);
+            setIsChanged(hasChanges);
+        } else {
+            const hasInput =
+                currentValues.department_id !== "" ||
+                currentValues.description !== "" ||
+                currentValues.established_date !== dayjs(new Date()).format("YYYY-MM-DD") ||
+                currentValues.major_code !== "" ||
+                currentValues.name !== "" ||
+                currentValues.status !== STATUS.ACTIVE;
+
+            setIsChanged(hasInput);
+        }
+    }, [majorCode, majorName, establishedDate, description, departmentId, mode, initialValues]);
 
     const handleSubmitClick = () => {
-        const payload: IMajors = {
-            major_code: majorCode,
-            name: majorName,
-            established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
-            status: STATUS.ACTIVE,
-            description,
-            updated_at: dayjs().format("YYYY-MM-DD"),
-            department_id: ""
-        };
+        const payload = currentValues;
 
-        const hasChanges = Object.keys(payload).some(
-            key => payload[key as keyof IMajors] !== initialValues?.[key as keyof IMajors]
-        );
+        if (mode === "edit" && initialValues) {
+            const hasChanges = hasObjectChanged(payload, initialValues, ["established_date"], ["updated_at"]);
 
-        if (mode === "edit" && !hasChanges) {
-            // Không có thay đổi → hỏi thoát
-            setOpenConfirm(true);
-            return;
+            if (!hasChanges) {
+                setOpenConfirm(false);
+                return;
+            } else {
+                setPendingPayload(payload);
+                setOpenConfirmSave(true); 
+            }
+        } else {
+            handleConfirmSave(payload);
         }
-
-        // Có thay đổi hoặc thêm mới → hỏi xác nhận lưu
-        setOpenConfirmSave(true);
     };
 
-    // const handleConfirmSave = async () => {
-    //     try {
-    //         const payload: IMajors = {
-    //             major_code: majorCode,
-    //             name: departmentName,
-    //             established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
-    //             status: STATUS.ACTIVE,
-    //             description,
-    //             updated_at: dayjs().format("YYYY-MM-DD"),
-    //             department_id: ""
-    //         };
+    const handleConfirmSave = async (payload: IMajors) => {
+        try {
+            if (mode === "add") await createMajor(payload);
+            else if (mode === "edit" && ID) await editMajor({ id: ID, data: payload });
 
-    //         if (mode === "add") await createDepartment(payload);
-    //         else if (mode === "edit") await editDepartment({ id: ID as string, data: payload });
+            showSnackbar(
+                mode === "add" ? "Thêm ngành thành công!" : "Cập nhật ngành thành công!",
+                "success"
+            );
 
-    //         showSnackbar(mode === "add" ? "Thêm khoa thành công!" : "Cập nhật khoa thành công!", "success");
-    //         setOpenConfirmSave(false);
-    //         onClose();
-    //     } catch (error: any) {
-    //         console.error(error);
-    //         showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
-    //     }
-    // };
+            setOpenConfirmSave(false);
+            onClose();
+        } catch (error) {
+            console.error(error);
+            showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+        }
+    };
 
     return (
         <Dialog open={open} onClose={handleCloseClick} className="primary-dialog department-form" maxWidth="sm" fullWidth>
@@ -150,21 +177,21 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
 
                 <LabelPrimary value="Khoa" required />
                 <Select
-                    disabled
-                    // value={gender}
-                    // onChange={(e) => setGender(e.target.value)}
+                    value={departmentId}
+                    onChange={(e) => setDepartmentId(e.target.value)}
                     fullWidth
                     id="outlined-select"
                     variant="outlined"
                     className="myprofile-text__field primary-dialog-input"
-                    defaultValue=""
                     MenuProps={{
                         disableScrollLock: true,   
                     }}
                 >
-                    <MenuItem value="1">Cong nghe thong tin</MenuItem>
-                    <MenuItem value="2">Ngon ngu</MenuItem>
-                    <MenuItem value="3">Other</MenuItem>
+                    {
+                        department?.data.map((row) => (
+                            <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
+                        ))
+                    }
                 </Select>
 
                 <LabelPrimary value="Mô tả" />
@@ -180,12 +207,11 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
             </DialogContent>
             <DialogActions className="primary-dialog-actions">
                 <Button onClick={handleCloseClick} className="button-cancel">Hủy</Button>
-                <Button onClick={handleSubmitClick} variant="contained">
+                <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
                     {mode === "add" ? "Thêm" : "Lưu"}
                 </Button>
             </DialogActions>
 
-            {/* Confirm thoát nếu không thay đổi */}
             <ConfirmDialog
                 open={openConfirm}
                 title="Xác nhận thoát"
@@ -197,13 +223,11 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                 onCancel={() => setOpenConfirm(false)}
             />
 
-            {/* Confirm lưu nếu có thay đổi */}
             <ConfirmDialog
                 open={openConfirmSave}
                 title="Xác nhận lưu"
                 message="Bạn có chắc muốn lưu các thay đổi?"
-                // onConfirm={handleConfirmSave}
-                onConfirm={() => console.log("Aaaaaaa")}
+                onConfirm={() => pendingPayload && handleConfirmSave(pendingPayload)}
                 onCancel={() => setOpenConfirmSave(false)}
             />
         </Dialog>

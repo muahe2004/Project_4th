@@ -11,6 +11,7 @@ export interface MajorListResponse {
 export interface Params {
   limit: number;
   skip: number;
+  department_id?: string;
 }
 
 const getMajors = async (params: Params): Promise<MajorListResponse> => {

@@ -25,7 +25,7 @@ const ButtonConfig: React.FC<ButtonConfigProps> = ({
   children,
   ...rest
 }) => {
-  const defaultClassname = `button-primary ${className}`.trim();
+  const defaultClassname = `button-primary ${className} ${disabled ? "button-disabled" : ""}`.trim();
 
   return (
     <Button

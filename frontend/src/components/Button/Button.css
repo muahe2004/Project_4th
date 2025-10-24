@@ -41,3 +41,9 @@
 .btn-spacing-left {
     margin-left: 10px !important;
 }
+
+.button-disabled {
+    background: #fff !important;
+    color: #ccc !important;
+    border: 1px solid #ccc !important;
+}

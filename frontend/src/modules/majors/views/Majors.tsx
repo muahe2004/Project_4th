@@ -1,15 +1,19 @@
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import "./styles/Majors.css";
 import {
+    Autocomplete,
     Box,
     IconButton,
+  MenuItem,
   Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@mui/material";
 
 import EditSquareIcon from '@mui/icons-material/EditSquare';
@@ -26,38 +30,60 @@ import { getStatusDisplay } from "../../../utils/status/status-display";
 import type { IMajors } from "../types";
 import { useGetMajor } from "../apis/getMajors";
 import MajorForm from "../components/MajorFormModel";
+import { useGetDepartment } from "../../department/apis/getDepartments";
+// import type { IDepartments } from "../../department/types";
+import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
 
 export function Majors() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
-
-    const searchDepartment = (value: string) => {
-        console.log("value: ", value);
-    }
+    const [searchDepartment, setSearchDepartment] = useState("");
 
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
     const [selectedDepartment, setSelectedDepartment] = useState<IMajors | undefined>(undefined); 
+
+    const [departmentId, setDepartmentId] = useState("");
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const Params = {
         limit: rowsPerPage,
         skip: (page - 1) * rowsPerPage,
-        search: search || undefined
+        ...(search && { search }),
+        ...(departmentId && { department_id: departmentId }),
     };
 
     const { data: major, isLoading: isLoadingMajor, error: errorMajor } = useGetMajor(Params);
+
+    const ParamsDepartment = {
+        limit: 5,
+        skip: (page - 1) * 5,
+        search: searchDepartment || undefined
+    };
+    
+    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment(ParamsDepartment);
 
     const isLoading = isLoadingMajor;
 
     return (
         <main className="admin-main-container">
-            {
+            {/* {
                 isLoading && (<Loading></Loading>)
-            }
+            } */}
             
             <Box className="admin-main-box">
+                <MainAutocomplete
+                    options={department?.data || []}
+                    value={departmentId}
+                    onChange={setDepartmentId}
+                    onSearchChange={setSearchDepartment}
+                    onResetPage={() => setPage(1)}
+                    getOptionLabel={(option) => option.name}
+                    getOptionId={(option) => (option.id?.toString() || "")}
+                    placeholder="Lọc theo khoa"
+                />
+
                 <SearchEngine 
                     placeholder="Tìm theo tên ngành, mã ngành..." 
                     onSearch={(val) => {
@@ -65,6 +91,7 @@ export function Majors() {
                         setPage(1);
                     }}
                 />
+
                 <Button
                     onClick={() => {
                         setMode("add");

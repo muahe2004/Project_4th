@@ -1,28 +1,28 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { URL_API_DEPARTMENT } from "../../../constants/config";
+import { URL_API_MAJOR } from "../../../constants/config";
 import { apiClient } from "../../../lib/api";
 import type { MutationConfig } from "../../../lib/react-query";
-import type { IDepartments } from "../types";
+import type { IMajors } from "../types";
 
-const createDepartment = async (data: IDepartments): Promise<any> => {
-    const response = await apiClient.post(`${URL_API_DEPARTMENT}`, data);
+const createMajor = async (data: IMajors): Promise<any> => {
+    const response = await apiClient.post(`${URL_API_MAJOR}`, data);
     return response.data;
 }
 
-type UseCreateDepartmentOptions = {
-    config?: MutationConfig<typeof createDepartment>
+type UseCreateMajorOptions = {
+    config?: MutationConfig<typeof createMajor>
 }
 
-export const useCreateDepartment = ({ config }: UseCreateDepartmentOptions) => {
+export const useCreateMajor = ({ config }: UseCreateMajorOptions) => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: createDepartment,
+        mutationFn: createMajor,
         onMutate: () => {},
         onError: () => {},
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["departments"],
+                queryKey: ["majors"],
             })
         },
         ...config
