@@ -6,18 +6,17 @@ from app.models.schemas.majors.major_schemas import (
     MajorListResponse,
     MajorPublic,
     MajorCreate,
+    MajorQueryParams,
     MajorUpdate,
     MajorDeleteResponse
 )
 from app.services.majors import MajorServices
 from typing import List, Optional
 
-from app.models.schemas.common.query import BaseQueryParams
-
 router = APIRouter()
 
 @router.get("")
-def get_majors(session: SessionDep, query: BaseQueryParams = Depends()):
+def get_majors(session: SessionDep, query: MajorQueryParams = Depends()):
     majors, total = MajorServices.get_all(session=session,query=query)
     return MajorListResponse(total=total, data=majors)
 

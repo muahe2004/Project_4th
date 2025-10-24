@@ -10,6 +10,7 @@ from app.models.models import Majors
 from app.models.schemas.majors.major_schemas import (
     MajorPublic,
     MajorCreate,
+    MajorQueryParams,
     MajorUpdate,
     MajorDeleteResponse
 )
@@ -22,13 +23,16 @@ class MajorServices:
     @staticmethod
     def get_all(
         *, session: Session,
-        query: BaseQueryParams
+        query: MajorQueryParams
     ) -> Tuple[List[MajorPublic], int]:
         statement = select(Majors)
 
         conditions = []
         if query.status:
             conditions.append(Majors.status == query.status)
+
+        if query.department_id:
+            conditions.append(Majors.department_id == query.department_id)
 
         if query.search:
             conditions.append(

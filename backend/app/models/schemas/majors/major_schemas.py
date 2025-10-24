@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
+from app.models.schemas.common.query import BaseQueryParams
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from uuid import UUID
 class MajorBase(SQLModel):
@@ -28,3 +29,5 @@ class MajorUpdate(SQLModel):
 class MajorDeleteResponse(SQLModel):
     message: str
     id: UUID
+class MajorQueryParams(BaseQueryParams):
+    department_id: Optional[UUID] = Field(None)
