@@ -37,6 +37,17 @@ body {
   transition: .25s;
 }
 
+.admin-main-container {
+  padding: 20px 20px 20px 10px;
+  height: calc(100vh - 65px) !important;
+}
+
+.admin-main-box {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: right;
+}
+
 /* ================== custom input ================== */
 .MuiInputLabel-root.Mui-focused {
   color: var(--primary-color) !important;

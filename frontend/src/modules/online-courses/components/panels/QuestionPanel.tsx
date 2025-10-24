@@ -3,7 +3,7 @@ import { useState } from "react";
 import SearchEngine from "../../../../components/SearchEngine/SearchEngine";
 import Button from "../../../../components/Button/Button";
 import type { QuestionResponse } from "../../types";
-import QuestionFormModal from "../QuestionFormModel";
+import QuestionFormModal from "../models/QuestionFormModel";
 import { QuestionTable } from "../tables/QuestionTable";
 import { useGetQuestion } from "../../apis/questions/getQuestion";
 

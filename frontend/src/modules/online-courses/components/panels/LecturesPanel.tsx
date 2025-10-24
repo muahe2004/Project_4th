@@ -4,7 +4,7 @@ import SearchEngine from "../../../../components/SearchEngine/SearchEngine";
 import Button from "../../../../components/Button/Button";
 import type { ILectures } from "../../types";
 import { LecturesTable } from "../tables/LecturesTable";
-import LectureFormModal from "../LectureFormModel";
+import LectureFormModal from "../models/LectureFormModel";
 import { useGetLectures } from "../../apis/lectures/getLecture";
 import { useGetCourses } from "../../apis/getCourses";
 import { useGetLessons } from "../../apis/lessons/getLessons";

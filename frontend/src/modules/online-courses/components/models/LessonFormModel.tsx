@@ -1,18 +1,18 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Box } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import Button from "../../../components/Button/Button";
-import LabelPrimary from "../../../components/Label/Label";
-import { STATUS } from "../../../constants/status";
-import { useSnackbar } from "../../../components/SnackBar/SnackBar";
-import { useConfirmCloseForm } from "../../../hooks/useConfirm";
-import "./styles/CourseFormModel.css";
-import { URL_API_UPLOAD } from "../../../constants/config";
-import type { ILessons } from "../types";
-import { useCreateCourse } from "../apis/addCourse";
-import { useEditCourse } from "../apis/editCourse";
-import { useGetCourses } from "../apis/getCourses";
-import { useCreateLesson } from "../apis/lessons/addLesson";
-import { useEditLesson } from "../apis/lessons/editLesson";
+import Button from "../../../../components/Button/Button";
+import LabelPrimary from "../../../../components/Label/Label";
+import { STATUS } from "../../../../constants/status";
+import { useSnackbar } from "../../../../components/SnackBar/SnackBar";
+import { useConfirmCloseForm } from "../../../../hooks/useConfirm";
+import "../styles/CourseFormModel.css";
+import { URL_API_UPLOAD } from "../../../../constants/config";
+import type { ILessons } from "../../types";
+import { useCreateCourse } from "../../apis/addCourse";
+import { useEditCourse } from "../../apis/editCourse";
+import { useGetCourses } from "../../apis/getCourses";
+import { useCreateLesson } from "../../apis/lessons/addLesson";
+import { useEditLesson } from "../../apis/lessons/editLesson";
 
 interface LessonFormProps {
     open: boolean;

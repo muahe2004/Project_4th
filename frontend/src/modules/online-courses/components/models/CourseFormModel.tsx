@@ -1,15 +1,15 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Box } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import Button from "../../../components/Button/Button";
-import LabelPrimary from "../../../components/Label/Label";
-import { STATUS } from "../../../constants/status";
-import { useSnackbar } from "../../../components/SnackBar/SnackBar";
-import { useConfirmCloseForm } from "../../../hooks/useConfirm";
-import "./styles/CourseFormModel.css";
-import { URL_API_UPLOAD } from "../../../constants/config";
-import type { ICourses } from "../types";
-import { useCreateCourse } from "../apis/addCourse";
-import { useEditCourse } from "../apis/editCourse";
+import Button from "../../../../components/Button/Button";
+import LabelPrimary from "../../../../components/Label/Label";
+import { STATUS } from "../../../../constants/status";
+import { useSnackbar } from "../../../../components/SnackBar/SnackBar";
+import { useConfirmCloseForm } from "../../../../hooks/useConfirm";
+import "../styles/CourseFormModel.css";
+import { URL_API_UPLOAD } from "../../../../constants/config";
+import type { ICourses } from "../../types";
+import { useCreateCourse } from "../../apis/addCourse";
+import { useEditCourse } from "../../apis/editCourse";
 
 interface CourseFormProps {
     open: boolean;

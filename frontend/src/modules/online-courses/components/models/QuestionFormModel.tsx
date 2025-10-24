@@ -11,17 +11,17 @@ import {
     Box,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import Button from "../../../components/Button/Button";
-import LabelPrimary from "../../../components/Label/Label";
-import { useSnackbar } from "../../../components/SnackBar/SnackBar";
-import { useGetLessons } from "../apis/lessons/getLessons";
-import type { IQuestions, IAnswers, QuestionResponse } from "../types";
-import { useGetLectures } from "../apis/lectures/getLecture";
-import { useGetCourses } from "../apis/getCourses";
-import { useCreateQuestion } from "../apis/questions/addQuestion";
-import { useEditQuestion } from "../apis/questions/editQuestion";
-import { useCreateAnswer } from "../apis/questions/addAnswer";
-import { useEditAnswer } from "../apis/questions/editAnswer";
+import Button from "../../../../components/Button/Button";
+import LabelPrimary from "../../../../components/Label/Label";
+import { useSnackbar } from "../../../../components/SnackBar/SnackBar";
+import { useGetLessons } from "../../apis/lessons/getLessons";
+import type { IQuestions, IAnswers, QuestionResponse } from "../../types";
+import { useGetLectures } from "../../apis/lectures/getLecture";
+import { useGetCourses } from "../../apis/getCourses";
+import { useCreateQuestion } from "../../apis/questions/addQuestion";
+import { useEditQuestion } from "../../apis/questions/editQuestion";
+import { useCreateAnswer } from "../../apis/questions/addAnswer";
+import { useEditAnswer } from "../../apis/questions/editAnswer";
 
 interface QuestionFormProps {
     open: boolean;

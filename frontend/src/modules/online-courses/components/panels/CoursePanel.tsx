@@ -5,7 +5,7 @@ import type { ICourses } from "../../types";
 import SearchEngine from "../../../../components/SearchEngine/SearchEngine";
 import Button from "../../../../components/Button/Button";
 import { CourseTable } from "../tables/CoursesTable";
-import CourseFormModal from "../CourseFormModel";
+import CourseFormModal from "../models/CourseFormModel";
 
 export const CoursePanel: React.FC = () => {
     const [page, setPage] = useState(1);

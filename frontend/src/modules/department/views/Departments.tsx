@@ -50,12 +50,12 @@ export function Departments() {
     const isLoading = isLoadingDeparment;
 
     return (
-        <main className="departments">
+        <main className="admin-main-container">
             {
                 isLoading && (<Loading></Loading>)
             }
             
-            <Box className="departments-box">
+            <Box className="admin-main-box">
                 <SearchEngine 
                     placeholder="Tìm theo tên khoa, mã " 
                     onSearch={(val) => {
@@ -68,7 +68,7 @@ export function Departments() {
                         setMode("add");
                         setOpen(true);
                     }}
-                    className="departments-button__add">
+                    className="btn-spacing-left">
                     Add Department
                 </Button>
             </Box>

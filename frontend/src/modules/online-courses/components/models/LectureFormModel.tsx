@@ -1,19 +1,19 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Box } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import Button from "../../../components/Button/Button";
-import LabelPrimary from "../../../components/Label/Label";
-import { STATUS } from "../../../constants/status";
-import { useSnackbar } from "../../../components/SnackBar/SnackBar";
-import { useConfirmCloseForm } from "../../../hooks/useConfirm";
-import "./styles/CourseFormModel.css";
-import type { ILectures } from "../types";
-import { useGetCourses } from "../apis/getCourses";
-import { useCreateLesson } from "../apis/lessons/addLesson";
-import { useEditLesson } from "../apis/lessons/editLesson";
-import { useCreateLecture } from "../apis/lectures/addLecture";
-import { useEditLecture } from "../apis/lectures/editLecture";
-import { useGetLessons } from "../apis/lessons/getLessons";
-import { convertYouTubeURL } from "../utils/convertYoutubeURL";
+import Button from "../../../../components/Button/Button";
+import LabelPrimary from "../../../../components/Label/Label";
+import { STATUS } from "../../../../constants/status";
+import { useSnackbar } from "../../../../components/SnackBar/SnackBar";
+import { useConfirmCloseForm } from "../../../../hooks/useConfirm";
+import "../styles/CourseFormModel.css";
+import type { ILectures } from "../../types";
+import { useGetCourses } from "../../apis/getCourses";
+import { useCreateLesson } from "../../apis/lessons/addLesson";
+import { useEditLesson } from "../../apis/lessons/editLesson";
+import { useCreateLecture } from "../../apis/lectures/addLecture";
+import { useEditLecture } from "../../apis/lectures/editLecture";
+import { useGetLessons } from "../../apis/lessons/getLessons";
+import { convertYouTubeURL } from "../../utils/convertYoutubeURL";
 
 interface LectureFormProps {
     open: boolean;

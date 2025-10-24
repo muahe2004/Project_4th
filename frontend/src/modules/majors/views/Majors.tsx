@@ -52,12 +52,12 @@ export function Majors() {
     const isLoading = isLoadingMajor;
 
     return (
-        <main className="departments">
+        <main className="admin-main-container">
             {
                 isLoading && (<Loading></Loading>)
             }
             
-            <Box className="departments-box">
+            <Box className="admin-main-box">
                 <SearchEngine 
                     placeholder="Tìm theo tên ngành, mã ngành..." 
                     onSearch={(val) => {
@@ -70,7 +70,7 @@ export function Majors() {
                         setMode("add");
                         setOpen(true);
                     }}
-                    className="departments-button__add">
+                    className="btn-spacing-left">
                     Add Major
                 </Button>
             </Box>
@@ -79,7 +79,7 @@ export function Majors() {
                 className="sticky-table-container"
                 component={Paper}
             >
-                <Table stickyHeader className="sticky-table" aria-label="departments table">
+                <Table stickyHeader className="sticky-table" aria-label="majors table">
                     <TableHead className="primary-thead">
                         <TableRow className="primary-trow">
                             <TableCell className="primary-thead__cell" align="center">

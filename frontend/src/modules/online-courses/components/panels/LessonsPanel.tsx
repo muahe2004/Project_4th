@@ -5,7 +5,7 @@ import Button from "../../../../components/Button/Button";
 import { LessonsTable } from "../tables/LessonsTable";
 import { useGetLessons } from "../../apis/lessons/getLessons";
 import type { ILessons } from "../../types";
-import LessonFormModal from "../LessonFormModel";
+import LessonFormModal from "../models/LessonFormModel";
 import { useGetCourses } from "../../apis/getCourses";
 
 export const LessonsPanel: React.FC = () => {

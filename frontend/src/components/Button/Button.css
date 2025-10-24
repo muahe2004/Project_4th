@@ -37,3 +37,7 @@
     color: #000 !important;
     border-color: #000 !important;
 }
+
+.btn-spacing-left {
+    margin-left: 10px !important;
+}
