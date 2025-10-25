@@ -45,9 +45,6 @@
 - Instagram: [@lyvanminh_]
 - Zalo: 0334266636
 
-# ENV FE:
-VITE_UNICORE_API_URL=http://localhost:8386
-
-VITE_UNICORE_PREFIX=unicore/api
-VITE_UNIUSERS_PREFIX=uniusers/api
-VITE_UNILEARN_PREFIX=
+# Update database
+1. alembic revision --autogenerate -m "update subject model"
+2. alembic upgrade head

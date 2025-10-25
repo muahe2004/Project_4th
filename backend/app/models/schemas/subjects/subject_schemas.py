@@ -5,6 +5,7 @@ from uuid import UUID
 from typing import Optional
 
 class SubjectBase(SQLModel):
+    subject_code: str = Field(sa_column=Column(String(12), nullable=False))
     name: str = Field(sa_column=Column(String(100), nullable=False))
     credit: int = Field(sa_column=Column(Integer, nullable=False))  
     description: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
@@ -19,6 +20,7 @@ class SubjectCreate(SubjectBase):
     pass
 
 class SubjectUpdate(SQLModel):
+    subject_code: Optional[str] = Field(sa_column=Column(String(12), nullable=False))
     name: Optional[str] = Field(sa_column=Column(String(100), nullable=False))
     credit: Optional[int] = Field(sa_column=Column(Integer, nullable=False))  
     description: Optional[str] | None = Field(default=None, sa_column=Column(Text, nullable=True))

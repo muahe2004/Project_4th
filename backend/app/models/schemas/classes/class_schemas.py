@@ -6,6 +6,7 @@ from uuid import UUID
 
 class ClassBase(SQLModel):
     class_code: str = Field(sa_column=Column(String(12), nullable=False, unique=True))
+    class_name: str = Field(sa_column=Column(String(100), nullable=True))
     size: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
     status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
@@ -21,6 +22,7 @@ class ClassCreate(ClassBase):
 
 class ClassUpdate(SQLModel):
     class_code: Optional[str] = Field(default=None, sa_column=Column(String(12), nullable=True))
+    class_name: Optional[str] = Field(sa_column=Column(String(100), nullable=True))
     size: Optional[int] = Field(default=None, sa_column=Column(Integer, nullable=True))
     status: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
     specialization_id: Optional[UUID] = Field(default=None, foreign_key="specializations.id")
