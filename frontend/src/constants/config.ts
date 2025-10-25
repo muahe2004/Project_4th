@@ -21,6 +21,9 @@ export const URL_API_DEPARTMENT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/dep
 // Major
 export const URL_API_MAJOR = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/majors`;
 
+// Specialization
+export const URL_API_SPECIALIZATION = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/specializations`;
+
 // Class
 export const URL_API_CLASS = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/classes`;
 

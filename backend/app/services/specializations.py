@@ -2,14 +2,14 @@ import uuid
 from datetime import datetime
 
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select
-from starlette import status
-from typing import List
+from sqlmodel import Session, select, or_, select, func, desc
+from typing import List, Tuple
 
 from app.models.models import Specializations
 from app.models.schemas.specializations.specialization_schemas import (
     SpecializationPublic,
     SpecializationCreate,
+    SpecializationQueryParams,
     SpecializationUpdate,
     SpecializationDeleteResponse
 )
@@ -19,9 +19,38 @@ from app.enums.status import StatusEnum
 
 class SpecializationServices:
     @staticmethod
-    def get_all(*, session: Session) -> List[SpecializationPublic]:
-        specializations = session.exec(select(Specializations)).all()
-        return specializations
+    def get_all(
+        *, session: Session,
+        query: SpecializationQueryParams
+    ) -> Tuple[List[SpecializationPublic], int]:
+        statement = select(Specializations)
+
+        conditions = []
+        if query.status:
+            conditions.append(Specializations.status == query.status)
+
+        if query.major_id:
+            conditions.append(Specializations.major_id == query.major_id)
+
+        if query.search:
+            conditions.append(
+                or_(
+                    Specializations.specialization_code.ilike(f"%{query.search}%"),
+                    Specializations.name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        total = session.exec(select(func.count()).select_from(statement.subquery())).one()
+
+        statement = statement.order_by(desc(Specializations.created_at))
+        statement = statement.offset(query.skip).limit(query.limit)
+
+        specializations = session.exec(statement).all()
+
+        return specializations, total
 
     @staticmethod
     def get_by_id(

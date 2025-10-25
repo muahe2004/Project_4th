@@ -24,10 +24,13 @@ import Loading from "../../../components/Loading/Loading";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 import type { IDepartments } from "../types";
+import StatusFilter from "../../../components/StatusFilter/StatusFilter";
+import { STATUS_OPTIONS } from "../../../constants/status";
 
 export function Departments() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
+    const [status, setStatus] = useState("");
 
     const searchDepartment = (value: string) => {
         console.log("value: ", value);
@@ -42,7 +45,8 @@ export function Departments() {
     const Params = {
         limit: rowsPerPage,
         skip: (page - 1) * rowsPerPage,
-        search: search || undefined
+        ...(search && { search }),
+        ...(status && { status }),
     };
 
     const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment(Params);
@@ -51,11 +55,13 @@ export function Departments() {
 
     return (
         <main className="admin-main-container">
-            {
-                isLoading && (<Loading></Loading>)
-            }
-            
             <Box className="admin-main-box">
+                <StatusFilter
+                    value={status}
+                    onChange={setStatus}
+                    options={STATUS_OPTIONS}
+                />
+                
                 <SearchEngine 
                     placeholder="Tìm theo tên khoa, mã " 
                     onSearch={(val) => {

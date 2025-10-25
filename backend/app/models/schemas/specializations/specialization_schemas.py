@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import List, Optional
+from app.models.schemas.common.query import BaseQueryParams
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from uuid import UUID
 
@@ -25,3 +27,9 @@ class SpecializationUpdate(SQLModel):
 class SpecializationDeleteResponse(SQLModel):
     message: str
     id: UUID
+class SpecializationQueryParams(BaseQueryParams):
+    major_id: Optional[UUID] = Field(None)
+
+class SpecializationListResponse(SQLModel):
+    total: int
+    data: List[SpecializationPublic]

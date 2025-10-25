@@ -1,37 +1,36 @@
-import PaginationUniCore from "../../../components/Pagination/Pagination";
-import "./styles/Majors.css";
+import { useState } from "react";
+import dayjs from "dayjs";
+
 import {
     Box,
     IconButton,
-  InputAdornment,
-  MenuItem,
-  Paper,
-  Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
 } from "@mui/material";
-
-import EditSquareIcon from '@mui/icons-material/EditSquare';
+import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
+
+import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import Button from "../../../components/Button/Button";
-import { useState } from "react";
-import dayjs from "dayjs";
+import MajorForm from "../components/MajorFormModel";
+import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
+import StatusFilter from "../../../components/StatusFilter/StatusFilter";
+
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
-import type { IMajors } from "../types";
-import { useGetMajor } from "../apis/getMajors";
-import MajorForm from "../components/MajorFormModel";
-import { useGetDepartment } from "../../department/apis/getDepartments";
-import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
-import { STATUS, STATUS_OPTIONS } from "../../../constants/status";
-import ClearIcon from "@mui/icons-material/Clear";
-import ClearableSelect from "../../../components/StatusFilter/StatusFilter";
+import { STATUS_OPTIONS } from "../../../constants/status";
 
+import { useGetMajor } from "../apis/getMajors";
+import { useGetDepartment } from "../../department/apis/getDepartments";
+import type { IMajors } from "../types";
+
+import "./styles/Majors.css";
 
 export function Majors() {
     const [page, setPage] = useState(1);
@@ -40,7 +39,7 @@ export function Majors() {
 
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
-    const [selectedDepartment, setSelectedDepartment] = useState<IMajors | undefined>(undefined); 
+    const [selectedMajor, setSelectedMajor] = useState<IMajors | undefined>(undefined); 
 
     const [departmentId, setDepartmentId] = useState("");
     const [status, setStatus] = useState("");
@@ -65,12 +64,10 @@ export function Majors() {
     
     const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment(ParamsDepartment);
 
-    const isLoading = isLoadingMajor;
-
     return (
         <main className="admin-main-container">
             <Box className="admin-main-box">
-                <ClearableSelect
+                <StatusFilter
                     value={status}
                     onChange={setStatus}
                     options={STATUS_OPTIONS}
@@ -149,7 +146,7 @@ export function Majors() {
                                         className="primary-tcell__button--icon" 
                                         onClick={() => {
                                             setMode("edit");
-                                            setSelectedDepartment(row);
+                                            setSelectedMajor(row);
                                             setOpen(true);
                                         }}
                                     >
@@ -179,7 +176,7 @@ export function Majors() {
             <MajorForm 
                 open={open} 
                 mode={mode} 
-                initialValues={selectedDepartment}
+                initialValues={selectedMajor}
                 onClose={() => setOpen(false)}
             />
         </main>

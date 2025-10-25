@@ -3,8 +3,10 @@ import uuid
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.specializations.specialization_schemas import (
+    SpecializationListResponse,
     SpecializationPublic,
     SpecializationCreate,
+    SpecializationQueryParams,
     SpecializationUpdate,
     SpecializationDeleteResponse
 )
@@ -14,9 +16,10 @@ from typing import List
 router = APIRouter()
 
 # =========================== get all specialization ===========================
-@router.get("", response_model=List[SpecializationPublic])
-def get_specializations(session: SessionDep) -> List[SpecializationPublic]:
-    return SpecializationServices.get_all(session=session)
+@router.get("")
+def get_majors(session: SessionDep, query: SpecializationQueryParams = Depends()):
+    specializations, total = SpecializationServices.get_all(session=session,query=query)
+    return SpecializationListResponse(total=total, data=specializations)
 
 # =========================== get specialization by id ===========================
 @router.get(
@@ -57,3 +60,4 @@ def delete_specialization(
     session: SessionDep, id: uuid.UUID
 ) -> SpecializationDeleteResponse:
     return SpecializationServices.delete(session=session, specialization_id=id)
+

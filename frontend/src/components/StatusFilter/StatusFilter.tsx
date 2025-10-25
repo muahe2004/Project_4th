@@ -18,7 +18,7 @@ interface ClearableSelectProps {
     className?: string;
 }
 
-const ClearableSelect: React.FC<ClearableSelectProps> = ({
+const StatusFilter: React.FC<ClearableSelectProps> = ({
     label = "",
     value,
     onChange,
@@ -62,4 +62,4 @@ const ClearableSelect: React.FC<ClearableSelectProps> = ({
     );
 };
 
-export default ClearableSelect;
+export default StatusFilter;
