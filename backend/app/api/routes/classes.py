@@ -14,7 +14,7 @@ from typing import List, Optional
 router = APIRouter()
 
 # =========================== get all classes ===========================
-@router.get("/")
+@router.get("")
 def get_classes(
     session: SessionDep,
     skip: int = Query(0, ge=0),
@@ -31,7 +31,7 @@ def get_classes(
         teacher_id=teacher_id,
         status=status,
     )
-    return {"total": total, "items": classes}
+    return {"total": total, "data": classes}
 
 # =========================== get class by id ===========================
 @router.get(
