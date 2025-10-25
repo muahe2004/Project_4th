@@ -116,7 +116,7 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
                     onChange={(e) => setTenBaiHoc(e.target.value)}
                     fullWidth
                     variant="outlined"
-                    className="myprofile-text__field primary-dialog-input"
+                    className="main-text__field primary-dialog-input"
                 />
 
                 <LabelPrimary value="Khoá Học"></LabelPrimary>
@@ -127,7 +127,7 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
                         fullWidth
                         id="outlined-select"
                         variant="outlined"
-                        className="myprofile-text__field primary-dialog-input"
+                        className="main-text__field primary-dialog-input"
                         defaultValue=""
                         MenuProps={{ disableScrollLock: true }}
                     >
@@ -147,7 +147,7 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
                         fullWidth
                         id="outlined-select"
                         variant="outlined"
-                        className="myprofile-text__field primary-dialog-input"
+                        className="main-text__field primary-dialog-input"
                         defaultValue=""
                         MenuProps={{ disableScrollLock: true }}
                     >
@@ -165,7 +165,7 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
                     onChange={(e) => setVideo(e.target.value)}
                     fullWidth
                     variant="outlined"
-                    className="myprofile-text__field primary-dialog-input"
+                    className="main-text__field primary-dialog-input"
                 />
 
                 <LabelPrimary value="Mô tả" />
@@ -176,7 +176,7 @@ const LectureFormModal: React.FC<LectureFormProps> = ({ open, mode, initialValue
                     variant="outlined"
                     multiline
                     rows={3}
-                    className="myprofile-text__field"
+                    className="main-text__field"
                 />
             </DialogContent>
 

@@ -1,9 +1,9 @@
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import "./styles/Majors.css";
 import {
-    Autocomplete,
     Box,
     IconButton,
+  InputAdornment,
   MenuItem,
   Paper,
   Select,
@@ -13,26 +13,25 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
 } from "@mui/material";
 
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import Button from "../../../components/Button/Button";
-import { useEffect, useState } from "react";
-// import DepartmentForm from "../components/DepartmentFormModel";
-// import { useGetDepartment } from "../apis/getDepartments";
+import { useState } from "react";
 import dayjs from "dayjs";
-import Loading from "../../../components/Loading/Loading";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 import type { IMajors } from "../types";
 import { useGetMajor } from "../apis/getMajors";
 import MajorForm from "../components/MajorFormModel";
 import { useGetDepartment } from "../../department/apis/getDepartments";
-// import type { IDepartments } from "../../department/types";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
+import { STATUS, STATUS_OPTIONS } from "../../../constants/status";
+import ClearIcon from "@mui/icons-material/Clear";
+import ClearableSelect from "../../../components/StatusFilter/StatusFilter";
+
 
 export function Majors() {
     const [page, setPage] = useState(1);
@@ -44,6 +43,7 @@ export function Majors() {
     const [selectedDepartment, setSelectedDepartment] = useState<IMajors | undefined>(undefined); 
 
     const [departmentId, setDepartmentId] = useState("");
+    const [status, setStatus] = useState("");
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -51,6 +51,7 @@ export function Majors() {
         limit: rowsPerPage,
         skip: (page - 1) * rowsPerPage,
         ...(search && { search }),
+        ...(status && { status }),
         ...(departmentId && { department_id: departmentId }),
     };
 
@@ -68,11 +69,13 @@ export function Majors() {
 
     return (
         <main className="admin-main-container">
-            {/* {
-                isLoading && (<Loading></Loading>)
-            } */}
-            
             <Box className="admin-main-box">
+                <ClearableSelect
+                    value={status}
+                    onChange={setStatus}
+                    options={STATUS_OPTIONS}
+                />
+
                 <MainAutocomplete
                     options={department?.data || []}
                     value={departmentId}

@@ -224,7 +224,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid>                    
 
                     <Grid size={4} className="myprofile-form__group">
@@ -235,7 +235,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -246,7 +246,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -270,7 +270,7 @@ export function MyProfile() {
                             fullWidth
                             id="outlined-select"
                             variant="outlined"
-                            className="myprofile-text__field"
+                            className="main-text__field"
                             defaultValue=""
                             MenuProps={{
                                 disableScrollLock: true,   
@@ -290,7 +290,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={6} className="myprofile-form__group myprofile-form__group--fullwidth">
@@ -301,7 +301,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={6} className="myprofile-form__group">
@@ -312,7 +312,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -323,7 +323,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     {
@@ -336,7 +336,7 @@ export function MyProfile() {
                                     fullWidth 
                                     id="outlined-basic" 
                                     variant="outlined" 
-                                    className="myprofile-text__field"/>
+                                    className="main-text__field"/>
                             </Grid> 
                         )
                     }
@@ -351,7 +351,7 @@ export function MyProfile() {
                                     fullWidth 
                                     id="outlined-basic" 
                                     variant="outlined" 
-                                    className="myprofile-text__field"/>
+                                    className="main-text__field"/>
                             </Grid> 
                         )
                     }
@@ -364,7 +364,7 @@ export function MyProfile() {
                                     fullWidth
                                     id="outlined-select"
                                     variant="outlined"
-                                    className="myprofile-text__field"
+                                    className="main-text__field"
                                     defaultValue=""
                                     MenuProps={{
                                         disableScrollLock: true,   
@@ -384,7 +384,7 @@ export function MyProfile() {
                             fullWidth
                             id="outlined-select"
                             variant="outlined"
-                            className="myprofile-text__field"
+                            className="main-text__field"
                             defaultValue=""
                             MenuProps={{
                                 disableScrollLock: true,   
@@ -404,7 +404,7 @@ export function MyProfile() {
                             fullWidth
                             id="outlined-select"
                             variant="outlined"
-                            className="myprofile-text__field"
+                            className="main-text__field"
                             defaultValue=""
                             MenuProps={{
                                 disableScrollLock: true,   
@@ -427,7 +427,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -436,7 +436,7 @@ export function MyProfile() {
                             <DatePicker
                                 value={issueDate ? new Date(issueDate) : null} 
                                 onChange={(newValue) => setIssueDate(newValue ? newValue.toISOString() : "")}
-                                className="myprofile-text__field"
+                                className="main-text__field"
                                 slotProps={{ 
                                     textField: { fullWidth: true }
                                 }}
@@ -452,7 +452,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -463,7 +463,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -474,7 +474,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -485,7 +485,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -496,7 +496,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={4} className="myprofile-form__group">
@@ -507,7 +507,7 @@ export function MyProfile() {
                             fullWidth 
                             id="outlined-basic" 
                             variant="outlined" 
-                            className="myprofile-text__field"/>
+                            className="main-text__field"/>
                     </Grid> 
 
                     <Grid size={12} className="myprofile-form__actions">
@@ -528,14 +528,14 @@ export function MyProfile() {
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Họ và tên bố" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Năm sinh"></LabelPrimary>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
-                                className="myprofile-text__field"
+                                className="main-text__field"
                                 slotProps={{ 
                                     textField: { fullWidth: true }
                                 }}
@@ -545,32 +545,32 @@ export function MyProfile() {
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Quốc tịch" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Dân tộc" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Tôn giáo" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>  
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Số điện thoại" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={6} className="myprofile-form__group">
                         <LabelPrimary value="Địa chỉ" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>   
 
                     <Grid size={6} className="myprofile-form__group">
                         <LabelPrimary value="Nghề nghiệp cha" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>   
 
                     {/* Mẹ */}
@@ -582,14 +582,14 @@ export function MyProfile() {
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Họ và tên mẹ" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Năm sinh"></LabelPrimary>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
-                                className="myprofile-text__field"
+                                className="main-text__field"
                                 slotProps={{ 
                                     textField: { fullWidth: true }
                                 }}
@@ -599,32 +599,32 @@ export function MyProfile() {
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Quốc tịch" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Dân tộc" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Tôn giáo" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>  
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Số điện thoại" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={6} className="myprofile-form__group">
                         <LabelPrimary value="Địa chỉ" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>   
 
                     <Grid size={6} className="myprofile-form__group">
                         <LabelPrimary value="Nghề nghiệp mẹ" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>
 
                     {/* Vợ hoặc chồng */}
@@ -636,14 +636,14 @@ export function MyProfile() {
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Họ và tên vợ/chồng" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Năm sinh"></LabelPrimary>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
-                                className="myprofile-text__field"
+                                className="main-text__field"
                                 slotProps={{ 
                                     textField: { fullWidth: true }
                                 }}
@@ -653,32 +653,32 @@ export function MyProfile() {
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Quốc tịch" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Dân tộc" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Tôn giáo" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>  
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Số điện thoại" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={6} className="myprofile-form__group">
                         <LabelPrimary value="Địa chỉ" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>   
 
                     <Grid size={6} className="myprofile-form__group">
                         <LabelPrimary value="Nghề nghiệp vợ/chồng" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>
 
                     <Grid size={12} className="myprofile-form__actions">
@@ -692,22 +692,22 @@ export function MyProfile() {
                 <Grid container spacing={2} className="myprofile-form">
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Mật khẩu cũ" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Mật khẩu mới" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Xác nhận mật khẩu mới" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>    
 
                     <Grid size={4} className="myprofile-form__group">
                         <LabelPrimary value="Mã xác nhận" required></LabelPrimary>
-                        <TextField fullWidth id="outlined-basic" variant="outlined" className="myprofile-text__field"/>
+                        <TextField fullWidth id="outlined-basic" variant="outlined" className="main-text__field"/>
                     </Grid>  
 
                     <Grid size={12} className="myprofile-form__actions">

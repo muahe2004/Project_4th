@@ -35,7 +35,7 @@ export default function WeekPicker() {
             </Tooltip>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                    className="week-picker__time myprofile-text__field"
+                    className="week-picker__time main-text__field"
                     slotProps={{ 
                         textField: { fullWidth: true }
                     }}
@@ -44,7 +44,7 @@ export default function WeekPicker() {
             <span className="week-picker__label">Tuần {week}</span>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                    className="week-picker__time myprofile-text__field"
+                    className="week-picker__time main-text__field"
                     slotProps={{ 
                         textField: { fullWidth: true }
                     }}

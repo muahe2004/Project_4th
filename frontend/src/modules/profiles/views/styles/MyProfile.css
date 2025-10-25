@@ -62,12 +62,12 @@
     text-align: right;
 }
 
-.myprofile-text__field input {
+.main-text__field input {
     font-size: var(--font-size-base) !important;
     padding: 12px !important; 
 }
 
-.myprofile-text__field .MuiSelect-select {
+.main-text__field .MuiSelect-select {
     padding: 12px !important;
     font-size: var(--font-size-base) !important;
 }

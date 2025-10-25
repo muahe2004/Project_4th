@@ -65,7 +65,7 @@ export const LecturesPanel: React.FC = () => {
                     // fullWidth
                     id="outlined-select"
                     variant="outlined"
-                    className="myprofile-text__field filter-text__field"
+                    className="main-text__field filter-text__field"
                     defaultValue=""
                     MenuProps={{ disableScrollLock: true }}
                 >
@@ -82,7 +82,7 @@ export const LecturesPanel: React.FC = () => {
                     // fullWidth
                     id="outlined-select"
                     variant="outlined"
-                    className="myprofile-text__field filter-text__field"
+                    className="main-text__field filter-text__field"
                     defaultValue=""
                     MenuProps={{ disableScrollLock: true }}
                 >

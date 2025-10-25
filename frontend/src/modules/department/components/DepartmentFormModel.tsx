@@ -126,7 +126,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                     onChange={(e) => setDepartmentCode(e.target.value)}
                     fullWidth
                     variant="outlined"
-                    className="myprofile-text__field primary-dialog-input"
+                    className="main-text__field primary-dialog-input"
                 />
 
                 <LabelPrimary value="Tên Khoa" required />
@@ -135,7 +135,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                     onChange={(e) => setDepartmentName(e.target.value)}
                     fullWidth
                     variant="outlined"
-                    className="myprofile-text__field primary-dialog-input"
+                    className="main-text__field primary-dialog-input"
                 />
 
                 <LabelPrimary value="Ngày thành lập" />
@@ -143,7 +143,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                     <DatePicker
                         value={establishedDate ? new Date(establishedDate) : null}
                         onChange={(newValue) => setEstablishedDate(newValue)}
-                        className="myprofile-text__field primary-dialog-input"
+                        className="main-text__field primary-dialog-input"
                         slotProps={{ textField: { fullWidth: true } }}
                     />
                 </LocalizationProvider>
@@ -156,7 +156,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                     variant="outlined"
                     multiline
                     rows={3}
-                    className="myprofile-text__field"
+                    className="main-text__field"
                 />
             </DialogContent>
             <DialogActions className="primary-dialog-actions">

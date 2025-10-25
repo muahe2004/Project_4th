@@ -50,7 +50,7 @@ function MainAutocomplete<T>({
                 {...params}
                 placeholder={placeholder}
                 variant="outlined"
-                className="myprofile-text__field filter-text__field"
+                className="main-text__field filter-text__field"
                 />
             )}
         />

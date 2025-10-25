@@ -56,7 +56,7 @@ export const LessonsPanel: React.FC = () => {
                     onChange={(e) => setKhoaHocId(e.target.value)}
                     id="outlined-select"
                     variant="outlined"
-                    className="myprofile-text__field filter-text__field"
+                    className="main-text__field filter-text__field"
                     defaultValue=""
                     MenuProps={{ disableScrollLock: true }}
                 >

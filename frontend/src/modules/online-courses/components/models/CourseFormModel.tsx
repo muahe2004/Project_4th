@@ -159,7 +159,7 @@ const CourseFormModal: React.FC<CourseFormProps> = ({ open, mode, initialValues,
 
                         <Button
                             component="label"
-                            className="myprofile-text__field primary-dialog-input"
+                            className="main-text__field primary-dialog-input"
                         >
                             Chọn ảnh
                             <input
@@ -179,7 +179,7 @@ const CourseFormModal: React.FC<CourseFormProps> = ({ open, mode, initialValues,
                             onChange={(e) => setMaKhoaHoc(e.target.value)}
                             fullWidth
                             variant="outlined"
-                            className="myprofile-text__field primary-dialog-input"
+                            className="main-text__field primary-dialog-input"
                         />
 
                         <LabelPrimary value="Tên Khoá Học" required />
@@ -188,7 +188,7 @@ const CourseFormModal: React.FC<CourseFormProps> = ({ open, mode, initialValues,
                             onChange={(e) => setTenKhoaHoc(e.target.value)}
                             fullWidth
                             variant="outlined"
-                            className="myprofile-text__field primary-dialog-input"
+                            className="main-text__field primary-dialog-input"
                         />
 
                         <LabelPrimary value="Giá Bán" required />
@@ -197,7 +197,7 @@ const CourseFormModal: React.FC<CourseFormProps> = ({ open, mode, initialValues,
                             onChange={(e) => setGiaBan(e.target.value)}
                             fullWidth
                             variant="outlined"
-                            className="myprofile-text__field primary-dialog-input"
+                            className="main-text__field primary-dialog-input"
                         />
 
                         <LabelPrimary value="Độ Khó"></LabelPrimary>
@@ -207,7 +207,7 @@ const CourseFormModal: React.FC<CourseFormProps> = ({ open, mode, initialValues,
                             fullWidth
                             id="outlined-select"
                             variant="outlined"
-                            className="myprofile-text__field primary-dialog-input"
+                            className="main-text__field primary-dialog-input"
                             defaultValue=""
                             MenuProps={{
                                 disableScrollLock: true,   
@@ -226,7 +226,7 @@ const CourseFormModal: React.FC<CourseFormProps> = ({ open, mode, initialValues,
                             variant="outlined"
                             multiline
                             rows={3}
-                            className="myprofile-text__field"
+                            className="main-text__field"
                         />
                 </Box>
             </DialogContent>

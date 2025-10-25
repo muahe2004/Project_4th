@@ -176,7 +176,7 @@ const QuestionFormModal: React.FC<QuestionFormProps> = ({ open, mode, initialVal
                         onChange={(e) => setKhoaHocId(e.target.value)}
                         fullWidth
                         variant="outlined"
-                        className="myprofile-text__field primary-dialog-input"
+                        className="main-text__field primary-dialog-input"
                         MenuProps={{ disableScrollLock: true }}
                     >
                         {courses?.data?.map((course) => (
@@ -192,7 +192,7 @@ const QuestionFormModal: React.FC<QuestionFormProps> = ({ open, mode, initialVal
                         onChange={(e) => setChuongHocId(e.target.value)}
                         fullWidth
                         variant="outlined"
-                        className="myprofile-text__field primary-dialog-input"
+                        className="main-text__field primary-dialog-input"
                         MenuProps={{ disableScrollLock: true }}
                     >
                         {lessons?.data?.map((lesson) => (
@@ -208,7 +208,7 @@ const QuestionFormModal: React.FC<QuestionFormProps> = ({ open, mode, initialVal
                         onChange={(e) => setBaiHocId(e.target.value)}
                         fullWidth
                         variant="outlined"
-                        className="myprofile-text__field primary-dialog-input"
+                        className="main-text__field primary-dialog-input"
                         MenuProps={{ disableScrollLock: true }}
                     >
                         {lectures?.data?.map((lecture) => (
@@ -226,7 +226,7 @@ const QuestionFormModal: React.FC<QuestionFormProps> = ({ open, mode, initialVal
                         onChange={(e) => setNoiDung(e.target.value)}
                         fullWidth
                         variant="outlined"
-                        className="myprofile-text__field primary-dialog-input"
+                        className="main-text__field primary-dialog-input"
                     />
 
                     <LabelPrimary value="Danh sách đáp án" required />
@@ -237,7 +237,7 @@ const QuestionFormModal: React.FC<QuestionFormProps> = ({ open, mode, initialVal
                             display="flex"
                             alignItems="center"
                             gap={1}
-                            className="myprofile-text__field"
+                            className="main-text__field"
                             mb={1}
                         >
                             <TextField

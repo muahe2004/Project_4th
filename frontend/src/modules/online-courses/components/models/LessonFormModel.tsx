@@ -99,7 +99,7 @@ const LessonFormModal: React.FC<LessonFormProps> = ({ open, mode, initialValues,
                     onChange={(e) => setTenChuong(e.target.value)}
                     fullWidth
                     variant="outlined"
-                    className="myprofile-text__field primary-dialog-input"
+                    className="main-text__field primary-dialog-input"
                 />
 
                 <LabelPrimary value="Khoá Học"></LabelPrimary>
@@ -110,7 +110,7 @@ const LessonFormModal: React.FC<LessonFormProps> = ({ open, mode, initialValues,
                         fullWidth
                         id="outlined-select"
                         variant="outlined"
-                        className="myprofile-text__field primary-dialog-input"
+                        className="main-text__field primary-dialog-input"
                         defaultValue=""
                         MenuProps={{ disableScrollLock: true }}
                     >

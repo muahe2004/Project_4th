@@ -43,7 +43,7 @@ export default function SearchEngine({ placeholder = "Tìm kiếm...", onSearch 
             value={value}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            className="myprofile-text__field search-engine__input"
+            className="main-text__field search-engine__input"
             InputProps={{
                 endAdornment: (
                 <InputAdornment position="end">

@@ -153,7 +153,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     onChange={(e) => setMajorCode(e.target.value)}
                     fullWidth
                     variant="outlined"
-                    className="myprofile-text__field primary-dialog-input"
+                    className="main-text__field primary-dialog-input"
                 />
 
                 <LabelPrimary value="Tên ngành" required />
@@ -162,7 +162,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     onChange={(e) => setMajorName(e.target.value)}
                     fullWidth
                     variant="outlined"
-                    className="myprofile-text__field primary-dialog-input"
+                    className="main-text__field primary-dialog-input"
                 />
 
                 <LabelPrimary value="Ngày thành lập" />
@@ -170,7 +170,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     <DatePicker
                         value={establishedDate ? new Date(establishedDate) : null}
                         onChange={(newValue) => setEstablishedDate(newValue)}
-                        className="myprofile-text__field primary-dialog-input"
+                        className="main-text__field primary-dialog-input"
                         slotProps={{ textField: { fullWidth: true } }}
                     />
                 </LocalizationProvider>
@@ -182,7 +182,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     fullWidth
                     id="outlined-select"
                     variant="outlined"
-                    className="myprofile-text__field primary-dialog-input"
+                    className="main-text__field primary-dialog-input"
                     MenuProps={{
                         disableScrollLock: true,   
                     }}
@@ -202,7 +202,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     variant="outlined"
                     multiline
                     rows={3}
-                    className="myprofile-text__field"
+                    className="main-text__field"
                 />
             </DialogContent>
             <DialogActions className="primary-dialog-actions">
