@@ -20,6 +20,7 @@ class ClassPublic(ClassBase):
 class ClassesResponse(ClassPublic):
     specialization_id: UUID
     specialization_name: str
+    teacher_name: str
 
 class ClassCreate(ClassBase):
     pass

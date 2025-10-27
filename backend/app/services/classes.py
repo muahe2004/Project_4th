@@ -1,21 +1,24 @@
 import uuid
 from datetime import datetime
-
+import json
 from fastapi import HTTPException, Request
 from sqlmodel import Session, select, func
 from starlette import status
 from typing import List, Optional, Tuple
 
 from app.models.models import Classes
+from app.models.models import Specializations
 from app.models.schemas.classes.class_schemas import (
     ClassPublic,
     ClassCreate,
     ClassUpdate,
-    ClassDeleteResponse
+    ClassDeleteResponse,
+    ClassesResponse
 )
 from app.models.models import Students
 
 from app.enums.status import StatusEnum
+from app.services.teachers import get_teacher_by_id, get_all_teachers
 
 class ClassServices:
     @staticmethod
@@ -25,30 +28,54 @@ class ClassServices:
         skip: int = 0,
         limit: int = 10,
         classcode: Optional[str] = None,
-        teacher_id: Optional[str] = None,
+        teacher_id: Optional[uuid.UUID] = None,
         status: Optional[str] = None
-    ) -> Tuple[List[ClassPublic], int]:
-        # Câu query gốc
-        statement = select(Classes)
+    ) -> Tuple[List[ClassesResponse], int]:
 
-        # Thêm điều kiện lọc nếu có
+        statement = (
+            select(
+                Classes.id,
+                Classes.class_code,
+                Classes.class_name,
+                Classes.size,
+                Classes.status,
+                Classes.created_at,
+                Classes.updated_at,
+                Classes.specialization_id,
+                Classes.teacher_id,
+                Specializations.name.label("specialization_name")
+            )
+            .join(Specializations, Specializations.id == Classes.specialization_id)
+        )
+
+        teacher_info = get_all_teachers()
+        teacher_map = {t["id"]: t["name"] for t in teacher_info} 
+
         if classcode:
-            statement = statement.where(Classes.classcode == classcode)
-
+            statement = statement.where(Classes.class_code == classcode)
         if teacher_id:
             statement = statement.where(Classes.teacher_id == teacher_id)
-
         if status:
             statement = statement.where(Classes.status == status)
 
-        # Query để đếm tổng số bản ghi sau khi filter
-        total = session.exec(
-            select(func.count()).select_from(statement.subquery())
-        ).one()
+        count_stmt = select(func.count()).select_from(Classes)
+        if classcode:
+            count_stmt = count_stmt.where(Classes.class_code == classcode)
+        if teacher_id:
+            count_stmt = count_stmt.where(Classes.teacher_id == teacher_id)
+        if status:
+            count_stmt = count_stmt.where(Classes.status == status)
 
-        # Query lấy dữ liệu phân trang
-        statement = statement.offset(skip).limit(limit)
-        classes = session.exec(statement).all()
+        total = session.exec(count_stmt).one()
+
+        results = session.exec(statement.offset(skip).limit(limit)).all()
+
+        classes = []
+        for r in results:
+            data = r._asdict()
+            t_id = str(data.get("teacher_id"))
+            data["teacher_name"] = teacher_map.get(t_id, "Chưa xác định")
+            classes.append(ClassesResponse(**data))
 
         return classes, total
 

@@ -1,136 +1,29 @@
-import uuid
-from datetime import datetime
+import os
+import httpx
+from typing import Optional
+from dotenv import load_dotenv
 
-from fastapi import HTTPException, Request
-from sqlmodel import Session, select
-from starlette import status
-from typing import List
-from app.middleware.hashing import hash_password
+load_dotenv()
 
-from app.models.models import Teachers
-from app.models.models import UserInformations
-from app.models.schemas.teachers.teacher_schemas import (
-    TeacherPublic,
-    TeacherCreate,
-    TeacherUpdate,
-    TeacherDeleteResponse,
-    TeacherCreateWithUserInfor,
-    TeacherWithCitizenID
-)
-from app.models.models import Classes
+UNICORE_API_URL = os.getenv("UNICORE_API_URL", "http://localhost:8386")
+UNIUSERS_PREFIX = os.getenv("UNIUSERS_PREFIX", "uniusers/api")
 
-from app.enums.status import StatusEnum
+TEACHER_API_URL = f"{UNICORE_API_URL}/{UNIUSERS_PREFIX}/teachers"
 
-class TeacherServices:
-    @staticmethod
-    def get_all(*, session: Session) -> List[TeacherPublic]:
-        teachers = session.exec(select(Teachers)).all()
-        return teachers
+def get_teacher_by_id(teacher_id: str) -> Optional[dict]:
+    url = f"{TEACHER_API_URL}/{teacher_id}"
+    try:
+        response = httpx.get(url, timeout=5)
+        response.raise_for_status()
+        return response.json()
+    except httpx.HTTPError:
+        return None
 
-    @staticmethod
-    def get_by_id(
-        *, session: Session, teacher_id: uuid.UUID, request: Request
-    ) -> TeacherPublic:
-        teacher = session.get(Teachers, teacher_id)
-        if not teacher:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Teacher does not exist"
-            )
-        return TeacherPublic.model_validate(teacher)
 
-    @staticmethod
-    def create(
-        *,
-        session: Session,
-        teacher: TeacherCreateWithUserInfor,
-    ) -> TeacherWithCitizenID:
-        existing = session.exec(
-            select(Teachers).where(Teachers.teacher_code == teacher.teacher_code)
-        ).first()
-        if existing:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Teacher {teacher.teacher_code} already exists.",
-            )
-        
-        teacher_data = teacher.model_dump(exclude={"citizen_id"})
-
-        # hash password
-        teacher_data["password"] = hash_password(teacher_data["password"])
-
-        new_teacher = Teachers(**teacher_data)
-        session.add(new_teacher)
-        session.commit()
-        session.refresh(new_teacher)
-
-        user_info = UserInformations(
-            teacher_id=new_teacher.id,
-            citizen_id=teacher.citizen_id
-        )
-        session.add(user_info)
-        session.commit()
-
-        user_info = session.exec(
-            select(UserInformations).where(UserInformations.teacher_id == new_teacher.id)
-        ).first()
-
-        return TeacherWithCitizenID(
-            **new_teacher.dict(),
-            citizen_id=user_info.citizen_id
-        )
-
-    @staticmethod
-    def update(
-        *,
-        session: Session,
-        teacher_id: uuid.UUID,
-        teacher_data: TeacherUpdate,
-    ) -> TeacherPublic:
-        teacher = session.get(Teachers, teacher_id)
-        if not teacher:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Teacher not found"
-            )
-
-        update_data = teacher_data.model_dump(exclude_unset=True)
-        for field, value in update_data.items():
-            setattr(teacher, field, value)
-
-        session.commit()
-        return TeacherPublic.model_validate(teacher)
-
-    @staticmethod
-    def delete_many(
-        *,
-        session: Session,
-        teacher_ids: List[uuid.UUID]
-    ) -> List[TeacherDeleteResponse]:
-        results = []
-
-        for teacher_id in teacher_ids:
-            teacher = session.get(Teachers, teacher_id)
-            if not teacher:
-                results.append(
-                    TeacherDeleteResponse(id=str(teacher_id), message="Teacher not found")
-                )
-                continue
-
-            check_related_entities = select(Classes).where(Classes.teacher_id == teacher.id)
-            classes = session.exec(check_related_entities).all()
-            if classes:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Teacher fees has related Classes Fees and cannot be deleted.",
-                )
-
-            if teacher.status == StatusEnum.ACTIVE:
-                teacher.status = StatusEnum.INACTIVE
-                message = "Teacher set to inactive"
-            else:
-                session.delete(teacher)
-                message = "Teacher deleted successfully"
-
-            session.commit()
-            results.append(TeacherDeleteResponse(id=str(teacher_id), message=message))
-
-        return results
+def get_all_teachers() -> list[dict]:
+    try:
+        response = httpx.get(TEACHER_API_URL, timeout=5)
+        response.raise_for_status()
+        return response.json()
+    except httpx.HTTPError:
+        return []
