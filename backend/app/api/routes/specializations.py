@@ -3,6 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.specializations.specialization_schemas import (
+    SpecializationDropdownResponse,
     SpecializationListResponse,
     SpecializationPublic,
     SpecializationCreate,
@@ -20,6 +21,14 @@ router = APIRouter()
 def get_majors(session: SessionDep, query: SpecializationQueryParams = Depends()):
     specializations, total = SpecializationServices.get_all(session=session,query=query)
     return SpecializationListResponse(total=total, data=specializations)
+
+# =========================== get dropdown specialization ===========================
+@router.get("/dropdown", response_model=List[SpecializationDropdownResponse])
+def get_teachers_dropdown(
+    session: SessionDep,
+    query: SpecializationQueryParams = Depends()
+) -> List[SpecializationDropdownResponse]:
+    return SpecializationServices.get_dropdown(session=session, query=query)
 
 # =========================== get specialization by id ===========================
 @router.get(

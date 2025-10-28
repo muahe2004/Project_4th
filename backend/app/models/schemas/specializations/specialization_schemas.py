@@ -33,3 +33,7 @@ class SpecializationQueryParams(BaseQueryParams):
 class SpecializationListResponse(SQLModel):
     total: int
     data: List[SpecializationPublic]
+
+class SpecializationDropdownResponse(SQLModel):
+    id: UUID
+    name: str

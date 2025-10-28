@@ -2,11 +2,12 @@ import uuid
 from datetime import datetime
 
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select, or_, select, func, desc
+from sqlmodel import Session, and_, select, or_, select, func, desc
 from typing import List, Tuple
 
 from app.models.models import Specializations
 from app.models.schemas.specializations.specialization_schemas import (
+    SpecializationDropdownResponse,
     SpecializationPublic,
     SpecializationCreate,
     SpecializationQueryParams,
@@ -51,6 +52,34 @@ class SpecializationServices:
         specializations = session.exec(statement).all()
 
         return specializations, total
+    
+    @staticmethod
+    def get_dropdown(*, session: Session, query: SpecializationQueryParams) -> List[SpecializationDropdownResponse]:
+        statement = select(Specializations)
+
+        conditions = []
+
+        if query.status:
+            conditions.append(Specializations.status == query.status)
+
+        if query.search:
+            search_pattern = f"%{query.search}%"
+            conditions.append(
+                or_(
+                    Specializations.specialization_code.ilike(search_pattern),
+                    Specializations.name.ilike(search_pattern),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(and_(*conditions))
+
+        statement = statement.order_by(desc(Specializations.created_at))
+        statement = statement.offset(query.skip).limit(query.limit)
+
+        results = session.exec(statement).all()
+
+        return [SpecializationDropdownResponse.model_validate(t) for t in results]
 
     @staticmethod
     def get_by_id(
