@@ -13,4 +13,5 @@ export const dashBoardUrl = "/admin";
 export const departmentUrl = "departments";
 export const majorUrl = "majors";
 export const specializationsUrl = "specializations";
+export const classesUrl = "classes";
 export const onlineCourse = "courses";
