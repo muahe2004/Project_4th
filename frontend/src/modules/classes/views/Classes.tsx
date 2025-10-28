@@ -1,5 +1,4 @@
 import { useState } from "react";
-import dayjs from "dayjs";
 
 import {
     Box,
@@ -15,27 +14,27 @@ import {
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+import Button from "../../../components/Button/Button";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
-import Button from "../../../components/Button/Button";
-import ClassForm from "../components/ClassFormModel";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
+import ClassForm from "../components/ClassFormModel";
+
+import { useGetClasses } from "../apis/getClasses";
+import { useGetSpecialization } from "../../specializations/apis/getSpecializations";
+import type { IClasses } from "../types";
 
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 import { STATUS_OPTIONS } from "../../../constants/status";
 
-import { useGetClasses } from "../apis/getClasses";
-import type { IClasses } from "../types";
-
 import "./styles/Specializations.css";
-import { useGetMajor } from "../../majors/apis/getMajors";
 
 export function Classes() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
-    const [searchMajor, setSearchMajor] = useState("");
+    const [searchSpecialization, setSearchSpecialization] = useState("");
 
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
@@ -56,13 +55,13 @@ export function Classes() {
 
     const { data: classes, isLoading: isLoadingClasses, error: errorClasses } = useGetClasses(Params);
 
-    const ParamsMajor = {
+    const ParamsSpecialization = {
         limit: 5,
         skip: (page - 1) * 5,
-        search: searchMajor || undefined
+        search: searchSpecialization || undefined
     };
     
-    const { data: major, isLoading: isLoadingDeparment, error: errorDepatment } = useGetMajor(ParamsMajor);
+    const { data: specializations, isLoading: isLoadingSpecializations, error: errorSpecializations } = useGetSpecialization(ParamsSpecialization);
 
     return (
         <main className="admin-main-container">
@@ -74,10 +73,10 @@ export function Classes() {
                 />
 
                 <MainAutocomplete
-                    options={major?.data || []}
+                    options={specializations?.data || []}
                     value={majorId}
                     onChange={setMajorId}
-                    onSearchChange={setSearchMajor}
+                    onSearchChange={setSearchSpecialization}
                     onResetPage={() => setPage(1)}
                     getOptionLabel={(option) => option.name}
                     getOptionId={(option) => (option.id?.toString() || "")}
@@ -175,7 +174,7 @@ export function Classes() {
             </TableContainer>
 
             <PaginationUniCore
-                totalItems={major?.total || 0}
+                totalItems={classes?.total || 0}
                 page={page}
                 rowsPerPage={rowsPerPage}
                 onPageChange={(p) => setPage(p)}

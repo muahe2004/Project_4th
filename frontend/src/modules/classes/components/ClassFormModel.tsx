@@ -12,6 +12,8 @@ import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import { useCreateClass } from "../apis/addClass";
 import { useEditClass } from "../apis/editClass";
 import { useGetMajor } from "../../majors/apis/getMajors";
+import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
+import { useGetSpecialization } from "../../specializations/apis/getSpecializations";
 
 interface ClasssFormProps {
     open: boolean;
@@ -27,14 +29,12 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
     const [classCode, setClassCode] = useState("");
     const [className, setClassName] = useState("");
     const [size, setSize] = useState(0);
-    // const [establishedDate, setEstablishedDate] = useState<Date | null>(new Date());
-    // const [description, setDescription] = useState(""); 
     const [teacherId, setTeacherId] = useState("");
     const [specializationId, setSpecializationId] = useState("");
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
     const [isChanged, setIsChanged] = useState(false);
     const [pendingPayload, setPendingPayload] = useState<IClasses | null>(null);
-    const [searchDepartMent, setSearchDepartMent] = useState("");
+    const [searchSpecialization, setSearchSpecialization] = useState("");
 
     const currentValues: IClasses = {
         class_code: classCode.trim(),
@@ -46,13 +46,24 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
         ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
     };
 
-    const Params = {
+    const [page, setPage] = useState(1);
+    const [searchTeacher, setSearchTeacher] = useState("");
+    const ParamsTeacher = {
         limit: 5,
-        skip: 0,
-        search: searchDepartMent || undefined
+        skip: (page - 1) * 5,
+        search: searchTeacher || undefined
     };
 
-    const { data: major, isLoading: isLoadingMajor, error: errorMajor } = useGetMajor(Params);
+    const { data: teacher, isLoading: isLoadingTeacher, error: errorTeacher } = useTeacherDropdown(ParamsTeacher);
+
+    const ParamsSpecialization = {
+        limit: 5,
+        skip: (page - 1) * 5,
+        search: searchSpecialization || undefined
+    };
+    
+    const { data: specializations, isLoading: isLoadingSpecializations, error: errorSpecializations } = useGetSpecialization(ParamsSpecialization);
+
     const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({mode, isChanged, onClose});
     const { mutateAsync: createClass } = useCreateClass({});
     const { mutateAsync: editClass } = useEditClass({});
@@ -69,7 +80,6 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
             setClassName("");
             setSpecializationId("");
             setTeacherId("");
-            // setSize(0);
         }
     }, [mode, initialValues, open]);
 
@@ -160,6 +170,15 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
                     className="main-text__field primary-dialog-input"
                 />
 
+                <LabelPrimary value="Sĩ số" />
+                <TextField
+                    value={className}
+                    onChange={(e) => setClassName(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    className="main-text__field primary-dialog-input"
+                />
+
                 <LabelPrimary value="Chuyên Ngành" required />
                 <Select
                     value={specializationId}
@@ -173,7 +192,7 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
                     }}
                 >
                     {
-                        major?.data.map((row) => (
+                        specializations?.data.map((row) => (
                             <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
                         ))
                     }
@@ -181,8 +200,8 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
 
                 <LabelPrimary value="Giáo viên chủ nhiệm" />
                 <Select
-                    value={specializationId}
-                    onChange={(e) => setSpecializationId(e.target.value)}
+                    value={teacherId}
+                    onChange={(e) => setTeacherId(e.target.value)}
                     fullWidth
                     id="outlined-select"
                     variant="outlined"
@@ -192,22 +211,11 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
                     }}
                 >
                     {
-                        major?.data.map((row) => (
+                        teacher?.map((row) => (
                             <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
                         ))
                     }
                 </Select>
-
-                {/* <LabelPrimary value="Mô tả" />
-                <TextField
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    multiline
-                    rows={3}
-                    className="main-text__field"
-                /> */}
             </DialogContent>
             <DialogActions className="primary-dialog-actions">
                 <Button onClick={handleCloseClick} className="button-cancel">Hủy</Button>

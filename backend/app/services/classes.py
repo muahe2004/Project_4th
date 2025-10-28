@@ -18,7 +18,7 @@ from app.models.schemas.classes.class_schemas import (
 from app.models.models import Students
 
 from app.enums.status import StatusEnum
-from app.services.teachers import get_teacher_by_id, get_all_teachers
+from app.services.teachers import get_all_teachers
 
 class ClassServices:
     @staticmethod
@@ -67,6 +67,8 @@ class ClassServices:
             count_stmt = count_stmt.where(Classes.status == status)
 
         total = session.exec(count_stmt).one()
+
+        statement = statement.order_by(Classes.created_at.desc())
 
         results = session.exec(statement.offset(skip).limit(limit)).all()
 
