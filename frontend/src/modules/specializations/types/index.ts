@@ -9,3 +9,8 @@ export interface ISpecializations {
   updated_at?: string;
   major_id: string;
 }
+
+export interface SpecializationsDropDown {
+    id: string;
+    name: string;
+}

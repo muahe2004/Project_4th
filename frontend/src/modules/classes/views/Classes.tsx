@@ -22,28 +22,28 @@ import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import ClassForm from "../components/ClassFormModel";
 
 import { useGetClasses } from "../apis/getClasses";
-import { useGetSpecialization } from "../../specializations/apis/getSpecializations";
-import type { IClasses } from "../types";
+import type { IClassesResponse } from "../types";
 
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 import { STATUS_OPTIONS } from "../../../constants/status";
 
-import "./styles/Specializations.css";
+import "./styles/Classes.css";
+import { useSpecializationsDropDown } from "../../specializations/apis/getSpecializationDropDown";
 
 export function Classes() {
     const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
     const [search, setSearch] = useState("");
     const [searchSpecialization, setSearchSpecialization] = useState("");
 
+    const [status, setStatus] = useState("");
+    const [specializationId, setSpecializationId] = useState("");
+
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
-    const [selectedMajor, setSelectedMajor] = useState<IClasses | undefined>(undefined); 
-
-    const [specializationId, setSpecializationId] = useState("");
-    const [status, setStatus] = useState("");
-
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [selectedClass, setSelectedClass] = useState<IClassesResponse>();
 
     const Params = {
         limit: rowsPerPage,
@@ -53,15 +53,23 @@ export function Classes() {
         ...(specializationId && { specialization_id: specializationId }),
     };
 
-    const { data: classes, isLoading: isLoadingClasses, error: errorClasses } = useGetClasses(Params);
-
     const ParamsSpecialization = {
         limit: 5,
-        skip: (page - 1) * 5,
-        search: searchSpecialization || undefined
+        skip: 0,
+        search: searchSpecialization || undefined,
     };
-    
-    const { data: specializations, isLoading: isLoadingSpecializations, error: errorSpecializations } = useGetSpecialization(ParamsSpecialization);
+
+    const {
+        data: classes,
+        isLoading: isLoadingClasses,
+        error: errorClasses,
+    } = useGetClasses(Params);
+
+    const {
+        data: specializations,
+        isLoading: isLoadingSpecializations,
+        error: errorSpecializations,
+    } = useSpecializationsDropDown(ParamsSpecialization);
 
     return (
         <main className="admin-main-container">
@@ -73,14 +81,19 @@ export function Classes() {
                 />
 
                 <MainAutocomplete
-                    options={specializations?.data || []}
-                    value={specializationId}
-                    onChange={setSpecializationId}
-                    onSearchChange={setSearchSpecialization}
-                    onResetPage={() => setPage(1)}
+                    options={specializations || []}
+                    value={specializationId ? specializationId : ""} 
+                    onChange={(id) => {
+                        setSpecializationId(id); 
+                        setPage(1); 
+                        setSearchSpecialization("");
+                    }}
+                    onSearchChange={setSearchSpecialization} 
+                    onResetPage={() => setPage(1)} 
                     getOptionLabel={(option) => option.name}
-                    getOptionId={(option) => (option.id?.toString() || "")}
+                    getOptionId={(option) => option.id?.toString() || ""} 
                     placeholder="Lọc theo chuyên ngành"
+                    className="filter-text__field"
                 />
 
                 <SearchEngine 
@@ -157,7 +170,7 @@ export function Classes() {
                                         className="primary-tcell__button--icon" 
                                         onClick={() => {
                                             setMode("edit");
-                                            setSelectedMajor(row);
+                                            setSelectedClass(row);
                                             setOpen(true);
                                         }}
                                     >
@@ -187,7 +200,7 @@ export function Classes() {
             <ClassForm 
                 open={open} 
                 mode={mode} 
-                initialValues={selectedMajor}
+                initialValues={selectedClass}
                 onClose={() => setOpen(false)}
             />
         </main>

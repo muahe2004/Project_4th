@@ -5,8 +5,6 @@ import {
     DialogContent,
     DialogActions,
     TextField,
-    Select,
-    MenuItem,
 } from "@mui/material";
 import dayjs from "dayjs";
 
@@ -20,64 +18,62 @@ import { useConfirmCloseForm } from "../../../hooks/useConfirm";
 import { useCreateClass } from "../apis/addClass";
 import { useEditClass } from "../apis/editClass";
 import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
-import { useGetSpecialization } from "../../specializations/apis/getSpecializations";
+import { useSpecializationsDropDown } from "../../specializations/apis/getSpecializationDropDown";
 
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import { positiveIntegerSlotProps } from "../../../utils/validation/validations";
-
 import { STATUS } from "../../../constants/status";
-import type { IClasses } from "../types";
+import type { IClasses, IClassesResponse } from "../types";
+import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
 
-interface ClasssFormProps {
+interface ClassFormProps {
     open: boolean;
     mode: "add" | "edit";
-    initialValues?: IClasses;
+    initialValues?: IClassesResponse;
     onClose: () => void;
 }
 
-const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClose }) => {
-    const ID = initialValues?.id;
+const ClassForm: React.FC<ClassFormProps> = ({ open, mode, initialValues, onClose }) => {
     const { showSnackbar } = useSnackbar();
-    
+    const ID = initialValues?.id;
+
     const [classCode, setClassCode] = useState("");
     const [className, setClassName] = useState("");
     const [size, setSize] = useState(0);
+
     const [teacherId, setTeacherId] = useState("");
+    const [teacherName, setTeacherName] = useState("");
     const [specializationId, setSpecializationId] = useState("");
+    const [specializationName, setSpecializationName] = useState("");
+
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
     const [isChanged, setIsChanged] = useState(false);
     const [pendingPayload, setPendingPayload] = useState<IClasses | null>(null);
+
+    const [teacherPage, setTeacherPage] = useState(1);
+    const [specializationPage, setSpecializationPage] = useState(1);
+
+    const [searchTeacher, setSearchTeacher] = useState("");
     const [searchSpecialization, setSearchSpecialization] = useState("");
 
-    const currentValues: IClasses = {
-        class_code: classCode.trim(),
-        class_name: className.trim(),
-        status: STATUS.ACTIVE,
-        teacher_id: teacherId,
-        specialization_id: specializationId,
-        size: size,
-        ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
-    };
-
-    const [page, setPage] = useState(1);
-    const [searchTeacher, setSearchTeacher] = useState("");
-    const ParamsTeacher = {
+    const { data: teacher = [] } = useTeacherDropdown({
         limit: 5,
-        skip: (page - 1) * 5,
-        search: searchTeacher || undefined
-    };
+        skip: (teacherPage - 1) * 5,
+        search: searchTeacher || undefined,
+    });
 
-    const { data: teacher, isLoading: isLoadingTeacher, error: errorTeacher } = useTeacherDropdown(ParamsTeacher);
-
-    const ParamsSpecialization = {
+    const { data: specializations = [] } = useSpecializationsDropDown({
         limit: 5,
-        skip: (page - 1) * 5,
-        search: searchSpecialization || undefined
-    };
-    
-    const { data: specializations, isLoading: isLoadingSpecializations, error: errorSpecializations } = useGetSpecialization(ParamsSpecialization);
+        skip: (specializationPage - 1) * 5,
+        search: searchSpecialization || undefined,
+    });
 
-    const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({mode, isChanged, onClose});
+    const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({
+        mode,
+        isChanged,
+        onClose,
+    });
+
     const { mutateAsync: createClass } = useCreateClass({});
     const { mutateAsync: editClass } = useEditClass({});
 
@@ -85,57 +81,66 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
         if (mode === "edit" && initialValues) {
             setClassCode(initialValues.class_code || "");
             setClassName(initialValues.class_name || "");
-            setSpecializationId(initialValues.specialization_id || "");
-            setTeacherId(initialValues.teacher_id || "");
             setSize(initialValues.size || 0);
+            setTeacherId(initialValues.teacher_id || "");
+            setTeacherName(initialValues.teacher_name || "");
+            setSpecializationId(initialValues.specialization_id || "");
+            setSpecializationName(initialValues.specialization_name || "");
         } else {
             setClassCode("");
             setClassName("");
-            setSpecializationId("");
+            setSize(0);
             setTeacherId("");
+            setTeacherName("");
+            setSpecializationId("");
+            setSpecializationName("");
         }
     }, [mode, initialValues, open]);
 
     useEffect(() => {
-        if (mode === "edit" && initialValues) {
-            const payload: IClasses = {
-                class_code: classCode.trim(),
-                class_name: className.trim(),
-                status: STATUS.ACTIVE,
-                size: size,
-                updated_at: dayjs().format("YYYY-MM-DD"),
-                specialization_id: specializationId,
-                teacher_id: teacherId
-            };
+        const payload: IClasses = {
+            class_code: classCode.trim(),
+            class_name: className.trim(),
+            status: STATUS.ACTIVE,
+            size,
+            specialization_id: specializationId,
+            teacher_id: teacherId,
+            ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
+        };
 
+        if (mode === "edit" && initialValues) {
             const hasChanges = hasObjectChanged(payload, initialValues, [], ["updated_at"]);
             setIsChanged(hasChanges);
         } else {
             const hasInput =
-                currentValues.specialization_id !== "" ||
-                currentValues.teacher_id !== "" ||
-                currentValues.size !== 0 ||
-                currentValues.class_code !== "" ||
-                currentValues.class_name !== "" ||
-                currentValues.status !== STATUS.ACTIVE;
-
+                classCode.trim() !== "" ||
+                className.trim() !== "" ||
+                size !== 0 ||
+                teacherId !== "" ||
+                specializationId !== "";
             setIsChanged(hasInput);
         }
     }, [classCode, className, size, teacherId, specializationId, mode, initialValues]);
 
     const handleSubmitClick = () => {
-        const payload = currentValues;
+        const payload: IClasses = {
+            class_code: classCode.trim(),
+            class_name: className.trim(),
+            status: STATUS.ACTIVE,
+            teacher_id: teacherId,
+            specialization_id: specializationId,
+            size,
+            ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
+        };
 
         if (mode === "edit" && initialValues) {
             const hasChanges = hasObjectChanged(payload, initialValues, [], ["updated_at"]);
-
             if (!hasChanges) {
                 setOpenConfirm(false);
                 return;
-            } else {
-                setPendingPayload(payload);
-                setOpenConfirmSave(true); 
             }
+            setPendingPayload(payload);
+            setOpenConfirmSave(true);
         } else {
             handleConfirmSave(payload);
         }
@@ -146,10 +151,7 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
             if (mode === "add") await createClass(payload);
             else if (mode === "edit" && ID) await editClass({ id: ID, data: payload });
 
-            showSnackbar(
-                mode === "add" ? "Thêm lớp thành công!" : "Cập nhật lớp thành công!",
-                "success"
-            );
+            showSnackbar(mode === "add" ? "Thêm lớp thành công!" : "Cập nhật lớp thành công!", "success");
 
             setOpenConfirmSave(false);
             onClose();
@@ -160,103 +162,119 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
     };
 
     return (
-        <Dialog open={open} onClose={handleCloseClick} className="primary-dialog department-form" maxWidth="sm" fullWidth>
-            <DialogTitle className="primary-dialog-title">
-                {mode === "add" ? "ADD CLASS" : "EDIT CLASS"}
-            </DialogTitle>
-            <DialogContent className="primary-dialog-content">
-                <LabelPrimary value="Mã lớp" required />
-                <TextField
-                    value={classCode}
-                    onChange={(e) => setClassCode(e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                />
+        <Dialog
+            open={open}
+            onClose={handleCloseClick}
+            className="primary-dialog department-form"
+            maxWidth="sm"
+            fullWidth
+        >
+        <DialogTitle className="primary-dialog-title">
+            {mode === "add" ? "ADD CLASS" : "EDIT CLASS"}
+        </DialogTitle>
 
-                <LabelPrimary value="Tên lớp" />
-                <TextField
-                    value={className}
-                    onChange={(e) => setClassName(e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                />
+        <DialogContent className="primary-dialog-content">
+            <LabelPrimary value="Mã lớp" required />
+            <TextField
+                value={classCode}
+                onChange={(e) => setClassCode(e.target.value)}
+                fullWidth
+                variant="outlined"
+                className="main-text__field primary-dialog-input"
+            />
 
-                <LabelPrimary value="Sĩ số" />
-                <TextField
-                    type="number"
-                    value={size}
-                    onChange={(e) => setSize(Number(e.target.value))}
-                    fullWidth
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                    slotProps={positiveIntegerSlotProps}
-                />
+            <LabelPrimary value="Tên lớp" />
+            <TextField
+                value={className}
+                onChange={(e) => setClassName(e.target.value)}
+                fullWidth
+                variant="outlined"
+                className="main-text__field primary-dialog-input"
+            />
 
-                <LabelPrimary value="Chuyên Ngành" required />
-                <Select
-                    value={specializationId}
-                    onChange={(e) => setSpecializationId(e.target.value)}
-                    fullWidth
-                    id="outlined-select"
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                    MenuProps={{
-                        disableScrollLock: true,   
-                    }}
-                >
-                    {
-                        specializations?.data.map((row) => (
-                            <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
-                        ))
-                    }
-                </Select>
+            <LabelPrimary value="Sĩ số" />
+            <TextField
+                type="number"
+                value={size}
+                onChange={(e) => setSize(Number(e.target.value))}
+                fullWidth
+                variant="outlined"
+                className="main-text__field primary-dialog-input"
+                slotProps={positiveIntegerSlotProps}
+            />
 
-                <LabelPrimary value="Giáo viên chủ nhiệm" />
-                <Select
-                    value={teacherId}
-                    onChange={(e) => setTeacherId(e.target.value)}
-                    fullWidth
-                    id="outlined-select"
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                    MenuProps={{
-                        disableScrollLock: true,   
-                    }}
-                >
-                    {
-                        teacher?.map((row) => (
-                            <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
-                        ))
-                    }
-                </Select>
-            </DialogContent>
-            <DialogActions className="primary-dialog-actions">
-                <Button onClick={handleCloseClick} className="button-cancel">Hủy</Button>
-                <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
-                    {mode === "add" ? "Thêm" : "Lưu"}
-                </Button>
-            </DialogActions>
-
-            <ConfirmDialog
-                open={openConfirm}
-                title="Xác nhận thoát"
-                message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
-                onConfirm={() => {
-                    setOpenConfirm(false);
-                    onClose();
+            <LabelPrimary value="Chuyên Ngành" required />
+            <MainAutocomplete
+                options={specializations}
+                value={
+                    specializationId
+                    ? { id: specializationId, name: specializationName }
+                    : null
+                }
+                onChange={(id) => {
+                    setSpecializationId(id);
+                    const selected = specializations.find((s) => s.id.toString() === id);
+                    setSpecializationName(selected?.name || "");
                 }}
-                onCancel={() => setOpenConfirm(false)}
+                onSearchChange={setSearchSpecialization}
+                onResetPage={() => setSpecializationPage(1)}
+                getOptionLabel={(option) => option.name}
+                getOptionId={(option) => option.id?.toString() || ""}
+                className="primary-dialog-input"
             />
 
-            <ConfirmDialog
-                open={openConfirmSave}
-                title="Xác nhận lưu"
-                message="Bạn có chắc muốn lưu các thay đổi?"
-                onConfirm={() => pendingPayload && handleConfirmSave(pendingPayload)}
-                onCancel={() => setOpenConfirmSave(false)}
+            <LabelPrimary value="Giáo viên chủ nhiệm" required />
+            <MainAutocomplete
+                options={teacher}
+                value={
+                    teacherId
+                    ? { id: teacherId, name: teacherName }
+                    : null
+                }
+                onChange={(id) => {
+                    setTeacherId(id);
+                    const selected = teacher.find((t) => t.id.toString() === id);
+                    setTeacherName(selected?.name || "");
+                }}
+                onSearchChange={setSearchTeacher}
+                onResetPage={() => setTeacherPage(1)}
+                getOptionLabel={(option) => option.name}
+                getOptionId={(option) => option.id?.toString() || ""}
+                className="primary-dialog-input"
             />
+        </DialogContent>
+
+        <DialogActions className="primary-dialog-actions">
+            <Button onClick={handleCloseClick} className="button-cancel">
+                Hủy
+            </Button>
+            <Button
+                onClick={handleSubmitClick}
+                variant="contained"
+                disabled={!isChanged}
+            >
+                {mode === "add" ? "Thêm" : "Lưu"}
+            </Button>
+        </DialogActions>
+
+        <ConfirmDialog
+            open={openConfirm}
+            title="Xác nhận thoát"
+            message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+            onConfirm={() => {
+            setOpenConfirm(false);
+            onClose();
+            }}
+            onCancel={() => setOpenConfirm(false)}
+        />
+
+        <ConfirmDialog
+            open={openConfirmSave}
+            title="Xác nhận lưu"
+            message="Bạn có chắc muốn lưu các thay đổi?"
+            onConfirm={() => pendingPayload && handleConfirmSave(pendingPayload)}
+            onCancel={() => setOpenConfirmSave(false)}
+        />
         </Dialog>
     );
 };
