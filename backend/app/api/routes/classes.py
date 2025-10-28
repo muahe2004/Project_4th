@@ -3,8 +3,10 @@ import uuid
 from fastapi import APIRouter, Depends, Request, Query
 from app.api.deps import SessionDep
 from app.models.schemas.classes.class_schemas import (
+    ClassListResponse,
     ClassPublic,
     ClassCreate,
+    ClassQueryParams,
     ClassUpdate,
     ClassDeleteResponse
 )
@@ -15,23 +17,9 @@ router = APIRouter()
 
 # =========================== get all classes ===========================
 @router.get("")
-def get_classes(
-    session: SessionDep,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1),
-    classcode: Optional[str] = None,
-    teacher_id: Optional[int] = None,
-    status: Optional[str] = None,
-):
-    classes, total = ClassServices.get_all(
-        session=session,
-        skip=skip,
-        limit=limit,
-        classcode=classcode,
-        teacher_id=teacher_id,
-        status=status,
-    )
-    return {"total": total, "data": classes}
+def get_classes(session: SessionDep, query: ClassQueryParams = Depends()):
+    classes, total = ClassServices.get_all(session=session,query=query)
+    return ClassListResponse(total=total, data=classes)
 
 # =========================== get class by id ===========================
 @router.get(

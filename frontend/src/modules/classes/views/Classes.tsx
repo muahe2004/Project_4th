@@ -40,7 +40,7 @@ export function Classes() {
     const [mode, setMode] = useState<"add" | "edit">("add");
     const [selectedMajor, setSelectedMajor] = useState<IClasses | undefined>(undefined); 
 
-    const [majorId, setMajorId] = useState("");
+    const [specializationId, setSpecializationId] = useState("");
     const [status, setStatus] = useState("");
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -50,7 +50,7 @@ export function Classes() {
         skip: (page - 1) * rowsPerPage,
         ...(search && { search }),
         ...(status && { status }),
-        ...(majorId && { major_id: majorId }),
+        ...(specializationId && { specialization_id: specializationId }),
     };
 
     const { data: classes, isLoading: isLoadingClasses, error: errorClasses } = useGetClasses(Params);
@@ -74,8 +74,8 @@ export function Classes() {
 
                 <MainAutocomplete
                     options={specializations?.data || []}
-                    value={majorId}
-                    onChange={setMajorId}
+                    value={specializationId}
+                    onChange={setSpecializationId}
                     onSearchChange={setSearchSpecialization}
                     onResetPage={() => setPage(1)}
                     getOptionLabel={(option) => option.name}

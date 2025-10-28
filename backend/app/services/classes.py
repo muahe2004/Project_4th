@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 import json
 from fastapi import HTTPException, Request
+from sqlalchemy import or_
 from sqlmodel import Session, select, func
 from starlette import status
 from typing import List, Optional, Tuple
@@ -11,6 +12,7 @@ from app.models.models import Specializations
 from app.models.schemas.classes.class_schemas import (
     ClassPublic,
     ClassCreate,
+    ClassQueryParams,
     ClassUpdate,
     ClassDeleteResponse,
     ClassesResponse
@@ -25,13 +27,8 @@ class ClassServices:
     def get_all(
         *,
         session: Session,
-        skip: int = 0,
-        limit: int = 10,
-        classcode: Optional[str] = None,
-        teacher_id: Optional[uuid.UUID] = None,
-        status: Optional[str] = None
+        query: ClassQueryParams
     ) -> Tuple[List[ClassesResponse], int]:
-
         statement = (
             select(
                 Classes.id,
@@ -43,34 +40,48 @@ class ClassServices:
                 Classes.updated_at,
                 Classes.specialization_id,
                 Classes.teacher_id,
-                Specializations.name.label("specialization_name")
+                Specializations.name.label("specialization_name"),
             )
             .join(Specializations, Specializations.id == Classes.specialization_id)
         )
 
         teacher_info = get_all_teachers()
-        teacher_map = {t["id"]: t["name"] for t in teacher_info} 
+        teacher_map = {str(t["id"]): t["name"] for t in teacher_info}
 
-        if classcode:
-            statement = statement.where(Classes.class_code == classcode)
-        if teacher_id:
-            statement = statement.where(Classes.teacher_id == teacher_id)
-        if status:
-            statement = statement.where(Classes.status == status)
+        conditions = []
+        if query.status:
+            conditions.append(Classes.status == query.status)
+
+        if query.specialization_id:
+            conditions.append(Classes.specialization_id == query.specialization_id)
+
+        if query.teacher_id:
+            conditions.append(Classes.teacher_id == query.teacher_id)
+
+        if query.search:
+            conditions.append(
+                or_(
+                    Classes.class_code.ilike(f"%{query.search}%"),
+                    Classes.class_name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
 
         count_stmt = select(func.count()).select_from(Classes)
-        if classcode:
-            count_stmt = count_stmt.where(Classes.class_code == classcode)
-        if teacher_id:
-            count_stmt = count_stmt.where(Classes.teacher_id == teacher_id)
-        if status:
-            count_stmt = count_stmt.where(Classes.status == status)
+        if conditions:
+            count_stmt = count_stmt.where(*conditions)
 
         total = session.exec(count_stmt).one()
 
-        statement = statement.order_by(Classes.created_at.desc())
+        statement = (
+            statement.order_by(Classes.created_at.desc())
+            .offset(query.skip)
+            .limit(query.limit)
+        )
 
-        results = session.exec(statement.offset(skip).limit(limit)).all()
+        results = session.exec(statement).all()
 
         classes = []
         for r in results:

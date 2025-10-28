@@ -1,19 +1,32 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem } from "@mui/material";
 import React, { useState, useEffect } from "react";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Select,
+    MenuItem,
+} from "@mui/material";
+import dayjs from "dayjs";
+
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
-import dayjs from "dayjs";
-import { STATUS } from "../../../constants/status";
-import type { IClasses } from "../types";
-import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
+
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
-import { hasObjectChanged } from "../../../utils/checkChangeValues";
+
 import { useCreateClass } from "../apis/addClass";
 import { useEditClass } from "../apis/editClass";
-import { useGetMajor } from "../../majors/apis/getMajors";
 import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
 import { useGetSpecialization } from "../../specializations/apis/getSpecializations";
+
+import { hasObjectChanged } from "../../../utils/checkChangeValues";
+import { positiveIntegerSlotProps } from "../../../utils/validation/validations";
+
+import { STATUS } from "../../../constants/status";
+import type { IClasses } from "../types";
 
 interface ClasssFormProps {
     open: boolean;
@@ -172,11 +185,13 @@ const ClassForm: React.FC<ClasssFormProps> = ({ open, mode, initialValues, onClo
 
                 <LabelPrimary value="Sĩ số" />
                 <TextField
-                    value={className}
-                    onChange={(e) => setClassName(e.target.value)}
+                    type="number"
+                    value={size}
+                    onChange={(e) => setSize(Number(e.target.value))}
                     fullWidth
                     variant="outlined"
                     className="main-text__field primary-dialog-input"
+                    slotProps={positiveIntegerSlotProps}
                 />
 
                 <LabelPrimary value="Chuyên Ngành" required />

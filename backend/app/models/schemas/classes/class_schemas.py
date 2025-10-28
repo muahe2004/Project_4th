@@ -1,8 +1,10 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from sqlalchemy import Column, String, Integer, DateTime 
 from uuid import UUID
+
+from app.models.schemas.common.query import BaseQueryParams
 
 class ClassBase(SQLModel):
     class_code: str = Field(sa_column=Column(String(12), nullable=False, unique=True))
@@ -37,3 +39,11 @@ class ClassUpdate(SQLModel):
 class ClassDeleteResponse(SQLModel):
     message: str
     id: UUID
+
+class ClassQueryParams(BaseQueryParams):
+    specialization_id: Optional[UUID] = Field(None)
+    teacher_id: Optional[UUID] = Field(None)
+
+class ClassListResponse(SQLModel):
+    total: int
+    data: List[ClassesResponse]
