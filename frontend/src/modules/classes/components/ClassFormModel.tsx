@@ -21,7 +21,7 @@ import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
 import { useSpecializationsDropDown } from "../../specializations/apis/getSpecializationDropDown";
 
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
-import { positiveIntegerSlotProps } from "../../../utils/validation/validations";
+import { isRequired, positiveIntegerSlotProps } from "../../../utils/validation/validations";
 import { STATUS } from "../../../constants/status";
 import type { IClasses, IClassesResponse } from "../types";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
@@ -161,6 +161,20 @@ const ClassForm: React.FC<ClassFormProps> = ({ open, mode, initialValues, onClos
         }
     };
 
+    // const handleBlurUsername = () => {
+    //     if (!isRequired(username)) {
+    //       setUsernameError("Username is required!");
+    //     } else {
+    //       setUsernameError("");
+    //     }
+    //   };
+
+    const handleBlur = () => {
+        if(!isRequired(classCode)) {
+            console.log("Chưa điền");
+        }
+    }
+
     return (
         <Dialog
             open={open}
@@ -178,9 +192,11 @@ const ClassForm: React.FC<ClassFormProps> = ({ open, mode, initialValues, onClos
             <TextField
                 value={classCode}
                 onChange={(e) => setClassCode(e.target.value)}
+                onBlur={handleBlur}
                 fullWidth
                 variant="outlined"
                 className="main-text__field primary-dialog-input"
+                helperText={!isRequired(classCode) ? "Mã lớp là bắt buộc!" : ""}
             />
 
             <LabelPrimary value="Tên lớp" />
