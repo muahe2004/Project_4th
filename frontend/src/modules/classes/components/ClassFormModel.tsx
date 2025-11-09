@@ -21,7 +21,10 @@ import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
 import { useSpecializationsDropDown } from "../../specializations/apis/getSpecializationDropDown";
 
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
-import { isRequired, positiveIntegerSlotProps } from "../../../utils/validation/validations";
+import {
+    isRequired,
+    positiveIntegerSlotProps,
+} from "../../../utils/validation/validations";
 import { STATUS } from "../../../constants/status";
 import type { IClasses, IClassesResponse } from "../types";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
@@ -33,26 +36,45 @@ interface ClassFormProps {
     onClose: () => void;
 }
 
-const ClassForm: React.FC<ClassFormProps> = ({ open, mode, initialValues, onClose }) => {
+const ClassForm: React.FC<ClassFormProps> = ({
+    open,
+    mode,
+    initialValues,
+    onClose,
+}) => {
     const { showSnackbar } = useSnackbar();
     const ID = initialValues?.id;
 
-    const [classCode, setClassCode] = useState("");
-    const [className, setClassName] = useState("");
-    const [size, setSize] = useState(0);
+    const [formValues, setFormValues] = useState({
+        classCode: "",
+        className: "",
+        size: 0,
+        teacherId: "",
+        teacherName: "",
+        specializationId: "",
+        specializationName: "",
+    });
 
-    const [teacherId, setTeacherId] = useState("");
-    const [teacherName, setTeacherName] = useState("");
-    const [specializationId, setSpecializationId] = useState("");
-    const [specializationName, setSpecializationName] = useState("");
+    const [errors, setErrors] = useState({
+        classCode: "",
+        className: "",
+        size: "",
+        teacherId: "",
+        teacherName: "",
+        specializationId: "",
+        specializationName: "",
+    });
 
-    const [openConfirmSave, setOpenConfirmSave] = useState(false);
+    const [confirm, setConfirm] = useState({
+        close: false,
+        save: false,
+        pendingPayload: null as IClasses | null,
+    });
+
     const [isChanged, setIsChanged] = useState(false);
-    const [pendingPayload, setPendingPayload] = useState<IClasses | null>(null);
 
     const [teacherPage, setTeacherPage] = useState(1);
     const [specializationPage, setSpecializationPage] = useState(1);
-
     const [searchTeacher, setSearchTeacher] = useState("");
     const [searchSpecialization, setSearchSpecialization] = useState("");
 
@@ -68,43 +90,86 @@ const ClassForm: React.FC<ClassFormProps> = ({ open, mode, initialValues, onClos
         search: searchSpecialization || undefined,
     });
 
-    const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({
-        mode,
-        isChanged,
-        onClose,
-    });
+    const { openConfirm, setOpenConfirm, handleCloseClick } =
+        useConfirmCloseForm({ mode, isChanged, onClose });
 
     const { mutateAsync: createClass } = useCreateClass({});
     const { mutateAsync: editClass } = useEditClass({});
 
+    const validationRules: Record<keyof typeof formValues, (value: any) => string> = {
+        classCode: (value) => (!isRequired(value) ? "Mã lớp là bắt buộc!" : ""),
+        teacherId: (value) => (!isRequired(value) ? "Giáo viên chủ nhiệm là bắt buộc!" : ""),
+        specializationId: (value) => (!isRequired(value) ? "Chuyên ngành là bắt buộc!" : ""),
+        className: () => "",
+        size: () => "",
+        teacherName: () => "",
+        specializationName: () => "",
+    };
+
+    const handleBlur = (field: keyof typeof formValues) => {
+        const value = formValues[field];
+        const error = validationRules[field](value);
+        setErrors((prev) => ({ ...prev, [field]: error }));
+    };
+
+    const validateForm = (): boolean => {
+        let valid = true;
+        const newErrors: typeof errors = { ...errors };
+
+        (Object.keys(validationRules) as (keyof typeof formValues)[]).forEach((field) => {
+            const value = formValues[field];
+            const error = validationRules[field](value);
+            newErrors[field] = error;
+            if (error) valid = false;
+        });
+
+        setErrors(newErrors);
+        return valid;
+    };
+
     useEffect(() => {
         if (mode === "edit" && initialValues) {
-            setClassCode(initialValues.class_code || "");
-            setClassName(initialValues.class_name || "");
-            setSize(initialValues.size || 0);
-            setTeacherId(initialValues.teacher_id || "");
-            setTeacherName(initialValues.teacher_name || "");
-            setSpecializationId(initialValues.specialization_id || "");
-            setSpecializationName(initialValues.specialization_name || "");
+            setFormValues({
+                classCode: initialValues.class_code || "",
+                className: initialValues.class_name || "",
+                size: initialValues.size || 0,
+                teacherId: initialValues.teacher_id || "",
+                teacherName: initialValues.teacher_name || "",
+                specializationId: initialValues.specialization_id || "",
+                specializationName: initialValues.specialization_name || "",
+            });
         } else {
-            setClassCode("");
-            setClassName("");
-            setSize(0);
-            setTeacherId("");
-            setTeacherName("");
-            setSpecializationId("");
-            setSpecializationName("");
+            setFormValues({
+                classCode: "",
+                className: "",
+                size: 0,
+                teacherId: "",
+                teacherName: "",
+                specializationId: "",
+                specializationName: "",
+            });
         }
+        setErrors({
+            classCode: "",
+            className: "",
+            size: "",
+            teacherId: "",
+            teacherName: "",
+            specializationId: "",
+            specializationName: "",
+        });
+
+        setIsChanged(false);
     }, [mode, initialValues, open]);
 
     useEffect(() => {
         const payload: IClasses = {
-            class_code: classCode.trim(),
-            class_name: className.trim(),
+            class_code: formValues.classCode.trim(),
+            class_name: formValues.className.trim(),
             status: STATUS.ACTIVE,
-            size,
-            specialization_id: specializationId,
-            teacher_id: teacherId,
+            size: formValues.size,
+            specialization_id: formValues.specializationId,
+            teacher_id: formValues.teacherId,
             ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
         };
 
@@ -113,23 +178,25 @@ const ClassForm: React.FC<ClassFormProps> = ({ open, mode, initialValues, onClos
             setIsChanged(hasChanges);
         } else {
             const hasInput =
-                classCode.trim() !== "" ||
-                className.trim() !== "" ||
-                size !== 0 ||
-                teacherId !== "" ||
-                specializationId !== "";
+                formValues.classCode.trim() !== "" ||
+                formValues.className.trim() !== "" ||
+                formValues.size !== 0 ||
+                formValues.teacherId !== "" ||
+                formValues.specializationId !== "";
             setIsChanged(hasInput);
         }
-    }, [classCode, className, size, teacherId, specializationId, mode, initialValues]);
+    }, [formValues, mode, initialValues]);
 
     const handleSubmitClick = () => {
+        if (!validateForm()) return;
+
         const payload: IClasses = {
-            class_code: classCode.trim(),
-            class_name: className.trim(),
+            class_code: formValues.classCode.trim(),
+            class_name: formValues.className.trim(),
             status: STATUS.ACTIVE,
-            teacher_id: teacherId,
-            specialization_id: specializationId,
-            size,
+            teacher_id: formValues.teacherId,
+            specialization_id: formValues.specializationId,
+            size: formValues.size,
             ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
         };
 
@@ -139,8 +206,7 @@ const ClassForm: React.FC<ClassFormProps> = ({ open, mode, initialValues, onClos
                 setOpenConfirm(false);
                 return;
             }
-            setPendingPayload(payload);
-            setOpenConfirmSave(true);
+            setConfirm({ ...confirm, pendingPayload: payload, save: true });
         } else {
             handleConfirmSave(payload);
         }
@@ -149,31 +215,21 @@ const ClassForm: React.FC<ClassFormProps> = ({ open, mode, initialValues, onClos
     const handleConfirmSave = async (payload: IClasses) => {
         try {
             if (mode === "add") await createClass(payload);
-            else if (mode === "edit" && ID) await editClass({ id: ID, data: payload });
+            else if (mode === "edit" && ID)
+                await editClass({ id: ID, data: payload });
 
-            showSnackbar(mode === "add" ? "Thêm lớp thành công!" : "Cập nhật lớp thành công!", "success");
+            showSnackbar(
+                mode === "add" ? "Thêm lớp thành công!" : "Cập nhật lớp thành công!",
+                "success"
+            );
 
-            setOpenConfirmSave(false);
+            setConfirm({ ...confirm, save: false, pendingPayload: null });
             onClose();
         } catch (error) {
             console.error(error);
             showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
         }
     };
-
-    // const handleBlurUsername = () => {
-    //     if (!isRequired(username)) {
-    //       setUsernameError("Username is required!");
-    //     } else {
-    //       setUsernameError("");
-    //     }
-    //   };
-
-    const handleBlur = () => {
-        if(!isRequired(classCode)) {
-            console.log("Chưa điền");
-        }
-    }
 
     return (
         <Dialog
@@ -183,114 +239,128 @@ const ClassForm: React.FC<ClassFormProps> = ({ open, mode, initialValues, onClos
             maxWidth="sm"
             fullWidth
         >
-        <DialogTitle className="primary-dialog-title">
-            {mode === "add" ? "ADD CLASS" : "EDIT CLASS"}
-        </DialogTitle>
+            <DialogTitle className="primary-dialog-title">
+                {mode === "add" ? "ADD CLASS" : "EDIT CLASS"}
+            </DialogTitle>
 
-        <DialogContent className="primary-dialog-content">
-            <LabelPrimary value="Mã lớp" required />
-            <TextField
-                value={classCode}
-                onChange={(e) => setClassCode(e.target.value)}
-                onBlur={handleBlur}
-                fullWidth
-                variant="outlined"
-                className="main-text__field primary-dialog-input"
-                helperText={!isRequired(classCode) ? "Mã lớp là bắt buộc!" : ""}
-            />
+            <DialogContent className="primary-dialog-content">
+                <LabelPrimary value="Mã lớp" required />
+                <TextField
+                    value={formValues.classCode}
+                    onChange={(e) =>
+                        setFormValues((prev) => ({ ...prev, classCode: e.target.value }))
+                    }
+                    onBlur={() => handleBlur("classCode")}
+                    fullWidth
+                    variant="outlined"
+                    className="main-text__field primary-dialog-input"
+                    error={Boolean(errors.classCode)}
+                    helperText={errors.classCode}
+                />
 
-            <LabelPrimary value="Tên lớp" />
-            <TextField
-                value={className}
-                onChange={(e) => setClassName(e.target.value)}
-                fullWidth
-                variant="outlined"
-                className="main-text__field primary-dialog-input"
-            />
+                <LabelPrimary value="Tên lớp" />
+                <TextField
+                    value={formValues.className}
+                    onChange={(e) =>
+                        setFormValues((prev) => ({ ...prev, className: e.target.value }))
+                    }
+                    fullWidth
+                    variant="outlined"
+                    className="main-text__field primary-dialog-input"
+                />
 
-            <LabelPrimary value="Sĩ số" />
-            <TextField
-                type="number"
-                value={size}
-                onChange={(e) => setSize(Number(e.target.value))}
-                fullWidth
-                variant="outlined"
-                className="main-text__field primary-dialog-input"
-                slotProps={positiveIntegerSlotProps}
-            />
+                <LabelPrimary value="Sĩ số" />
+                <TextField
+                    type="number"
+                    value={formValues.size}
+                    onChange={(e) =>
+                        setFormValues((prev) => ({ ...prev, size: Number(e.target.value) }))
+                    }
+                    fullWidth
+                    variant="outlined"
+                    className="main-text__field primary-dialog-input"
+                    slotProps={positiveIntegerSlotProps}
+                />
 
-            <LabelPrimary value="Chuyên Ngành" required />
-            <MainAutocomplete
-                options={specializations}
-                value={
-                    specializationId
-                    ? { id: specializationId, name: specializationName }
-                    : null
-                }
-                onChange={(id) => {
-                    setSpecializationId(id);
-                    const selected = specializations.find((s) => s.id.toString() === id);
-                    setSpecializationName(selected?.name || "");
+                <LabelPrimary value="Chuyên Ngành" required />
+                <MainAutocomplete
+                    options={specializations}
+                    value={
+                        formValues.specializationId
+                            ? { id: formValues.specializationId, name: formValues.specializationName }
+                            : null
+                    }
+                    onChange={(id) => {
+                        const selected = specializations.find((s) => s.id.toString() === id);
+                        setFormValues((prev) => ({
+                            ...prev,
+                            specializationId: id,
+                            specializationName: selected?.name || "",
+                        }));
+                        setErrors((prev) => ({ ...prev, specializationId: "" }));
+                    }}
+
+                    onSearchChange={setSearchSpecialization}
+                    onResetPage={() => setSpecializationPage(1)}
+                    getOptionLabel={(option) => option.name}
+                    getOptionId={(option) => option.id?.toString() || ""}
+                    className="primary-dialog-input"
+                    error={Boolean(errors.specializationId)}
+                    helperText={errors.specializationId}
+                />
+
+                <LabelPrimary value="Giáo viên chủ nhiệm" required />
+                <MainAutocomplete
+                    options={teacher}
+                    value={
+                        formValues.teacherId ? { id: formValues.teacherId, name: formValues.teacherName } : null
+                    }
+                    onChange={(id) => {
+                        setFormValues((prev) => ({
+                            ...prev,
+                            teacherId: id,
+                            teacherName: teacher.find(t => t.id.toString() === id)?.name || "",
+                        }));
+                        setErrors(prev => ({ ...prev, teacherId: "" }));
+                    }}
+
+                    onSearchChange={setSearchTeacher}
+                    onResetPage={() => setTeacherPage(1)}
+                    getOptionLabel={(option) => option.name}
+                    getOptionId={(option) => option.id?.toString() || ""}
+                    className="primary-dialog-input"
+                    error={Boolean(errors.teacherId)}
+                    helperText={errors.teacherId}
+                />
+            </DialogContent>
+
+            <DialogActions className="primary-dialog-actions">
+                <Button onClick={handleCloseClick} className="button-cancel">
+                    Hủy
+                </Button>
+                <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
+                    {mode === "add" ? "Thêm" : "Lưu"}
+                </Button>
+            </DialogActions>
+
+            <ConfirmDialog
+                open={openConfirm}
+                title="Xác nhận thoát"
+                message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+                onConfirm={() => {
+                    setOpenConfirm(false);
+                    onClose();
                 }}
-                onSearchChange={setSearchSpecialization}
-                onResetPage={() => setSpecializationPage(1)}
-                getOptionLabel={(option) => option.name}
-                getOptionId={(option) => option.id?.toString() || ""}
-                className="primary-dialog-input"
+                onCancel={() => setOpenConfirm(false)}
             />
 
-            <LabelPrimary value="Giáo viên chủ nhiệm" required />
-            <MainAutocomplete
-                options={teacher}
-                value={
-                    teacherId
-                    ? { id: teacherId, name: teacherName }
-                    : null
-                }
-                onChange={(id) => {
-                    setTeacherId(id);
-                    const selected = teacher.find((t) => t.id.toString() === id);
-                    setTeacherName(selected?.name || "");
-                }}
-                onSearchChange={setSearchTeacher}
-                onResetPage={() => setTeacherPage(1)}
-                getOptionLabel={(option) => option.name}
-                getOptionId={(option) => option.id?.toString() || ""}
-                className="primary-dialog-input"
+            <ConfirmDialog
+                open={confirm.save}
+                title="Xác nhận lưu"
+                message="Bạn có chắc muốn lưu các thay đổi?"
+                onConfirm={() => confirm.pendingPayload && handleConfirmSave(confirm.pendingPayload)}
+                onCancel={() => setConfirm({ ...confirm, save: false })}
             />
-        </DialogContent>
-
-        <DialogActions className="primary-dialog-actions">
-            <Button onClick={handleCloseClick} className="button-cancel">
-                Hủy
-            </Button>
-            <Button
-                onClick={handleSubmitClick}
-                variant="contained"
-                disabled={!isChanged}
-            >
-                {mode === "add" ? "Thêm" : "Lưu"}
-            </Button>
-        </DialogActions>
-
-        <ConfirmDialog
-            open={openConfirm}
-            title="Xác nhận thoát"
-            message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
-            onConfirm={() => {
-            setOpenConfirm(false);
-            onClose();
-            }}
-            onCancel={() => setOpenConfirm(false)}
-        />
-
-        <ConfirmDialog
-            open={openConfirmSave}
-            title="Xác nhận lưu"
-            message="Bạn có chắc muốn lưu các thay đổi?"
-            onConfirm={() => pendingPayload && handleConfirmSave(pendingPayload)}
-            onCancel={() => setOpenConfirmSave(false)}
-        />
         </Dialog>
     );
 };

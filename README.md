@@ -32,7 +32,7 @@
 # Run backend:
 1. source venv/bin/activate (MacOS) source venv/Scripts/activate (Win) 
 2. uvicorn app.main:app --reload
-3. Can use: python3 run.py to run BE by python file
+3. Can use: python3 run.py
 
 # Run frontend:
 1. npm run dev

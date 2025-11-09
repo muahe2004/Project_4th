@@ -11,6 +11,8 @@ interface MainAutocompleteProps<T> {
     getOptionId?: (option: T) => string;
     placeholder?: string;
     className?: string;
+    error?: boolean;
+    helperText?: string;
 }
 
 function MainAutocomplete<T>({
@@ -23,11 +25,13 @@ function MainAutocomplete<T>({
     getOptionId = (option: any) => option?.id?.toString() ?? "",
     placeholder,
     className,
+    error = false,
+    helperText = "",
 }: MainAutocompleteProps<T>) {
     const currentValue =
         typeof value === "object" && value !== null
-        ? value
-        : options.find((opt) => getOptionId(opt) === value) || null;
+            ? value
+            : options.find((opt) => getOptionId(opt) === value) || null;
 
     return (
         <Autocomplete<T, false, false, true>
@@ -62,6 +66,8 @@ function MainAutocomplete<T>({
                     placeholder={placeholder}
                     variant="outlined"
                     className="main-text__field filter-text__field"
+                    error={error}
+                    helperText={helperText}
                     onFocus={() => {
                         onSearchChange?.("");
                         onResetPage?.();
