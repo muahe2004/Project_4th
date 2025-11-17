@@ -16,6 +16,7 @@ from app.models.schemas.user_informations.user_information_schemas import UserIn
 from app.models.schemas.score_components.score_component_schemas import ScoreComponentBase
 from app.models.schemas.scores.score_schemas import ScoresBase
 from app.models.schemas.relatives.relative_schemas import RelativeBase
+from app.models.schemas.classes.student_class_schemas import StudentClassBase
 
 class Departments(DepartmentBase, table=True):
     __tablename__ = "departments"
@@ -79,4 +80,8 @@ class Scores(ScoresBase, table=True):
 
 class Relatives(RelativeBase, table=True):
     __tablename__ = "relatives"
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+class StudentClass(StudentClassBase, table=True):
+    __tablename__ = "student_class"
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
