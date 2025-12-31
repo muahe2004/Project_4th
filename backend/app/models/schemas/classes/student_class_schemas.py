@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import UUID as UUID_TYPE, uuid4
+from app.models.schemas.common.query import BaseQueryParams
 from sqlmodel import SQLModel, Field, Column, String, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from typing import Optional
@@ -20,12 +21,16 @@ class StudentClassPublic(StudentClassBase):
 class StudentClassCreate(StudentClassBase):
     pass
 
-class StudentUpdate(BaseModel):
+class StudentClassUpdate(BaseModel):
     student_id: Optional[UUID_TYPE] = Field(default=None, sa_column=Column(PG_UUID(as_uuid=True), nullable=True))
     class_id: UUID_TYPE = Field(foreign_key="classes.id")
     status: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
-class StudentDeleteResponse(BaseModel):
+class StudentClassDeleteResponse(BaseModel):
     message: str
     id: UUID_TYPE
+
+class StudentClassQueryParams(BaseQueryParams):
+    class_id: Optional[UUID_TYPE] = Field(None)
+    student_id: Optional[UUID_TYPE] = Field(None)

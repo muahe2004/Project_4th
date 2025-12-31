@@ -95,6 +95,10 @@ export const createRouterConfig = () => {
           element: <Classes />,
         },
         {
+          path: layOutAdminUrl + learningScheduleUrl,
+          element: <LearningSchedule></LearningSchedule>
+        },
+        {
           path: layOutAdminUrl + onlineCourse,
           element: <Courses></Courses>
         },

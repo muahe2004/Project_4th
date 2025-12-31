@@ -1,7 +1,6 @@
 .week-picker {
     display: flex;
     align-items: center;
-    width: 50%;
     justify-content: right;
 }
 
@@ -10,7 +9,7 @@
 }
 
 .week-picker__time {
-    width: 21% !important;
+    width: 15% !important;
     margin-left: 10px !important;
 }
 

@@ -18,6 +18,7 @@ from app.api.routes import (
     teaching_schedules,
     examination_schedules,
     auth,
+    student_class
 )
 
 api_router = APIRouter()
@@ -37,4 +38,5 @@ api_router.include_router(learning_schedules.router, prefix="/learning_schedules
 api_router.include_router(relatives.router, prefix="/relatives", tags=["relatives"])
 api_router.include_router(teaching_schedules.router, prefix="/teaching_schedules", tags=["teaching_schedules"])
 api_router.include_router(examination_schedules.router, prefix="/examination_schedules", tags=["examination_schedules"])
+api_router.include_router(student_class.router, prefix="/student_class", tags=["student_class"])
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])

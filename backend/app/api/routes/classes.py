@@ -1,5 +1,6 @@
 import uuid
 
+from app.models.schemas.classes.student_class_schemas import StudentClassCreate, StudentClassPublic
 from fastapi import APIRouter, Depends, Request, Query
 from app.api.deps import SessionDep
 from app.models.schemas.classes.class_schemas import (
@@ -60,3 +61,13 @@ def delete_multiple_classes(
     session: SessionDep, class_ids: List[uuid.UUID]
 ) -> List[ClassDeleteResponse]:
     return ClassServices.delete_many(session=session, class_ids=class_ids)
+
+# =========================== student class ===========================
+@router.post(
+    "",
+    response_model=StudentClassPublic,
+)
+def create_class(
+    request: Request, session: SessionDep, data: StudentClassCreate
+) -> StudentClassPublic:
+    return ClassServices.create(session=session, class_=data)

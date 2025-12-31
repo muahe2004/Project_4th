@@ -1,86 +1,91 @@
 @import url("../../assets/styles/theme.css");
 
+/* ===== Admin Navbar ===== */
 .admin-navbar {
-    padding: fixed;
-    top: 0 !important;
+    position: fixed !important;
+    top: 65px !important;
     left: 0 !important;
     width: 15% !important;
-    height: calc(100vh - 65px);
-    margin-top: 65px;
+    height: calc(100vh - 65px) !important;
     background: #fafafa !important;
-    padding: 12px;
-    transition: .25s !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    transition: width 0.25s ease !important;
 }
 
 .admin-navbar.closed {
     width: 60px !important;
 }
 
+/* ===== Navbar List ===== */
 .admin-navbar__list {
-    padding: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    list-style: none !important;
 }
 
+/* ===== Navbar Button ===== */
 .admin-navbar__button {
-    display: flex;
-    align-items: center;
+    display: flex !important;
+    align-items: center !important;
     padding: 8px !important;
-}
-
-.admin-navbar__button.closed {
-    padding: 8px 0 !important;
-    margin-right: 0;
-    width: 36px;
-    height: 36px;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: background 0.2s ease !important;
 }
 
 .admin-navbar__button.active {
-    background: #f0f0f0;
+    background: #f0f0f0 !important;
 }
 
+.admin-navbar__button.closed {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+}
+
+/* ===== Icon ===== */
 .admin-navbar__icon {
     color: var(--primary-color) !important;
-    margin-right: 10px;
-    min-width: 0 !important;
+    margin-right: 10px !important;
+    display: flex !important;
 }
 
-.admin-navbar__icon.closed {
-    margin: 0 auto;
+.admin-navbar__button.closed .admin-navbar__icon {
+    margin: 0 !important;
 }
 
-.admin-navbar__icon.closed svg {
-    display: block;
-}
-
+/* ===== Text ===== */
 .admin-navbar__text {
-    color: var(--primary-color);
-}
-
-.admin-navbar__text.closed {
-    display: none;
-}
-
-.admin-navbar__text span {
+    color: var(--primary-color) !important;
     font-size: var(--font-size-label) !important;
 }
 
+.admin-navbar__button.closed .admin-navbar__text {
+    display: none !important;
+}
+
+/* ===== Toggle Button ===== */
 .admin-navbar__toggle--button {
-    width: 30px;
-    height: 30px;
-    border-radius: 999px;
-    position: absolute;
-    right: -15px;
-    top: 45%;
-    transform: translateY(-50%);
-    border: 1px solid #ccc;
-    cursor: pointer;
-    transition: .25s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ccc;
+    position: absolute !important;
+    right: -15px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 50% !important;
+    border: 1px solid #ccc !important;
+    background: #fff !important;
+    color: #ccc !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.25s, color 0.25s !important;
 }
 
 .admin-navbar__toggle--button:hover {
-    background: var(--primary-color);
-    color: #fff;
+    background: var(--primary-color) !important;
+    color: #fff !important;
 }

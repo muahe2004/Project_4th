@@ -54,7 +54,6 @@ export function LearningScheduleTable() {
 
                 return dayRows.map((row, idx) => (
                     <TableRow key={`${i}-${idx}`}>
-                        {/* Chỉ hiển thị cột "Thứ" ở dòng đầu tiên, và gộp theo số môn trong ngày */}
                         {idx === 0 && (
                             <TableCell className="primary-tcell" align="center" rowSpan={dayRows.length}>
                                 {row.day}

@@ -49,7 +49,7 @@ export function LearningSchedule() {
             <TabPanel value={value} index={0}>
 
                 <Box className="learning-schedule__flex">
-                    <FormControl className="learningSchedule-controller">
+                    {/* <FormControl className="learningSchedule-controller">
                         <InputLabel className="select-primary__label" id="demo-simple-select-helper-label">Học kỳ</InputLabel>
                         <Select
                             className="select-primary"
@@ -87,12 +87,12 @@ export function LearningSchedule() {
                             <MenuItem value={20}>Twenty</MenuItem>
                             <MenuItem value={30}>Thirty</MenuItem>
                         </Select>
-                    </FormControl>
+                    </FormControl> */}
 
-                    <WeekPicker></WeekPicker>
                 </Box>
 
-                
+                <WeekPicker></WeekPicker>
+                                
                 <LearningScheduleTable></LearningScheduleTable>
             </TabPanel>
 
