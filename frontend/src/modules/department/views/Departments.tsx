@@ -26,6 +26,8 @@ import { getStatusDisplay } from "../../../utils/status/status-display";
 import type { IDepartments } from "../types";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import { STATUS_OPTIONS } from "../../../constants/status";
+import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
+import { dashBoardUrl } from "../../../routes/urls";
 
 export function Departments() {
     const [page, setPage] = useState(1);
@@ -55,6 +57,13 @@ export function Departments() {
 
     return (
         <main className="admin-main-container">
+            <BreadCrumb
+                className="department-breadcrumb"
+                items={[
+                    { label: "Dashboard", to: dashBoardUrl },
+                    { label: "Departments" },
+                ]}
+            />
             <Box className="admin-main-box">
                 <StatusFilter
                     value={status}

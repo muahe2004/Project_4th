@@ -1,0 +1,57 @@
+@import url("../../assets/styles/theme.css");
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    color: var(--text-color-second);
+}
+
+.breadcrumb__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    row-gap: 6px;
+}
+
+.breadcrumb__list-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb__separator {
+    margin: 0 10px;
+    color: var(--text-color-time);
+}
+
+.breadcrumb__link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font: inherit;
+    cursor: pointer;
+}
+
+.breadcrumb__link:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb__link:focus-visible {
+    outline: 2px solid var(--secondary-color);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.breadcrumb__button {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.breadcrumb__current {
+    color: var(--primary-color);
+    font-weight: var(--font-weight-bold);
+}

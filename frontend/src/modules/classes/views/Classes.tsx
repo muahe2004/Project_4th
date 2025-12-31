@@ -30,6 +30,8 @@ import { STATUS_OPTIONS } from "../../../constants/status";
 
 import "./styles/Classes.css";
 import { useSpecializationsDropDown } from "../../specializations/apis/getSpecializationDropDown";
+import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
+import { dashBoardUrl } from "../../../routes/urls";
 
 export function Classes() {
     const [page, setPage] = useState(1);
@@ -73,6 +75,13 @@ export function Classes() {
 
     return (
         <main className="admin-main-container">
+            <BreadCrumb
+                className="department-breadcrumb"
+                items={[
+                    { label: "Dashboard", to: dashBoardUrl },
+                    { label: "Classes" },
+                ]}
+            />
             <Box className="admin-main-box">
                 <StatusFilter
                     value={status}

@@ -3,3 +3,7 @@
 .department-name-tcell {
     width: 30%;
 }
+
+.department-breadcrumb {
+    margin-bottom: 12px;
+}

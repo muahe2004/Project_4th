@@ -7,6 +7,8 @@ import WeekPicker from "../components/WeekPicker";
 
 import "./styles/learningSchedule.css"
 import { useState, type ReactNode } from "react";
+import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
+import { dashBoardUrl } from "../../../routes/urls";
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -37,6 +39,13 @@ export function LearningSchedule() {
   
     return (
         <main className="learningSchedule">
+            <BreadCrumb
+                className="department-breadcrumb"
+                items={[
+                    { label: "Dashboard", to: dashBoardUrl },
+                    { label: "Learning Schedules" },
+                ]}
+            />
             <Typography className="primary-title">
                 THÔNG TIN LỊCH HỌC
             </Typography>

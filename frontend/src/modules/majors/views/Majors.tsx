@@ -31,6 +31,8 @@ import { useGetDepartment } from "../../department/apis/getDepartments";
 import type { IMajors } from "../types";
 
 import "./styles/Majors.css";
+import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
+import { dashBoardUrl } from "../../../routes/urls";
 
 export function Majors() {
     const [page, setPage] = useState(1);
@@ -66,6 +68,13 @@ export function Majors() {
 
     return (
         <main className="admin-main-container">
+            <BreadCrumb
+                className="department-breadcrumb"
+                items={[
+                    { label: "Dashboard", to: dashBoardUrl },
+                    { label: "Majors" },
+                ]}
+            />
             <Box className="admin-main-box">
                 <StatusFilter
                     value={status}
