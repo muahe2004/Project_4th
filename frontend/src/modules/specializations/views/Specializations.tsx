@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
 import {
@@ -31,6 +31,8 @@ import type { ISpecializations } from "../types";
 
 import "./styles/Specializations.css";
 import { useGetMajor } from "../../majors/apis/getMajors";
+import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
+import { dashBoardUrl } from "../../../routes/urls";
 
 export function Specializations() {
     const [page, setPage] = useState(1);
@@ -64,8 +66,20 @@ export function Specializations() {
     
     const { data: major, isLoading: isLoadingDeparment, error: errorDepatment } = useGetMajor(ParamsMajor);
 
+    useEffect(() => {
+        console.log(major);
+    }, [])
+
     return (
         <main className="admin-main-container">
+            <BreadCrumb
+                className="department-breadcrumb"
+                items={[
+                    { label: "Dashboard", to: dashBoardUrl },
+                    { label: "Specializations" },
+                ]}
+            />
+            
             <Box className="admin-main-box">
                 <StatusFilter
                     value={status}

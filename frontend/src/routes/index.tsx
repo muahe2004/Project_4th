@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -16,6 +16,7 @@ import Majors from "../modules/majors/views/Majors";
 import Courses from "../modules/online-courses/views/Index";
 import Specializations from "../modules/specializations/views/Specializations";
 import Classes from "../modules/classes/views/Classes";
+import { Students } from "../modules/students/views/Students";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -101,6 +102,10 @@ export const createRouterConfig = () => {
         {
           path: layOutAdminUrl + onlineCourse,
           element: <Courses></Courses>
+        },
+        {
+          path: layOutAdminUrl + studentUrl,
+          element: <Students></Students>
         },
       ],
     },

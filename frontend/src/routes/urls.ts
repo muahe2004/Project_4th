@@ -15,3 +15,4 @@ export const specializationsUrl = "specializations";
 export const classesUrl = "classes";
 export const onlineCourse = "courses";
 export const learningScheduleUrl = "learning-schedule";
+export const studentUrl = "students";

@@ -86,7 +86,7 @@ body {
 
 .filter-text__field {
   min-width: 250px !important;
-  margin-left: 10px;
+  margin-right: 10px !important;
 }
 
 /* ================== datetime picker ================== */
