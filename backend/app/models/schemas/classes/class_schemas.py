@@ -19,6 +19,14 @@ class ClassBase(SQLModel):
 class ClassPublic(ClassBase):
     id: UUID
 
+class IdsRequest(SQLModel):
+    ids: list[UUID]
+
+class ClassDropDownResponse(SQLModel):
+    id: UUID
+    class_code: str
+    class_name: str
+
 class ClassesResponse(ClassPublic):
     specialization_id: UUID
     specialization_name: str

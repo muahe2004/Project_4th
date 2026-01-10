@@ -10,6 +10,7 @@ from typing import List, Optional, Tuple
 from app.models.models import Classes
 from app.models.models import Specializations
 from app.models.schemas.classes.class_schemas import (
+    ClassDropDownResponse,
     ClassPublic,
     ClassCreate,
     ClassQueryParams,
@@ -102,6 +103,19 @@ class ClassServices:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Class does not exist"
             )
         return ClassPublic.model_validate(class_)
+    
+    @staticmethod
+    def get_dropdown_by_ids(
+        *, session: Session, ids: List[uuid.UUID], request: Request
+    ) -> List[ClassDropDownResponse]:
+        if not ids:
+            return []
+
+        statement = select(Classes).where(Classes.id.in_(ids))
+        classes = session.exec(statement).all()
+
+        return [ClassDropDownResponse.model_validate(c) for c in classes]
+
 
     @staticmethod
     def create(

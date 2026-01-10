@@ -4,12 +4,14 @@ from app.models.schemas.classes.student_class_schemas import StudentClassCreate,
 from fastapi import APIRouter, Depends, Request, Query
 from app.api.deps import SessionDep
 from app.models.schemas.classes.class_schemas import (
+    ClassDropDownResponse,
     ClassListResponse,
     ClassPublic,
     ClassCreate,
     ClassQueryParams,
     ClassUpdate,
-    ClassDeleteResponse
+    ClassDeleteResponse,
+    IdsRequest
 )
 from app.services.classes import ClassServices
 from typing import List, Optional
@@ -31,6 +33,14 @@ def get_class_by_id(
     session: SessionDep, id: uuid.UUID, request: Request
 ) -> ClassPublic:
     return ClassServices.get_by_id(session=session, class_id=id, request=request)
+
+# =========================== get dropdown class by ids ===========================
+@router.post(
+    "dropdown-by-id",
+    response_model=list[ClassDropDownResponse]
+)
+def get_class_dropdown_by_ids( session: SessionDep, payload: IdsRequest, request: Request):
+    return ClassServices.get_dropdown_by_ids(session=session, ids=payload.ids, request=request,)
 
 # =========================== add class ===========================
 @router.post(
