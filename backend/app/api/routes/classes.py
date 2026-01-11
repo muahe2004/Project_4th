@@ -36,7 +36,7 @@ def get_class_by_id(
 
 # =========================== get dropdown class by ids ===========================
 @router.post(
-    "dropdown-by-id",
+    "/dropdown-by-ids",
     response_model=list[ClassDropDownResponse]
 )
 def get_class_dropdown_by_ids( session: SessionDep, payload: IdsRequest, request: Request):

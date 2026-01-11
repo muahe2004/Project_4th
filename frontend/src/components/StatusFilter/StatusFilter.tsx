@@ -19,37 +19,44 @@ interface ClearableSelectProps {
 }
 
 const StatusFilter: React.FC<ClearableSelectProps> = ({
-    label = "",
     value,
     onChange,
     options,
     className = "",
 }) => {
     return (
-        <FormControl  variant="outlined" className={`main-text__field filter-text__field ${className}`}>
+        <FormControl variant="outlined" className={`main-text__field filter-text__field ${className}`}>
             <Select
                 value={value}
-                onChange={(e) => onChange(e.target.value)}
+                onChange={(e) => onChange(e.target.value as string)}
+                displayEmpty
+                renderValue={(selected) =>
+                    selected ? (
+                        options.find(o => o.value === selected)?.label
+                    ) : (
+                        <span style={{ color: "#9e9e9e" }}>
+                            Chọn trạng thái
+                        </span>
+                    )
+                }
                 input={
                     <OutlinedInput
                         endAdornment={
-                        value ? (
-                            <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={() => onChange("")}
-                                edge="end"
-                                sx={{ mr: 1 }}
-                            >
-                                <ClearIcon fontSize="small" />
-                            </IconButton>
-                            </InputAdornment>
-                        ) : null
+                            value ? (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => onChange("")}
+                                        edge="end"
+                                        sx={{ mr: 1 }}
+                                    >
+                                        <ClearIcon fontSize="small" />
+                                    </IconButton>
+                                </InputAdornment>
+                            ) : null
                         }
-                        label={label}
                     />
                 }
-                displayEmpty
                 MenuProps={{ disableScrollLock: true }}
             >
                 {options.map((opt) => (

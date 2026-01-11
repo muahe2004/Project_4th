@@ -5,33 +5,24 @@ import { getStatusDisplay } from "../../../utils/status/status-display";
 
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from "@mui/icons-material/Delete";
-import type { IStudents } from "../types";
-import { useState } from "react";
+import type { IStudents, IStudentsResponse } from "../types";
+import { useEffect, useState } from "react";
 
-const students = {
-    data: [
-        {
-            student_code: "020000",
-            name: "Ly Van Test",
-            date_of_birth: "null",
-            gender: "1",
-            email: "lyvantest@unicore.edu.vn",
-            phone: "null",
-            address: "null",
-            class_id: "null",
-            training_program: "null",
-            course: "null",
-            status: "active",
-            created_at: "2026-01-10T00:00:00",
-            updated_at: "2026-01-10T00:00:00"
-        }
-    ],
-    total: 100
-};
+interface StudentTableProps {
+    students?: {
+        data: IStudentsResponse[];
+        total: number;
+    };
+}
 
-export const StudentTable = () => {
+
+export const StudentTable = ({ students }: StudentTableProps) => {
 
     const [selectedStudent, setSelectedStudent] = useState<IStudents | undefined>(undefined); 
+
+    useEffect(() => {
+        console.log(students);
+    }, [students])
     
     return(
         <TableContainer
@@ -81,7 +72,7 @@ export const StudentTable = () => {
                                 {row.gender}
                             </TableCell>
                             <TableCell className="sticky-tcell" align="left">
-                                {row.class_id}
+                                {row.class_name}
                             </TableCell>
                             <TableCell className="sticky-tcell" align="center" sx={{ color: getStatusColor(row.status)}}>
                                 {getStatusDisplay(row.status)}
