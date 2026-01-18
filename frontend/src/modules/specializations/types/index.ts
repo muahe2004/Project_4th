@@ -11,6 +11,6 @@ export interface ISpecializations {
 }
 
 export interface SpecializationsDropDown {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 }

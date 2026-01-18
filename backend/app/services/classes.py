@@ -3,7 +3,7 @@ from datetime import datetime
 import json
 from fastapi import HTTPException, Request
 from sqlalchemy import or_
-from sqlmodel import Session, select, func
+from sqlmodel import Session, and_, select, or_, select, func, desc
 from starlette import status
 from typing import List, Optional, Tuple
 
@@ -92,6 +92,34 @@ class ClassServices:
             classes.append(ClassesResponse(**data))
 
         return classes, total
+    
+    @staticmethod
+    def get_dropdown(*, session: Session, query: ClassQueryParams) -> List[ClassDropDownResponse]:
+        statement = select(Classes)
+
+        conditions = []
+
+        if query.status:
+            conditions.append(Classes.status == query.status)
+
+        if query.search:
+            search_pattern = f"%{query.search}%"
+            conditions.append(
+                or_(
+                    Classes.class_code.ilike(search_pattern),
+                    Classes.class_name.ilike(search_pattern),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(and_(*conditions))
+
+        statement = statement.order_by(desc(Classes.created_at))
+        statement = statement.offset(query.skip).limit(query.limit)
+
+        results = session.exec(statement).all()
+
+        return [ClassDropDownResponse.model_validate(t) for t in results]
 
     @staticmethod
     def get_by_id(

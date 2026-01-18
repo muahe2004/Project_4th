@@ -14,3 +14,9 @@ export interface IClassesResponse extends IClasses {
     specialization_name: string;
     teacher_name: string;
 }
+
+export interface IClassesDropDown {
+    id: string;
+    class_name: string;
+    class_code: string;
+}

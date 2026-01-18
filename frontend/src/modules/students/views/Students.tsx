@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useGetStudents } from "../apis/getStudents";
@@ -9,6 +9,8 @@ import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import { STATUS_OPTIONS } from "../../../constants/status";
 import Button from "../../../components/Button/Button";
+import StudentFormModel from "../components/StudentFormModel";
+import type { IStudentsResponse } from "../types";
 
 
 
@@ -20,9 +22,16 @@ export function Students() {
     const searchDepartment = (value: string) => {
         console.log("value: ", value);
     }
+    
+    const handleEditStudent = (student: IStudentsResponse) => {
+        setMode("edit");
+        setSelectedStudent(student);
+        setOpen(true);
+    };
 
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
+    const [selectedStudent, setSelectedStudent] = useState<IStudentsResponse | undefined>(undefined);
     // const [selectedDepartment, setSelectedDepartment] = useState<IDepartments | undefined>(undefined); 
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -37,6 +46,10 @@ export function Students() {
     const { data: students, isLoading: isLoadingDeparment, error: errorDepatment } = useGetStudents(Params);
     
     const isLoading = isLoadingDeparment;
+
+    useEffect(() => {
+        console.log(students);
+    }, [])
 
     return(
         <main className="admin-main-container">
@@ -65,6 +78,7 @@ export function Students() {
                 <Button
                     onClick={() => {
                         setMode("add");
+                        setSelectedStudent(undefined);
                         setOpen(true);
                     }}
                     className="btn-spacing-left">
@@ -72,7 +86,7 @@ export function Students() {
                 </Button>
             </Box>
 
-            <StudentTable students={students}/>
+            <StudentTable students={students} onEdit={handleEditStudent}/>
             <PaginationUniCore
                 totalItems={students?.total || 0}
                 page={page}
@@ -83,6 +97,16 @@ export function Students() {
                 setPage(1); 
             }}
             ></PaginationUniCore>
+
+            <StudentFormModel 
+                open={open} 
+                mode={mode} 
+                initialValues={selectedStudent}
+                onClose={() => {
+                    setOpen(false);
+                    setSelectedStudent(undefined);
+                }}
+            />
         </main>
     )
 }

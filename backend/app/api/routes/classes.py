@@ -24,16 +24,6 @@ def get_classes(session: SessionDep, query: ClassQueryParams = Depends()):
     classes, total = ClassServices.get_all(session=session,query=query)
     return ClassListResponse(total=total, data=classes)
 
-# =========================== get class by id ===========================
-@router.get(
-    "/{id}",
-    response_model=ClassPublic
-)
-def get_class_by_id(
-    session: SessionDep, id: uuid.UUID, request: Request
-) -> ClassPublic:
-    return ClassServices.get_by_id(session=session, class_id=id, request=request)
-
 # =========================== get dropdown class by ids ===========================
 @router.post(
     "/dropdown-by-ids",
@@ -41,6 +31,14 @@ def get_class_by_id(
 )
 def get_class_dropdown_by_ids( session: SessionDep, payload: IdsRequest, request: Request):
     return ClassServices.get_dropdown_by_ids(session=session, ids=payload.ids, request=request,)
+
+# =========================== get dropdown classes ===========================
+@router.get("/dropdown", response_model=List[ClassDropDownResponse])
+def get_classes_dropdown(
+    session: SessionDep,
+    query: ClassQueryParams = Depends()
+) -> List[ClassDropDownResponse]:
+    return ClassServices.get_dropdown(session=session, query=query)
 
 # =========================== add class ===========================
 @router.post(

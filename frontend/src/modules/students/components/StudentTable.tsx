@@ -1,24 +1,23 @@
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import dayjs from "dayjs";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from "@mui/icons-material/Delete";
-import type { IStudents, IStudentsResponse } from "../types";
-import { useEffect, useState } from "react";
+import type { IStudentsResponse } from "../types";
+import { useEffect } from "react";
+import { getGenderDisplay } from "../../../utils/status/gender-display";
 
 interface StudentTableProps {
     students?: {
         data: IStudentsResponse[];
         total: number;
     };
+    onEdit?: (student: IStudentsResponse) => void;
 }
 
 
-export const StudentTable = ({ students }: StudentTableProps) => {
-
-    const [selectedStudent, setSelectedStudent] = useState<IStudents | undefined>(undefined); 
+export const StudentTable = ({ students, onEdit }: StudentTableProps) => {
 
     useEffect(() => {
         console.log(students);
@@ -68,8 +67,8 @@ export const StudentTable = ({ students }: StudentTableProps) => {
                                 {/* {dayjs(row.established_date).format("DD-MM-YYYY")} */}
                                 {row.email}
                             </TableCell>
-                            <TableCell className="sticky-tcell" align="left">
-                                {row.gender}
+                            <TableCell className="sticky-tcell" align="center">
+                                {getGenderDisplay(row.gender)}
                             </TableCell>
                             <TableCell className="sticky-tcell" align="left">
                                 {row.class_name}
@@ -81,9 +80,7 @@ export const StudentTable = ({ students }: StudentTableProps) => {
                                 <IconButton 
                                     className="primary-tcell__button--icon" 
                                     onClick={() => {
-                                        // setMode("edit");
-                                        setSelectedStudent(row);
-                                        // setOpen(true);
+                                        onEdit?.(row);
                                     }}
                                 >
                                     <EditSquareIcon/>
