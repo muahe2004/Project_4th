@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
-import { UNIUSERS_PREFIX } from "../constants/config";
+import { UNICORE_PREFIX } from "../constants/config";
 
 type UserInfo = {
   id: string;
@@ -26,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
 
       fetchMe: async () => {
         try {
-          const res = await axios.get(`${import.meta.env.VITE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/auth/me`, {
+          const res = await axios.get(`${import.meta.env.VITE_UNICORE_API_URL}/${UNICORE_PREFIX}/auth/me`, {
             withCredentials: true,
           });
           set({ user: res.data });
@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         try {
-          await axios.post(`${import.meta.env.VITE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/auth/logout`, {}, { withCredentials: true });
+          await axios.post(`${import.meta.env.VITE_UNICORE_API_URL}/${UNICORE_PREFIX}/auth/logout`, {}, { withCredentials: true });
         } catch (e) {
           console.error("Logout failed:", e);
         }

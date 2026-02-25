@@ -1,25 +1,47 @@
 from datetime import datetime
 from typing import Optional
+from uuid import UUID as UUID_TYPE, uuid4
 from sqlmodel import SQLModel, Field, Column, String, DateTime, Text
-from uuid import UUID
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
-class TeacherBase(SQLModel):
+from app.models.schemas.common.query import BaseQueryParams
+
+class BaseModel(SQLModel):
+    model_config = dict(arbitrary_types_allowed=True)
+
+class TeacherBase(BaseModel):
     teacher_code: str = Field(sa_column=Column(String(12), nullable=False, unique=True))
     name: str = Field(sa_column=Column(String(100), nullable=False))
-    date_of_birth: datetime | None = Field(default=None)
-    gender: str | None = Field(default=None, sa_column=Column(String(1), nullable=False))
-    email: str | None = Field(default=None, sa_column=Column(String(100), nullable=False, unique=True))
-    phone: str | None = Field(default=None, sa_column=Column(String(20), nullable=True))
-    address: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
-    academic_rank: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
-    status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
-    department_id: UUID | None = Field(default=None, foreign_key="departments.id")
+    date_of_birth: Optional[datetime] = Field(default=None)
+    gender: Optional[str] = Field(default=None, sa_column=Column(String(1), nullable=False))
+    email: Optional[str] = Field(default=None, sa_column=Column(String(100), nullable=False, unique=True))
+    phone: Optional[str] = Field(default=None, sa_column=Column(String(20), nullable=True))
+    address: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
+    academic_rank: Optional[str] = Field(default=None, sa_column=Column(String(100), nullable=True))
+    status: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
+    department_id: Optional[UUID_TYPE] = Field(default=None, sa_column=Column(PG_UUID(as_uuid=True), nullable=True))
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     password: str = Field(sa_column=Column(String(100), nullable=False))
 
 class TeacherPublic(TeacherBase):
-    id: UUID
+    id: UUID_TYPE
+
+class TeacherResponse(BaseModel):
+    id: UUID_TYPE
+    teacher_code: str
+    name: str
+    date_of_birth: Optional[datetime] = None
+    gender: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    academic_rank: Optional[str] = None
+    status: Optional[str] = None
+    department_id: Optional[UUID_TYPE] = None
+    created_at: datetime
+    updated_at: datetime
+
 
 class TeacherWithCitizenID(TeacherPublic):
     citizen_id: str
@@ -31,7 +53,7 @@ class TeacherCreateWithUserInfor(TeacherBase):
     citizen_id: str
     pass
 
-class TeacherUpdate(SQLModel):
+class TeacherUpdate(BaseModel):
     teacher_code: Optional[str] = Field(default=None, sa_column=Column(String(12), nullable=True))
     name: Optional[str] = Field(default=None, sa_column=Column(String(100), nullable=True))
     date_of_birth: Optional[datetime] = Field(default=None)
@@ -41,9 +63,16 @@ class TeacherUpdate(SQLModel):
     address: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
     academic_rank: Optional[str] = Field(default=None, sa_column=Column(String(100), nullable=True))
     status: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
-    department_id: Optional[UUID] = Field(default=None, foreign_key="departments.id")
+    department_id: Optional[UUID_TYPE] = Field(default=None, sa_column=Column(PG_UUID(as_uuid=True), nullable=True))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
-class TeacherDeleteResponse(SQLModel):
+class TeacherDeleteResponse(BaseModel):
     message: str
-    id: UUID
+    id: UUID_TYPE
+
+class TeacherDropdownResponse(BaseModel):
+    id: UUID_TYPE
+    name: str
+
+class TeacherSearchParams(BaseQueryParams):
+    department_id: Optional[UUID_TYPE] = Field(None)

@@ -7,7 +7,7 @@ class UserInformationBase(SQLModel):
     place_of_origin: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
     exempted_group: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
     priority_group: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
-    citizen_id: str = Field(sa_column=Column(String(12), nullable=False, unique=True))
+    citizen_id: str | None = Field(default=None, sa_column=Column(String(12), nullable=True, unique=True))
     issue_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
     issue_place: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
     nationality: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
@@ -26,6 +26,20 @@ class UserInformationPublic(UserInformationBase):
 
 class UserInformationCreate(UserInformationBase):
     pass
+
+class StudentInformationCreate(SQLModel):
+    citizen_id: Optional[str] = None
+    place_of_origin: Optional[str] = None
+    exempted_group: Optional[str] = None
+    priority_group: Optional[str] = None
+    issue_date: Optional[datetime] = None
+    issue_place: Optional[str] = None
+    nationality: Optional[str] = None
+    ethnicity: Optional[str] = None
+    religion: Optional[str] = None
+    insurance_number: Optional[str] = None
+    bank_name: Optional[str] = None
+    bank_account_number: Optional[str] = None
 
 class UserInformationUpdate(SQLModel):
     place_of_origin: Optional[str] | None = Field(default=None, sa_column=Column(Text, nullable=True))

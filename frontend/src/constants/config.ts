@@ -4,16 +4,16 @@ export const UNICORE_PREFIX = import.meta.env.VITE_UNICORE_PREFIX;
 export const UNILEARN_PREFIX = import.meta.env.VITE_UNILEARN_PREFIX;
 
 // Auth
-export const URL_API_AUTH = `${BASE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/auth/login`;
+export const URL_API_AUTH = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/auth/login`;
 
 // Teacher
-export const URL_API_TEACHER = `${BASE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/teachers`;
+export const URL_API_TEACHER = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/teachers`;
 
 // Student
-export const URL_API_STUTDENT = `${BASE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/students`;
+export const URL_API_STUTDENT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/students`;
 
 // User information
-export const URL_API_USER_INFORMATION = `${BASE_UNICORE_API_URL}/${UNIUSERS_PREFIX}/user_information`;
+export const URL_API_USER_INFORMATION = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/user_information`;
 
 // Department
 export const URL_API_DEPARTMENT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/departments`;

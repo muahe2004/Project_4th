@@ -42,3 +42,14 @@ class RelativeUpdate(SQLModel):
 class RelativeDeleteResponse(SQLModel):
     message: str
     id: UUID
+
+class StudentRelativeCreate(SQLModel):
+    name: Optional[str] = None
+    date_of_birth: Optional[datetime] = None
+    nationality: Optional[str] = None
+    ethnicity: Optional[str] = None
+    religion: Optional[str] = None
+    occupation: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    relationship: Optional[str] = None

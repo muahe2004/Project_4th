@@ -3,12 +3,13 @@ import uuid
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.students.student_schemas import (
+    ListStudentResponse,
+    StudentCreateResponse,
     StudentPublic,
-    StudentCreate,
     StudentCreateWithUserInfor,
+    StudentQueryParams,
     StudentUpdate,
     StudentDeleteResponse,
-    StudentWithCitizenID
 )
 from app.services.students import StudentServices
 from typing import List
@@ -16,9 +17,16 @@ from typing import List
 router = APIRouter()
 
 # =========================== get all students ===========================
-@router.get("", response_model = List[StudentPublic])
-def get_students(session: SessionDep) -> List[StudentPublic]:
-    return StudentServices.get_all(session=session)
+@router.get("", response_model=ListStudentResponse)
+def get_students(
+    session: SessionDep,
+    query: StudentQueryParams = Depends(),
+):
+    students, total = StudentServices.get_all(session=session, query=query)
+    return ListStudentResponse(
+        data=students,
+        total=total,
+    )
 
 # =========================== get student by id ===========================
 @router.get(
@@ -33,13 +41,13 @@ def get_student_by_id(
 # =========================== add student ===========================
 @router.post(
     "",
-    response_model=StudentWithCitizenID
+    response_model=StudentCreateResponse
 )
 def create_student(
-    request: Request, session: SessionDep, data: StudentCreateWithUserInfor
-) -> StudentWithCitizenID:
+    session: SessionDep,
+    data: StudentCreateWithUserInfor
+) -> StudentCreateResponse:
     return StudentServices.create(session=session, student=data)
-
 
 # =========================== update student ===========================
 @router.patch(
