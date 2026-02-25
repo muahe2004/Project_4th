@@ -5,7 +5,7 @@ from sqlalchemy import Integer, Float
 from uuid import UUID
 
 class ScoresBase(SQLModel):
-    student_id: UUID | None = Field(default=None)
+    student_id: UUID | None = Field(default=None, foreign_key="students.id")
     score_component_id: UUID = Field(foreign_key="score_components.id")
     score: float = Field(sa_column=Column(Float, nullable=False))
     attempt: int = Field(default=1, sa_column=Column(Integer, default=1))
@@ -21,7 +21,7 @@ class ScoresCreate(ScoresBase):
     pass
 
 class ScoresUpdate(SQLModel):
-    student_id: UUID | None = Field(default=None)
+    student_id: UUID | None = Field(default=None, foreign_key="students.id")
     score_component_id: Optional[UUID] = Field(foreign_key="score_components.id")
     score: float = Field(sa_column=Column(Float, nullable=False))
     attempt: Optional[int] = Field(default=1, sa_column=Column(Integer, default=1))

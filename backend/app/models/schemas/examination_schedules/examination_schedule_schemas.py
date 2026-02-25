@@ -12,8 +12,8 @@ class ExaminationScheduleBase(SQLModel):
     room_id: UUID | None = Field(default=None, foreign_key="rooms.id")
     schedule_type: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     status: str | None = Field(default=None, sa_column=Column(String(500), nullable=True))
-    invigilator_1_id: UUID | None = Field(default=None)
-    invigilator_2_id: UUID | None = Field(default=None)
+    invigilator_1_id: UUID | None = Field(default=None, foreign_key="teachers.id")
+    invigilator_2_id: UUID | None = Field(default=None, foreign_key="teachers.id")
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
@@ -31,8 +31,8 @@ class ExaminationScheduleUpdate(SQLModel):
     room_id: Optional[UUID] | None = Field(default=None, foreign_key="rooms.id")
     schedule_type: Optional[str] | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     status: Optional[str] | None = Field(default=None, sa_column=Column(String(500), nullable=True))
-    invigilator_1_id: Optional[UUID] | None = Field(default=None)
-    invigilator_2_id: Optional[UUID] | None = Field(default=None)
+    invigilator_1_id: Optional[UUID] | None = Field(default=None, foreign_key="teachers.id")
+    invigilator_2_id: Optional[UUID] | None = Field(default=None, foreign_key="teachers.id")
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
 class ExaminationScheduleDeleteResponse(SQLModel):
