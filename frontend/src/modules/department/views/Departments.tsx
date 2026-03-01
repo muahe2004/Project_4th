@@ -16,7 +16,7 @@ import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import Button from "../../../components/Button/Button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DepartmentForm from "../components/DepartmentFormModel";
 import { useGetDepartment } from "../apis/getDepartments";
 import dayjs from "dayjs";
@@ -28,15 +28,16 @@ import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import { STATUS_OPTIONS } from "../../../constants/status";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
+import { useDeleteDepartment } from "../apis/deleteDepartment";
 
 export function Departments() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("");
 
-    const searchDepartment = (value: string) => {
-        console.log("value: ", value);
-    }
+    const { showSnackbar } = useSnackbar();
+    const deleteDepartmentMutation = useDeleteDepartment();
 
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
@@ -51,9 +52,38 @@ export function Departments() {
         ...(status && { status }),
     };
 
-    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment(Params);
+    const { data: department, isLoading: isLoadingDeparment } = useGetDepartment(Params);
 
     const isLoading = isLoadingDeparment;
+
+    const handleDeleteDepartment = (departmentId?: string) => {
+        if (!departmentId) {
+            showSnackbar("Không tìm thấy mã khoa để xoá", "error");
+            return;
+        }
+
+        if (!window.confirm("Bạn có chắc muốn xoá khoa này không?")) {
+            return;
+        }
+
+        deleteDepartmentMutation.mutate(departmentId, {
+            onSuccess: () => {
+                showSnackbar("Xoá khoa thành công", "success");
+            },
+            onError: (error: any) => {
+                const detail = error?.response?.data?.detail ?? "Xoá khoa thất bại";
+                showSnackbar(detail, "error");
+            }
+        });
+    };
+
+    if (isLoading) {
+        return (
+            <main className="admin-main-container">
+                <Loading />
+            </main>
+        );
+    }
 
     return (
         <main className="admin-main-container">
@@ -138,7 +168,11 @@ export function Departments() {
                                     >
                                         <EditSquareIcon/>
                                     </IconButton>
-                                    <IconButton className="primary-tcell__button--icon primary-tcell__button--delete">
+                                    <IconButton 
+                                        className="primary-tcell__button--icon primary-tcell__button--delete"
+                                        onClick={() => handleDeleteDepartment(row.id)}
+                                        // disabled={deleteDepartmentMutation.isLoading}
+                                    >
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>

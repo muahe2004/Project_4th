@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import dayjs from "dayjs";
 
 import {
@@ -33,6 +33,8 @@ import "./styles/Specializations.css";
 import { useGetMajor } from "../../majors/apis/getMajors";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
+import { useDeleteSpecialization } from "../apis/deleteSpecialization";
 
 export function Specializations() {
     const [page, setPage] = useState(1);
@@ -48,6 +50,9 @@ export function Specializations() {
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    const { showSnackbar } = useSnackbar();
+    const deleteSpecializationMutation = useDeleteSpecialization();
+
     const Params = {
         limit: rowsPerPage,
         skip: (page - 1) * rowsPerPage,
@@ -56,7 +61,7 @@ export function Specializations() {
         ...(majorId && { major_id: majorId }),
     };
 
-    const { data: specializations, isLoading: isLoadingSpecialization, error: errorSpecialization } = useGetSpecialization(Params);
+    const { data: specializations } = useGetSpecialization(Params);
 
     const ParamsMajor = {
         limit: 5,
@@ -64,11 +69,27 @@ export function Specializations() {
         search: searchMajor || undefined
     };
     
-    const { data: major, isLoading: isLoadingDeparment, error: errorDepatment } = useGetMajor(ParamsMajor);
+    const { data: major } = useGetMajor(ParamsMajor);
+    const handleDeleteSpecialization = (id?: string) => {
+        if (!id) {
+            showSnackbar("Không tìm thấy mã chuyên ngành để xoá", "error");
+            return;
+        }
 
-    useEffect(() => {
-        console.log(major);
-    }, [])
+        if (!window.confirm("Bạn có chắc muốn xoá chuyên ngành này không?")) {
+            return;
+        }
+
+        deleteSpecializationMutation.mutate(id, {
+            onSuccess: () => {
+                showSnackbar("Xoá chuyên ngành thành công", "success");
+            },
+            onError: (error: any) => {
+                const detail = error?.response?.data?.detail ?? "Xoá chuyên ngành thất bại";
+                showSnackbar(detail, "error");
+            },
+        });
+    };
 
     return (
         <main className="admin-main-container">
@@ -166,7 +187,11 @@ export function Specializations() {
                                     >
                                         <EditSquareIcon/>
                                     </IconButton>
-                                    <IconButton className="primary-tcell__button--icon primary-tcell__button--delete">
+                                    <IconButton
+                                        className="primary-tcell__button--icon primary-tcell__button--delete"
+                                        onClick={() => handleDeleteSpecialization(row.id)}
+                                        // disabled={deleteSpecializationMutation.isLoading}
+                                    >
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>

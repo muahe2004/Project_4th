@@ -33,6 +33,8 @@ import type { IMajors } from "../types";
 import "./styles/Majors.css";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
+import { useDeleteMajor } from "../apis/deleteMajor";
 
 export function Majors() {
     const [page, setPage] = useState(1);
@@ -48,6 +50,9 @@ export function Majors() {
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    const { showSnackbar } = useSnackbar();
+    const deleteMajorMutation = useDeleteMajor();
+
     const Params = {
         limit: rowsPerPage,
         skip: (page - 1) * rowsPerPage,
@@ -56,7 +61,28 @@ export function Majors() {
         ...(departmentId && { department_id: departmentId }),
     };
 
-    const { data: major, isLoading: isLoadingMajor, error: errorMajor } = useGetMajor(Params);
+    const { data: major } = useGetMajor(Params);
+
+    const handleDeleteMajor = (majorId?: string) => {
+        if (!majorId) {
+            showSnackbar("Không tìm thấy mã ngành để xoá", "error");
+            return;
+        }
+
+        if (!window.confirm("Bạn có chắc muốn xoá ngành này không?")) {
+            return;
+        }
+
+        deleteMajorMutation.mutate(majorId, {
+            onSuccess: () => {
+                showSnackbar("Xoá ngành thành công", "success");
+            },
+            onError: (error: any) => {
+                const detail = error?.response?.data?.detail ?? "Xoá ngành thất bại";
+                showSnackbar(detail, "error");
+            },
+        });
+    };
 
     const ParamsDepartment = {
         limit: 5,
@@ -64,7 +90,7 @@ export function Majors() {
         search: searchDepartment || undefined
     };
     
-    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment(ParamsDepartment);
+    const { data: department } = useGetDepartment(ParamsDepartment);
 
     return (
         <main className="admin-main-container">
@@ -161,7 +187,11 @@ export function Majors() {
                                     >
                                         <EditSquareIcon/>
                                     </IconButton>
-                                    <IconButton className="primary-tcell__button--icon primary-tcell__button--delete">
+                                    <IconButton
+                                        className="primary-tcell__button--icon primary-tcell__button--delete"
+                                        onClick={() => handleDeleteMajor(row.id)}
+                                        // disabled={deleteMajorMutation.isLoading}
+                                    >
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>
