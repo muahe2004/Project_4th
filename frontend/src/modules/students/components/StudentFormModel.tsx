@@ -4,13 +4,14 @@ import dayjs from "dayjs";
 import { STATUS } from "../../../constants/status";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
-import type { IStudentsResponse, IStudentRelatives, IStudentInformation, IStudentCreate, IStudentInformationCreate, IStudentRelativesCreate } from "../types";
+import type { IStudentsResponse, IStudentRelatives, IStudentInformation, IStudentCreate, IStudentInformationCreate, IStudentRelativesCreate, IStudentUpdate } from "../types";
 import BasicInformationTab from "./BasicInformationtab";
 import Button from "../../../components/Button/Button";
 import OtherInformationTab from "./OtherInformationTab";
 import RelativeInformationTab from "./RelativeInformationTab";
 import { RELATIONSHIP } from "../../../constants/relationships";
 import { useCreateStudent } from "../apis/addStudent";
+import { useUpdateStudent } from "../apis/updateStudent";
 import { useClassesDropDown } from "../../classes/apis/getClassDropDown";
 
 interface TabPanelProps {
@@ -105,6 +106,15 @@ const DEFAULT_STUDENT_INFORMATION: IStudentInformation = {
     updated_at: undefined,
 };
 
+const normalizeNullableText = (value?: string | null): string | null => {
+    if (value === undefined || value === null) {
+        return null;
+    }
+
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+};
+
 const DEFAULT_STUDENT: IStudentsResponse = {
     student_code: "",
     name: "",
@@ -176,21 +186,25 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
         }));
     };
 
-    const { mutateAsync: createStudent } = useCreateStudent({})
+    const { mutateAsync: createStudent } = useCreateStudent({});
+    const { mutateAsync: updateStudent } = useUpdateStudent({});
 
     const handleSubmitClick = async () => {
 
         const student_information: IStudentInformationCreate = {
-            citizen_id: student.student_information?.citizen_id ?? null,
+            citizen_id: normalizeNullableText(student.student_information?.citizen_id),
+            place_of_origin: normalizeNullableText(student.student_information?.place_of_origin),
+            exempted_group: normalizeNullableText(student.student_information?.exempted_group),
+            priority_group: normalizeNullableText(student.student_information?.priority_group),
             issue_date: student.student_information?.issue_date ?? null,
-            issue_place: student.student_information?.issue_place ?? null,
-            nationality: student.student_information?.nationality ?? null,
-            ethnicity: student.student_information?.ethnicity ?? null,
-            religion: student.student_information?.religion ?? null,
-            insurance_number: student.student_information?.insurance_number ?? null,
-            bank_name: student.student_information?.bank_name ?? null,
-            bank_account_number: student.student_information?.bank_account_number ?? null,
-        }
+            issue_place: normalizeNullableText(student.student_information?.issue_place),
+            nationality: normalizeNullableText(student.student_information?.nationality),
+            ethnicity: normalizeNullableText(student.student_information?.ethnicity),
+            religion: normalizeNullableText(student.student_information?.religion),
+            insurance_number: normalizeNullableText(student.student_information?.insurance_number),
+            bank_name: normalizeNullableText(student.student_information?.bank_name),
+            bank_account_number: normalizeNullableText(student.student_information?.bank_account_number),
+        };
 
         const student_relatives: IStudentRelativesCreate[] = (
             student.student_relative ?? [])
@@ -207,7 +221,7 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
                     relationship: r.relationship,
                 }));
 
-        const payload: IStudentCreate = {
+        const basePayload: IStudentUpdate = {
             student_code: student.student_code,
             name: student.name,
             date_of_birth: student.date_of_birth,
@@ -222,11 +236,33 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
 
             student_information: student_information,
             student_relatives: student_relatives,
-
-            ...(mode === "add" && { password: student.student_code }) // if mode add included password
         };
 
-        if (mode === "add") await createStudent(payload)
+        if (mode === "add") {
+            const createPayload: IStudentCreate = {
+                student_code: student.student_code,
+                name: student.name,
+                date_of_birth: student.date_of_birth,
+                gender: student.gender,
+                email: student.email,
+                phone: student.phone,
+                address: student.address,
+                class_id: student.class_id,
+                training_program: student.training_program,
+                course: student.course,
+                status: student.status,
+                student_information: student_information,
+                student_relatives: student_relatives,
+                password: student.student_code,
+            };
+            await createStudent(createPayload);
+        } else if (mode === "edit" && initialValues?.id) {
+            await updateStudent({
+                studentId: initialValues.id,
+                data: basePayload,
+            });
+        }
+        onClose();
     };
 
     const handleRelativeUpdate = (index: number, fields: Partial<IStudentRelatives>) => {

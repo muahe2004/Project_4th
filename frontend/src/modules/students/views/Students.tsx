@@ -10,6 +10,7 @@ import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import { STATUS_OPTIONS } from "../../../constants/status";
 import Button from "../../../components/Button/Button";
 import StudentFormModel from "../components/StudentFormModel";
+import { useDeleteStudent } from "../apis/deleteStudent";
 import type { IStudentsResponse } from "../types";
 
 
@@ -44,6 +45,7 @@ export function Students() {
     };
 
     const { data: students, isLoading: isLoadingDeparment, error: errorDepatment } = useGetStudents(Params);
+    const { mutateAsync: deleteStudents } = useDeleteStudent({});
     
     const isLoading = isLoadingDeparment;
 
@@ -86,7 +88,17 @@ export function Students() {
                 </Button>
             </Box>
 
-            <StudentTable students={students} onEdit={handleEditStudent}/>
+            <StudentTable
+                students={students}
+                onEdit={handleEditStudent}
+                onDelete={(student) => {
+                    if (!student.id) {
+                        return;
+                    }
+
+                    deleteStudents([student.id]);
+                }}
+            />
             <PaginationUniCore
                 totalItems={students?.total || 0}
                 page={page}

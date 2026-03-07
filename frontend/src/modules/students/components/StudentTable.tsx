@@ -14,10 +14,11 @@ interface StudentTableProps {
         total: number;
     };
     onEdit?: (student: IStudentsResponse) => void;
+    onDelete?: (student: IStudentsResponse) => void;
 }
 
 
-export const StudentTable = ({ students, onEdit }: StudentTableProps) => {
+export const StudentTable = ({ students, onEdit, onDelete }: StudentTableProps) => {
 
     useEffect(() => {
         console.log(students);
@@ -85,7 +86,10 @@ export const StudentTable = ({ students, onEdit }: StudentTableProps) => {
                                 >
                                     <EditSquareIcon/>
                                 </IconButton>
-                                <IconButton className="primary-tcell__button--icon primary-tcell__button--delete">
+                                <IconButton
+                                    className="primary-tcell__button--icon primary-tcell__button--delete"
+                                    onClick={() => onDelete?.(row)}
+                                >
                                     <DeleteIcon />
                                 </IconButton>
                             </TableCell>

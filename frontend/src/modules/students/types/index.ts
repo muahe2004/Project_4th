@@ -65,6 +65,22 @@ export interface IStudentCreate extends IStudents {
     student_relatives?: IStudentRelativesCreate[];
 }
 
+export interface IStudentUpdate {
+    student_code?: string;
+    name?: string;
+    date_of_birth?: string | null;
+    gender?: string;
+    email?: string;
+    phone?: string | null;
+    address?: string | null;
+    class_id?: string;
+    training_program?: string | null;
+    course?: string | null;
+    status?: string | null;
+    student_information?: IStudentInformationCreate | null;
+    student_relatives?: IStudentRelativesCreate[];
+}
+
 export interface IStudentInformationCreate {
     place_of_origin?: string | null;
     exempted_group?: string | null;
