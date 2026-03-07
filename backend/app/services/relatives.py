@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select
+from sqlmodel import Session, select, delete
 from starlette import status
 from typing import List
 
@@ -10,7 +10,8 @@ from app.models.schemas.relatives.relative_schemas import (
     RelativePublic,
     RelativeCreate,
     RelativeUpdate,
-    RelativeDeleteResponse
+    RelativeDeleteResponse,
+    StudentRelativeCreate,
 )
 
 class RelativeServices:
@@ -70,6 +71,37 @@ class RelativeServices:
         session.commit()
 
         return RelativePublic.model_validate(relative)
+
+    @staticmethod
+    def replace_for_student(
+        *,
+        session: Session,
+        student_id: uuid.UUID,
+        relatives: list[StudentRelativeCreate],
+        commit: bool = True,
+    ) -> list[RelativePublic]:
+        session.exec(
+            delete(Relatives).where(Relatives.student_id == student_id)
+        )
+
+        created_relatives: list[Relatives] = []
+        for relative in relatives:
+            relative_data = relative.model_dump(exclude_none=True)
+            if not relative_data:
+                continue
+            new_relative = Relatives(
+                **relative_data,
+                student_id=student_id,
+            )
+            session.add(new_relative)
+            created_relatives.append(new_relative)
+
+        if commit:
+            session.commit()
+        else:
+            session.flush()
+
+        return [RelativePublic.model_validate(rel) for rel in created_relatives]
     
 
     @staticmethod

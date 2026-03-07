@@ -55,6 +55,8 @@ class StudentUpdate(BaseModel):
     course: Optional[str] = Field(default=None, sa_column=Column(String(20), nullable=True))
     status: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
+    student_information: Optional[StudentInformationCreate] = None
+    student_relatives: Optional[List[StudentRelativeCreate]] = None
 
 class StudentDeleteResponse(BaseModel):
     message: str

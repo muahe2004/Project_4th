@@ -15,30 +15,34 @@ from app.models.schemas.students.student_schemas import (
     StudentUpdate,
     StudentDeleteResponse,
     StudentWithCitizenID,
-    StudentsResponse
+    StudentsResponse,
+    StudentRelativeCreate,
 )
 from app.models.schemas.user_informations.user_information_schemas import (
-    UserInformationPublic
+    UserInformationPublic,
+    UserInformationUpdate,
 )
 from app.models.schemas.relatives.relative_schemas import RelativePublic
-
+from app.services.user_information import User_Information_Services
+from app.services.relatives import RelativeServices
 from app.services.classes import ClassServices
+
+def _has_relative_payload_value(relative: StudentRelativeCreate) -> bool:
+    return any(
+        bool(value and str(value).strip())
+        for value in (
+            relative.name,
+            relative.phone,
+            relative.relationship,
+            relative.occupation,
+        )
+    )
 from app.enums.status import StatusEnum
 
 class StudentServices:
     @staticmethod
     def get_all(*, session: Session, query) -> tuple[list[StudentsResponse], int]:
-        statement = (
-            select(Students, UserInformations, Relatives)
-            .outerjoin(
-                UserInformations,
-                UserInformations.student_id == Students.id,
-            )
-            .outerjoin(
-                Relatives,
-                Relatives.student_id == Students.id,
-            )
-        )
+        statement = select(Students)
 
         conditions = []
         if query.status:
@@ -69,51 +73,47 @@ class StudentServices:
             .limit(query.limit)
         )
 
-        rows = session.exec(statement).all()
+        students_page = session.exec(statement).all()
+        student_ids = [student.id for student in students_page]
 
-        student_rows: dict[
-            uuid.UUID,
-            dict[str, object],
-        ] = {}
-        for student, user_info, relative in rows:
-            if student.id not in student_rows:
-                student_rows[student.id] = {
-                    "student": student,
-                    "user_info": user_info,
-                    "relatives": [],
-                }
+        user_infos = {}
+        if student_ids:
+            infos = session.exec(
+                select(UserInformations).where(UserInformations.student_id.in_(student_ids))
+            ).all()
+            user_infos = {info.student_id: info for info in infos}
 
-            if relative:
-                student_rows[student.id]["relatives"].append(
-                    RelativePublic.model_validate(relative)
-                )
+        relatives_map = {}
+        if student_ids:
+            relatives = session.exec(
+                select(Relatives).where(Relatives.student_id.in_(student_ids))
+            ).all()
+            for relative in relatives:
+                relatives_map.setdefault(relative.student_id, []).append(relative)
 
-        # collect class_ids
         class_ids = [
-            entry["student"].class_id
-            for entry in student_rows.values()
-            if entry["student"].class_id is not None
+            student.class_id
+            for student in students_page
+            if student.class_id is not None
         ]
 
-        # call class service
         class_info = ClassServices.get_dropdown_by_ids(
             session=session,
             ids=class_ids,
             request=None,
         )
         class_map = {
-            str(c["id"]): {
-                "class_code": c["class_code"],
-                "class_name": c["class_name"],
+            str(c.id): {
+                "class_code": c.class_code,
+                "class_name": c.class_name,
             }
             for c in class_info
         }
 
         students: list[StudentsResponse] = []
-        for entry in student_rows.values():
-            student = entry["student"]
-            user_info = entry["user_info"]
-            student_relatives = entry["relatives"]
+        for student in students_page:
+            user_info = user_infos.get(student.id)
+            student_relatives = relatives_map.get(student.id, [])
             class_data = class_map.get(str(student.class_id), {})
 
             students.append(
@@ -156,14 +156,6 @@ class StudentServices:
             select(Students).where(Students.student_code == student.student_code)
         ).first():
             raise HTTPException(400, "Student already exists")
-
-        if session.exec(
-            select(UserInformations).where(
-                UserInformations.citizen_id ==
-                student.student_information.citizen_id
-            )
-        ).first():
-            raise HTTPException(400, "Citizen ID already exists")
 
         student_data = student.model_dump(exclude={"student_information"})
         student_data["password"] = hash_password(student_data["password"])
@@ -236,9 +228,48 @@ class StudentServices:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Student not found"
             )
 
-        update_data = student_data.model_dump(exclude_unset=True)
+        update_data = student_data.model_dump(
+            exclude_unset=True,
+            exclude={"student_information", "student_relatives"},
+        )
         for field, value in update_data.items():
             setattr(student, field, value)
+
+        if student_data.student_information:
+            info_payload = (
+                student_data.student_information.model_dump(exclude_none=True)
+            )
+            if info_payload:
+                user_info = session.exec(
+                    select(UserInformations).where(
+                        UserInformations.student_id == student.id
+                    )
+                ).one_or_none()
+                user_info_update = UserInformationUpdate(**info_payload)
+                if user_info:
+                    User_Information_Services.update(
+                        session=session,
+                        user_information_id=user_info.id,
+                        user_information_data=user_info_update,
+                        commit=False,
+                    )
+                else:
+                    session.add(
+                        UserInformations(**info_payload, student_id=student.id)
+                    )
+
+        if student_data.student_relatives is not None:
+            filtered_relatives = [
+                rel
+                for rel in student_data.student_relatives
+                if _has_relative_payload_value(rel)
+            ]
+            RelativeServices.replace_for_student(
+                session=session,
+                student_id=student.id,
+                relatives=filtered_relatives,
+                commit=False,
+            )
 
         session.commit()
         return StudentPublic.model_validate(student)
@@ -267,12 +298,11 @@ class StudentServices:
                     detail="Student has related tuition fees and cannot be deleted.",
                 )
 
-            if student.status == StatusEnum.ACTIVE:
+            if student.status != StatusEnum.INACTIVE:
                 student.status = StatusEnum.INACTIVE
                 message = "Student set to inactive"
             else:
-                session.delete(student)
-                message = "Student deleted successfully"
+                message = "Student already inactive"
 
             session.commit()
             results.append(StudentDeleteResponse(id=str(student_id), message=message))

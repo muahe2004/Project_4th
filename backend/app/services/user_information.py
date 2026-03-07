@@ -58,6 +58,7 @@ class User_Information_Services:
         session: Session,
         user_information_id: uuid.UUID,
         user_information_data: UserInformationUpdate,
+        commit: bool = True,
     ) -> UserInformationPublic: 
         user_information = session.get(UserInformations, user_information_id)
         if not user_information:
@@ -69,7 +70,10 @@ class User_Information_Services:
         for field, value in update_data.items():
             setattr(user_information, field, value)
 
-        session.commit()
+        if commit:
+            session.commit()
+        else:
+            session.flush()
         return UserInformationPublic.model_validate(user_information)
     
     @staticmethod 
