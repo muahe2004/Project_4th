@@ -1,7 +1,9 @@
 import uuid
-from fastapi import APIRouter, Request
+from app.models.schemas.common.query import BaseQueryParams
+from fastapi import APIRouter, Request, Depends
 from app.api.deps import SessionDep
 from app.models.schemas.subjects.subject_schemas import (
+    SubjectListResponse,
     SubjectPublic,
     SubjectCreate,
     SubjectUpdate,
@@ -14,10 +16,10 @@ router = APIRouter()
 
 
 # =========================== get all subject ===========================
-@router.get("", response_model=List[SubjectPublic])
-def get_subjects(session: SessionDep) -> List[SubjectPublic]:
-    return SubjectServices.get_all(session=session)
-
+@router.get("")
+def get_departments(session: SessionDep, query: BaseQueryParams = Depends()):
+    departments, total = SubjectServices.get_all(session=session, query=query)
+    return SubjectListResponse(total=total, data=departments)
 
 # =========================== get subject by id ===========================
 @router.get("/{id}", response_model=SubjectPublic)
@@ -51,8 +53,10 @@ def update_subject(
 
 # =========================== delete subject ===========================
 @router.delete(
-    "/{id}",
-    response_model=SubjectDeleteResponse,
+    "",
+    response_model=List[SubjectDeleteResponse],
 )
-def delete_subject(session: SessionDep, id: uuid.UUID) -> SubjectDeleteResponse:
-    return SubjectServices.delete(session=session, subject_id=id)
+def delete_multiple_subjects(
+    session: SessionDep, subject_ids: List[uuid.UUID]
+) -> List[SubjectDeleteResponse]:
+    return SubjectServices.delete_many(session=session, subject_ids=subject_ids)

@@ -17,3 +17,4 @@ export const onlineCourse = "courses";
 export const learningScheduleUrl = "learning-schedule";
 export const studentUrl = "students";
 export const teacherUrl = "teachers";
+export const subjectUrl = "subjects";

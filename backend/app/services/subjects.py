@@ -1,8 +1,9 @@
 import uuid
+from app.models.schemas.common.query import BaseQueryParams
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select
+from sqlmodel import Session, select, or_, func, desc
 from starlette import status
-from typing import List
+from typing import List, Tuple
 
 from app.models.models import Subjects
 from app.models.schemas.subjects.subject_schemas import (
@@ -19,11 +20,35 @@ from app.models.models import ExaminationSchedules
 class SubjectServices:
     @staticmethod
     def get_all(
-        *,
-        session: Session,
-    ) -> List[SubjectPublic]:
-        subjects = session.exec(select(Subjects)).all()
-        return subjects
+        *, session: Session, query: BaseQueryParams
+    ) -> Tuple[List[SubjectPublic], int]:
+        statement = select(Subjects)
+
+        conditions = []
+        if query.status:
+            conditions.append(Subjects.status == query.status)
+
+        if query.search:
+            conditions.append(
+                or_(
+                    Subjects.subject_code.ilike(f"%{query.search}%"),
+                    Subjects.name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        total = session.exec(
+            select(func.count()).select_from(statement.subquery())
+        ).one()
+
+        statement = statement.order_by(desc(Subjects.created_at))
+        statement = statement.offset(query.skip).limit(query.limit)
+
+        subjects = session.exec(statement).all()
+
+        return subjects, total
 
     @staticmethod
     def get_by_id(
@@ -74,42 +99,46 @@ class SubjectServices:
         return SubjectPublic.model_validate(subject)
 
     @staticmethod
-    def delete(*, session: Session, subject_id: uuid.UUID) -> SubjectDeleteResponse:
-        subject = session.get(Subjects, subject_id)
-        if not subject:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Subject not found"
-            )
+    def delete_many(
+        *, session: Session, subject_ids: List[uuid.UUID]
+    ) -> List[SubjectDeleteResponse]:
+        results: List[SubjectDeleteResponse] = []
 
-        check_related_entities = select(LearningSchedules).where(
-            LearningSchedules.subject_id == subject_id
-        )
-        learningSchedules = session.exec(check_related_entities).all()
-        if learningSchedules:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Subject has related LearningSchedules and cannot be deleted.",
-            )
+        for subject_id in subject_ids:
+            subject = session.get(Subjects, subject_id)
+            if not subject:
+                results.append(
+                    SubjectDeleteResponse(id=str(subject_id), message="Subject not found")
+                )
+                continue
 
-        check_related_entities_second = select(ExaminationSchedules).where(
-            ExaminationSchedules.subject_id == subject_id
-        )
-        examinationSchedules = session.exec(check_related_entities_second).all()
-        if examinationSchedules:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Subject has related ExaminationSchedules and cannot be deleted.",
-            )
+            learning_schedules = session.exec(
+                select(LearningSchedules).where(LearningSchedules.subject_id == subject.id)
+            ).all()
+            if learning_schedules:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Subject has related learning schedules and cannot be deleted.",
+                )
 
-        if subject.status == StatusEnum.ACTIVE:
-            subject.status = StatusEnum.INACTIVE
+            examination_schedules = session.exec(
+                select(ExaminationSchedules).where(
+                    ExaminationSchedules.subject_id == subject.id
+                )
+            ).all()
+            if examination_schedules:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Subject has related examination schedules and cannot be deleted.",
+                )
+
+            if subject.status != StatusEnum.INACTIVE:
+                subject.status = StatusEnum.INACTIVE
+                message = "Subject set to inactive"
+            else:
+                message = "Subject already inactive"
+
             session.commit()
-            return SubjectDeleteResponse(
-                id=str(subject.id), message="subject set to inactive"
-            )
+            results.append(SubjectDeleteResponse(id=str(subject_id), message=message))
 
-        session.delete(subject)
-        session.commit()
-        return SubjectDeleteResponse(
-            id=str(subject.id), message="subject deleted successfully"
-        )
+        return results

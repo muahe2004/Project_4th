@@ -16,7 +16,7 @@ import { Home, People, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 
 import "./AdminNavbar.css";
-import { classesUrl, dashBoardUrl, departmentUrl, learningScheduleUrl, majorUrl, onlineCourse, specializationsUrl, studentUrl, teacherUrl } from "../../routes/urls";
+import { classesUrl, dashBoardUrl, departmentUrl, learningScheduleUrl, majorUrl, onlineCourse, specializationsUrl, studentUrl, subjectUrl, teacherUrl } from "../../routes/urls";
 
 type NavbarProps = {
   isOpen: boolean;
@@ -36,7 +36,7 @@ export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
     { label: "Khoa", icon: <SchoolIcon />, path: `${dashBoardUrl}/${departmentUrl}` },
     { label: "Ngành", icon: <MenuBookIcon />, path: `${dashBoardUrl}/${majorUrl}` },
     { label: "Chuyên ngành", icon: <AccountTreeIcon />, path: `${dashBoardUrl}/${specializationsUrl}` },
-    { label: "Môn học", icon: <AutoStoriesIcon />, path: "/admin/mon-hoc" },
+    { label: "Môn học", icon: <AutoStoriesIcon />, path: `${dashBoardUrl}/${subjectUrl}` },
     { label: "Lịch học", icon: <EventIcon />, path: `${dashBoardUrl}/${learningScheduleUrl}` },
     { label: "Lịch dạy", icon: <EditCalendarIcon />, path: `${dashBoardUrl}/${learningScheduleUrl}` },
     { label: "Lịch thi", icon: <AssignmentIcon />, path: "/admin/lich-thi" },

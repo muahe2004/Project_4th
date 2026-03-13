@@ -1,8 +1,8 @@
 from datetime import datetime
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, String, Integer, DateTime, Text
-from uuid import UUID
-from typing import Optional
+from uuid import UUID as UUID_TYPE
+from typing import List, Optional
 
 
 class SubjectBase(SQLModel):
@@ -22,7 +22,7 @@ class SubjectBase(SQLModel):
 
 
 class SubjectPublic(SubjectBase):
-    id: UUID
+    id: UUID_TYPE
 
 
 class SubjectCreate(SubjectBase):
@@ -46,4 +46,8 @@ class SubjectUpdate(SQLModel):
 
 class SubjectDeleteResponse(SQLModel):
     message: str
-    id: UUID
+    id: UUID_TYPE
+
+class SubjectListResponse(SQLModel):
+    total: int
+    data: List[SubjectPublic]
