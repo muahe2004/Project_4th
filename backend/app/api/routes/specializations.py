@@ -9,36 +9,40 @@ from app.models.schemas.specializations.specialization_schemas import (
     SpecializationCreate,
     SpecializationQueryParams,
     SpecializationUpdate,
-    SpecializationDeleteResponse
+    SpecializationDeleteResponse,
 )
 from app.services.specializations import SpecializationServices
 from typing import List
 
 router = APIRouter()
 
+
 # =========================== get all specialization ===========================
 @router.get("")
 def get_majors(session: SessionDep, query: SpecializationQueryParams = Depends()):
-    specializations, total = SpecializationServices.get_all(session=session,query=query)
+    specializations, total = SpecializationServices.get_all(
+        session=session, query=query
+    )
     return SpecializationListResponse(total=total, data=specializations)
+
 
 # =========================== get dropdown specialization ===========================
 @router.get("/dropdown", response_model=List[SpecializationDropdownResponse])
 def get_teachers_dropdown(
-    session: SessionDep,
-    query: SpecializationQueryParams = Depends()
+    session: SessionDep, query: SpecializationQueryParams = Depends()
 ) -> List[SpecializationDropdownResponse]:
     return SpecializationServices.get_dropdown(session=session, query=query)
 
+
 # =========================== get specialization by id ===========================
-@router.get(
-    "/{id}",
-    response_model=SpecializationPublic
-)
+@router.get("/{id}", response_model=SpecializationPublic)
 def get_specialization_by_id(
     session: SessionDep, id: uuid.UUID, request: Request
 ) -> SpecializationPublic:
-    return SpecializationServices.get_by_id(session=session, specialization_id=id, request=request)
+    return SpecializationServices.get_by_id(
+        session=session, specialization_id=id, request=request
+    )
+
 
 # =========================== add specialization ===========================
 @router.post(
@@ -50,6 +54,7 @@ def create_specialization(
 ) -> SpecializationPublic:
     return SpecializationServices.create(session=session, specialization=data)
 
+
 # =========================== update specialization ===========================
 @router.patch(
     "/{id}",
@@ -58,7 +63,10 @@ def create_specialization(
 def update_specialization(
     session: SessionDep, id: uuid.UUID, data: SpecializationUpdate
 ) -> SpecializationPublic:
-    return SpecializationServices.update(session=session, specialization_id=id, specialization_data=data)
+    return SpecializationServices.update(
+        session=session, specialization_id=id, specialization_data=data
+    )
+
 
 # =========================== delete specialization ===========================
 @router.delete(
@@ -69,4 +77,3 @@ def delete_specialization(
     session: SessionDep, id: uuid.UUID
 ) -> SpecializationDeleteResponse:
     return SpecializationServices.delete(session=session, specialization_id=id)
-

@@ -9,14 +9,11 @@ from app.models.models import Relatives, Students, UserInformations, TuitionFees
 from app.models.schemas.students.student_schemas import (
     StudentCreateResponse,
     StudentPublic,
-    StudentCreate,
     StudentCreateWithUserInfor,
-    StudentQueryParams,
     StudentUpdate,
     StudentDeleteResponse,
-    StudentWithCitizenID,
     StudentsResponse,
-    StudentRelativeCreate,
+    UserRelativeCreate,
 )
 from app.models.schemas.user_informations.user_information_schemas import (
     UserInformationPublic,
@@ -26,8 +23,10 @@ from app.models.schemas.relatives.relative_schemas import RelativePublic
 from app.services.user_information import User_Information_Services
 from app.services.relatives import RelativeServices
 from app.services.classes import ClassServices
+from app.enums.status import StatusEnum
 
-def _has_relative_payload_value(relative: StudentRelativeCreate) -> bool:
+
+def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
     return any(
         bool(value and str(value).strip())
         for value in (
@@ -37,7 +36,7 @@ def _has_relative_payload_value(relative: StudentRelativeCreate) -> bool:
             relative.occupation,
         )
     )
-from app.enums.status import StatusEnum
+
 
 class StudentServices:
     @staticmethod
@@ -79,7 +78,9 @@ class StudentServices:
         user_infos = {}
         if student_ids:
             infos = session.exec(
-                select(UserInformations).where(UserInformations.student_id.in_(student_ids))
+                select(UserInformations).where(
+                    UserInformations.student_id.in_(student_ids)
+                )
             ).all()
             user_infos = {info.student_id: info for info in infos}
 
@@ -147,9 +148,7 @@ class StudentServices:
 
     @staticmethod
     def create(
-        *,
-        session: Session,
-        student: StudentCreateWithUserInfor
+        *, session: Session, student: StudentCreateWithUserInfor
     ) -> StudentCreateResponse:
 
         if session.exec(
@@ -205,16 +204,14 @@ class StudentServices:
         student = session.get(Students, student_id)
         if not student:
             raise HTTPException(
-                status_code = status.HTTP_404_NOT_FOUND, detail="Student does not exist"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Student does not exist"
             )
         return StudentPublic.model_validate(student)
-    
-    @staticmethod
-    def create_list_student(
 
-    ) -> StudentPublic:
+    @staticmethod
+    def create_list_student() -> StudentPublic:
         return "Create list student"
-    
+
     @staticmethod
     def update(
         *,
@@ -236,8 +233,8 @@ class StudentServices:
             setattr(student, field, value)
 
         if student_data.student_information:
-            info_payload = (
-                student_data.student_information.model_dump(exclude_none=True)
+            info_payload = student_data.student_information.model_dump(
+                exclude_none=True
             )
             if info_payload:
                 user_info = session.exec(
@@ -254,9 +251,7 @@ class StudentServices:
                         commit=False,
                     )
                 else:
-                    session.add(
-                        UserInformations(**info_payload, student_id=student.id)
-                    )
+                    session.add(UserInformations(**info_payload, student_id=student.id))
 
         if student_data.student_relatives is not None:
             filtered_relatives = [
@@ -273,12 +268,10 @@ class StudentServices:
 
         session.commit()
         return StudentPublic.model_validate(student)
-    
+
     @staticmethod
     def delete_many(
-        *,
-        session: Session,
-        student_ids: List[uuid.UUID]
+        *, session: Session, student_ids: List[uuid.UUID]
     ) -> List[StudentDeleteResponse]:
         results: List[StudentDeleteResponse] = []
 
@@ -286,11 +279,15 @@ class StudentServices:
             student = session.get(Students, student_id)
             if not student:
                 results.append(
-                    StudentDeleteResponse(id=str(student_id), message="Student not found")
+                    StudentDeleteResponse(
+                        id=str(student_id), message="Student not found"
+                    )
                 )
                 continue
 
-            check_related_entities = select(TuitionFees).where(TuitionFees.student_id == student.id)
+            check_related_entities = select(TuitionFees).where(
+                TuitionFees.student_id == student.id
+            )
             tuition_fees = session.exec(check_related_entities).all()
             if tuition_fees:
                 raise HTTPException(

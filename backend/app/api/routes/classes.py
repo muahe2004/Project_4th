@@ -1,7 +1,6 @@
 import uuid
 
-from app.models.schemas.classes.student_class_schemas import StudentClassCreate, StudentClassPublic
-from fastapi import APIRouter, Depends, Request, Query
+from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.classes.class_schemas import (
     ClassDropDownResponse,
@@ -11,34 +10,40 @@ from app.models.schemas.classes.class_schemas import (
     ClassQueryParams,
     ClassUpdate,
     ClassDeleteResponse,
-    IdsRequest
+    IdsRequest,
 )
 from app.services.classes import ClassServices
-from typing import List, Optional
+from typing import List
 
 router = APIRouter()
+
 
 # =========================== get all classes ===========================
 @router.get("")
 def get_classes(session: SessionDep, query: ClassQueryParams = Depends()):
-    classes, total = ClassServices.get_all(session=session,query=query)
+    classes, total = ClassServices.get_all(session=session, query=query)
     return ClassListResponse(total=total, data=classes)
 
+
 # =========================== get dropdown class by ids ===========================
-@router.post(
-    "/dropdown-by-ids",
-    response_model=list[ClassDropDownResponse]
-)
-def get_class_dropdown_by_ids( session: SessionDep, payload: IdsRequest, request: Request):
-    return ClassServices.get_dropdown_by_ids(session=session, ids=payload.ids, request=request,)
+@router.post("/dropdown-by-ids", response_model=list[ClassDropDownResponse])
+def get_class_dropdown_by_ids(
+    session: SessionDep, payload: IdsRequest, request: Request
+):
+    return ClassServices.get_dropdown_by_ids(
+        session=session,
+        ids=payload.ids,
+        request=request,
+    )
+
 
 # =========================== get dropdown classes ===========================
 @router.get("/dropdown", response_model=List[ClassDropDownResponse])
 def get_classes_dropdown(
-    session: SessionDep,
-    query: ClassQueryParams = Depends()
+    session: SessionDep, query: ClassQueryParams = Depends()
 ) -> List[ClassDropDownResponse]:
     return ClassServices.get_dropdown(session=session, query=query)
+
 
 # =========================== add class ===========================
 @router.post(
@@ -50,15 +55,15 @@ def create_class(
 ) -> ClassPublic:
     return ClassServices.create(session=session, class_=data)
 
+
 # =========================== update class ===========================
 @router.patch(
     "/{id}",
     response_model=ClassPublic,
 )
-def update_class(
-    session: SessionDep, id: uuid.UUID, data: ClassUpdate
-) -> ClassPublic:
+def update_class(session: SessionDep, id: uuid.UUID, data: ClassUpdate) -> ClassPublic:
     return ClassServices.update(session=session, class_id=id, class_data=data)
+
 
 # =========================== delete classes ===========================
 @router.delete(
@@ -69,13 +74,3 @@ def delete_multiple_classes(
     session: SessionDep, class_ids: List[uuid.UUID]
 ) -> List[ClassDeleteResponse]:
     return ClassServices.delete_many(session=session, class_ids=class_ids)
-
-# =========================== student class ===========================
-@router.post(
-    "",
-    response_model=StudentClassPublic,
-)
-def create_class(
-    request: Request, session: SessionDep, data: StudentClassCreate
-) -> StudentClassPublic:
-    return ClassServices.create(session=session, class_=data)

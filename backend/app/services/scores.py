@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 from fastapi import HTTPException, Request
 from sqlmodel import Session, select
 from starlette import status
@@ -10,25 +9,23 @@ from app.models.schemas.scores.score_schemas import (
     ScoresPublic,
     ScoresCreate,
     ScoresUpdate,
-    ScoresDeleteResponse
+    ScoresDeleteResponse,
 )
 from app.enums.status import StatusEnum
+
 
 class ScoresServices:
     @staticmethod
     def get_all(
-        *, 
-        session: Session,        
+        *,
+        session: Session,
     ) -> List[ScoresPublic]:
         scores = session.exec(select(Scores)).all()
         return scores
 
     @staticmethod
     def get_by_id(
-        *,
-        session: Session,
-        score_id: uuid.UUID,
-        request: Request
+        *, session: Session, score_id: uuid.UUID, request: Request
     ) -> ScoresPublic:
         score = session.get(Scores, score_id)
         if not score:
@@ -36,7 +33,7 @@ class ScoresServices:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Score does not exist"
             )
         return ScoresPublic.model_validate(score)
-    
+
     @staticmethod
     def create(
         *,
@@ -51,32 +48,29 @@ class ScoresServices:
             )
         ).first()
 
-        if (existing):
+        if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Score already exists.",
+                detail="Score already exists.",
             )
-        
+
         new_score = Scores(**score.dict())
         session.add(new_score)
         session.commit()
         session.refresh(new_score)
 
         return new_score
-    
+
     @staticmethod
     def update(
-        *,
-        session: Session,
-        score_id: uuid.UUID,
-        score_data: ScoresUpdate
+        *, session: Session, score_id: uuid.UUID, score_data: ScoresUpdate
     ) -> ScoresPublic:
         score = session.get(Scores, score_id)
         if not score:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Score not found"
             )
-        
+
         update_data = score_data.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(score, field, value)
@@ -84,25 +78,25 @@ class ScoresServices:
         session.commit()
 
         return ScoresPublic.model_validate(score)
-    
+
     @staticmethod
-    def delete(
-        *, 
-        session: Session,
-        score_id: uuid.UUID
-    ) -> ScoresDeleteResponse:
+    def delete(*, session: Session, score_id: uuid.UUID) -> ScoresDeleteResponse:
         score = session.get(Scores, score_id)
         if not score:
             raise HTTPException(
-                status_code = status.HTTP_404_NOT_FOUND, detail="Score not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Score not found"
             )
-        
+
         if score.status == StatusEnum.ACTIVE:
             score.status = StatusEnum.INACTIVE
             session.commit()
-            return ScoresDeleteResponse(id = str(score.id), message = "Score set to inactive")
-        
+            return ScoresDeleteResponse(
+                id=str(score.id), message="Score set to inactive"
+            )
+
         session.delete(score)
         session.commit()
 
-        return ScoresDeleteResponse(id = str(score.id), message = "Score deleted successfully")
+        return ScoresDeleteResponse(
+            id=str(score.id), message="Score deleted successfully"
+        )

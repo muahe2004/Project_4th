@@ -1,37 +1,42 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Request
 from app.api.deps import SessionDep
 from app.models.schemas.learning_schedules.learning_schedule_schemas import (
     LearningSchedulePublic,
     LearningScheduleCreate,
     LearningScheduleUpdate,
-    LearningScheduleDeleteResponse
+    LearningScheduleDeleteResponse,
 )
 from app.services.learning_schedules import LearningScheduleServices
 from typing import List
 
 router = APIRouter()
 
+
 # =========================== get all ===========================
 @router.get("", response_model=List[LearningSchedulePublic])
 def get_learning_schedules(session: SessionDep) -> List[LearningSchedulePublic]:
     return LearningScheduleServices.get_all(session=session)
 
+
 # =========================== get by class ===========================
 @router.get("/by-class/{id}", response_model=List[LearningSchedulePublic])
-def get_learning_schedulesPby_class(session: SessionDep, id: uuid.UUID) -> List[LearningSchedulePublic]:
+def get_learning_schedulesPby_class(
+    session: SessionDep, id: uuid.UUID
+) -> List[LearningSchedulePublic]:
     return LearningScheduleServices.get_by_class(session=session, class_id=id)
 
+
 # =========================== get by id ===========================
-@router.get(
-    "/{id}",
-    response_model=LearningSchedulePublic
-)
+@router.get("/{id}", response_model=LearningSchedulePublic)
 def get_learning_schedules_by_id(
     session: SessionDep, id: uuid.UUID, request: Request
 ) -> LearningSchedulePublic:
-    return LearningScheduleServices.get_by_id(session=session, learning_schedules_id=id, request=request)
+    return LearningScheduleServices.get_by_id(
+        session=session, learning_schedules_id=id, request=request
+    )
+
 
 # =========================== add ===========================
 @router.post(
@@ -43,6 +48,7 @@ def create_learning_schedule(
 ) -> LearningSchedulePublic:
     return LearningScheduleServices.create(session=session, learning_schedules=data)
 
+
 # =========================== update ===========================
 @router.patch(
     "/{id}",
@@ -51,7 +57,10 @@ def create_learning_schedule(
 def update_learning_schedules(
     session: SessionDep, id: uuid.UUID, data: LearningScheduleUpdate
 ) -> LearningSchedulePublic:
-    return LearningScheduleServices.update(session=session, learning_schedule_id=id, learning_schedule_data=data)
+    return LearningScheduleServices.update(
+        session=session, learning_schedule_id=id, learning_schedule_data=data
+    )
+
 
 # =========================== delete ===========================
 @router.delete(
@@ -62,4 +71,3 @@ def delete_learning_schedule(
     session: SessionDep, id: uuid.UUID
 ) -> LearningScheduleDeleteResponse:
     return LearningScheduleServices.delete(session=session, learning_schedule_id=id)
-

@@ -7,6 +7,7 @@ UNICORE_SECRET_KEY = settings.UNICORE_SECRET_KEY
 ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
+
 def decode_jwt(token: str):
     try:
         payload = jwt.decode(token, UNICORE_SECRET_KEY, algorithms=[ALGORITHM])
@@ -18,6 +19,7 @@ def decode_jwt(token: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+
 def get_token_from_cookie(request: Request):
     token = request.cookies.get("access_token")
     if not token:
@@ -27,5 +29,3 @@ def get_token_from_cookie(request: Request):
             headers={"WWW-Authenticate": "Bearer"},
         )
     return token
-
-

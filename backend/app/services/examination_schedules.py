@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 
 from fastapi import HTTPException, Request
 from sqlmodel import Session, select
@@ -11,10 +10,11 @@ from app.models.schemas.examination_schedules.examination_schedule_schemas impor
     ExaminationSchedulePublic,
     ExaminationScheduleCreate,
     ExaminationScheduleUpdate,
-    ExaminationScheduleDeleteResponse
+    ExaminationScheduleDeleteResponse,
 )
 
 from app.enums.status import StatusEnum
+
 
 class ExaminationScheduleServices:
     @staticmethod
@@ -26,10 +26,13 @@ class ExaminationScheduleServices:
     def get_by_id(
         *, session: Session, examination_schedules_id: uuid.UUID, request: Request
     ) -> ExaminationSchedulePublic:
-        examination_schedule = session.get(ExaminationSchedules, examination_schedules_id)
+        examination_schedule = session.get(
+            ExaminationSchedules, examination_schedules_id
+        )
         if not examination_schedule:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Examination Schedules does not exist"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Examination Schedules does not exist",
             )
         return ExaminationSchedulePublic.model_validate(examination_schedule)
 
@@ -42,13 +45,13 @@ class ExaminationScheduleServices:
         existing = session.exec(
             select(ExaminationSchedules).where(
                 ExaminationSchedules.class_id == examination_schedule.class_id,
-                ExaminationSchedules.subject_id == examination_schedule.subject_id
+                ExaminationSchedules.subject_id == examination_schedule.subject_id,
             )
         ).first()
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Examination Schedules already exists.",
+                detail="Examination Schedules already exists.",
             )
         new_examination_schedules = ExaminationSchedules(**examination_schedule.dict())
         session.add(new_examination_schedules)
@@ -59,15 +62,18 @@ class ExaminationScheduleServices:
 
     @staticmethod
     def update(
-        *, 
+        *,
         session: Session,
         examination_schedule_id: uuid.UUID,
         examination_schedule_data: ExaminationScheduleUpdate,
     ) -> ExaminationSchedulePublic:
-        examination_schedule = session.get(ExaminationSchedules, examination_schedule_id)
+        examination_schedule = session.get(
+            ExaminationSchedules, examination_schedule_id
+        )
         if not examination_schedule:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Examination Schedule not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Examination Schedule not found",
             )
 
         update_data = examination_schedule_data.model_dump(exclude_unset=True)
@@ -76,24 +82,33 @@ class ExaminationScheduleServices:
 
         session.commit()
         return ExaminationSchedulePublic.model_validate(examination_schedule)
-    
+
     @staticmethod
     def delete(
         *,
         session: Session,
         examination_schedule_id: uuid.UUID,
     ) -> ExaminationScheduleDeleteResponse:
-        examination_schedule = session.get(ExaminationSchedules, examination_schedule_id)
+        examination_schedule = session.get(
+            ExaminationSchedules, examination_schedule_id
+        )
         if not examination_schedule:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Examination Schedule not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Examination Schedule not found",
             )
 
         if examination_schedule.status == StatusEnum.ACTIVE:
             examination_schedule.status = StatusEnum.INACTIVE
             session.commit()
-            return ExaminationScheduleDeleteResponse(id=str(examination_schedule.id), message="Examination Schedule set to inactive")
+            return ExaminationScheduleDeleteResponse(
+                id=str(examination_schedule.id),
+                message="Examination Schedule set to inactive",
+            )
 
         session.delete(examination_schedule)
         session.commit()
-        return ExaminationScheduleDeleteResponse(id=str(examination_schedule.id), message="Examination Schedule deleted successfully")
+        return ExaminationScheduleDeleteResponse(
+            id=str(examination_schedule.id),
+            message="Examination Schedule deleted successfully",
+        )

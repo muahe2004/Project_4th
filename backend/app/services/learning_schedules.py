@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 
 from fastapi import HTTPException, Request
 from sqlmodel import Session, select
@@ -11,29 +10,33 @@ from app.models.schemas.learning_schedules.learning_schedule_schemas import (
     LearningSchedulePublic,
     LearningScheduleCreate,
     LearningScheduleUpdate,
-    LearningScheduleDeleteResponse
+    LearningScheduleDeleteResponse,
 )
 from app.models.models import TeachingSchedules
 
 from app.enums.status import StatusEnum
+
 
 class LearningScheduleServices:
     @staticmethod
     def get_all(*, session: Session) -> List[LearningSchedulePublic]:
         learning_schedules = session.exec(select(LearningSchedules)).all()
         return learning_schedules
-    
+
     @staticmethod
     def get_by_class(
         *,
         session: Session,
         class_id: uuid.UUID,
     ) -> List[LearningSchedulePublic]:
-        learning_schedules = session.exec(select(LearningSchedules).where(LearningSchedules.class_id == class_id))
+        learning_schedules = session.exec(
+            select(LearningSchedules).where(LearningSchedules.class_id == class_id)
+        )
 
         if not learning_schedules:
             raise HTTPException(
-                status_code = status.HTTP_404_NOT_FOUND, detail =  "Learning Schedules does not exist"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Learning Schedules does not exist",
             )
         return learning_schedules
 
@@ -44,7 +47,8 @@ class LearningScheduleServices:
         learning_schedules = session.get(LearningSchedules, learning_schedules_id)
         if not learning_schedules:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Learning Schedules does not exist"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Learning Schedules does not exist",
             )
         return LearningSchedulePublic.model_validate(learning_schedules)
 
@@ -60,13 +64,13 @@ class LearningScheduleServices:
                 LearningSchedules.subject_id == learning_schedules.subject_id,
                 LearningSchedules.date == learning_schedules.date,
                 LearningSchedules.start_period == learning_schedules.start_period,
-                LearningSchedules.end_period == learning_schedules.end_period    
+                LearningSchedules.end_period == learning_schedules.end_period,
             )
         ).first()
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Learning Schedules already exists.",
+                detail="Learning Schedules already exists.",
             )
         new_learning_schedules = LearningSchedules(**learning_schedules.dict())
         session.add(new_learning_schedules)
@@ -77,7 +81,7 @@ class LearningScheduleServices:
 
     @staticmethod
     def update(
-        *, 
+        *,
         session: Session,
         learning_schedule_id: uuid.UUID,
         learning_schedule_data: LearningScheduleUpdate,
@@ -85,7 +89,8 @@ class LearningScheduleServices:
         learning_schedule = session.get(LearningSchedules, learning_schedule_id)
         if not learning_schedule:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Learning Schedule not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Learning Schedule not found",
             )
 
         update_data = learning_schedule_data.model_dump(exclude_unset=True)
@@ -94,7 +99,7 @@ class LearningScheduleServices:
 
         session.commit()
         return LearningSchedulePublic.model_validate(learning_schedule)
-    
+
     @staticmethod
     def delete(
         *,
@@ -104,10 +109,13 @@ class LearningScheduleServices:
         learning_schedule = session.get(LearningSchedules, learning_schedule_id)
         if not learning_schedule:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Learning Schedule not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Learning Schedule not found",
             )
 
-        check_related_entities = select(TeachingSchedules).where(TeachingSchedules.learning_schedule_id == learning_schedule.id)
+        check_related_entities = select(TeachingSchedules).where(
+            TeachingSchedules.learning_schedule_id == learning_schedule.id
+        )
         teaching_schedules = session.exec(check_related_entities).all()
         if teaching_schedules:
             raise HTTPException(
@@ -118,8 +126,14 @@ class LearningScheduleServices:
         if learning_schedule.status == StatusEnum.ACTIVE:
             learning_schedule.status = StatusEnum.INACTIVE
             session.commit()
-            return LearningScheduleDeleteResponse(id=str(learning_schedule.id), message="Learning Schedule set to inactive")
+            return LearningScheduleDeleteResponse(
+                id=str(learning_schedule.id),
+                message="Learning Schedule set to inactive",
+            )
 
         session.delete(learning_schedule)
         session.commit()
-        return LearningScheduleDeleteResponse(id=str(learning_schedule.id), message="Learning Schedule deleted successfully")
+        return LearningScheduleDeleteResponse(
+            id=str(learning_schedule.id),
+            message="Learning Schedule deleted successfully",
+        )

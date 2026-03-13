@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field
 from typing import Optional
-from sqlmodel import SQLModel, Field
+from pydantic import Field
+from sqlmodel import SQLModel
 
 
 class BaseQueryParams(SQLModel):

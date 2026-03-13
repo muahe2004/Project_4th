@@ -1,11 +1,8 @@
 import uuid
-from datetime import datetime
-import json
 from fastapi import HTTPException, Request
-from sqlalchemy import or_
-from sqlmodel import Session, and_, select, or_, select, func, desc
+from sqlmodel import Session, and_, or_, select, func, desc
 from starlette import status
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 from app.models.models import Classes
 from app.models.models import Specializations
@@ -16,35 +13,31 @@ from app.models.schemas.classes.class_schemas import (
     ClassQueryParams,
     ClassUpdate,
     ClassDeleteResponse,
-    ClassesResponse
+    ClassesResponse,
 )
 from app.models.models import Students
 
 from app.enums.status import StatusEnum
 from app.services.teachers import get_all_teachers
 
+
 class ClassServices:
     @staticmethod
     def get_all(
-        *,
-        session: Session,
-        query: ClassQueryParams
+        *, session: Session, query: ClassQueryParams
     ) -> Tuple[List[ClassesResponse], int]:
-        statement = (
-            select(
-                Classes.id,
-                Classes.class_code,
-                Classes.class_name,
-                Classes.size,
-                Classes.status,
-                Classes.created_at,
-                Classes.updated_at,
-                Classes.specialization_id,
-                Classes.teacher_id,
-                Specializations.name.label("specialization_name"),
-            )
-            .join(Specializations, Specializations.id == Classes.specialization_id)
-        )
+        statement = select(
+            Classes.id,
+            Classes.class_code,
+            Classes.class_name,
+            Classes.size,
+            Classes.status,
+            Classes.created_at,
+            Classes.updated_at,
+            Classes.specialization_id,
+            Classes.teacher_id,
+            Specializations.name.label("specialization_name"),
+        ).join(Specializations, Specializations.id == Classes.specialization_id)
 
         teacher_info = get_all_teachers()
         teacher_map = {str(t["id"]): t["name"] for t in teacher_info}
@@ -92,9 +85,11 @@ class ClassServices:
             classes.append(ClassesResponse(**data))
 
         return classes, total
-    
+
     @staticmethod
-    def get_dropdown(*, session: Session, query: ClassQueryParams) -> List[ClassDropDownResponse]:
+    def get_dropdown(
+        *, session: Session, query: ClassQueryParams
+    ) -> List[ClassDropDownResponse]:
         statement = select(Classes)
 
         conditions = []
@@ -131,7 +126,7 @@ class ClassServices:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Class does not exist"
             )
         return ClassPublic.model_validate(class_)
-    
+
     @staticmethod
     def get_dropdown_by_ids(
         *, session: Session, ids: List[uuid.UUID], request: Request
@@ -143,7 +138,6 @@ class ClassServices:
         classes = session.exec(statement).all()
 
         return [ClassDropDownResponse.model_validate(c) for c in classes]
-
 
     @staticmethod
     def create(
@@ -188,9 +182,7 @@ class ClassServices:
 
     @staticmethod
     def delete_many(
-        *,
-        session: Session,
-        class_ids: List[uuid.UUID]
+        *, session: Session, class_ids: List[uuid.UUID]
     ) -> List[ClassDeleteResponse]:
         results = []
 
@@ -209,7 +201,7 @@ class ClassServices:
                 results.append(
                     ClassDeleteResponse(
                         id=str(class_id),
-                        message="Class has students and cannot be deleted."
+                        message="Class has students and cannot be deleted.",
                     )
                 )
                 continue

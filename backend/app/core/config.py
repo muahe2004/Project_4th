@@ -1,23 +1,20 @@
 import os
-import secrets
-import warnings
 from typing import Annotated, Any, Literal
 
 from dotenv import load_dotenv
 from pydantic import (
     AnyUrl,
     BeforeValidator,
-    Field,
     PostgresDsn,
     computed_field,
 )
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing_extensions import Self
 
 # Load .env từ thư mục cha cấp 2
 dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
 load_dotenv(dotenv_path=dotenv_path)
+
 
 def parse_cors(v: Any) -> list[str] | str:
     if isinstance(v, str) and not v.startswith("["):
@@ -29,9 +26,7 @@ def parse_cors(v: Any) -> list[str] | str:
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_ignore_empty=True,
-        extra="ignore",
-        env_file=dotenv_path
+        env_ignore_empty=True, extra="ignore", env_file=dotenv_path
     )
 
     UNICORE_SECRET_KEY: str
@@ -40,16 +35,22 @@ class Settings(BaseSettings):
 
     # General
     PROJECT_NAME: str = "UNICORE"
-    ENVIRONMENT: Literal["local", "staging", "production", "uat", "development"] = "local"
+    ENVIRONMENT: Literal["local", "staging", "production", "uat", "development"] = (
+        "local"
+    )
 
     # CORS
-    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
+    BACKEND_CORS_ORIGINS: Annotated[
+        list[AnyUrl] | str, BeforeValidator(parse_cors)
+    ] = []
     FRONTEND_HOST: str = "http://localhost:2004"
 
     @computed_field  # type: ignore[prop-decorator]
     @property
     def all_cors_origins(self) -> list[str]:
-        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [self.FRONTEND_HOST]
+        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [
+            self.FRONTEND_HOST
+        ]
 
     # PostgreSQL
     POSTGRES_SERVER: str
@@ -72,5 +73,6 @@ class Settings(BaseSettings):
             port=self.POSTGRES_PORT,
             path=f"{self.POSTGRES_DB}",
         )
+
 
 settings = Settings()  # type: ignore

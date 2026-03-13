@@ -1,10 +1,9 @@
 import uuid
-from datetime import datetime
 
 from fastapi import HTTPException, Request
 from sqlmodel import Session, or_, select, func, desc
 from starlette import status
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 from app.models.models import Majors
 from app.models.schemas.majors.major_schemas import (
@@ -12,18 +11,17 @@ from app.models.schemas.majors.major_schemas import (
     MajorCreate,
     MajorQueryParams,
     MajorUpdate,
-    MajorDeleteResponse
+    MajorDeleteResponse,
 )
 from app.models.models import Specializations
 
 from app.enums.status import StatusEnum
-from app.models.schemas.common.query import BaseQueryParams
+
 
 class MajorServices:
     @staticmethod
     def get_all(
-        *, session: Session,
-        query: MajorQueryParams
+        *, session: Session, query: MajorQueryParams
     ) -> Tuple[List[MajorPublic], int]:
         statement = select(Majors)
 
@@ -45,7 +43,9 @@ class MajorServices:
         if conditions:
             statement = statement.where(*conditions)
 
-        total = session.exec(select(func.count()).select_from(statement.subquery())).one()
+        total = session.exec(
+            select(func.count()).select_from(statement.subquery())
+        ).one()
 
         statement = statement.order_by(desc(Majors.created_at))
         statement = statement.offset(query.skip).limit(query.limit)
@@ -71,9 +71,7 @@ class MajorServices:
         session: Session,
         major: MajorCreate,
     ) -> MajorPublic:
-        existing = session.exec(
-            select(Majors).where(Majors.name == major.name)
-        ).first()
+        existing = session.exec(select(Majors).where(Majors.name == major.name)).first()
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -88,7 +86,7 @@ class MajorServices:
 
     @staticmethod
     def update(
-        *, 
+        *,
         session: Session,
         major_id: uuid.UUID,
         major_data: MajorUpdate,
@@ -117,10 +115,12 @@ class MajorServices:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Major not found"
             )
-        
-        check_related_entities = select(Specializations).where(Specializations.major_id == major.id)
+
+        check_related_entities = select(Specializations).where(
+            Specializations.major_id == major.id
+        )
         specializations = session.exec(check_related_entities).all()
-        if specializations: 
+        if specializations:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Major has related specializations and cannot be deleted.",
@@ -129,8 +129,12 @@ class MajorServices:
         if major.status == StatusEnum.ACTIVE:
             major.status = StatusEnum.INACTIVE
             session.commit()
-            return MajorDeleteResponse(id=str(major.id), message="Major set to inactive")
+            return MajorDeleteResponse(
+                id=str(major.id), message="Major set to inactive"
+            )
 
         session.delete(major)
         session.commit()
-        return MajorDeleteResponse(id=str(major.id), message="Major deleted successfully")
+        return MajorDeleteResponse(
+            id=str(major.id), message="Major deleted successfully"
+        )

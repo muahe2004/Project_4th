@@ -2,10 +2,10 @@ from collections.abc import Generator
 from typing import Annotated
 
 from fastapi import Depends
+
 # from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session
 
-from app.core.config import settings
 from app.core.database import engine
 
 # reusable_oauth2 = OAuth2PasswordBearer(

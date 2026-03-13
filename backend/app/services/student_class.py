@@ -1,30 +1,19 @@
 import uuid
-from datetime import datetime
-import json
-from app.models.schemas.classes.student_class_schemas import StudentClassCreate, StudentClassPublic, StudentClassQueryParams, StudentClassUpdate
-from fastapi import HTTPException, Request
-from sqlalchemy import or_
-from sqlmodel import Session, select, func
+from app.models.schemas.classes.student_class_schemas import (
+    StudentClassCreate,
+    StudentClassPublic,
+    StudentClassUpdate,
+)
+from fastapi import HTTPException
+from sqlmodel import Session, select
 from starlette import status
-from typing import List, Optional, Tuple
 
 from app.models.models import StudentClass
-from app.models.models import Specializations
-from app.models.schemas.classes.class_schemas import (
-    ClassPublic,
-    ClassCreate,
-    ClassQueryParams,
-    ClassUpdate,
-    ClassDeleteResponse,
-    ClassesResponse
-)
-from app.models.models import Students
 
-from app.enums.status import StatusEnum
-from app.services.teachers import get_all_teachers
+# from app.services.teachers import get_all_teachers
+
 
 class StudentClassServices:
-
     # @staticmethod
     # def get_all(
     #     *,
@@ -109,14 +98,14 @@ class StudentClassServices:
     ) -> StudentClassPublic:
         existing = session.exec(
             select(StudentClass).where(
-                (StudentClass.class_id == class_.class_id) &
-                (StudentClass.student_id == class_.student_id)
+                (StudentClass.class_id == class_.class_id)
+                & (StudentClass.student_id == class_.student_id)
             )
         ).first()
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Class already exists.",
+                detail="Class already exists.",
             )
         new_class = StudentClass(**class_.dict())
         session.add(new_class)

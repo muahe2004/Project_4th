@@ -1,8 +1,8 @@
 import uuid
-from datetime import datetime
 
 from fastapi import HTTPException, Request
-from sqlmodel import Session, and_, select, or_, select, func, desc
+from sqlmodel import Session, and_, or_, select, func, desc
+from starlette import status
 from typing import List, Tuple
 
 from app.models.models import Specializations
@@ -12,17 +12,17 @@ from app.models.schemas.specializations.specialization_schemas import (
     SpecializationCreate,
     SpecializationQueryParams,
     SpecializationUpdate,
-    SpecializationDeleteResponse
+    SpecializationDeleteResponse,
 )
 from app.models.models import Classes
 
 from app.enums.status import StatusEnum
 
+
 class SpecializationServices:
     @staticmethod
     def get_all(
-        *, session: Session,
-        query: SpecializationQueryParams
+        *, session: Session, query: SpecializationQueryParams
     ) -> Tuple[List[SpecializationPublic], int]:
         statement = select(Specializations)
 
@@ -44,7 +44,9 @@ class SpecializationServices:
         if conditions:
             statement = statement.where(*conditions)
 
-        total = session.exec(select(func.count()).select_from(statement.subquery())).one()
+        total = session.exec(
+            select(func.count()).select_from(statement.subquery())
+        ).one()
 
         statement = statement.order_by(desc(Specializations.created_at))
         statement = statement.offset(query.skip).limit(query.limit)
@@ -52,9 +54,11 @@ class SpecializationServices:
         specializations = session.exec(statement).all()
 
         return specializations, total
-    
+
     @staticmethod
-    def get_dropdown(*, session: Session, query: SpecializationQueryParams) -> List[SpecializationDropdownResponse]:
+    def get_dropdown(
+        *, session: Session, query: SpecializationQueryParams
+    ) -> List[SpecializationDropdownResponse]:
         statement = select(Specializations)
 
         conditions = []
@@ -88,30 +92,10 @@ class SpecializationServices:
         specialization = session.get(Specializations, specialization_id)
         if not specialization:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Specialization does not exist"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Specialization does not exist",
             )
         return SpecializationPublic.model_validate(specialization)
-    
-    @staticmethod
-    def create(
-        *,
-        session: Session,
-        specialization: SpecializationCreate,
-    ) -> SpecializationPublic:
-        existing = session.exec(
-            select(Specializations).where(Specializations.name == specialization.name)
-        ).first()
-        if existing:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Specialization {specialization.name} already exists.",
-            )
-        new_specialization = Specializations(**specialization.dict())
-        session.add(new_specialization)
-        session.commit()
-        session.refresh(new_specialization)
-
-        return SpecializationPublic.model_validate(new_specialization)
 
     @staticmethod
     def create(
@@ -153,7 +137,7 @@ class SpecializationServices:
 
         session.commit()
         return SpecializationPublic.model_validate(specialization)
-    
+
     @staticmethod
     def delete(
         *,
@@ -165,20 +149,26 @@ class SpecializationServices:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Specialization not found"
             )
-        
-        check_related_entities = select(Classes).where(Classes.specialization_id == specialization.id)
+
+        check_related_entities = select(Classes).where(
+            Classes.specialization_id == specialization.id
+        )
         classes = session.exec(check_related_entities).all()
         if classes:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Specialization has related classes and cannot be deleted.",
             )
-        
+
         if specialization.status == StatusEnum.ACTIVE:
             specialization.status = StatusEnum.INACTIVE
             session.commit()
-            return SpecializationDeleteResponse(id=str(specialization.id), message="Specialization set to inactive")
+            return SpecializationDeleteResponse(
+                id=str(specialization.id), message="Specialization set to inactive"
+            )
 
         session.delete(specialization)
         session.commit()
-        return SpecializationDeleteResponse(id=str(specialization.id), message="Specialization deleted successfully")
+        return SpecializationDeleteResponse(
+            id=str(specialization.id), message="Specialization deleted successfully"
+        )
