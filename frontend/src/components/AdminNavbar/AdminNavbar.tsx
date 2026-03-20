@@ -16,7 +16,7 @@ import { Home, People, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 
 import "./AdminNavbar.css";
-import { classesUrl, dashBoardUrl, departmentUrl, learningScheduleUrl, majorUrl, onlineCourse, specializationsUrl, studentUrl, subjectUrl, teacherUrl } from "../../routes/urls";
+import { classesUrl, dashBoardUrl, departmentUrl, learningScheduleUrl, majorUrl, onlineCourse, specializationsUrl, studentUrl, subjectUrl, teacherUrl, teachingScheduleUrl } from "../../routes/urls";
 
 type NavbarProps = {
   isOpen: boolean;
@@ -37,15 +37,15 @@ export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
     { label: "Ngành", icon: <MenuBookIcon />, path: `${dashBoardUrl}/${majorUrl}` },
     { label: "Chuyên ngành", icon: <AccountTreeIcon />, path: `${dashBoardUrl}/${specializationsUrl}` },
     { label: "Môn học", icon: <AutoStoriesIcon />, path: `${dashBoardUrl}/${subjectUrl}` },
-    { label: "Lịch học", icon: <EventIcon />, path: `${dashBoardUrl}/${learningScheduleUrl}` },
-    { label: "Lịch dạy", icon: <EditCalendarIcon />, path: `${dashBoardUrl}/${learningScheduleUrl}` },
+    // { label: "Lịch học", icon: <EventIcon />, path: `${dashBoardUrl}/${learningScheduleUrl}` },
+    { label: "Lịch dạy", icon: <EditCalendarIcon />, path: `${dashBoardUrl}/${teachingScheduleUrl}` },
     { label: "Lịch thi", icon: <AssignmentIcon />, path: "/admin/lich-thi" },
     { label: "Sinh viên", icon: <GroupsIcon />, path: `${dashBoardUrl}/${studentUrl}` },
     { label: "Giảng viên", icon: <PersonIcon />, path: `${dashBoardUrl}/${teacherUrl}` },
     { label: "Lớp", icon: <ClassIcon />, path: `${dashBoardUrl}/${classesUrl}` },
     { label: "Phòng học", icon: <MeetingRoomIcon />, path: "/admin/phong-hoc" },
-    { label: "Người dùng", icon: <People />, path: "/admin/nguoi-dung" },
-    { label: "UniLearning", icon: <AutoStoriesIcon />, path: `${dashBoardUrl}/${onlineCourse}` },
+    // { label: "Người dùng", icon: <People />, path: "/admin/nguoi-dung" },
+    // { label: "UniLearning", icon: <AutoStoriesIcon />, path: `${dashBoardUrl}/${onlineCourse}` },
   ];
 
   return (

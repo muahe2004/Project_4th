@@ -4,6 +4,8 @@ from sqlalchemy import Integer
 from uuid import UUID
 from typing import Optional
 
+from app.models.schemas.common.query import BaseQueryParams
+
 
 class RoomBase(SQLModel):
     room_number: int = Field(sa_column=Column(Integer, nullable=False, unique=True))
@@ -43,3 +45,13 @@ class RoomUpdate(SQLModel):
 class RoomDeleteResponse(SQLModel):
     message: str
     id: UUID
+
+
+class RoomDropDownResponse(SQLModel):
+    id: UUID
+    room_number: int
+    type: str
+
+
+class RoomSearchParams(BaseQueryParams):
+    pass

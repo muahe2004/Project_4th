@@ -15,6 +15,7 @@ export const specializationsUrl = "specializations";
 export const classesUrl = "classes";
 export const onlineCourse = "courses";
 export const learningScheduleUrl = "learning-schedule";
+export const teachingScheduleUrl = "teaching-schedule";
 export const studentUrl = "students";
 export const teacherUrl = "teachers";
 export const subjectUrl = "subjects";

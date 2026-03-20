@@ -1,9 +1,11 @@
 import uuid
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.rooms.room_schemas import (
+    RoomDropDownResponse,
     RoomsPublic,
     RoomCreate,
+    RoomSearchParams,
     RoomUpdate,
     RoomDeleteResponse,
 )
@@ -17,6 +19,14 @@ router = APIRouter()
 @router.get("", response_model=List[RoomsPublic])
 def get_rooms(session: SessionDep) -> List[RoomsPublic]:
     return RoomServices.get_all(session=session)
+
+
+# =========================== get dropdown rooms ===========================
+@router.get("/dropdown", response_model=List[RoomDropDownResponse])
+def get_rooms_dropdown(
+    session: SessionDep, query: RoomSearchParams = Depends()
+) -> List[RoomDropDownResponse]:
+    return RoomServices.get_dropdown(session=session, query=query)
 
 
 # =========================== get room by id ===========================

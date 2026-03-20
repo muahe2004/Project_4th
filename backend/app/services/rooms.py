@@ -1,13 +1,16 @@
 import uuid
 from fastapi import HTTPException, Request
-from sqlmodel import Session, select
+from sqlmodel import Session, and_, desc, or_, select
+from sqlalchemy import String, cast
 from starlette import status
 from typing import List
 
 from app.models.models import Rooms
 from app.models.schemas.rooms.room_schemas import (
+    RoomDropDownResponse,
     RoomsPublic,
     RoomCreate,
+    RoomSearchParams,
     RoomUpdate,
     RoomDeleteResponse,
 )
@@ -24,6 +27,37 @@ class RoomServices:
     ) -> List[RoomsPublic]:
         rooms = session.exec(select(Rooms)).all()
         return rooms
+
+    @staticmethod
+    def get_dropdown(
+        *, session: Session, query: RoomSearchParams
+    ) -> List[RoomDropDownResponse]:
+        statement = select(Rooms)
+
+        conditions = []
+        if query.status:
+            conditions.append(Rooms.status == query.status)
+
+        if query.search:
+            search_pattern = f"%{query.search}%"
+            conditions.append(
+                or_(
+                    cast(Rooms.room_number, String).ilike(search_pattern),
+                    Rooms.type.ilike(search_pattern),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(and_(*conditions))
+
+        statement = (
+            statement.order_by(desc(Rooms.created_at))
+            .offset(query.skip)
+            .limit(query.limit)
+        )
+
+        results = session.exec(statement).all()
+        return [RoomDropDownResponse.model_validate(room) for room in results]
 
     @staticmethod
     def get_by_id(

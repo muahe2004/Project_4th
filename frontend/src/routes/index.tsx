@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -19,6 +19,7 @@ import Classes from "../modules/classes/views/Classes";
 import { Students } from "../modules/students/views/Students";
 import { Teachers } from "../modules/teachers/views/Teachers";
 import { Subjects } from "../modules/subjects/views/Subjects";
+import { TeachingSchedules } from "../modules/teachingSchedule/views/TeachingSchedules";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -100,6 +101,10 @@ export const createRouterConfig = () => {
         {
           path: layOutAdminUrl + learningScheduleUrl,
           element: <LearningSchedule></LearningSchedule>
+        },
+        {
+          path: layOutAdminUrl + teachingScheduleUrl,
+          element: <TeachingSchedules></TeachingSchedules>
         },
         {
           path: layOutAdminUrl + onlineCourse,

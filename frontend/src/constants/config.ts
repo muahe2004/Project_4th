@@ -27,6 +27,15 @@ export const URL_API_SPECIALIZATION = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}
 // Class
 export const URL_API_CLASS = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/classes`;
 
+// Room
+export const URL_API_ROOM = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/rooms`;
+
+// Subject
+export const URL_API_SUBJECT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/subjects`;
+
+// Teaching Schedule
+export const URL_API_TEACHING_SCHEDULE = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/teaching_schedules`;
+
 // Course
 export const URL_API_COURSE = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/courses`;
 

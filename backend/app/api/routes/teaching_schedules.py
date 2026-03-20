@@ -1,8 +1,10 @@
 import uuid
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
+    ListTeachingScheduleResponse,
+    TeachingScheduleSearchParams,
     TeachingSchedulPublic,
     TeachingScheduleCreate,
     TeachingScheduleUpdate,
@@ -10,15 +12,19 @@ from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
     TeachingScheduleWithLearningSchedulePublic,
 )
 from app.services.teaching_schedules import TeachingScheduleServices
-from typing import List
 
 router = APIRouter()
 
 
 # =========================== get all ===========================
-@router.get("", response_model=List[TeachingSchedulPublic])
-def get_teaching_schedules(session: SessionDep) -> List[TeachingSchedulPublic]:
-    return TeachingScheduleServices.get_all(session=session)
+@router.get("", response_model=ListTeachingScheduleResponse)
+def get_teaching_schedules(
+    session: SessionDep, query: TeachingScheduleSearchParams = Depends()
+) -> ListTeachingScheduleResponse:
+    teaching_schedules, total = TeachingScheduleServices.get_all(
+        session=session, query=query
+    )
+    return ListTeachingScheduleResponse(data=teaching_schedules, total=total)
 
 
 # =========================== get by id ===========================

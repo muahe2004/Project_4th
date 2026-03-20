@@ -13,6 +13,7 @@ interface MainAutocompleteProps<T> {
     className?: string;
     error?: boolean;
     helperText?: string;
+    disabled?: boolean;
 }
 
 function MainAutocomplete<T>({
@@ -27,6 +28,7 @@ function MainAutocomplete<T>({
     className,
     error = false,
     helperText = "",
+    disabled = false,
 }: MainAutocompleteProps<T>) {
     const currentValue =
         typeof value === "object" && value !== null
@@ -39,6 +41,7 @@ function MainAutocomplete<T>({
             freeSolo
             options={options}
             value={currentValue as any}
+            disabled={disabled}
             getOptionLabel={(option) =>
                 typeof option === "string" ? option : getOptionLabel(option)
             }
@@ -68,6 +71,7 @@ function MainAutocomplete<T>({
                     className="main-text__field filter-text__field"
                     error={error}
                     helperText={helperText}
+                    disabled={disabled}
                     onFocus={() => {
                         onSearchChange?.("");
                         onResetPage?.();
