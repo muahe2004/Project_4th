@@ -7,6 +7,7 @@ from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
     TeachingScheduleCreate,
     TeachingScheduleUpdate,
     TeachingScheduleDeleteResponse,
+    TeachingScheduleWithLearningSchedulePublic,
 )
 from app.services.teaching_schedules import TeachingScheduleServices
 from typing import List
@@ -33,11 +34,11 @@ def get_learning_schedules_by_id(
 # =========================== add ===========================
 @router.post(
     "",
-    response_model=TeachingSchedulPublic,
+    response_model=TeachingScheduleWithLearningSchedulePublic,
 )
 def create_department(
     request: Request, session: SessionDep, data: TeachingScheduleCreate
-) -> TeachingSchedulPublic:
+) -> TeachingScheduleWithLearningSchedulePublic:
     return TeachingScheduleServices.create(session=session, teaching_schedule=data)
 
 

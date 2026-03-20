@@ -5,7 +5,7 @@ from sqlmodel import Session, select
 from starlette import status
 from typing import List
 
-from app.models.models import LearningSchedules
+from app.models.models import Classes, LearningSchedules, Rooms, Subjects
 from app.models.schemas.learning_schedules.learning_schedule_schemas import (
     LearningSchedulePublic,
     LearningScheduleCreate,
@@ -57,24 +57,50 @@ class LearningScheduleServices:
         *,
         session: Session,
         learning_schedules: LearningScheduleCreate,
+        auto_commit: bool = True,
     ) -> LearningSchedulePublic:
-        existing = session.exec(
+        existing_class = session.get(Classes, learning_schedules.class_id)
+        if not existing_class:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Class does not exist.",
+            )
+
+        existing_subject = session.get(Subjects, learning_schedules.subject_id)
+        if not existing_subject:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Subject does not exist.",
+            )
+
+        if learning_schedules.room_id:
+            existing_room = session.get(Rooms, learning_schedules.room_id)
+            if not existing_room:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Room does not exist.",
+                )
+
+        overlapping_schedule = session.exec(
             select(LearningSchedules).where(
                 LearningSchedules.class_id == learning_schedules.class_id,
-                LearningSchedules.subject_id == learning_schedules.subject_id,
                 LearningSchedules.date == learning_schedules.date,
-                LearningSchedules.start_period == learning_schedules.start_period,
-                LearningSchedules.end_period == learning_schedules.end_period,
+                LearningSchedules.start_period <= learning_schedules.end_period,
+                LearningSchedules.end_period >= learning_schedules.start_period,
             )
         ).first()
-        if existing:
+        if overlapping_schedule:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Learning Schedules already exists.",
+                detail="Learning Schedule overlaps with an existing schedule.",
             )
-        new_learning_schedules = LearningSchedules(**learning_schedules.dict())
+
+        new_learning_schedules = LearningSchedules(**learning_schedules.model_dump())
         session.add(new_learning_schedules)
-        session.commit()
+        if auto_commit:
+            session.commit()
+        else:
+            session.flush()
         session.refresh(new_learning_schedules)
 
         return new_learning_schedules

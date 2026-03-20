@@ -5,13 +5,15 @@ from sqlmodel import Session, select
 from starlette import status
 from typing import List
 
-from app.models.models import TeachingSchedules
+from app.models.models import Teachers, TeachingSchedules
 from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
     TeachingSchedulPublic,
     TeachingScheduleCreate,
     TeachingScheduleUpdate,
     TeachingScheduleDeleteResponse,
+    TeachingScheduleWithLearningSchedulePublic,
 )
+from app.services.learning_schedules import LearningScheduleServices
 
 
 class TeachingScheduleServices:
@@ -35,14 +37,45 @@ class TeachingScheduleServices:
     @staticmethod
     def create(
         *, session: Session, teaching_schedule: TeachingScheduleCreate
-    ) -> TeachingSchedulPublic:
+    ) -> TeachingScheduleWithLearningSchedulePublic:
+        if teaching_schedule.teacher_id:
+            existing_teacher = session.get(Teachers, teaching_schedule.teacher_id)
+            if not existing_teacher:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Teacher does not exist.",
+                )
 
-        new_teaching_schedule = TeachingSchedules(**teaching_schedule.dict())
-        session.add(new_teaching_schedule)
-        session.commit()
-        session.refresh(new_teaching_schedule)
+        try:
+            new_learning_schedule = LearningScheduleServices.create(
+                session=session,
+                learning_schedules=teaching_schedule.learning_schedule,
+                auto_commit=False,
+            )
 
-        return new_teaching_schedule
+            new_teaching_schedule = TeachingSchedules(
+                teacher_id=teaching_schedule.teacher_id,
+                learning_schedule_id=new_learning_schedule.id,
+                status=teaching_schedule.status,
+            )
+            session.add(new_teaching_schedule)
+            session.commit()
+            session.refresh(new_teaching_schedule)
+            return TeachingScheduleWithLearningSchedulePublic(
+                id=new_teaching_schedule.id,
+                teacher_id=new_teaching_schedule.teacher_id,
+                learning_schedule_id=new_teaching_schedule.learning_schedule_id,
+                status=new_teaching_schedule.status,
+                created_at=new_teaching_schedule.created_at,
+                updated_at=new_teaching_schedule.updated_at,
+                learning_schedule=new_learning_schedule,
+            )
+        except HTTPException:
+            session.rollback()
+            raise
+        except Exception:
+            session.rollback()
+            raise
 
     @staticmethod
     def update(

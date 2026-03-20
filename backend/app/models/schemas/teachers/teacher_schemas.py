@@ -67,6 +67,7 @@ class TeacherWithCitizenID(TeacherPublic):
     citizen_id: str
 
 
+# need include learning schedule create 
 class TeacherCreate(TeacherBase):
     pass
 

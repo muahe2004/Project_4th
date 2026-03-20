@@ -3,6 +3,11 @@ from typing import Optional
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from uuid import UUID
 
+from app.models.schemas.learning_schedules.learning_schedule_schemas import (
+    LearningScheduleCreate,
+    LearningSchedulePublic,
+)
+
 
 class TeachingScheduleBase(SQLModel):
     teacher_id: UUID | None = Field(default=None, foreign_key="teachers.id")
@@ -22,8 +27,16 @@ class TeachingSchedulPublic(TeachingScheduleBase):
     id: UUID
 
 
-class TeachingScheduleCreate(TeachingScheduleBase):
-    pass
+class TeachingScheduleWithLearningSchedulePublic(TeachingSchedulPublic):
+    learning_schedule: LearningSchedulePublic
+
+
+class TeachingScheduleCreate(SQLModel):
+    teacher_id: UUID | None = Field(default=None, foreign_key="teachers.id")
+    learning_schedule: LearningScheduleCreate
+    status: Optional[str] | None = Field(
+        default=None, sa_column=Column(String(50), nullable=True)
+    )
 
 
 class TeachingScheduleUpdate(SQLModel):

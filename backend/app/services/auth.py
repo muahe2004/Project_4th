@@ -4,7 +4,7 @@ from app.models.models import Students, Teachers
 from app.enums.status import StatusEnum
 from app.enums.roles import RoleEnum, UserCodeTypeEnum
 from app.middleware.hashing import verify_password
-from jose import jwt
+import jwt
 from datetime import datetime, timedelta
 from app.core.config import settings
 from app.middleware.decodedToken import get_token_from_cookie, decode_jwt
@@ -88,8 +88,6 @@ class AuthServices:
             "name": payload.get("name"),
             "role": payload.get("role"),
         }
-
-    staticmethod
 
     def log_out(response: Response):
         response.delete_cookie(
