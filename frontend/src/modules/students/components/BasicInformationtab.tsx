@@ -113,8 +113,19 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
             <LabelPrimary value="Lớp" required />
             <MainAutocomplete
                 options={classes}
-                value={student.class_id ? classes.find((cls) => cls.id === student.class_id) ?? null : null}
-                onChange={(id) => onStudentChange((prev) => ({ ...prev, class_id: id || "" }))}
+                value={
+                    student.class_id
+                        ? classes.find((cls) => cls.id === student.class_id) ??
+                          (student.class_name || student.class_code
+                              ? {
+                                    id: student.class_id,
+                                    class_code: student.class_code ?? "",
+                                    class_name: student.class_name ?? "",
+                                }
+                              : null)
+                        : null
+                }
+                onChange={(id) => onStudentChange((prev) => ({ ...prev, class_id: id || undefined }))}
                 onSearchChange={onClassSearchChange}
                 onResetPage={onClassResetPage}
                 getOptionLabel={(option) => `${option.class_code} - ${option.class_name}`}

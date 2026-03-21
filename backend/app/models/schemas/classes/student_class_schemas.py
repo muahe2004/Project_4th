@@ -18,6 +18,9 @@ class StudentClassBase(BaseModel):
     status: Optional[str] = Field(
         default=None, sa_column=Column(String(50), nullable=True)
     )
+    class_type: Optional[str] = Field(
+        default=None, sa_column=Column(String(50), nullable=True)
+    )
     created_at: datetime = Field(
         default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
     )

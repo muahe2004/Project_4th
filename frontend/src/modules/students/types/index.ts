@@ -10,7 +10,7 @@ export interface IStudents {
     training_program?: string | null;
     course?: string | null;
     status: string;
-    class_id?: string;
+    class_id?: string | null;
     created_at?: string;
     updated_at?: string;
     password?: string;
@@ -73,7 +73,7 @@ export interface IStudentUpdate {
     email?: string;
     phone?: string | null;
     address?: string | null;
-    class_id?: string;
+    class_id?: string | null;
     training_program?: string | null;
     course?: string | null;
     status?: string | null;

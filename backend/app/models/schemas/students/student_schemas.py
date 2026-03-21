@@ -33,9 +33,9 @@ class StudentBase(BaseModel):
         default=None, sa_column=Column(String(20), nullable=True)
     )
     address: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
-    class_id: Optional[UUID_TYPE] = Field(
-        default=None, sa_column=Column(PG_UUID(as_uuid=True), nullable=True)
-    )
+    # class_id: Optional[UUID_TYPE] = Field(
+    #     default=None, sa_column=Column(PG_UUID(as_uuid=True), nullable=True)
+    # )
     training_program: Optional[str] = Field(
         default=None, sa_column=Column(String(50), nullable=True)
     )
@@ -56,6 +56,7 @@ class StudentBase(BaseModel):
 
 class StudentPublic(StudentBase):
     id: UUID_TYPE
+    class_id: Optional[UUID_TYPE] = None
 
 
 class StudentWithCitizenID(StudentPublic):
@@ -67,6 +68,7 @@ class StudentCreate(StudentBase):
 
 
 class StudentCreateWithUserInfor(StudentBase):
+    class_id: Optional[UUID_TYPE] = None
     student_information: UserInformationCreate
     student_relatives: List[UserRelativeCreate]
 

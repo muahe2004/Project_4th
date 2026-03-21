@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useGetStudents } from "../apis/getStudents";
@@ -13,17 +13,11 @@ import StudentFormModel from "../components/StudentFormModel";
 import { useDeleteStudent } from "../apis/deleteStudent";
 import type { IStudentsResponse } from "../types";
 
-
-
 export function Students() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("");
 
-    const searchDepartment = (value: string) => {
-        console.log("value: ", value);
-    }
-    
     const handleEditStudent = (student: IStudentsResponse) => {
         setMode("edit");
         setSelectedStudent(student);
@@ -44,14 +38,8 @@ export function Students() {
         ...(status && { status }),
     };
 
-    const { data: students, isLoading: isLoadingDeparment, error: errorDepatment } = useGetStudents(Params);
+    const { data: students } = useGetStudents(Params);
     const { mutateAsync: deleteStudents } = useDeleteStudent({});
-    
-    const isLoading = isLoadingDeparment;
-
-    useEffect(() => {
-        console.log(students);
-    }, [])
 
     return(
         <main className="admin-main-container">

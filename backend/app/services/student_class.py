@@ -107,7 +107,7 @@ class StudentClassServices:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Class already exists.",
             )
-        new_class = StudentClass(**class_.dict())
+        new_class = StudentClass(**class_.model_dump())
         session.add(new_class)
         session.commit()
         session.refresh(new_class)

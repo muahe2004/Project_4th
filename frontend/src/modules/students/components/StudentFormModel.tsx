@@ -115,6 +115,15 @@ const normalizeNullableText = (value?: string | null): string | null => {
     return trimmed.length > 0 ? trimmed : null;
 };
 
+const normalizeOptionalUuid = (value?: string | null): string | undefined => {
+    if (!value) {
+        return undefined;
+    }
+
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+};
+
 const DEFAULT_STUDENT: IStudentsResponse = {
     student_code: "",
     name: "",
@@ -126,7 +135,7 @@ const DEFAULT_STUDENT: IStudentsResponse = {
     training_program: null,
     course: null,
     status: STATUS.ACTIVE,
-    class_id: "",
+    class_id: null,
     created_at: "",
     updated_at: "",
     password: "",
@@ -157,8 +166,6 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
     };
 
     useEffect(() => {
-        console.log(classes);
-
         if (mode === "edit" && initialValues) {
             setStudent({
                 ...DEFAULT_STUDENT,
@@ -229,7 +236,7 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
             email: student.email,
             phone: student.phone,
             address: student.address,
-            class_id: student.class_id,
+            class_id: normalizeOptionalUuid(student.class_id),
             training_program: student.training_program,
             course: student.course,
             status: student.status,
@@ -247,7 +254,7 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
                 email: student.email,
                 phone: student.phone,
                 address: student.address,
-                class_id: student.class_id,
+                class_id: normalizeOptionalUuid(student.class_id),
                 training_program: student.training_program,
                 course: student.course,
                 status: student.status,

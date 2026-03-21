@@ -113,7 +113,7 @@ class TeachingScheduleResponse(PydanticBaseModel):
 class TeachingScheduleSearchParams(BaseQueryParams):
     class_id: Optional[UUID] = Field(None)
     teacher_id: Optional[UUID] = Field(None)
-
+    student_id: Optional[UUID] = Field(None)
 
 class ListTeachingScheduleResponse(PydanticBaseModel):
     data: list[TeachingScheduleResponse]

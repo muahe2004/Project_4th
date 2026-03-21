@@ -5,7 +5,6 @@ import { getStatusDisplay } from "../../../utils/status/status-display";
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from "@mui/icons-material/Delete";
 import type { IStudentsResponse } from "../types";
-import { useEffect } from "react";
 import { getGenderDisplay } from "../../../utils/status/gender-display";
 
 interface StudentTableProps {
@@ -20,10 +19,6 @@ interface StudentTableProps {
 
 export const StudentTable = ({ students, onEdit, onDelete }: StudentTableProps) => {
 
-    useEffect(() => {
-        console.log(students);
-    }, [students])
-    
     return(
         <TableContainer
             className="sticky-table-container"

@@ -11,6 +11,9 @@ export interface StudentListResponse {
 export interface Params {
   limit: number;
   skip: number;
+  search?: string;
+  status?: string;
+  class_id?: string;
 }
 
 const getStudents = async (params: Params): Promise<StudentListResponse> => {

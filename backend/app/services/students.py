@@ -1,11 +1,19 @@
 import uuid
+from datetime import datetime
+from importlib import import_module
 from fastapi import HTTPException, Request
 from sqlmodel import Session, func, or_, select
 from starlette import status
 from app.middleware.hashing import hash_password
 from typing import List
 
-from app.models.models import Relatives, Students, UserInformations, TuitionFees
+from app.models.models import (
+    Relatives,
+    StudentClass,
+    Students,
+    TuitionFees,
+    UserInformations,
+)
 from app.models.schemas.students.student_schemas import (
     StudentCreateResponse,
     StudentPublic,
@@ -24,7 +32,7 @@ from app.services.user_information import User_Information_Services
 from app.services.relatives import RelativeServices
 from app.services.classes import ClassServices
 from app.enums.status import StatusEnum
-
+from app.enums.class_type import ClassTypeEnum
 
 def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
     return any(
@@ -38,7 +46,85 @@ def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
     )
 
 
+def _sanitize_user_information_payload(payload: dict) -> dict:
+    ignored_fields = {"student_id", "teacher_id", "created_at", "updated_at", "id"}
+    return {key: value for key, value in payload.items() if key not in ignored_fields}
+
+
 class StudentServices:
+    @staticmethod
+    def _get_primary_class_map(
+        *, session: Session, student_ids: List[uuid.UUID]
+    ) -> dict[uuid.UUID, uuid.UUID]:
+        if not student_ids:
+            return {}
+
+        student_class_rows = session.exec(
+            select(StudentClass)
+            .where(StudentClass.student_id.in_(student_ids))
+            .order_by(StudentClass.updated_at.desc(), StudentClass.created_at.desc())
+        ).all()
+
+        fallback_map: dict[uuid.UUID, uuid.UUID] = {}
+        active_map: dict[uuid.UUID, uuid.UUID] = {}
+
+        for row in student_class_rows:
+            if row.student_id is None:
+                continue
+
+            if row.student_id not in fallback_map:
+                fallback_map[row.student_id] = row.class_id
+
+            if (
+                row.student_id not in active_map
+                and row.status in (None, StatusEnum.ACTIVE)
+            ):
+                active_map[row.student_id] = row.class_id
+
+        result = fallback_map.copy()
+        result.update(active_map)
+        return result
+
+    @staticmethod
+    def _get_primary_class_id(
+        *, session: Session, student_id: uuid.UUID
+    ) -> uuid.UUID | None:
+        return StudentServices._get_primary_class_map(
+            session=session, student_ids=[student_id]
+        ).get(student_id)
+
+    @staticmethod
+    def _upsert_student_class(
+        *,
+        session: Session,
+        student_id: uuid.UUID,
+        class_id: uuid.UUID,
+        set_primary_class_type: bool = False,
+    ) -> None:
+        existing_link = session.exec(
+            select(StudentClass).where(
+                StudentClass.student_id == student_id,
+                StudentClass.class_id == class_id,
+            )
+        ).first()
+
+        if existing_link:
+            existing_link.status = StatusEnum.ACTIVE
+            if set_primary_class_type and not existing_link.class_type:
+                existing_link.class_type = ClassTypeEnum.PRIMARY
+            existing_link.updated_at = datetime.now()
+            return
+
+        class_type = ClassTypeEnum.PRIMARY if set_primary_class_type else None
+        session.add(
+            StudentClass(
+                student_id=student_id,
+                class_id=class_id,
+                status=StatusEnum.ACTIVE,
+                class_type=class_type,
+            )
+        )
+
     @staticmethod
     def get_all(*, session: Session, query) -> tuple[list[StudentsResponse], int]:
         statement = select(Students)
@@ -48,7 +134,23 @@ class StudentServices:
             conditions.append(Students.status == query.status)
 
         if query.class_id:
-            conditions.append(Students.class_id == query.class_id)
+            student_ids_by_class = session.exec(
+                select(StudentClass.student_id).where(
+                    StudentClass.class_id == query.class_id,
+                    or_(
+                        StudentClass.status == StatusEnum.ACTIVE,
+                        StudentClass.status.is_(None),
+                    ),
+                )
+            ).all()
+            filtered_student_ids = [
+                student_id
+                for student_id in student_ids_by_class
+                if student_id is not None
+            ]
+            if not filtered_student_ids:
+                return [], 0
+            conditions.append(Students.id.in_(filtered_student_ids))
 
         if query.search:
             conditions.append(
@@ -92,10 +194,12 @@ class StudentServices:
             for relative in relatives:
                 relatives_map.setdefault(relative.student_id, []).append(relative)
 
+        student_class_map = StudentServices._get_primary_class_map(
+            session=session,
+            student_ids=student_ids,
+        )
         class_ids = [
-            student.class_id
-            for student in students_page
-            if student.class_id is not None
+            class_id for class_id in student_class_map.values() if class_id is not None
         ]
 
         class_info = ClassServices.get_dropdown_by_ids(
@@ -115,7 +219,8 @@ class StudentServices:
         for student in students_page:
             user_info = user_infos.get(student.id)
             student_relatives = relatives_map.get(student.id, [])
-            class_data = class_map.get(str(student.class_id), {})
+            class_id = student_class_map.get(student.id)
+            class_data = class_map.get(str(class_id), {})
 
             students.append(
                 StudentsResponse(
@@ -127,7 +232,7 @@ class StudentServices:
                     email=student.email,
                     phone=student.phone,
                     address=student.address,
-                    class_id=student.class_id,
+                    class_id=class_id,
                     training_program=student.training_program,
                     course=student.course,
                     status=student.status,
@@ -156,17 +261,19 @@ class StudentServices:
         ).first():
             raise HTTPException(400, "Student already exists")
 
-        student_data = student.model_dump(exclude={"student_information"})
+        student_data = student.model_dump(
+            exclude={"student_information", "student_relatives", "class_id"}
+        )
         student_data["password"] = hash_password(student_data["password"])
 
         new_student = Students(**student_data)
         session.add(new_student)
         session.flush()
 
-        user_info = UserInformations(
-            **student.student_information.model_dump(),
-            student_id=new_student.id,
+        user_info_payload = _sanitize_user_information_payload(
+            student.student_information.model_dump(exclude_none=True)
         )
+        user_info = UserInformations(**user_info_payload, student_id=new_student.id)
 
         session.add(user_info)
 
@@ -182,6 +289,14 @@ class StudentServices:
             session.add(relative_record)
             relatives.append(relative_record)
 
+        if student.class_id is not None:
+            StudentServices._upsert_student_class(
+                session=session,
+                student_id=new_student.id,
+                class_id=student.class_id,
+                set_primary_class_type=True,
+            )
+
         session.commit()
         session.refresh(new_student)
         session.refresh(user_info)
@@ -193,6 +308,7 @@ class StudentServices:
         )
         return StudentCreateResponse(
             **new_student.dict(),
+            class_id=student.class_id,
             student_information=UserInformationPublic.model_validate(user_info),
             student_relative=student_relatives_response,
         )
@@ -206,7 +322,13 @@ class StudentServices:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Student does not exist"
             )
-        return StudentPublic.model_validate(student)
+        class_id = StudentServices._get_primary_class_id(
+            session=session,
+            student_id=student.id,
+        )
+        payload = student.model_dump()
+        payload["class_id"] = class_id
+        return StudentPublic.model_validate(payload)
 
     @staticmethod
     def create_list_student() -> StudentPublic:
@@ -227,14 +349,21 @@ class StudentServices:
 
         update_data = student_data.model_dump(
             exclude_unset=True,
-            exclude={"student_information", "student_relatives"},
+            exclude={"student_information", "student_relatives", "class_id"},
         )
         for field, value in update_data.items():
             setattr(student, field, value)
 
+        if student_data.class_id is not None:
+            StudentServices._upsert_student_class(
+                session=session,
+                student_id=student.id,
+                class_id=student_data.class_id,
+            )
+
         if student_data.student_information:
-            info_payload = student_data.student_information.model_dump(
-                exclude_none=True
+            info_payload = _sanitize_user_information_payload(
+                student_data.student_information.model_dump(exclude_none=True)
             )
             if info_payload:
                 user_info = session.exec(
@@ -267,7 +396,13 @@ class StudentServices:
             )
 
         session.commit()
-        return StudentPublic.model_validate(student)
+        class_id = StudentServices._get_primary_class_id(
+            session=session,
+            student_id=student.id,
+        )
+        payload = student.model_dump()
+        payload["class_id"] = class_id
+        return StudentPublic.model_validate(payload)
 
     @staticmethod
     def delete_many(
