@@ -1,0 +1,115 @@
+.learning-calender__wrapper {
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.learning-calender__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 90px repeat(7, minmax(0, 1fr));
+  background: #fff;
+}
+
+.learning-calender__grid > * {
+  min-width: 0;
+}
+
+.learning-calender__head {
+  border-right: 1px solid #d8d8d8;
+  border-bottom: 1px solid #d8d8d8;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 10px 0;
+}
+
+.learning-calender__head strong {
+  font-size: 15px;
+  text-transform: capitalize;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 4px;
+}
+
+.learning-calender__head span {
+  font-size: 18px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.learning-calender__head-nav {
+  background: var(--primary-color);
+  color: #fff;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+}
+
+.learning-calender__head-nav span {
+  font-size: 16px;
+}
+
+.learning-calender__time-column {
+  border-right: 1px solid #d8d8d8;
+  position: relative;
+}
+
+.learning-calender__time-label {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+  color: #7d8799;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.learning-calender__day-column {
+  border-right: 1px solid #d8d8d8;
+  position: relative;
+}
+
+.learning-calender__hour-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed #d3d8df;
+}
+
+.learning-calender__event {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+}
+
+@media (max-width: 1200px) {
+  .learning-calender__grid {
+    grid-template-columns: 72px repeat(7, minmax(0, 1fr));
+  }
+
+  .learning-calender__head {
+    min-height: 66px;
+  }
+
+  .learning-calender__head strong {
+    font-size: 12px;
+  }
+
+  .learning-calender__head span {
+    font-size: 14px;
+  }
+
+  .learning-calender__head-nav span {
+    font-size: 12px;
+  }
+
+  .learning-calender__time-label {
+    font-size: 11px;
+  }
+}

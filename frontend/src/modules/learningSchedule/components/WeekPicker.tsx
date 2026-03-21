@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Box, Tooltip } from "@mui/material";
 import Button from "../../../components/Button/Button";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -10,21 +9,31 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
-export default function WeekPicker() {
-    const [week, setWeek] = useState(1);
+interface WeekPickerProps {
+    selectedDate: Date;
+    onChangeDate: (date: Date) => void;
+}
+
+function addDays(date: Date, days: number): Date {
+    const nextDate = new Date(date);
+    nextDate.setDate(nextDate.getDate() + days);
+    return nextDate;
+}
+
+export default function WeekPicker({ selectedDate, onChangeDate }: WeekPickerProps) {
 
     const prevWeek = () => {
-        setWeek((w) => (w > 1 ? w - 1 : w)); 
+        onChangeDate(addDays(selectedDate, -7));
     };
 
     const nextWeek = () => {
-        setWeek((w) => w + 1);
+        onChangeDate(addDays(selectedDate, 7));
     };
 
     return (
         <Box className="week-picker">
             <Tooltip classes={{ popper: "primary-tooltip" }} placement="top" title="Tuần hiện tại">
-                <Button className="week-picker__button" onClick={prevWeek}>
+                <Button className="week-picker__button" onClick={() => onChangeDate(new Date())}>
                     <CalendarTodayIcon />
                 </Button>
             </Tooltip>
@@ -35,15 +44,12 @@ export default function WeekPicker() {
             </Tooltip>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
-                    className="week-picker__time main-text__field"
-                    slotProps={{ 
-                        textField: { fullWidth: true }
+                    value={selectedDate}
+                    onChange={(value) => {
+                        if (value) {
+                            onChangeDate(value);
+                        }
                     }}
-                />
-            </LocalizationProvider>
-            <span className="week-picker__label">Tuần {week}</span>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
                     className="week-picker__time main-text__field"
                     slotProps={{ 
                         textField: { fullWidth: true }

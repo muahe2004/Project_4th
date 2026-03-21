@@ -5,6 +5,7 @@ export const notFoundUrl = "/not-found";
 export const signinUrl = "/sign-in";
 export const profileUrl = "/my-profile";
 export const gradesUrl = "/grades";
+export const studentLearningSchedules = "student-learning-schedules"
 
 // ADMIN
 export const layOutAdminUrl = "/admin"

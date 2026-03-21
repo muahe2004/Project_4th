@@ -19,8 +19,4 @@
 
 .week-picker__time .MuiIconButton-root:hover {
     background: transparent !important;
-} 
-
-.week-picker__label {
-    margin-left: 10px;
 }
