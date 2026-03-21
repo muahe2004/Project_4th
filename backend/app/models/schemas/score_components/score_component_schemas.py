@@ -6,19 +6,11 @@ from uuid import UUID
 
 
 class ScoreComponentBase(SQLModel):
-    subject_id: UUID = Field(foreign_key="subjects.id")
-    component_type: str = Field(sa_column=Column(String(50), nullable=False))
-    weight: float = Field(sa_column=Column(Float, nullable=False))
+    component_type: str = Field(sa_column=Column(String(50), nullable=False)) # điểm giữa, điểm cuối, điểm không tính vào GPA
+    weight: float = Field(sa_column=Column(Float, nullable=False)) # trọng số điểm
     description: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
-    status: str | None = Field(
-        default=None, sa_column=Column(String(50), nullable=True)
-    )
-    created_at: datetime = Field(
-        default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
-    )
-    updated_at: datetime = Field(
-        default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
-    )
+    created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
+    updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
 
 class ScoreComponentPublic(ScoreComponentBase):

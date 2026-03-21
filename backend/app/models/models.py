@@ -1,4 +1,5 @@
 import uuid
+from app.models.schemas.academic_terms.academic_term_schemas import AcademicTermBase
 from sqlmodel import Field
 from app.models.schemas.departments.department_schemas import DepartmentBase
 from app.models.schemas.majors.major_schemas import MajorBase
@@ -93,6 +94,9 @@ class UserInformations(UserInformationBase, table=True):
     __tablename__ = "user_informations"
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
+class AcademicTerms(AcademicTermBase, table=True):
+    __tablename__ = "academic_terms"
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
 class ScoreComponents(ScoreComponentBase, table=True):
     __tablename__ = "score_components"
