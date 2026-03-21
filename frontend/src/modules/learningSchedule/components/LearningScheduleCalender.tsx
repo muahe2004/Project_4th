@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import { useGetTeachingSchedules } from "../../teachingSchedule/apis/getTeachingSchedules";
 import type { ITeachingScheduleResponse } from "../../teachingSchedule/types";
+import { useAuthStore } from "../../../stores/useAuthStore";
 import LearningBox from "./LearningBox";
 import "./styles/LearningScheduleCalender.css";
 
@@ -118,6 +119,7 @@ interface LearningScheduleCalenderProps {
 export function LearningScheduleCalender({
   selectedDate,
 }: LearningScheduleCalenderProps) {
+  const user = useAuthStore((state) => state.user);
   const monday = useMemo(() => getMonday(selectedDate), [selectedDate]);
   const weekDays = useMemo(
     () => Array.from({ length: 7 }, (_, index) => addDays(monday, index)),
@@ -130,11 +132,12 @@ export function LearningScheduleCalender({
       limit: 1000,
       skip: 0,
       status: "active",
+      ...(user?.id && { student_id: user.id }),
     }),
-    []
+    [user?.id]
   );
 
-  const { data } = useGetTeachingSchedules(queryParams);
+  const { data } = useGetTeachingSchedules(queryParams, Boolean(user?.id));
 
   const weekData = useMemo(() => {
     const schedules = data?.data ?? [];

@@ -125,7 +125,17 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
                               : null)
                         : null
                 }
-                onChange={(id) => onStudentChange((prev) => ({ ...prev, class_id: id || undefined }))}
+                onChange={(id) =>
+                    onStudentChange((prev) => {
+                        const selectedClass = classes.find((cls) => cls.id === id);
+                        return {
+                            ...prev,
+                            class_id: id || undefined,
+                            class_name: selectedClass?.class_name ?? "",
+                            class_code: selectedClass?.class_code ?? "",
+                        };
+                    })
+                }
                 onSearchChange={onClassSearchChange}
                 onResetPage={onClassResetPage}
                 getOptionLabel={(option) => `${option.class_code} - ${option.class_name}`}

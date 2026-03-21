@@ -1,8 +1,7 @@
 import uuid
 from datetime import datetime
-from importlib import import_module
 from fastapi import HTTPException, Request
-from sqlmodel import Session, func, or_, select
+from sqlmodel import Session, and_, func, or_, select
 from starlette import status
 from app.middleware.hashing import hash_password
 from typing import List
@@ -53,6 +52,29 @@ def _sanitize_user_information_payload(payload: dict) -> dict:
 
 class StudentServices:
     @staticmethod
+    def _deactivate_other_primary_class_links(
+        *, session: Session, student_id: uuid.UUID, keep_id: uuid.UUID | None
+    ) -> None:
+        conditions = [
+            StudentClass.student_id == student_id,
+            or_(
+                StudentClass.class_type == ClassTypeEnum.PRIMARY,
+                StudentClass.class_type == "TEACHER",  # dữ liệu cũ
+            ),
+            or_(
+                StudentClass.status == StatusEnum.ACTIVE,
+                StudentClass.status.is_(None),
+            ),
+        ]
+        if keep_id is not None:
+            conditions.append(StudentClass.id != keep_id)
+
+        rows = session.exec(select(StudentClass).where(and_(*conditions))).all()
+        for row in rows:
+            row.status = StatusEnum.INACTIVE
+            row.updated_at = datetime.now()
+
+    @staticmethod
     def _get_primary_class_map(
         *, session: Session, student_ids: List[uuid.UUID]
     ) -> dict[uuid.UUID, uuid.UUID]:
@@ -100,7 +122,33 @@ class StudentServices:
         student_id: uuid.UUID,
         class_id: uuid.UUID,
         set_primary_class_type: bool = False,
+        replace_primary_class: bool = False,
     ) -> None:
+        if replace_primary_class:
+            primary_link = session.exec(
+                select(StudentClass)
+                .where(
+                    StudentClass.student_id == student_id,
+                    or_(
+                        StudentClass.class_type == ClassTypeEnum.PRIMARY,
+                        StudentClass.class_type == "TEACHER",  # dữ liệu cũ
+                    ),
+                )
+                .order_by(StudentClass.updated_at.desc(), StudentClass.created_at.desc())
+            ).first()
+            if primary_link:
+                primary_link.class_id = class_id
+                primary_link.status = StatusEnum.ACTIVE
+                if set_primary_class_type:
+                    primary_link.class_type = ClassTypeEnum.PRIMARY
+                    StudentServices._deactivate_other_primary_class_links(
+                        session=session,
+                        student_id=student_id,
+                        keep_id=primary_link.id,
+                    )
+                primary_link.updated_at = datetime.now()
+                return
+
         existing_link = session.exec(
             select(StudentClass).where(
                 StudentClass.student_id == student_id,
@@ -112,10 +160,22 @@ class StudentServices:
             existing_link.status = StatusEnum.ACTIVE
             if set_primary_class_type and not existing_link.class_type:
                 existing_link.class_type = ClassTypeEnum.PRIMARY
+            if set_primary_class_type and replace_primary_class:
+                StudentServices._deactivate_other_primary_class_links(
+                    session=session,
+                    student_id=student_id,
+                    keep_id=existing_link.id,
+                )
             existing_link.updated_at = datetime.now()
             return
 
         class_type = ClassTypeEnum.PRIMARY if set_primary_class_type else None
+        if set_primary_class_type and replace_primary_class:
+            StudentServices._deactivate_other_primary_class_links(
+                session=session,
+                student_id=student_id,
+                keep_id=None,
+            )
         session.add(
             StudentClass(
                 student_id=student_id,
@@ -359,6 +419,8 @@ class StudentServices:
                 session=session,
                 student_id=student.id,
                 class_id=student_data.class_id,
+                set_primary_class_type=True,
+                replace_primary_class=True,
             )
 
         if student_data.student_information:

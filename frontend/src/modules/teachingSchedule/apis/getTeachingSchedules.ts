@@ -13,6 +13,7 @@ export interface Params {
   skip: number;
   status?: string;
   search?: string;
+  student_id?: string;
 }
 
 const getTeachingSchedules = async (
@@ -35,9 +36,10 @@ const getTeachingSchedules = async (
   }
 };
 
-export const useGetTeachingSchedules = (params: Params) => {
+export const useGetTeachingSchedules = (params: Params, enabled = true) => {
   return useQuery<TeachingScheduleListResponse, AxiosError<{ detail?: string }>>({
     queryKey: ["teaching-schedules", params],
     queryFn: () => getTeachingSchedules(params),
+    enabled,
   });
 };

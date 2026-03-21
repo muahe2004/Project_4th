@@ -14,6 +14,7 @@ from app.models.models import (
     Subjects,
     Teachers,
     TeachingSchedules,
+    StudentClass,
 )
 from app.models.schemas.learning_schedules.learning_schedule_schemas import (
     LearningSchedulePublic,
@@ -64,6 +65,24 @@ class TeachingScheduleServices:
             .outerjoin(Teachers, Teachers.id == TeachingSchedules.teacher_id)
             .outerjoin(Rooms, Rooms.id == LearningSchedules.room_id)
         )
+        student_class_subquery = None
+        if query.student_id:
+            student_class_subquery = (
+                select(StudentClass.class_id)
+                .where(
+                    StudentClass.student_id == query.student_id,
+                    or_(
+                        StudentClass.status == StatusEnum.ACTIVE,
+                        StudentClass.status.is_(None),
+                    ),
+                )
+                .distinct()
+                .subquery()
+            )
+            statement = statement.join(
+                student_class_subquery,
+                student_class_subquery.c.class_id == LearningSchedules.class_id,
+            )
 
         conditions = []
         if query.status:
@@ -105,6 +124,11 @@ class TeachingScheduleServices:
             .outerjoin(Teachers, Teachers.id == TeachingSchedules.teacher_id)
             .outerjoin(Rooms, Rooms.id == LearningSchedules.room_id)
         )
+        if student_class_subquery is not None:
+            count_stmt = count_stmt.join(
+                student_class_subquery,
+                student_class_subquery.c.class_id == LearningSchedules.class_id,
+            )
         if conditions:
             count_stmt = count_stmt.where(and_(*conditions))
         total = session.exec(count_stmt).one()
