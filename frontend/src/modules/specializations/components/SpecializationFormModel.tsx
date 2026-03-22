@@ -188,11 +188,9 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                         disableScrollLock: true,   
                     }}
                 >
-                    {
-                        major?.data.map((row) => (
-                            <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
-                        ))
-                    }
+                    {(major?.data ?? []).map((row) => (
+                        <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
+                    ))}
                 </Select>
 
                 <LabelPrimary value="Mô tả" />

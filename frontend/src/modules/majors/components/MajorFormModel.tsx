@@ -187,11 +187,9 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                         disableScrollLock: true,   
                     }}
                 >
-                    {
-                        department?.data.map((row) => (
-                            <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
-                        ))
-                    }
+                    {(department?.data ?? []).map((row) => (
+                        <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
+                    ))}
                 </Select>
 
                 <LabelPrimary value="Mô tả" />

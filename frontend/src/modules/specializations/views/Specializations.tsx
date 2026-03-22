@@ -162,7 +162,7 @@ export function Specializations() {
                         </TableRow>
                     </TableHead>
                     <TableBody className="sticky-tbody">
-                        {specializations?.data.map((row) => (
+                        {(specializations?.data ?? []).map((row) => (
                             <TableRow key={row.id} className="sticky-trow">
                                 <TableCell  className="sticky-tcell" align="center">
                                     {row.specialization_code}
@@ -202,7 +202,7 @@ export function Specializations() {
             </TableContainer>
 
             <PaginationUniCore
-                totalItems={major?.total || 0}
+                totalItems={specializations?.total || 0}
                 page={page}
                 rowsPerPage={rowsPerPage}
                 onPageChange={(p) => setPage(p)}

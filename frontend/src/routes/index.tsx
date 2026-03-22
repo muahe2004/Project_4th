@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, roomUrl, examinationScheduleUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -20,6 +20,8 @@ import { Students } from "../modules/students/views/Students";
 import { Teachers } from "../modules/teachers/views/Teachers";
 import { Subjects } from "../modules/subjects/views/Subjects";
 import { TeachingSchedules } from "../modules/teachingSchedule/views/TeachingSchedules";
+import { Rooms } from "../modules/rooms/views/Rooms";
+import { ExaminationSchedules } from "../modules/examinationSchedule/views/ExaminationSchedules";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -121,6 +123,14 @@ export const createRouterConfig = () => {
         {
           path: layOutAdminUrl + subjectUrl,
           element: <Subjects></Subjects>
+        },
+        {
+          path: layOutAdminUrl + roomUrl,
+          element: <Rooms></Rooms>
+        },
+        {
+          path: layOutAdminUrl + examinationScheduleUrl,
+          element: <ExaminationSchedules></ExaminationSchedules>
         },
       ],
     },

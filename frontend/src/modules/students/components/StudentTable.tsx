@@ -51,7 +51,7 @@ export const StudentTable = ({ students, onEdit, onDelete }: StudentTableProps) 
                     </TableRow>
                 </TableHead>
                 <TableBody className="sticky-tbody">
-                    {students?.data.map((row) => (
+                    {(students?.data ?? []).map((row) => (
                         <TableRow key={row.student_code} className="sticky-trow">
                             <TableCell  className="sticky-tcell" align="center">
                                 {row.student_code}

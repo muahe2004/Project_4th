@@ -143,7 +143,7 @@ export function Departments() {
                         </TableRow>
                     </TableHead>
                     <TableBody className="sticky-tbody">
-                        {department?.data.map((row) => (
+                        {(department?.data ?? []).map((row) => (
                             <TableRow key={row.id} className="sticky-trow">
                                 <TableCell  className="sticky-tcell" align="center">
                                     {row.department_code}

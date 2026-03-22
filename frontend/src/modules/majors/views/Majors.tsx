@@ -162,7 +162,7 @@ export function Majors() {
                         </TableRow>
                     </TableHead>
                     <TableBody className="sticky-tbody">
-                        {major?.data.map((row) => (
+                        {(major?.data ?? []).map((row) => (
                             <TableRow key={row.id} className="sticky-trow">
                                 <TableCell  className="sticky-tcell" align="center">
                                     {row.major_code}
