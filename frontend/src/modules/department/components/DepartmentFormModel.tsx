@@ -68,6 +68,11 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
     });
 
     const handleSubmitClick = () => {
+        if (mode === "add") {
+            void handleConfirmSave();
+            return;
+        }
+
         const payload: IDepartments = {
             department_code: departmentCode,
             name: departmentName,
@@ -87,7 +92,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
             return;
         }
 
-        // Có thay đổi hoặc thêm mới → hỏi xác nhận lưu
+        // Edit có thay đổi → hỏi xác nhận lưu
         setOpenConfirmSave(true);
     };
 
@@ -178,14 +183,16 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                 onCancel={() => setOpenConfirm(false)}
             />
 
-            {/* Confirm lưu nếu có thay đổi */}
-            <ConfirmDialog
-                open={openConfirmSave}
-                title="Xác nhận lưu"
-                message="Bạn có chắc muốn lưu các thay đổi?"
-                onConfirm={handleConfirmSave}
-                onCancel={() => setOpenConfirmSave(false)}
-            />
+            {/* Confirm lưu chỉ dùng cho mode edit */}
+            {mode === "edit" && (
+                <ConfirmDialog
+                    open={openConfirmSave}
+                    title="Xác nhận lưu"
+                    message="Bạn có chắc muốn lưu các thay đổi?"
+                    onConfirm={handleConfirmSave}
+                    onCancel={() => setOpenConfirmSave(false)}
+                />
+            )}
         </Dialog>
     );
 };
