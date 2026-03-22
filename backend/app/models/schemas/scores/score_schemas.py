@@ -44,3 +44,70 @@ class ScoresUpdate(SQLModel):
 class ScoresDeleteResponse(SQLModel):
     message: str
     id: UUID
+
+
+class StudentScoreFilterParams(SQLModel):
+    academic_term_id: Optional[UUID] = Field(default=None)
+    subject_id: Optional[UUID] = Field(default=None)
+
+
+class StudentInfoScoreResponse(SQLModel):
+    id: UUID
+    student_code: str
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+
+
+class StudentScoreComponentResponse(SQLModel):
+    id: UUID
+    component_type: str
+    weight: float
+    description: Optional[str] = None
+
+
+class StudentScoreItemResponse(SQLModel):
+    id: UUID
+    subject_id: UUID
+    subject_code: str
+    subject_name: str
+    subject_credit: int
+    academic_term_id: UUID
+    academic_year: str
+    semester: Optional[int] = None
+    score: float
+    attempt: int
+    score_type: str
+    status: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    score_component: StudentScoreComponentResponse
+
+
+class StudentScoresPayload(SQLModel):
+    items: list[StudentScoreItemResponse]
+    total: int
+
+
+class StudentScoreByStudentResponse(SQLModel):
+    student_info: StudentInfoScoreResponse
+    scores: StudentScoresPayload
+
+
+class ScoreByClassSubjectParams(SQLModel):
+    class_id: UUID
+    subject_id: UUID
+
+
+class StudentScoreByClassSubjectItem(SQLModel):
+    student_info: StudentInfoScoreResponse
+    scores: list[StudentScoreItemResponse]
+
+
+class ScoreByClassSubjectResponse(SQLModel):
+    class_id: UUID
+    class_name: str
+    subject_id: UUID
+    subject_name: str
+    students: list[StudentScoreByClassSubjectItem]
+    total_students: int

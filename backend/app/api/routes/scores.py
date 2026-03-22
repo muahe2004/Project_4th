@@ -1,11 +1,15 @@
 import uuid
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.scores.score_schemas import (
+    ScoreByClassSubjectParams,
+    ScoreByClassSubjectResponse,
     ScoresPublic,
     ScoresCreate,
     ScoresUpdate,
     ScoresDeleteResponse,
+    StudentScoreByStudentResponse,
+    StudentScoreFilterParams,
 )
 from app.services.scores import ScoresServices
 from typing import List
@@ -17,6 +21,29 @@ router = APIRouter()
 @router.get("", response_model=List[ScoresPublic])
 def get_scores(session: SessionDep) -> List[ScoresPublic]:
     return ScoresServices.get_all(session=session)
+
+
+# =========================== get score by class + subject ===========================
+@router.get("/class-subject", response_model=ScoreByClassSubjectResponse)
+def get_scores_by_class_subject(
+    session: SessionDep,
+    query: ScoreByClassSubjectParams = Depends(),
+) -> ScoreByClassSubjectResponse:
+    return ScoresServices.get_by_class_subject(session=session, query=query)
+
+
+# =========================== get score by student ===========================
+@router.get("/student/{student_id}", response_model=StudentScoreByStudentResponse)
+def get_scores_by_student(
+    session: SessionDep,
+    student_id: uuid.UUID,
+    query: StudentScoreFilterParams = Depends(),
+) -> StudentScoreByStudentResponse:
+    return ScoresServices.get_by_student(
+        session=session,
+        student_id=student_id,
+        query=query,
+    )
 
 
 # =========================== get score by id ===========================
