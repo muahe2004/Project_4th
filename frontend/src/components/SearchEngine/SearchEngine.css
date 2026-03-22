@@ -1,8 +1,13 @@
 @import url("../../assets/styles/theme.css");
 
 .search-engine__input {
-    min-width: 30% !important;
+    min-width: 280px !important;
+    max-width: 420px !important;
     margin-left: 10px !important;
+}
+
+.search-engine__input .MuiInputBase-input {
+    color: #111 !important;
 }
 
 .search-engine__icon svg {

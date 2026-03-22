@@ -7,31 +7,49 @@ import ClearIcon from "@mui/icons-material/Clear";
 
 import "./SearchEngine.css";
 
+const searchDraftCache = new Map<string, string>();
+
 export type SearchEngineProps = {
     placeholder?: string;
     onSearch: (value: string) => void; 
 };
 
 export default function SearchEngine({ placeholder = "Tìm kiếm...", onSearch }: SearchEngineProps) {
-    const [value, setValue] = React.useState("");
+    const cacheKey = React.useMemo(() => {
+        if (typeof window === "undefined") {
+            return placeholder;
+        }
+        return `${window.location.pathname}::${placeholder}`;
+    }, [placeholder]);
+
+    const [value, setValue] = React.useState(() => searchDraftCache.get(cacheKey) ?? "");
+
+    React.useEffect(() => {
+        setValue(searchDraftCache.get(cacheKey) ?? "");
+    }, [cacheKey]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = event.target.value;
         setValue(newValue);
-        onSearch(newValue.trim()); 
+        searchDraftCache.set(cacheKey, newValue);
     };
 
     const handleClear = () => {
         setValue("");
+        searchDraftCache.delete(cacheKey);
         onSearch(""); 
     };
 
     const handleSearch = () => {
-        onSearch(value.trim());
+        const normalizedValue = value.trim();
+        searchDraftCache.set(cacheKey, normalizedValue);
+        onSearch(normalizedValue);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
+            event.preventDefault();
+            event.stopPropagation();
             handleSearch();
         }
     };
