@@ -33,6 +33,9 @@ export const URL_API_ROOM = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/rooms`;
 // Subject
 export const URL_API_SUBJECT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/subjects`;
 
+// Score
+export const URL_API_SCORE = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/scores`;
+
 // Teaching Schedule
 export const URL_API_TEACHING_SCHEDULE = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/teaching_schedules`;
 

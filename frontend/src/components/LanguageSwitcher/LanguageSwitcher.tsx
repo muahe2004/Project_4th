@@ -14,6 +14,8 @@ const languages = [
     { code: 'en', flag: UK, label: 'English' },
 ];
 
+const EmptySelectIcon = () => null;
+
 const LanguageSwitcher = ({ className = '' }: LanguageSwitcherProps) => {
     const { i18n } = useTranslation();
     const currentLang = i18n.language;
@@ -30,6 +32,7 @@ const LanguageSwitcher = ({ className = '' }: LanguageSwitcherProps) => {
                 value={currentLang}
                 onChange={handleChangeLanguage}
                 className="switcher-select"
+                IconComponent={EmptySelectIcon}
                 MenuProps={{
                     disableScrollLock: true,
                 }}
