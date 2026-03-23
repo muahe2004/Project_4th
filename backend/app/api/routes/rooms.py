@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.rooms.room_schemas import (
     RoomDropDownResponse,
+    RoomListResponse,
     RoomsPublic,
     RoomCreate,
     RoomSearchParams,
@@ -11,14 +12,16 @@ from app.models.schemas.rooms.room_schemas import (
 )
 from app.services.rooms import RoomServices
 from typing import List
+from app.models.schemas.common.query import BaseQueryParams
 
 router = APIRouter()
 
 
 # =========================== get all room ===========================
-@router.get("", response_model=List[RoomsPublic])
-def get_rooms(session: SessionDep) -> List[RoomsPublic]:
-    return RoomServices.get_all(session=session)
+@router.get("", response_model=RoomListResponse)
+def get_rooms(session: SessionDep, query: BaseQueryParams = Depends()):
+    rooms, total = RoomServices.get_all(session=session, query=query)
+    return RoomListResponse(total=total, data=rooms)
 
 
 # =========================== get dropdown rooms ===========================

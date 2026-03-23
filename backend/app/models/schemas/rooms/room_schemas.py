@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from sqlalchemy import Integer
 from uuid import UUID
-from typing import Optional
+from typing import List, Optional
 
 from app.models.schemas.common.query import BaseQueryParams
 
@@ -23,6 +23,11 @@ class RoomBase(SQLModel):
 
 class RoomsPublic(RoomBase):
     id: UUID
+
+
+class RoomListResponse(SQLModel):
+    total: int
+    data: List[RoomsPublic]
 
 
 class RoomCreate(RoomBase):

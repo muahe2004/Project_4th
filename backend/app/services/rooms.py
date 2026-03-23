@@ -1,9 +1,9 @@
 import uuid
 from fastapi import HTTPException, Request
-from sqlmodel import Session, and_, desc, or_, select
+from sqlmodel import Session, and_, desc, or_, select, func
 from sqlalchemy import String, cast
 from starlette import status
-from typing import List
+from typing import List, Tuple
 
 from app.models.models import Rooms
 from app.models.schemas.rooms.room_schemas import (
@@ -17,6 +17,7 @@ from app.models.schemas.rooms.room_schemas import (
 from app.enums.status import StatusEnum
 from app.models.models import LearningSchedules
 from app.models.models import ExaminationSchedules
+from app.models.schemas.common.query import BaseQueryParams
 
 
 class RoomServices:
@@ -24,9 +25,38 @@ class RoomServices:
     def get_all(
         *,
         session: Session,
-    ) -> List[RoomsPublic]:
-        rooms = session.exec(select(Rooms)).all()
-        return rooms
+        query: BaseQueryParams,
+    ) -> Tuple[List[RoomsPublic], int]:
+        statement = select(Rooms)
+
+        conditions = []
+        if query.status:
+            conditions.append(Rooms.status == query.status)
+
+        if query.search:
+            search_pattern = f"%{query.search}%"
+            conditions.append(
+                or_(
+                    cast(Rooms.room_number, String).ilike(search_pattern),
+                    Rooms.type.ilike(search_pattern),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        total = session.exec(
+            select(func.count()).select_from(statement.subquery())
+        ).one()
+
+        statement = (
+            statement.order_by(desc(Rooms.created_at))
+            .offset(query.skip)
+            .limit(query.limit)
+        )
+
+        rooms = session.exec(statement).all()
+        return rooms, total
 
     @staticmethod
     def get_dropdown(
