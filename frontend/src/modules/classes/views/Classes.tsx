@@ -72,6 +72,7 @@ export function Classes() {
         isLoading: isLoadingSpecializations,
         error: errorSpecializations,
     } = useSpecializationsDropDown(ParamsSpecialization);
+    const specializationOptions = Array.isArray(specializations) ? specializations : [];
 
     return (
         <main className="admin-main-container">
@@ -90,7 +91,7 @@ export function Classes() {
                 />
 
                 <MainAutocomplete
-                    options={specializations || []}
+                    options={specializationOptions}
                     value={specializationId ? specializationId : ""} 
                     onChange={(id) => {
                         setSpecializationId(id); 

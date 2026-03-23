@@ -30,16 +30,18 @@ function MainAutocomplete<T>({
     helperText = "",
     disabled = false,
 }: MainAutocompleteProps<T>) {
+    const safeOptions = Array.isArray(options) ? options : [];
+
     const currentValue =
         typeof value === "object" && value !== null
             ? value
-            : options.find((opt) => getOptionId(opt) === value) || null;
+            : safeOptions.find((opt) => getOptionId(opt) === value) || null;
 
     return (
         <Autocomplete<T, false, false, true>
             className={clsx("main-auto-complete", className)}
             freeSolo
-            options={options}
+            options={safeOptions}
             value={currentValue as any}
             disabled={disabled}
             getOptionLabel={(option) =>

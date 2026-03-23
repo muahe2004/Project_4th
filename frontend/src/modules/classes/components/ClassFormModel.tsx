@@ -89,6 +89,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
         skip: (specializationPage - 1) * 5,
         search: searchSpecialization || undefined,
     });
+    const teacherOptions = Array.isArray(teacher) ? teacher : [];
+    const specializationOptions = Array.isArray(specializations) ? specializations : [];
 
     const { openConfirm, setOpenConfirm, handleCloseClick } =
         useConfirmCloseForm({ mode, isChanged, onClose });
@@ -284,14 +286,14 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
                 <LabelPrimary value="Chuyên Ngành" required />
                 <MainAutocomplete
-                    options={specializations}
+                    options={specializationOptions}
                     value={
                         formValues.specializationId
                             ? { id: formValues.specializationId, name: formValues.specializationName }
                             : null
                     }
                     onChange={(id) => {
-                        const selected = specializations.find((s) => s.id.toString() === id);
+                        const selected = specializationOptions.find((s) => s.id.toString() === id);
                         setFormValues((prev) => ({
                             ...prev,
                             specializationId: id,
@@ -311,7 +313,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
                 <LabelPrimary value="Giáo viên chủ nhiệm" required />
                 <MainAutocomplete
-                    options={teacher}
+                    options={teacherOptions}
                     value={
                         formValues.teacherId ? { id: formValues.teacherId, name: formValues.teacherName } : null
                     }
@@ -319,7 +321,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                         setFormValues((prev) => ({
                             ...prev,
                             teacherId: id,
-                            teacherName: teacher.find(t => t.id.toString() === id)?.name || "",
+                            teacherName: teacherOptions.find((t) => t.id.toString() === id)?.name || "",
                         }));
                         setErrors(prev => ({ ...prev, teacherId: "" }));
                     }}

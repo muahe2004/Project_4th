@@ -1,5 +1,4 @@
-import { createBrowserRouter, Navigate, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, roomUrl, examinationScheduleUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
@@ -22,22 +21,26 @@ import { Subjects } from "../modules/subjects/views/Subjects";
 import { TeachingSchedules } from "../modules/teachingSchedule/views/TeachingSchedules";
 import { Rooms } from "../modules/rooms/views/Rooms";
 import { ExaminationSchedules } from "../modules/examinationSchedule/views/ExaminationSchedules";
+import { ROLES } from "../constants/roles";
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const navigate = useNavigate();
-  const setUser = useAuthStore((state) => state.setUser);
+const ProtectedRoute = ({
+  children,
+  allowedRoles,
+}: {
+  children: React.ReactNode;
+  allowedRoles?: string[];
+}) => {
   const user = useAuthStore((state) => state.user);
 
-  useEffect(() => {
-    if (user) {
-      setUser(user);
-    } else {
-      useAuthStore.getState().logout();
-      navigate(signinUrl);
-    }
-  }, []);
+  if (!user) {
+    return <Navigate to={signinUrl} replace />;
+  }
 
-  return user ? <>{children}</> : <Navigate to={signinUrl} replace />;
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to={homeUrl} replace />;
+  }
+
+  return <>{children}</>;
 };
 
 export const createRouterConfig = () => {
@@ -75,7 +78,7 @@ export const createRouterConfig = () => {
     {
       path: layOutAdminUrl,
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
           <LayoutAdmin />
         </ProtectedRoute>
       ),
