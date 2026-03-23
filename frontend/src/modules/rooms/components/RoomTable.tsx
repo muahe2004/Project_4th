@@ -37,6 +37,9 @@ export function RoomTable({ rooms, onEdit, onDelete }: RoomTableProps) {
               Loại phòng
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
+              Số chỗ ngồi
+            </TableCell>
+            <TableCell className="primary-thead__cell" align="center">
               Trạng thái
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
@@ -52,6 +55,9 @@ export function RoomTable({ rooms, onEdit, onDelete }: RoomTableProps) {
               </TableCell>
               <TableCell className="sticky-tcell" align="left">
                 {row.type}
+              </TableCell>
+              <TableCell className="sticky-tcell" align="center">
+                {row.seats}
               </TableCell>
               <TableCell
                 className="sticky-tcell"

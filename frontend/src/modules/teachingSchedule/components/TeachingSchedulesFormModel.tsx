@@ -122,6 +122,9 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
     search: searchSubject || undefined,
   });
   const subjects = subjectResponse?.data ?? [];
+  const selectedRoomOption = rooms.find(
+    (item) => item.id.toString() === formValues.roomId
+  );
 
   const { mutateAsync: createTeachingSchedule } = useCreateTeachingSchedule({});
   const { mutateAsync: updateTeachingSchedule } = useUpdateTeachingSchedule();
@@ -492,6 +495,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
                       id: formValues.roomId,
                       room_number: Number(formValues.roomNumber),
                       type: formValues.roomType,
+                      seats: selectedRoomOption?.seats ?? 0,
                     }
                   : null
               }
@@ -512,7 +516,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
               onSearchChange={setSearchRoom}
               onResetPage={() => setRoomPage(1)}
               getOptionLabel={(option) =>
-                `Phòng ${option.room_number} - ${option.type}`
+                `Phòng ${option.room_number} - ${option.type} (${option.seats} chỗ)`
               }
               getOptionId={(option) => option.id?.toString() || ""}
               className="primary-dialog-input"

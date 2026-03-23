@@ -37,6 +37,7 @@ export function RoomFormModel({
 
   const [roomNumber, setRoomNumber] = useState("");
   const [roomType, setRoomType] = useState("");
+  const [seats, setSeats] = useState("");
   const [isChanged, setIsChanged] = useState(false);
   const [openConfirmSave, setOpenConfirmSave] = useState(false);
 
@@ -47,9 +48,11 @@ export function RoomFormModel({
     if (mode === "edit" && initialValues) {
       setRoomNumber(String(initialValues.room_number || ""));
       setRoomType(initialValues.type || "");
+      setSeats(String(initialValues.seats || ""));
     } else {
       setRoomNumber("");
       setRoomType("");
+      setSeats("");
     }
     setIsChanged(false);
   }, [mode, initialValues, open]);
@@ -57,6 +60,7 @@ export function RoomFormModel({
   const currentValues = {
     room_number: Number(roomNumber),
     type: roomType.trim(),
+    seats: Number(seats),
   };
 
   useEffect(() => {
@@ -67,6 +71,7 @@ export function RoomFormModel({
           {
             room_number: initialValues.room_number,
             type: initialValues.type,
+            seats: initialValues.seats,
           },
           [],
           []
@@ -75,9 +80,10 @@ export function RoomFormModel({
       return;
     }
 
-    const hasInput = roomNumber.trim() !== "" || currentValues.type !== "";
+    const hasInput =
+      roomNumber.trim() !== "" || currentValues.type !== "" || seats.trim() !== "";
     setIsChanged(hasInput);
-  }, [mode, initialValues, roomNumber, roomType]);
+  }, [mode, initialValues, roomNumber, roomType, seats]);
 
   const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({
     mode,
@@ -93,6 +99,11 @@ export function RoomFormModel({
     }
     if (!roomType.trim()) {
       showSnackbar("Loại phòng là bắt buộc", "error");
+      return false;
+    }
+    const seatsValue = Number(seats);
+    if (!Number.isInteger(seatsValue) || seatsValue <= 0) {
+      showSnackbar("Số chỗ ngồi phải là số nguyên dương", "error");
       return false;
     }
     return true;
@@ -125,6 +136,7 @@ export function RoomFormModel({
       const basePayload = {
         room_number: Number(roomNumber),
         type: roomType.trim(),
+        seats: Number(seats),
         status: initialValues?.status ?? STATUS.ACTIVE,
       };
 
@@ -183,6 +195,16 @@ export function RoomFormModel({
           onChange={(event) => setRoomType(event.target.value)}
           fullWidth
           variant="outlined"
+          className="main-text__field primary-dialog-input"
+        />
+
+        <LabelPrimary value="Số chỗ ngồi" required />
+        <TextField
+          value={seats}
+          onChange={(event) => setSeats(event.target.value)}
+          fullWidth
+          variant="outlined"
+          type="number"
           className="main-text__field primary-dialog-input"
         />
       </DialogContent>

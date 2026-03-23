@@ -81,6 +81,7 @@ export interface IRoomDropDown {
   id: string;
   room_number: number;
   type: string;
+  seats: number;
 }
 
 export interface ISubjectDropDown {
