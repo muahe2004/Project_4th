@@ -150,4 +150,11 @@ class DepartmentServices:
         statement = select(Departments).where(Departments.id.in_(ids))
         departments = session.exec(statement).all()
 
-        return [DepartmentDropDownResponse.model_validate(c) for c in departments]
+        return [
+            DepartmentDropDownResponse(
+                id=department.id,
+                department_code=department.department_code,
+                department_name=department.name,
+            )
+            for department in departments
+        ]

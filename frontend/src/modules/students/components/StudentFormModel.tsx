@@ -81,7 +81,6 @@ const isRelativeEmpty = (relative: IStudentRelatives) => {
     return !(
         relative.name?.trim() ||
         relative.phone?.trim() ||
-        relative.relationship?.trim() ||
         relative.occupation?.trim()
     );
 };

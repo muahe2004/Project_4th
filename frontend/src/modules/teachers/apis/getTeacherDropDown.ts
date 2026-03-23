@@ -20,7 +20,7 @@ const getTeacherDropdown = async (params: Params): Promise<TeacherDropDown[]> =>
 
 export const useTeacherDropdown = (params: Params) => {
     return useQuery<TeacherDropDown[], AxiosError<{ detail?: string }>>({
-        queryKey: ['teachers', params],
+        queryKey: ['teachers-dropdown', params],
         queryFn: () => getTeacherDropdown(params),
     });
 };

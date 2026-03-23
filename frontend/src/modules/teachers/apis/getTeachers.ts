@@ -1,40 +1,23 @@
-// import axios, { AxiosError } from 'axios';
-// import { useQuery } from '@tanstack/react-query';
-// import { URL_API_SPECIALIZATION } from '../../../constants/config';
-// import type { ISpecializations } from '../types';
+import axios, { AxiosError } from "axios";
+import { useQuery } from "@tanstack/react-query";
 
-// export interface SpecializationListResponse {
-//   total: number;
-//   data: ISpecializations[];
-// }
+import { URL_API_TEACHER } from "../../../constants/config";
+import type { TeacherListResponse, TeacherQueryParams } from "../types";
 
-// export interface Params {
-//   limit: number;
-//   skip: number;
-//   major_id?: string;
-// }
+const getTeachers = async (
+  params: TeacherQueryParams
+): Promise<TeacherListResponse> => {
+  const res = await axios.get<TeacherListResponse>(`${URL_API_TEACHER}`, {
+    params,
+    withCredentials: true,
+  });
 
-// const getSpecializations = async (params: Params): Promise<SpecializationListResponse> => {
-//   try {
-//     const res = await axios.get<SpecializationListResponse>(
-//       `${URL_API_SPECIALIZATION}`,
-//       {
-//         params, 
-//         withCredentials: true,
-//       }
-//     );
-//     return res.data;
-//   } catch (error: any) {
-//     if (axios.isAxiosError(error)) {
-//       throw error;
-//     }
-//     throw new Error('Unexpected error');
-//   }
-// };
+  return res.data;
+};
 
-// export const useGetSpecialization = (params: Params) => {
-//   return useQuery<SpecializationListResponse, AxiosError<{ detail?: string }>>({
-//     queryKey: ['specializations', params],
-//     queryFn: () => getSpecializations(params),
-//   });
-// };
+export const useGetTeachers = (params: TeacherQueryParams) => {
+  return useQuery<TeacherListResponse, AxiosError<{ detail?: string }>>({
+    queryKey: ["teachers", params],
+    queryFn: () => getTeachers(params),
+  });
+};

@@ -32,15 +32,13 @@ from app.enums.status import StatusEnum
 
 
 def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
-    return any(
-        bool(value and str(value).strip())
-        for value in (
-            relative.name,
-            relative.phone,
-            relative.relationship,
-            relative.occupation,
-        )
-    )
+    # `relatives.name` is required in DB, so only keep records with a non-empty name.
+    return bool(relative.name and str(relative.name).strip())
+
+
+def _sanitize_user_information_payload(payload: dict) -> dict:
+    ignored_fields = {"student_id", "teacher_id", "created_at", "updated_at", "id"}
+    return {key: value for key, value in payload.items() if key not in ignored_fields}
 
 
 def get_all_teachers() -> List[dict]:
@@ -214,12 +212,21 @@ class TeacherServices:
         session: Session,
         teacher: TeacherCreateWithUserInfor,
     ) -> TeacherCreateResponse:
-        if session.exec(
+        existing_teacher_code = session.exec(
             select(Teachers).where(Teachers.teacher_code == teacher.teacher_code)
-        ).first():
+        ).first()
+        if existing_teacher_code:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Teacher already exists",
+            )
+        existing_email = session.exec(
+            select(Teachers).where(Teachers.email == teacher.email)
+        ).first()
+        if existing_email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Teacher email already exists",
             )
 
         teacher_data = teacher.model_dump(
@@ -231,10 +238,10 @@ class TeacherServices:
         session.add(new_teacher)
         session.flush()
 
-        user_info = UserInformations(
-            **teacher.teacher_information.model_dump(),
-            teacher_id=new_teacher.id,
+        user_info_payload = _sanitize_user_information_payload(
+            teacher.teacher_information.model_dump(exclude_none=True)
         )
+        user_info = UserInformations(**user_info_payload, teacher_id=new_teacher.id)
         session.add(user_info)
 
         relatives = []
@@ -278,6 +285,32 @@ class TeacherServices:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Teacher not found"
             )
 
+        if (
+            teacher_data.teacher_code
+            and teacher_data.teacher_code != teacher.teacher_code
+            and session.exec(
+                select(Teachers).where(Teachers.teacher_code == teacher_data.teacher_code)
+            ).first()
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Teacher code already exists",
+            )
+
+        if (
+            teacher_data.email
+            and teacher_data.email != teacher.email
+            and session.exec(
+                select(Teachers).where(
+                    Teachers.email == teacher_data.email, Teachers.id != teacher_id
+                )
+            ).first()
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Teacher email already exists",
+            )
+
         update_data = teacher_data.model_dump(
             exclude_unset=True,
             exclude={"teacher_information", "teacher_relatives"},
@@ -285,8 +318,8 @@ class TeacherServices:
         for field, value in update_data.items():
             setattr(teacher, field, value)
         if teacher_data.teacher_information:
-            info_payload = teacher_data.teacher_information.model_dump(
-                exclude_none=True
+            info_payload = _sanitize_user_information_payload(
+                teacher_data.teacher_information.model_dump(exclude_none=True)
             )
             if info_payload:
                 user_info = session.exec(

@@ -34,15 +34,8 @@ from app.enums.status import StatusEnum
 from app.enums.class_type import ClassTypeEnum
 
 def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
-    return any(
-        bool(value and str(value).strip())
-        for value in (
-            relative.name,
-            relative.phone,
-            relative.relationship,
-            relative.occupation,
-        )
-    )
+    # `relatives.name` is required in DB, so only keep records with a non-empty name.
+    return bool(relative.name and str(relative.name).strip())
 
 
 def _sanitize_user_information_payload(payload: dict) -> dict:

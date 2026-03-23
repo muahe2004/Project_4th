@@ -86,6 +86,7 @@ def update_teacher(
     response_model=List[TeacherDeleteResponse],
 )
 def delete_multiple_teachers(
-    session: SessionDep, teacher_ids: List[uuid.UUID]
+    session: SessionDep,
+    teacher_ids: List[uuid.UUID],
 ) -> List[TeacherDeleteResponse]:
     return TeacherServices.delete_many(session=session, teacher_ids=teacher_ids)
