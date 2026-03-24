@@ -9,6 +9,9 @@ import { STATUS_OPTIONS } from "../../../constants/status";
 import Loading from "../../../components/Loading/Loading";
 import { useGetTeachingSchedules } from "../apis/getTeachingSchedules";
 import TeachingSchedulesTable from "../components/TeachingSchedulesTable";
+import TeachingScheduleByRoom from "../components/TeachingScheduleByRoom";
+import TeachingScheduleByTeacher from "../components/TeachingScheduleByTeacher";
+import TeachingScheduleByClass from "../components/TeachingScheduleByClass";
 import Button from "../../../components/Button/Button";
 import TeachingSchedulesFormModel from "../components/TeachingSchedulesFormModel";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
@@ -20,6 +23,7 @@ export function TeachingSchedules() {
   const { showSnackbar } = useSnackbar();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [scheduleView, setScheduleView] = useState<"table" | "room" | "teacher" | "class">("table");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [openForm, setOpenForm] = useState(false);
@@ -31,6 +35,7 @@ export function TeachingSchedules() {
   const [deletingTeachingSchedule, setDeletingTeachingSchedule] = useState<
     ITeachingScheduleResponse | undefined
   >(undefined);
+  const isTableView = scheduleView === "table";
 
   const params = {
     limit: rowsPerPage,
@@ -39,7 +44,10 @@ export function TeachingSchedules() {
     ...(status && { status }),
   };
 
-  const { data: teachingSchedules, isLoading } = useGetTeachingSchedules(params);
+  const { data: teachingSchedules, isLoading } = useGetTeachingSchedules(
+    params,
+    isTableView
+  );
   const deleteTeachingScheduleMutation = useDeleteTeachingSchedule();
 
   const handleOpenAddForm = () => {
@@ -96,7 +104,7 @@ export function TeachingSchedules() {
     });
   };
 
-  if (isLoading) {
+  if (isTableView && isLoading) {
     return (
       <main className="admin-main-container">
         <Loading />
@@ -131,24 +139,58 @@ export function TeachingSchedules() {
         >
             Add Schedule
         </Button>
+        <Button
+            className="btn-spacing-left"
+            onClick={() =>
+              setScheduleView((prev) => (prev === "room" ? "table" : "room"))
+            }
+        >
+            {scheduleView === "room" ? "Table UI" : "Room UI"}
+        </Button>
+        <Button
+            className="btn-spacing-left"
+            onClick={() =>
+              setScheduleView((prev) => (prev === "teacher" ? "table" : "teacher"))
+            }
+        >
+            {scheduleView === "teacher" ? "Table UI" : "Teacher UI"}
+        </Button>
+        <Button
+            className="btn-spacing-left"
+            onClick={() =>
+              setScheduleView((prev) => (prev === "class" ? "table" : "class"))
+            }
+        >
+            {scheduleView === "class" ? "Table UI" : "Class UI"}
+        </Button>
       </Box>
 
-      <TeachingSchedulesTable
-        teachingSchedules={teachingSchedules}
-        onEdit={handleOpenEditForm}
-        onDelete={handleOpenDeleteConfirm}
-      />
+      {scheduleView === "room" ? (
+        <TeachingScheduleByRoom />
+      ) : scheduleView === "teacher" ? (
+        <TeachingScheduleByTeacher />
+      ) : scheduleView === "class" ? (
+        <TeachingScheduleByClass />
+      ) : (
+        <>
+          <TeachingSchedulesTable
+            teachingSchedules={teachingSchedules}
+            onEdit={handleOpenEditForm}
+            onDelete={handleOpenDeleteConfirm}
+          />
 
-      <PaginationUniCore
-        totalItems={teachingSchedules?.total || 0}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageChange={(value) => setPage(value)}
-        onRowsPerPageChange={(value) => {
-          setRowsPerPage(value);
-          setPage(1);
-        }}
-      />
+          <PaginationUniCore
+            totalItems={teachingSchedules?.total || 0}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={(value) => setPage(value)}
+            onRowsPerPageChange={(value) => {
+              setRowsPerPage(value);
+              setPage(1);
+            }}
+          />
+        </>
+      )}
 
       <TeachingSchedulesFormModel
         open={openForm}

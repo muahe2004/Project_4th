@@ -1,0 +1,175 @@
+.teaching-schedule-by-room-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.teaching-schedule-by-room {
+  width: 100%;
+  border: 1px solid var(--primary-color);
+  /* border-radius: 8px; */
+  background: #ffffff;
+  /* padding: 8px; */
+  margin: 10px 0;
+  max-height: min(63vh, calc(100vh - 280px));
+  overflow-y: auto;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.teaching-schedule-by-room::-webkit-scrollbar {
+  display: none;
+}
+
+.teaching-schedule-by-room__pagination {
+  flex: 0 0 auto;
+}
+
+.teaching-schedule-by-room--empty {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7a8190;
+}
+
+.teaching-room-container:first-child {
+  padding: 0 0 8px 0;
+  /* padding-bottom: 8px; */
+}
+
+.teaching-room-container {
+  border-bottom: 1px solid #edf1f5;
+  padding: 8px 0;
+}
+
+.teaching-room-container:last-child {
+  border-bottom: none;
+}
+
+.teaching-room-row {
+  display: grid;
+  grid-template-columns: 70px repeat(7, minmax(122px, 1fr));
+  /* gap: 8px; */
+  align-items: start;
+  min-width: 980px;
+}
+
+.teaching-room-row--teacher {
+  grid-template-columns: 180px repeat(7, minmax(122px, 1fr));
+  min-width: 1090px;
+}
+
+.teaching-room-row--class {
+  grid-template-columns: 160px repeat(7, minmax(122px, 1fr));
+  min-width: 1070px;
+}
+
+.teaching-room-row--header {
+  margin-bottom: 8px;
+}
+
+.teaching-room-row--header > * {
+  border-right: 0px solid #ffffff;
+}
+
+.teaching-room-row--header > *:first-child {
+  border-left: 0px solid #ffffff;
+}
+
+.teaching-room-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.teaching-room-label--header,
+.teaching-room-day-title--header {
+  background: var(--primary-color);
+  color: #ffffff;
+  /* border-radius: 4px; */
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.teaching-room-day-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+}
+
+.teaching-room-label--teacher {
+  justify-content: flex-start;
+  text-align: left;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.teaching-room-label--class {
+  justify-content: flex-start;
+  text-align: left;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+
+.teaching-room-day-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 20px);
+  grid-template-rows: repeat(2, 20px);
+  gap: 3px;
+  justify-content: center;
+  padding: 1px 0;
+}
+
+.teaching-room-cell {
+  background: #ffffff;
+  border-radius: 3px;
+  min-height: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid var(--primary-color);
+  cursor: default;
+  line-height: 1;
+  padding: 0;
+}
+
+.teaching-room-cell--busy {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.teaching-room-cell__count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+  padding: 0 3px;
+}
