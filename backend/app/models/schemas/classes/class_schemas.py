@@ -3,9 +3,8 @@ from typing import List, Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, String, Integer, DateTime
 from uuid import UUID
-
+from pydantic import BaseModel as PydanticBaseModel
 from app.models.schemas.common.query import BaseQueryParams
-
 
 class ClassBase(SQLModel):
     class_code: str = Field(sa_column=Column(String(12), nullable=False, unique=True))
@@ -23,30 +22,24 @@ class ClassBase(SQLModel):
     specialization_id: UUID = Field(foreign_key="specializations.id")
     teacher_id: UUID | None = Field(default=None, foreign_key="teachers.id")
 
-
 class ClassPublic(ClassBase):
     id: UUID
 
-
 class IdsRequest(SQLModel):
     ids: list[UUID]
-
 
 class ClassDropDownResponse(SQLModel):
     id: UUID
     class_code: str
     class_name: str
 
-
 class ClassesResponse(ClassPublic):
     specialization_id: UUID
     specialization_name: str
     teacher_name: str
 
-
 class ClassCreate(ClassBase):
     pass
-
 
 class ClassUpdate(SQLModel):
     class_code: Optional[str] = Field(
@@ -65,17 +58,19 @@ class ClassUpdate(SQLModel):
         default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
     )
 
-
 class ClassDeleteResponse(SQLModel):
     message: str
     id: UUID
-
 
 class ClassQueryParams(BaseQueryParams):
     specialization_id: Optional[UUID] = Field(None)
     teacher_id: Optional[UUID] = Field(None)
 
-
 class ClassListResponse(SQLModel):
     total: int
     data: List[ClassesResponse]
+
+class TeachingScheduleClassInfo(PydanticBaseModel): # use at TeachingScheduleResponse
+    class_id: UUID
+    class_name: Optional[str] = None
+    class_code: Optional[str] = None

@@ -4,6 +4,7 @@ from app.api.deps import SessionDep
 from app.models.schemas.rooms.room_schemas import (
     RoomDropDownResponse,
     RoomListResponse,
+    RoomWithLearningSchedulesResponse,
     RoomsPublic,
     RoomCreate,
     RoomSearchParams,
@@ -31,6 +32,24 @@ def get_rooms_dropdown(
 ) -> List[RoomDropDownResponse]:
     return RoomServices.get_dropdown(session=session, query=query)
 
+# ===========================  ===========================
+@router.get(
+    "/with-learning-schedules",
+    response_model=RoomWithLearningSchedulesResponse,
+)
+def get_rooms_with_learning_schedules(
+    session: SessionDep,
+    query: BaseQueryParams = Depends()
+):
+    data, total = RoomServices.get_room_and_learning_schedule(
+        session=session,
+        query=query,
+    )
+
+    return RoomWithLearningSchedulesResponse(
+        data=data,
+        total=total
+    )
 
 # =========================== get room by id ===========================
 @router.get("/{id}", response_model=RoomsPublic)
@@ -56,7 +75,6 @@ def update_room(session: SessionDep, id: uuid.UUID, data: RoomUpdate) -> RoomsPu
     return RoomServices.update(session=session, room_id=id, room_data=data)
 
 
-# =========================== delete room ===========================
 @router.delete(
     "/{id}",
     response_model=RoomDeleteResponse,

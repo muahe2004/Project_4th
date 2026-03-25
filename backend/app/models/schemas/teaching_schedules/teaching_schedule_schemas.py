@@ -1,5 +1,8 @@
 from datetime import datetime
 from typing import Optional
+from app.models.schemas.subjects.subject_schemas import TeachingScheduleSubjectInfo
+from app.models.schemas.classes.class_schemas import TeachingScheduleClassInfo
+from app.models.schemas.teachers.teacher_schemas import TeachingScheduleTeacherInfo
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from uuid import UUID
 from pydantic import BaseModel as PydanticBaseModel
@@ -41,7 +44,6 @@ class TeachingScheduleCreate(SQLModel):
         default=None, sa_column=Column(String(50), nullable=True)
     )
 
-
 class TeachingScheduleLearningScheduleUpdate(SQLModel):
     class_id: Optional[UUID] = Field(default=None, foreign_key="classes.id")
     subject_id: Optional[UUID] = Field(default=None, foreign_key="subjects.id")
@@ -56,7 +58,6 @@ class TeachingScheduleLearningScheduleUpdate(SQLModel):
         default=None, sa_column=Column(String(500), nullable=True)
     )
 
-
 class TeachingScheduleUpdate(SQLModel):
     teacher_id: UUID | None = Field(default=None, foreign_key="teachers.id")
     learning_schedule: Optional[TeachingScheduleLearningScheduleUpdate] = None
@@ -64,34 +65,13 @@ class TeachingScheduleUpdate(SQLModel):
         default=None, sa_column=Column(String(50), nullable=True)
     )
 
-
 class TeachingScheduleDeleteResponse(SQLModel):
     message: str
     id: UUID
 
-
-class TeachingScheduleTeacherInfo(PydanticBaseModel):
-    teacher_id: UUID
-    teacher_name: Optional[str] = None
-    teacher_email: Optional[str] = None
-    teacher_phone: Optional[str] = None
-
-
-class TeachingScheduleClassInfo(PydanticBaseModel):
-    class_id: UUID
-    class_name: Optional[str] = None
-    class_code: Optional[str] = None
-
-
 class TeachingScheduleRoomInfo(PydanticBaseModel):
     room_id: UUID
     room_number: Optional[int] = None
-
-
-class TeachingScheduleSubjectInfo(PydanticBaseModel):
-    subject_id: UUID
-    subject_name: Optional[str] = None
-
 
 class TeachingScheduleResponse(PydanticBaseModel):
     model_config = ConfigDict(populate_by_name=True)
@@ -109,6 +89,15 @@ class TeachingScheduleResponse(PydanticBaseModel):
     room: Optional[TeachingScheduleRoomInfo] = None
     subject: Optional[TeachingScheduleSubjectInfo] = None
 
+class TeachingScheduleInRoom(PydanticBaseModel): # use at model: RoomWithLearningSchedules
+    id: UUID
+    status: str | None = None
+    created_at: datetime
+    updated_at: datetime
+    learning_schedule: LearningSchedulePublic
+    teacher: Optional[TeachingScheduleTeacherInfo] = None
+    class_info: Optional[TeachingScheduleClassInfo] = None
+    subject: Optional[TeachingScheduleSubjectInfo] = None
 
 class TeachingScheduleSearchParams(BaseQueryParams):
     class_id: Optional[UUID] = Field(None)

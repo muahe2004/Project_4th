@@ -1,4 +1,5 @@
 from datetime import datetime
+from app.models.schemas.teaching_schedules.teaching_schedule_schemas import TeachingScheduleInRoom
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from sqlalchemy import Integer
 from uuid import UUID
@@ -17,6 +18,14 @@ class RoomBase(SQLModel):
 
 class RoomsPublic(RoomBase):
     id: UUID
+
+class RoomWithLearningSchedules(SQLModel): # use at RoomWithLearningSchedulesResponse
+    room_information: RoomsPublic
+    teaching_schedules: list[TeachingScheduleInRoom]
+
+class RoomWithLearningSchedulesResponse(SQLModel): 
+    data: list[RoomWithLearningSchedules]
+    total: int
 
 class RoomListResponse(SQLModel):
     total: int

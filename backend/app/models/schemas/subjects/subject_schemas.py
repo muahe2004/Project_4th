@@ -3,7 +3,7 @@ from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, String, Integer, DateTime, Text
 from uuid import UUID as UUID_TYPE
 from typing import List, Optional
-
+from pydantic import BaseModel as PydanticBaseModel
 
 class SubjectBase(SQLModel):
     subject_code: str = Field(sa_column=Column(String(12), nullable=False))
@@ -51,3 +51,8 @@ class SubjectDeleteResponse(SQLModel):
 class SubjectListResponse(SQLModel):
     total: int
     data: List[SubjectPublic]
+
+class TeachingScheduleSubjectInfo(PydanticBaseModel): # use at model: TeachingScheduleResponse
+    subject_id: UUID_TYPE
+    subject_name: Optional[str] = None
+    subject_code: Optional[str] = None

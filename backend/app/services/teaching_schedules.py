@@ -55,6 +55,7 @@ class TeachingScheduleServices:
                 Rooms.room_number.label("room_number"),
                 Subjects.id.label("subject_id"),
                 Subjects.name.label("subject_name"),
+                Subjects.subject_code.label("subject_code"),
             )
             .join(
                 LearningSchedules,
@@ -156,6 +157,7 @@ class TeachingScheduleServices:
             room_number,
             subject_id,
             subject_name,
+            subject_code,
         ) in rows:
             schedules.append(
                 TeachingScheduleResponse(
@@ -192,6 +194,7 @@ class TeachingScheduleServices:
                     subject=TeachingScheduleSubjectInfo(
                         subject_id=subject_id,
                         subject_name=subject_name,
+                        subject_code=subject_code,
                     ),
                 )
             )
