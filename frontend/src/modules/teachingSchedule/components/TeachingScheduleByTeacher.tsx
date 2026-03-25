@@ -18,66 +18,7 @@ interface TeacherGroup {
   scheduleMap: Map<string, ITeachingScheduleResponse[]>;
 }
 
-const EXTRA_PREVIEW_TEACHERS = 8;
-
-function toMockSchedule(
-  id: string,
-  roomNumber: number,
-  date: string,
-  startPeriod: number,
-  endPeriod: number,
-  subjectName: string,
-  className: string,
-  teacherName: string
-): ITeachingScheduleResponse {
-  return {
-    id,
-    status: "active",
-    created_at: "2026-03-20T10:00:00.000Z",
-    updated_at: "2026-03-20T10:00:00.000Z",
-    teacher: {
-      teacher_id: `teacher-${id}`,
-      teacher_name: teacherName,
-      teacher_email: "",
-      teacher_phone: "",
-    },
-    class: {
-      class_id: `class-${id}`,
-      class_name: className,
-      class_code: "",
-    },
-    subject: {
-      subject_id: `subject-${id}`,
-      subject_name: subjectName,
-    },
-    room: {
-      room_id: `room-${roomNumber}`,
-      room_number: roomNumber,
-    },
-    learning_schedule: {
-      id: `ls-${id}`,
-      class_id: `class-${id}`,
-      subject_id: `subject-${id}`,
-      room_id: `room-${roomNumber}`,
-      date,
-      start_period: startPeriod,
-      end_period: endPeriod,
-      schedule_type: "theory",
-      status: "active",
-      created_at: "2026-03-20T10:00:00.000Z",
-      updated_at: "2026-03-20T10:00:00.000Z",
-    },
-  };
-}
-
-const MOCK_SCHEDULES: ITeachingScheduleResponse[] = [
-  toMockSchedule("1", 201, "2026-03-23T00:00:00.000Z", 1, 3, "Cấu trúc dữ liệu", "Lớp Web 2", "Lý Văn Minh"),
-  toMockSchedule("2", 201, "2026-03-25T00:00:00.000Z", 7, 9, "Giải tích", "Lớp Web 1", "Nguyễn Chi Nam"),
-  toMockSchedule("3", 202, "2026-03-24T00:00:00.000Z", 2, 4, "OOP", "Lớp Java 2", "Đỗ Phương Thùy"),
-  toMockSchedule("4", 203, "2026-03-26T00:00:00.000Z", 8, 10, "React", "Lớp FE 1", "Tạ Minh Nguyệt "),
-  toMockSchedule("5", 204, "2026-03-27T00:00:00.000Z", 1, 2, "DBMS", "Lớp CSDL", "Lý Văn Minh"),
-  toMockSchedule("6", 205, "2026-03-29T00:00:00.000Z", 5, 7, "KTPM", "Lớp Test 2", "Nguyễn Dương Phương Anh"),
-];
+const EXTRA_PREVIEW_TEACHERS = 0;
 
 function getWeekDay(dateValue: string): number {
   const date = new Date(dateValue);
@@ -171,9 +112,7 @@ export function TeachingScheduleByTeacher({
   const teacherGroups = useMemo(
     () =>
       appendPreviewTeachers(
-        toTeacherGroups(
-          teachingSchedules?.data?.length ? teachingSchedules.data : MOCK_SCHEDULES
-        ),
+        toTeacherGroups(teachingSchedules?.data ?? []),
         EXTRA_PREVIEW_TEACHERS
       ),
     [teachingSchedules?.data]

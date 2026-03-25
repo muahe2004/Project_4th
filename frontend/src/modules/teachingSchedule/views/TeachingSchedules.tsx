@@ -35,19 +35,15 @@ export function TeachingSchedules() {
   const [deletingTeachingSchedule, setDeletingTeachingSchedule] = useState<
     ITeachingScheduleResponse | undefined
   >(undefined);
-  const isTableView = scheduleView === "table";
 
   const params = {
-    limit: rowsPerPage,
-    skip: (page - 1) * rowsPerPage,
+    limit: scheduleView === "table" ? rowsPerPage : 2000,
+    skip: scheduleView === "table" ? (page - 1) * rowsPerPage : 0,
     ...(search && { search }),
     ...(status && { status }),
   };
 
-  const { data: teachingSchedules, isLoading } = useGetTeachingSchedules(
-    params,
-    isTableView
-  );
+  const { data: teachingSchedules, isLoading } = useGetTeachingSchedules(params);
   const deleteTeachingScheduleMutation = useDeleteTeachingSchedule();
 
   const handleOpenAddForm = () => {
@@ -104,7 +100,7 @@ export function TeachingSchedules() {
     });
   };
 
-  if (isTableView && isLoading) {
+  if (isLoading) {
     return (
       <main className="admin-main-container">
         <Loading />
@@ -166,11 +162,11 @@ export function TeachingSchedules() {
       </Box>
 
       {scheduleView === "room" ? (
-        <TeachingScheduleByRoom />
+        <TeachingScheduleByRoom teachingSchedules={teachingSchedules} />
       ) : scheduleView === "teacher" ? (
-        <TeachingScheduleByTeacher />
+        <TeachingScheduleByTeacher teachingSchedules={teachingSchedules} />
       ) : scheduleView === "class" ? (
-        <TeachingScheduleByClass />
+        <TeachingScheduleByClass teachingSchedules={teachingSchedules} />
       ) : (
         <>
           <TeachingSchedulesTable
