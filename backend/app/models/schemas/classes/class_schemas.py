@@ -3,7 +3,6 @@ from typing import List, Optional
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, String, Integer, DateTime
 from uuid import UUID
-from pydantic import BaseModel as PydanticBaseModel
 from app.models.schemas.common.query import BaseQueryParams
 
 class ClassBase(SQLModel):
@@ -69,8 +68,3 @@ class ClassQueryParams(BaseQueryParams):
 class ClassListResponse(SQLModel):
     total: int
     data: List[ClassesResponse]
-
-class TeachingScheduleClassInfo(PydanticBaseModel): # use at TeachingScheduleResponse
-    class_id: UUID
-    class_name: Optional[str] = None
-    class_code: Optional[str] = None

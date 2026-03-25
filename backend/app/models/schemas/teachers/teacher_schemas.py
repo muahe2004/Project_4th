@@ -9,9 +9,9 @@ from app.models.schemas.user_informations.user_information_schemas import (
     UserInformationCreate,
     UserInformationPublic,
 )
+from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleInTeacher
 from sqlmodel import SQLModel, Field, Column, String, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from pydantic import BaseModel as PydanticBaseModel
 
 from app.models.schemas.common.query import BaseQueryParams
 
@@ -54,6 +54,14 @@ class TeacherBase(BaseModel):
 
 class TeacherPublic(TeacherBase):
     id: UUID_TYPE
+
+class TeacherWithLearningSchedules(SQLModel):
+    teacher_information: TeacherPublic
+    teaching_schedules: list[TeachingScheduleInTeacher]
+
+class TeacherWithLearningSchedulesResponse(SQLModel): 
+    data: list[TeacherWithLearningSchedules]
+    total: int
 
 
 class TeacherResponse(TeacherPublic):
@@ -134,9 +142,3 @@ class ListTeacherResponse(BaseModel):
 class TeacherCreateResponse(TeacherPublic):
     teacher_information: UserInformationPublic
     teacher_relative: Optional[List[RelativePublic]] = None
-
-class TeachingScheduleTeacherInfo(PydanticBaseModel): # use at model: TeachingScheduleResponse
-    teacher_id: UUID_TYPE
-    teacher_name: Optional[str] = None
-    teacher_email: Optional[str] = None
-    teacher_phone: Optional[str] = None

@@ -1,12 +1,16 @@
 import uuid
 
+from app.models.schemas.common.query import BaseQueryParams
+from app.models.schemas.learning_schedules.learning_schedule_schemas import LearningSchedulePublic
+from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleClassInfo, TeachingScheduleInTeacher, TeachingScheduleRoomInfo, TeachingScheduleSubjectInfo
 from fastapi import HTTPException, Request
 from sqlmodel import Session, and_, desc, func, or_, select
 from starlette import status
-from typing import List
+from sqlalchemy import String, cast
+from typing import List, Tuple
 from app.middleware.hashing import hash_password
 
-from app.models.models import Classes, Relatives, Teachers, UserInformations
+from app.models.models import Classes, LearningSchedules, Relatives, Rooms, Subjects, Teachers, TeachingSchedules, UserInformations
 from app.models.schemas.relatives.relative_schemas import (
     RelativePublic,
     UserRelativeCreate,
@@ -20,6 +24,7 @@ from app.models.schemas.teachers.teacher_schemas import (
     TeacherResponse,
     TeacherSearchParams,
     TeacherUpdate,
+    TeacherWithLearningSchedules,
 )
 from app.models.schemas.user_informations.user_information_schemas import (
     UserInformationPublic,
@@ -153,6 +158,153 @@ class TeacherServices:
 
         return teachers, total
 
+    # get teacher and learning schedule
+    @staticmethod
+    def get_teacher_and_learning_schedule(
+        *, session: Session, query: BaseQueryParams
+    ) -> Tuple[List[TeacherWithLearningSchedules], int]:
+
+        conditions = []
+
+        if query.search:
+            search_pattern = f"%{query.search}%"
+            conditions.append(
+                cast(Teachers.name, String).ilike(search_pattern)
+            )
+
+        count_stmt = select(func.count(Teachers.id))
+
+        if conditions:
+            count_stmt = count_stmt.where(and_(*conditions))
+
+        total = session.exec(count_stmt).one()
+
+        teacher_stmt = select(Teachers)
+
+        if conditions:
+            teacher_stmt = teacher_stmt.where(and_(*conditions))
+
+        teacher_stmt = (
+            teacher_stmt
+            .order_by(desc(Teachers.created_at))
+            .offset(query.skip)
+            .limit(query.limit)
+        )
+
+        teachers = session.exec(teacher_stmt).all()
+
+        if not teachers:
+            return [], total
+
+        teacher_ids = [r.id for r in teachers]
+
+        stmt = (
+            select(
+                Teachers.id.label("teacher_id"),
+
+                TeachingSchedules.id.label("ts_id"),
+                TeachingSchedules.status.label("ts_status"),
+                TeachingSchedules.created_at.label("ts_created_at"),
+                TeachingSchedules.updated_at.label("ts_updated_at"),
+
+                LearningSchedules.id.label("ls_id"),
+                LearningSchedules.class_id.label("ls_class_id"),
+                LearningSchedules.subject_id.label("ls_subject_id"),
+                LearningSchedules.date.label("ls_date"),
+                LearningSchedules.start_period.label("ls_start_period"),
+                LearningSchedules.end_period.label("ls_end_period"),
+                LearningSchedules.created_at.label("ls_created_at"),
+                LearningSchedules.updated_at.label("ls_updated_at"),
+
+                Rooms.id.label("room_id"),
+                Rooms.room_number.label("room_number"),
+
+                Classes.id.label("class_id"),
+                Classes.class_name.label("class_name"),
+                Classes.class_code.label("class_code"),
+
+                Subjects.id.label("subject_id"),
+                Subjects.name.label("subject_name"),
+                Subjects.subject_code.label("subject_code"),
+            )
+            .select_from(Teachers)
+            .outerjoin(
+                TeachingSchedules,
+                TeachingSchedules.teacher_id == Teachers.id
+            )
+            .outerjoin(
+                LearningSchedules,
+                LearningSchedules.id == TeachingSchedules.learning_schedule_id
+            )
+            .outerjoin(Rooms, Rooms.id == LearningSchedules.room_id)
+            .outerjoin(Classes, Classes.id == LearningSchedules.class_id)
+            .outerjoin(Subjects, Subjects.id == LearningSchedules.subject_id)
+            .where(Teachers.id.in_(teacher_ids))
+        )
+
+        rows = session.exec(stmt).all()
+
+        teacher_map = {}
+
+        for r in teachers:
+            teacher_map[r.id] = TeacherWithLearningSchedules(
+                teacher_information=TeacherPublic.model_validate(r),
+                teaching_schedules=[]
+            )
+
+        for row in rows:
+
+            if row.ls_id is None:
+                continue
+
+            schedule_item = TeachingScheduleInTeacher(
+                id=row.ts_id or row.ls_id,
+                status=row.ts_status,  
+                created_at=row.ts_created_at or row.ls_created_at,
+                updated_at=row.ts_updated_at or row.ls_updated_at,
+
+                learning_schedule=LearningSchedulePublic(
+                    id=row.ls_id,
+                    class_id=row.ls_class_id,
+                    subject_id=row.ls_subject_id,
+                    date=row.ls_date,
+                    start_period=row.ls_start_period,
+                    end_period=row.ls_end_period,
+                    created_at=row.ls_created_at,
+                    updated_at=row.ls_updated_at,
+                ),
+
+                room = (
+                    TeachingScheduleRoomInfo(
+                        room_id=row.room_id,
+                        room_number=row.room_number,
+                    )
+                    if row.room_id else None
+                ),
+
+                class_info=(
+                    TeachingScheduleClassInfo(
+                        class_id=row.class_id,
+                        class_name=row.class_name,
+                        class_code=row.class_code,
+                    )
+                    if row.class_id else None
+                ),
+
+                subject=(
+                    TeachingScheduleSubjectInfo(
+                        subject_id=row.subject_id,
+                        subject_name=row.subject_name,
+                        subject_code=row.subject_code,
+                    )
+                    if row.subject_id else None
+                ),
+            )
+
+            teacher_map[row.teacher_id].teaching_schedules.append(schedule_item)
+
+        return list(teacher_map.values()), total
+    
     @staticmethod
     def get_list_teacher(
         *, session: Session, teacher_ids: List[str]

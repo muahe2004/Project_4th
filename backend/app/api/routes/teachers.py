@@ -1,6 +1,7 @@
 import uuid
 
 from app.services.teachers import TeacherServices
+from app.models.schemas.common.query import BaseQueryParams
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.teachers.teacher_schemas import (
@@ -13,6 +14,7 @@ from app.models.schemas.teachers.teacher_schemas import (
     TeacherUpdate,
     TeacherDeleteResponse,
     TeacherCreateWithUserInfor,
+    TeacherWithLearningSchedulesResponse,
 )
 
 # from app.services.teachers import TeacherServices
@@ -31,6 +33,25 @@ def get_teachers(
     return ListTeacherResponse(
         data=teachers,
         total=total,
+    )
+
+# ===========================  ===========================
+@router.get(
+    "/with-learning-schedules",
+    response_model=TeacherWithLearningSchedulesResponse,
+)
+def get_teachers_with_learning_schedules(
+    session: SessionDep,
+    query: BaseQueryParams = Depends()
+):
+    data, total = TeacherServices.get_teacher_and_learning_schedule(
+        session=session,
+        query=query,
+    )
+
+    return TeacherWithLearningSchedulesResponse(
+        data=data,
+        total=total
     )
 
 

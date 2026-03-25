@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.models.schemas.teaching_schedules.teaching_schedule_schemas import TeachingScheduleInRoom
+from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleInRoom
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from sqlalchemy import Integer
 from uuid import UUID

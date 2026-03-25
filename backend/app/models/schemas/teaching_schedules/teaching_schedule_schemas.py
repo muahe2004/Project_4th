@@ -1,8 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from app.models.schemas.subjects.subject_schemas import TeachingScheduleSubjectInfo
-from app.models.schemas.classes.class_schemas import TeachingScheduleClassInfo
-from app.models.schemas.teachers.teacher_schemas import TeachingScheduleTeacherInfo
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from uuid import UUID
 from pydantic import BaseModel as PydanticBaseModel
@@ -14,6 +11,12 @@ from app.models.schemas.learning_schedules.learning_schedule_schemas import (
     LearningSchedulePublic,
 )
 
+from app.models.schemas.shared.teaching_schedule_embeds import (
+    TeachingScheduleClassInfo,
+    TeachingScheduleRoomInfo,
+    TeachingScheduleSubjectInfo,
+    TeachingScheduleTeacherInfo,
+)
 
 class TeachingScheduleBase(SQLModel):
     teacher_id: UUID | None = Field(default=None, foreign_key="teachers.id")
@@ -69,10 +72,6 @@ class TeachingScheduleDeleteResponse(SQLModel):
     message: str
     id: UUID
 
-class TeachingScheduleRoomInfo(PydanticBaseModel):
-    room_id: UUID
-    room_number: Optional[int] = None
-
 class TeachingScheduleResponse(PydanticBaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
@@ -89,15 +88,6 @@ class TeachingScheduleResponse(PydanticBaseModel):
     room: Optional[TeachingScheduleRoomInfo] = None
     subject: Optional[TeachingScheduleSubjectInfo] = None
 
-class TeachingScheduleInRoom(PydanticBaseModel): # use at model: RoomWithLearningSchedules
-    id: UUID
-    status: str | None = None
-    created_at: datetime
-    updated_at: datetime
-    learning_schedule: LearningSchedulePublic
-    teacher: Optional[TeachingScheduleTeacherInfo] = None
-    class_info: Optional[TeachingScheduleClassInfo] = None
-    subject: Optional[TeachingScheduleSubjectInfo] = None
 
 class TeachingScheduleSearchParams(BaseQueryParams):
     class_id: Optional[UUID] = Field(None)

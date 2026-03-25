@@ -1,9 +1,6 @@
 import uuid
-from app.models.schemas.classes.class_schemas import TeachingScheduleClassInfo
 from app.models.schemas.learning_schedules.learning_schedule_schemas import LearningSchedulePublic
-from app.models.schemas.subjects.subject_schemas import TeachingScheduleSubjectInfo
-from app.models.schemas.teachers.teacher_schemas import TeachingScheduleTeacherInfo
-from app.models.schemas.teaching_schedules.teaching_schedule_schemas import TeachingScheduleInRoom
+from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleClassInfo, TeachingScheduleInRoom, TeachingScheduleSubjectInfo, TeachingScheduleTeacherInfo
 from fastapi import HTTPException, Request
 from sqlmodel import Session, and_, desc, or_, select, func
 from sqlalchemy import String, cast
