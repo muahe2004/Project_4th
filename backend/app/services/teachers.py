@@ -169,7 +169,11 @@ class TeacherServices:
         if query.search:
             search_pattern = f"%{query.search}%"
             conditions.append(
-                cast(Teachers.name, String).ilike(search_pattern)
+                
+                or_(
+                    cast(Teachers.name, String).ilike(search_pattern),
+                    cast(Teachers.teacher_code, String).ilike(search_pattern),
+                )
             )
 
         count_stmt = select(func.count(Teachers.id))

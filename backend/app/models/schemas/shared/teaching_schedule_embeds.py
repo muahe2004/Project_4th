@@ -48,3 +48,13 @@ class TeachingScheduleInRoom(BaseModel):
     teacher: Optional[TeachingScheduleTeacherInfo] = None
     class_info: Optional[TeachingScheduleClassInfo] = None
     subject: Optional[TeachingScheduleSubjectInfo] = None
+
+class TeachingScheduleInClass(BaseModel):
+    id: UUID
+    status: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    learning_schedule: LearningSchedulePublic
+    teacher: Optional[TeachingScheduleTeacherInfo] = None
+    room: Optional[TeachingScheduleRoomInfo] = None
+    subject: Optional[TeachingScheduleSubjectInfo] = None

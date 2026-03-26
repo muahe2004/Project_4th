@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
+from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleInClass
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, String, Integer, DateTime
 from uuid import UUID
@@ -68,3 +69,11 @@ class ClassQueryParams(BaseQueryParams):
 class ClassListResponse(SQLModel):
     total: int
     data: List[ClassesResponse]
+
+class ClassWithLearningSchedules(SQLModel):
+    class_information: ClassPublic
+    teaching_schedules: list[TeachingScheduleInClass]
+
+class ClassWithLearningSchedulesResponse(SQLModel): 
+    data: list[ClassWithLearningSchedules]
+    total: int

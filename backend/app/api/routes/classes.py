@@ -1,5 +1,6 @@
 import uuid
 
+from app.models.schemas.common.query import BaseQueryParams
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.classes.class_schemas import (
@@ -10,6 +11,7 @@ from app.models.schemas.classes.class_schemas import (
     ClassQueryParams,
     ClassUpdate,
     ClassDeleteResponse,
+    ClassWithLearningSchedulesResponse,
     IdsRequest,
 )
 from app.services.classes import ClassServices
@@ -24,6 +26,24 @@ def get_classes(session: SessionDep, query: ClassQueryParams = Depends()):
     classes, total = ClassServices.get_all(session=session, query=query)
     return ClassListResponse(total=total, data=classes)
 
+# ===========================  ===========================
+@router.get(
+    "/with-learning-schedules",
+    response_model=ClassWithLearningSchedulesResponse,
+)
+def get_classes_with_learning_schedules(
+    session: SessionDep,
+    query: BaseQueryParams = Depends()
+):
+    data, total = ClassServices.get_class_and_learning_schedule(
+        session=session,
+        query=query,
+    )
+
+    return ClassWithLearningSchedulesResponse(
+        data=data,
+        total=total
+    )
 
 # =========================== get dropdown class by ids ===========================
 @router.post("/dropdown-by-ids", response_model=list[ClassDropDownResponse])
@@ -35,7 +55,6 @@ def get_class_dropdown_by_ids(
         ids=payload.ids,
         request=request,
     )
-
 
 # =========================== get dropdown classes ===========================
 @router.get("/dropdown", response_model=List[ClassDropDownResponse])
