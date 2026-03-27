@@ -13,7 +13,7 @@ from app.models.schemas.rooms.room_schemas import (
 )
 from app.services.rooms import RoomServices
 from typing import List
-from app.models.schemas.common.query import BaseQueryParams
+from app.models.schemas.common.query import BaseQueryParams, DateRange
 
 router = APIRouter()
 
@@ -39,11 +39,13 @@ def get_rooms_dropdown(
 )
 def get_rooms_with_learning_schedules(
     session: SessionDep,
-    query: BaseQueryParams = Depends()
+    query: BaseQueryParams = Depends(),
+    date_range: DateRange = Depends(),
 ):
     data, total = RoomServices.get_room_and_learning_schedule(
         session=session,
         query=query,
+        date_range=date_range,
     )
 
     return RoomWithLearningSchedulesResponse(

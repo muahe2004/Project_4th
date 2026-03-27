@@ -1,6 +1,6 @@
 import uuid
 
-from app.models.schemas.common.query import BaseQueryParams
+from app.models.schemas.common.query import BaseQueryParams, DateRange
 from app.models.schemas.learning_schedules.learning_schedule_schemas import LearningSchedulePublic
 from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleClassInfo, TeachingScheduleInTeacher, TeachingScheduleRoomInfo, TeachingScheduleSubjectInfo
 from fastapi import HTTPException, Request
@@ -34,6 +34,7 @@ from app.services.departments import DepartmentServices
 from app.services.user_information import User_Information_Services
 from app.services.relatives import RelativeServices
 from app.enums.status import StatusEnum
+from app.services.common import build_date_conditions
 
 
 def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
@@ -161,10 +162,11 @@ class TeacherServices:
     # get teacher and learning schedule
     @staticmethod
     def get_teacher_and_learning_schedule(
-        *, session: Session, query: BaseQueryParams
+        *, session: Session, query: BaseQueryParams, date_range: DateRange
     ) -> Tuple[List[TeacherWithLearningSchedules], int]:
 
         conditions = []
+        schedule_conditions = build_date_conditions(date_range)
 
         if query.search:
             search_pattern = f"%{query.search}%"
@@ -245,6 +247,9 @@ class TeacherServices:
             .outerjoin(Subjects, Subjects.id == LearningSchedules.subject_id)
             .where(Teachers.id.in_(teacher_ids))
         )
+
+        if schedule_conditions:
+            stmt = stmt.where(and_(*schedule_conditions))
 
         rows = session.exec(stmt).all()
 

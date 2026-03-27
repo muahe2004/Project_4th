@@ -2,6 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
+from app.models.schemas.common.query import DateRange
 from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
     ListTeachingScheduleResponse,
     TeachingScheduleSearchParams,
@@ -19,10 +20,12 @@ router = APIRouter()
 # =========================== get all ===========================
 @router.get("", response_model=ListTeachingScheduleResponse)
 def get_teaching_schedules(
-    session: SessionDep, query: TeachingScheduleSearchParams = Depends()
+    session: SessionDep,
+    query: TeachingScheduleSearchParams = Depends(),
+    date_range: DateRange = Depends(),
 ) -> ListTeachingScheduleResponse:
     teaching_schedules, total = TeachingScheduleServices.get_all(
-        session=session, query=query
+        session=session, query=query, date_range=date_range
     )
     return ListTeachingScheduleResponse(data=teaching_schedules, total=total)
 

@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 from app.enums.status import StatusEnum
 from fastapi import HTTPException, Request
 from sqlmodel import Session, and_, desc, func, or_, select
@@ -19,6 +18,7 @@ from app.models.models import (
 from app.models.schemas.learning_schedules.learning_schedule_schemas import (
     LearningSchedulePublic,
 )
+from app.models.schemas.common.query import DateRange
 from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
     TeachingScheduleClassInfo,
     TeachingScheduleRoomInfo,
@@ -33,12 +33,13 @@ from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
     TeachingScheduleWithLearningSchedulePublic,
 )
 from app.services.learning_schedules import LearningScheduleServices
+from app.services.common import build_date_conditions
 
 
 class TeachingScheduleServices:
     @staticmethod
     def get_all(
-        *, session: Session, query: TeachingScheduleSearchParams
+        *, session: Session, query: TeachingScheduleSearchParams, date_range: DateRange
     ) -> Tuple[List[TeachingScheduleResponse], int]:
         statement = (
             select(
@@ -94,6 +95,8 @@ class TeachingScheduleServices:
 
         if query.teacher_id:
             conditions.append(TeachingSchedules.teacher_id == query.teacher_id)
+
+        conditions.extend(build_date_conditions(date_range))
 
         if query.search:
             search_pattern = f"%{query.search}%"

@@ -1,5 +1,5 @@
 import uuid
-from app.models.schemas.common.query import BaseQueryParams
+from app.models.schemas.common.query import BaseQueryParams, DateRange
 from app.models.schemas.learning_schedules.learning_schedule_schemas import LearningSchedulePublic
 from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleInClass, TeachingScheduleRoomInfo, TeachingScheduleSubjectInfo, TeachingScheduleTeacherInfo
 from fastapi import HTTPException, Request
@@ -24,6 +24,7 @@ from app.models.models import Students
 
 from app.enums.status import StatusEnum
 from app.services.teachers import get_all_teachers
+from app.services.common import build_date_conditions
 
 
 class ClassServices:
@@ -94,10 +95,11 @@ class ClassServices:
     # get class and learning schedule
     @staticmethod
     def get_class_and_learning_schedule(
-        *, session: Session, query: BaseQueryParams
+        *, session: Session, query: BaseQueryParams, date_range: DateRange
     ) -> Tuple[List[ClassWithLearningSchedules], int]:
 
         conditions = []
+        schedule_conditions = build_date_conditions(date_range)
 
         if query.search:
             search_pattern = f"%{query.search}%"
@@ -178,6 +180,9 @@ class ClassServices:
             .outerjoin(Subjects, Subjects.id == LearningSchedules.subject_id)
             .where(Classes.id.in_(class_ids))
         )
+
+        if schedule_conditions:
+            stmt = stmt.where(and_(*schedule_conditions))
 
         rows = session.exec(stmt).all()
 

@@ -1,6 +1,6 @@
 import uuid
 
-from app.models.schemas.common.query import BaseQueryParams
+from app.models.schemas.common.query import BaseQueryParams, DateRange
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.classes.class_schemas import (
@@ -33,11 +33,13 @@ def get_classes(session: SessionDep, query: ClassQueryParams = Depends()):
 )
 def get_classes_with_learning_schedules(
     session: SessionDep,
-    query: BaseQueryParams = Depends()
+    query: BaseQueryParams = Depends(),
+    date_range: DateRange = Depends(),
 ):
     data, total = ClassServices.get_class_and_learning_schedule(
         session=session,
         query=query,
+        date_range=date_range,
     )
 
     return ClassWithLearningSchedulesResponse(

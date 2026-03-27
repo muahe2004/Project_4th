@@ -20,7 +20,8 @@ from app.models.schemas.rooms.room_schemas import (
 from app.enums.status import StatusEnum
 from app.models.models import LearningSchedules
 from app.models.models import ExaminationSchedules
-from app.models.schemas.common.query import BaseQueryParams
+from app.models.schemas.common.query import BaseQueryParams, DateRange
+from app.services.common import build_date_conditions
 
 
 class RoomServices:
@@ -64,10 +65,11 @@ class RoomServices:
     # get room and learning schedule
     @staticmethod
     def get_room_and_learning_schedule(
-        *, session: Session, query: BaseQueryParams
+        *, session: Session, query: BaseQueryParams, date_range: DateRange
     ) -> Tuple[List[RoomWithLearningSchedules], int]:
 
         conditions = []
+        schedule_conditions = build_date_conditions(date_range)
 
         if query.search:
             search_pattern = f"%{query.search}%"
@@ -144,6 +146,9 @@ class RoomServices:
             .where(Rooms.id.in_(room_ids))
             .order_by(desc(Rooms.created_at))
         )
+
+        if schedule_conditions:
+            stmt = stmt.where(and_(*schedule_conditions))
 
         rows = session.exec(stmt).all()
 
