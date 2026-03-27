@@ -43,7 +43,10 @@ export function TeachingSchedules() {
     ...(status && { status }),
   };
 
-  const { data: teachingSchedules, isLoading } = useGetTeachingSchedules(params);
+  const { data: teachingSchedules, isLoading } = useGetTeachingSchedules(
+    params,
+    scheduleView === "table"
+  );
   const deleteTeachingScheduleMutation = useDeleteTeachingSchedule();
 
   const handleOpenAddForm = () => {
@@ -162,11 +165,11 @@ export function TeachingSchedules() {
       </Box>
 
       {scheduleView === "room" ? (
-        <TeachingScheduleByRoom teachingSchedules={teachingSchedules} />
+        <TeachingScheduleByRoom search={search} status={status} />
       ) : scheduleView === "teacher" ? (
-        <TeachingScheduleByTeacher teachingSchedules={teachingSchedules} />
+        <TeachingScheduleByTeacher search={search} status={status} />
       ) : scheduleView === "class" ? (
-        <TeachingScheduleByClass teachingSchedules={teachingSchedules} />
+        <TeachingScheduleByClass search={search} status={status} />
       ) : (
         <>
           <TeachingSchedulesTable

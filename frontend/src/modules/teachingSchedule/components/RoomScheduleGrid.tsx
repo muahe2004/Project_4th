@@ -1,5 +1,5 @@
 import TeachingPeriodCell from "./TeachingPeriodCell";
-import type { ITeachingScheduleResponse } from "../types";
+import type { ITeachingScheduleWithRelations } from "../types";
 
 const DAYS = [
   { label: "Thứ 2", value: 1 },
@@ -16,7 +16,7 @@ const PERIODS = Array.from({ length: 12 }, (_, index) => index + 1);
 interface TeachingRoomContainerProps {
   roomLabel: string;
   rowLabel?: string;
-  scheduleMap: Map<string, ITeachingScheduleResponse[]>;
+  scheduleMap: Map<string, ITeachingScheduleWithRelations[]>;
   showHeader?: boolean;
   firstColumnTitle?: string;
   variant?: string;

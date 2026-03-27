@@ -1,8 +1,8 @@
-import type { ITeachingScheduleResponse } from "../types";
+import type { ITeachingScheduleWithRelations } from "../types";
 
 interface TeachingPeriodCellProps {
   period: number;
-  schedules?: ITeachingScheduleResponse[];
+  schedules?: ITeachingScheduleWithRelations[];
 }
 
 function formatDate(dateValue: string): string {
@@ -13,7 +13,7 @@ function formatDate(dateValue: string): string {
   return `${day}/${month}/${year}`;
 }
 
-function buildTooltip(schedules?: ITeachingScheduleResponse[]): string {
+function buildTooltip(schedules?: ITeachingScheduleWithRelations[]): string {
   if (!schedules || schedules.length === 0) {
     return "";
   }
@@ -21,7 +21,7 @@ function buildTooltip(schedules?: ITeachingScheduleResponse[]): string {
   return schedules
     .slice(0, 8)
     .map((schedule, index) => {
-      const className = schedule.class?.class_name ?? "-";
+      const className = schedule.class?.class_name ?? schedule.class_info?.class_name ?? "-";
       const subjectName = schedule.subject?.subject_name ?? "-";
       const teacherName = schedule.teacher?.teacher_name ?? "-";
       const roomNumber = schedule.room?.room_number ?? "-";

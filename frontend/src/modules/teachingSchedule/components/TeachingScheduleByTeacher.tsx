@@ -1,39 +1,31 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import PaginationUniCore from "../../../components/Pagination/Pagination";
+import Loading from "../../../components/Loading/Loading";
 import RoomScheduleGrid from "./RoomScheduleGrid";
-import type { ITeachingScheduleResponse } from "../types";
+import { useGetTeachersWithLearningSchedules } from "../apis/getTeachersWithLearningSchedules";
+import type {
+  ITeacherWithLearningSchedules,
+  ITeachingScheduleWithRelations,
+} from "../types";
 import "./styles/TeachingScheduleByRoom.css";
-
-interface TeachingScheduleByTeacherProps {
-  teachingSchedules?: {
-    data: ITeachingScheduleResponse[];
-    total: number;
-  };
-}
 
 interface TeacherGroup {
   teacherKey: string;
   teacherLabel: string;
-  scheduleMap: Map<string, ITeachingScheduleResponse[]>;
+  scheduleMap: Map<string, ITeachingScheduleWithRelations[]>;
 }
-
-const EXTRA_PREVIEW_TEACHERS = 0;
 
 function getWeekDay(dateValue: string): number {
   const date = new Date(dateValue);
   return date.getDay();
 }
 
-function mapTeacherLabel(item: ITeachingScheduleResponse): string {
-  const teacherName = item.teacher?.teacher_name?.trim();
-  if (teacherName) {
-    return teacherName;
-  }
-  return "Chưa gán giảng viên";
+function mapTeacherLabel(teacher: ITeacherWithLearningSchedules["teacher_information"]): string {
+  return teacher.name?.trim() || "Chưa gán giảng viên";
 }
 
-function getPeriodRange(item: ITeachingScheduleResponse): number[] {
+function getPeriodRange(item: ITeachingScheduleWithRelations): number[] {
   const start = item.learning_schedule.start_period;
   const end = item.learning_schedule.end_period;
   const from = Math.max(1, Math.min(12, start));
@@ -44,90 +36,78 @@ function getPeriodRange(item: ITeachingScheduleResponse): number[] {
   return Array.from({ length: to - from + 1 }, (_, index) => from + index);
 }
 
-function toTeacherGroups(data: ITeachingScheduleResponse[]): TeacherGroup[] {
-  const teacherMap = new Map<string, TeacherGroup>();
+function toTeacherGroups(data: ITeacherWithLearningSchedules[]): TeacherGroup[] {
+  return data.map((teacher) => {
+    const teacherLabel = mapTeacherLabel(teacher.teacher_information);
+    const scheduleMap = new Map<string, ITeachingScheduleWithRelations[]>();
 
-  data.forEach((item) => {
-    const day = getWeekDay(item.learning_schedule.date);
-    if (day < 0 || day > 6) {
-      return;
-    }
+    teacher.teaching_schedules.forEach((item) => {
+      const day = getWeekDay(item.learning_schedule.date);
+      if (day < 0 || day > 6) {
+        return;
+      }
 
-    const teacherLabel = mapTeacherLabel(item);
-    const teacherKey = item.teacher?.teacher_id ?? `teacher-${teacherLabel}`;
-    const current = teacherMap.get(teacherKey) ?? {
-      teacherKey,
-      teacherLabel,
-      scheduleMap: new Map<string, ITeachingScheduleResponse[]>(),
-    };
-
-    getPeriodRange(item).forEach((period) => {
-      const key = `${day}-${period}`;
-      const existing = current.scheduleMap.get(key) ?? [];
-      existing.push(item);
-      current.scheduleMap.set(key, existing);
+      getPeriodRange(item).forEach((period) => {
+        const key = `${day}-${period}`;
+        const existing = scheduleMap.get(key) ?? [];
+        existing.push(item);
+        scheduleMap.set(key, existing);
+      });
     });
 
-    teacherMap.set(teacherKey, current);
+    return {
+      teacherKey: teacher.teacher_information.id,
+      teacherLabel,
+      scheduleMap,
+    };
   });
-
-  return [...teacherMap.values()].sort((left, right) =>
-    left.teacherLabel.localeCompare(right.teacherLabel, "vi")
-  );
 }
 
-function appendPreviewTeachers(groups: TeacherGroup[], count: number): TeacherGroup[] {
-  if (count <= 0) {
-    return groups;
-  }
-
-  const usedLabels = new Set(groups.map((item) => item.teacherLabel));
-  const previewGroups: TeacherGroup[] = [];
-  let nextTeacherNumber = 1;
-
-  while (previewGroups.length < count) {
-    const teacherLabel = `Giảng viên ${String(nextTeacherNumber).padStart(2, "0")}`;
-    if (!usedLabels.has(teacherLabel)) {
-      previewGroups.push({
-        teacherKey: `preview-${teacherLabel}`,
-        teacherLabel,
-        scheduleMap: new Map<string, ITeachingScheduleResponse[]>(),
-      });
-      usedLabels.add(teacherLabel);
-    }
-    nextTeacherNumber += 1;
-  }
-
-  return [...groups, ...previewGroups].sort((left, right) =>
-    left.teacherLabel.localeCompare(right.teacherLabel, "vi")
-  );
+interface TeachingScheduleByTeacherProps {
+  search?: string;
+  status?: string;
 }
 
 export function TeachingScheduleByTeacher({
-  teachingSchedules,
+  search,
+  status,
 }: TeachingScheduleByTeacherProps) {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  useEffect(() => {
+    setPage(1);
+  }, [search, status]);
+
+  const params = {
+    limit: rowsPerPage,
+    skip: (page - 1) * rowsPerPage,
+    ...(search && { search }),
+    ...(status && { status }),
+  };
+
+  const {
+    data: teacherSchedules,
+    isLoading,
+  } = useGetTeachersWithLearningSchedules(params);
+
   const teacherGroups = useMemo(
-    () =>
-      appendPreviewTeachers(
-        toTeacherGroups(teachingSchedules?.data ?? []),
-        EXTRA_PREVIEW_TEACHERS
-      ),
-    [teachingSchedules?.data]
+    () => toTeacherGroups(teacherSchedules?.data ?? []),
+    [teacherSchedules?.data]
   );
 
-  const pagedGroups = useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    return teacherGroups.slice(start, end);
-  }, [teacherGroups, page, rowsPerPage]);
+  if (isLoading) {
+    return (
+      <div className="teaching-schedule-by-room teaching-schedule-by-room--empty">
+        <Loading />
+      </div>
+    );
+  }
 
   if (teacherGroups.length === 0) {
     return (
       <div className="teaching-schedule-by-room teaching-schedule-by-room--empty">
-        Không có lịch dạy để hiển thị theo giảng viên
+        Không có giảng viên nào để hiển thị
       </div>
     );
   }
@@ -135,7 +115,7 @@ export function TeachingScheduleByTeacher({
   return (
     <div className="teaching-schedule-by-room-layout">
       <section className="teaching-schedule-by-room">
-        {pagedGroups.map((group, index) => (
+        {teacherGroups.map((group, index) => (
           <RoomScheduleGrid
             key={group.teacherKey}
             roomLabel={group.teacherLabel}
@@ -149,7 +129,7 @@ export function TeachingScheduleByTeacher({
 
       <div className="teaching-schedule-by-room__pagination">
         <PaginationUniCore
-          totalItems={teacherGroups.length}
+          totalItems={teacherSchedules?.total ?? 0}
           page={page}
           rowsPerPage={rowsPerPage}
           onPageChange={(value) => setPage(value)}
