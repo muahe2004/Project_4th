@@ -22,6 +22,7 @@ import { TeachingSchedules } from "../modules/teachingSchedule/views/TeachingSch
 import { Rooms } from "../modules/rooms/views/Rooms";
 import { ExaminationSchedules } from "../modules/examinationSchedule/views/ExaminationSchedules";
 import { ROLES } from "../constants/roles";
+import Loading from "../components/Loading/Loading";
 
 const ProtectedRoute = ({
   children,
@@ -31,6 +32,12 @@ const ProtectedRoute = ({
   allowedRoles?: string[];
 }) => {
   const user = useAuthStore((state) => state.user);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const authReady = useAuthStore((state) => state.authReady);
+
+  if (!hasHydrated || !authReady) {
+    return <Loading />;
+  }
 
   if (!user) {
     return <Navigate to={signinUrl} replace />;

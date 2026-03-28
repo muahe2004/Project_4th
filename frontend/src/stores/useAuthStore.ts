@@ -12,17 +12,26 @@ type UserInfo = {
 
 type AuthState = {
   user: UserInfo | null;
+  hasHydrated: boolean;
+  authReady: boolean;
   setUser: (user: UserInfo) => void;
+  setHasHydrated: (value: boolean) => void;
   fetchMe: () => Promise<UserInfo | null>;
+  initializeAuth: () => Promise<UserInfo | null>;
   logout: () => void;
 };
 
+let authInitPromise: Promise<UserInfo | null> | null = null;
+
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
+      hasHydrated: false,
+      authReady: false,
 
       setUser: (user) => set({ user }),
+      setHasHydrated: (value) => set({ hasHydrated: value }),
 
       fetchMe: async () => {
         try {
@@ -38,6 +47,19 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      initializeAuth: async () => {
+        if (!authInitPromise) {
+          authInitPromise = get()
+            .fetchMe()
+            .finally(() => {
+              set({ authReady: true });
+              authInitPromise = null;
+            });
+        }
+
+        return authInitPromise;
+      },
+
       logout: async () => {
         try {
           await axios.post(`${import.meta.env.VITE_UNICORE_API_URL}/${UNICORE_PREFIX}/auth/logout`, {}, { withCredentials: true });
@@ -50,6 +72,9 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       partialize: (state) => ({ user: state.user }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
