@@ -1,18 +1,19 @@
 import { useState } from "react";
-import LearningScheduleCalender from "../components/LearningScheduleCalender";
 
-import "./styles/learningSchedule.css";
+import TeachingScheduleCalender from "../components/TeachingScheduleCalender";
 import WeekPicker from "../../../components/WeekPicker/WeekPicker";
 
-export function LearningSchedule() {
+import "../../learningSchedule/views/styles/learningSchedule.css";
+
+export function TeacherTeachingScheduleView() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   return (
     <main className="learningSchedule">
       <WeekPicker selectedDate={selectedDate} onChangeDate={setSelectedDate} />
-      <LearningScheduleCalender selectedDate={selectedDate} />
+      <TeachingScheduleCalender selectedDate={selectedDate} />
     </main>
   );
 }
 
-export default LearningSchedule;
+export default TeacherTeachingScheduleView;

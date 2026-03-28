@@ -15,14 +15,24 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from "../../stores/useAuthStore";
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
-import { homeUrl, profileUrl, signinUrl, gradesUrl, studentLearningSchedules } from "../../routes/urls"
+import { homeUrl, profileUrl, signinUrl, gradesUrl, studentLearningSchedules, teacherTeachingSchedules } from "../../routes/urls"
 import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
+import { ROLES } from '../../constants/roles';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout); 
+  const isTeacher = user?.role === ROLES.TEACHER;
+  const scheduleUrl = isTeacher ? teacherTeachingSchedules : studentLearningSchedules;
+  const learningScheduleLabel = isTeacher
+    ? t('header_menu.teachingSchedule')
+    : t('header_menu.learningSchedule');
+  const examScheduleLabel = isTeacher
+    ? t('header_menu.proctoringSchedule')
+    : t('header_menu.examSchedule');
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -78,9 +88,13 @@ const Header: React.FC = () => {
               onClick={() => handleNavigate(profileUrl)}
             >{t('header_menu.profile')}</MenuItem>
             <MenuItem onClick={() => handleNavigate(gradesUrl)}>{t('header_menu.academicResults')}</MenuItem>
-            <MenuItem onClick={() => handleNavigate(studentLearningSchedules)}>{t('header_menu.learningSchedule')}</MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.examSchedule')}</MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.tuition')}</MenuItem>
+            <MenuItem onClick={() => handleNavigate(scheduleUrl)}>
+              {learningScheduleLabel}
+            </MenuItem>
+            <MenuItem onClick={handleCloseUserMenu}>{examScheduleLabel}</MenuItem>
+            {!isTeacher && (
+              <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.tuition')}</MenuItem>
+            )}
             <MenuItem 
               onClick={handleLogout}
             >{t('header_menu.logout')}</MenuItem>

@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, roomUrl, examinationScheduleUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, roomUrl, examinationScheduleUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -23,6 +23,7 @@ import { Rooms } from "../modules/rooms/views/Rooms";
 import { ExaminationSchedules } from "../modules/examinationSchedule/views/ExaminationSchedules";
 import { ROLES } from "../constants/roles";
 import Loading from "../components/Loading/Loading";
+import TeacherTeachingScheduleView from "../modules/teachingSchedule/views/TeacherTeachingScheduleView";
 
 const ProtectedRoute = ({
   children,
@@ -79,6 +80,10 @@ export const createRouterConfig = () => {
         {
           path: studentLearningSchedules,
           element: <LearningSchedule />,
+        },
+        {
+          path: teacherTeachingSchedules,
+          element: <TeacherTeachingScheduleView />,
         },
       ],
     },

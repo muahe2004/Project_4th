@@ -6,6 +6,7 @@ export const signinUrl = "/sign-in";
 export const profileUrl = "/my-profile";
 export const gradesUrl = "/grades";
 export const studentLearningSchedules = "student-learning-schedules"
+export const teacherTeachingSchedules = "teacher-teaching-schedules"
 
 // ADMIN
 export const layOutAdminUrl = "/admin"

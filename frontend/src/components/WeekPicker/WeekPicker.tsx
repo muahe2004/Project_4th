@@ -1,13 +1,13 @@
 import { Box, Tooltip } from "@mui/material";
-import Button from "../../../components/Button/Button";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
-import "./styles/WeekPicker.css";
+import "./WeekPicker.css";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import Button from "../Button/Button";
 
 interface WeekPickerProps {
     selectedDate: Date;

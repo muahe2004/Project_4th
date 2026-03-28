@@ -13,6 +13,7 @@ export interface Params {
   skip: number;
   status?: string;
   search?: string;
+  teacher_id?: string;
   student_id?: string;
 }
 
