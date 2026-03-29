@@ -1,5 +1,5 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, Tabs, Tab, Box } from "@mui/material";
-import React, { useState, useEffect, type ReactNode } from "react";
+import React, { useMemo, useState, useEffect, type ReactNode } from "react";
 import dayjs from "dayjs";
 import { STATUS } from "../../../constants/status";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
@@ -13,6 +13,7 @@ import { RELATIONSHIP } from "../../../constants/relationships";
 import { useCreateStudent } from "../apis/addStudent";
 import { useUpdateStudent } from "../apis/updateStudent";
 import { useClassesDropDown } from "../../classes/apis/getClassDropDown";
+import { useClassesDropDownByIds } from "../../classes/apis/getClassDropDownByIds";
 
 interface TabPanelProps {
     children?: ReactNode;
@@ -156,6 +157,13 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
         skip: (specializationPage - 1) * 5,
         search: searchSpecialization || undefined,
     });
+    const { data: selectedClasses = [] } = useClassesDropDownByIds(
+        student.class_id ? { ids: [student.class_id] } : { ids: [] }
+    );
+    const classOptions = useMemo(
+        () => Array.from(new Map([...selectedClasses, ...classes].map((item) => [item.id, item])).values()),
+        [selectedClasses, classes]
+    );
     const handleClassSearchChange = (value: string) => {
         setSearchSpecialization(value);
         setSpecializationPage(1);
@@ -313,7 +321,7 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
                 <TabPanel value={value} index={0}>
                 <BasicInformationTab
                     student={student}
-                    classes={classes}
+                    classes={classOptions}
                     dateOfBirth={dateOfBirth}
                     onStudentChange={setStudent}
                     onDateChange={handleDateChange}

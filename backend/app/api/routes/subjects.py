@@ -1,5 +1,5 @@
 import uuid
-from app.models.schemas.common.query import BaseQueryParams
+from app.models.schemas.common.query import BaseQueryParams, IdsRequest
 from fastapi import APIRouter, Request, Depends
 from app.api.deps import SessionDep
 from app.models.schemas.subjects.subject_schemas import (
@@ -8,6 +8,7 @@ from app.models.schemas.subjects.subject_schemas import (
     SubjectCreate,
     SubjectUpdate,
     SubjectDeleteResponse,
+    SubjectDropdownResponse,
 )
 from app.services.subjects import SubjectServices
 from typing import List
@@ -20,6 +21,26 @@ router = APIRouter()
 def get_departments(session: SessionDep, query: BaseQueryParams = Depends()):
     departments, total = SubjectServices.get_all(session=session, query=query)
     return SubjectListResponse(total=total, data=departments)
+
+
+# =========================== get dropdown subjects ===========================
+@router.get("/dropdown", response_model=List[SubjectDropdownResponse])
+def get_subjects_dropdown(
+    session: SessionDep, query: BaseQueryParams = Depends()
+) -> List[SubjectDropdownResponse]:
+    return SubjectServices.get_dropdown(session=session, query=query)
+
+
+# =========================== get dropdown subjects by ids ===========================
+@router.post("/dropdown-by-ids", response_model=List[SubjectDropdownResponse])
+def get_subjects_dropdown_by_ids(
+    session: SessionDep, payload: IdsRequest, request: Request
+) -> List[SubjectDropdownResponse]:
+    return SubjectServices.get_dropdown_by_ids(
+        session=session,
+        ids=payload.ids,
+        request=request,
+    )
 
 # =========================== get subject by id ===========================
 @router.get("/{id}", response_model=SubjectPublic)

@@ -1,8 +1,11 @@
 import uuid
 
 from fastapi import APIRouter, Depends, Request
+from typing import List
 from app.api.deps import SessionDep
+from app.models.schemas.common.query import IdsRequest
 from app.models.schemas.majors.major_schemas import (
+    MajorDropDownResponse,
     MajorListResponse,
     MajorPublic,
     MajorCreate,
@@ -19,6 +22,26 @@ router = APIRouter()
 def get_majors(session: SessionDep, query: MajorQueryParams = Depends()):
     majors, total = MajorServices.get_all(session=session, query=query)
     return MajorListResponse(total=total, data=majors)
+
+
+# =========================== get dropdown majors ===========================
+@router.get("/dropdown", response_model=List[MajorDropDownResponse])
+def get_majors_dropdown(
+    session: SessionDep, query: MajorQueryParams = Depends()
+) -> List[MajorDropDownResponse]:
+    return MajorServices.get_dropdown(session=session, query=query)
+
+
+# =========================== get dropdown majors by ids ===========================
+@router.post("/dropdown-by-ids", response_model=List[MajorDropDownResponse])
+def get_majors_dropdown_by_ids(
+    session: SessionDep, payload: IdsRequest, request: Request
+) -> List[MajorDropDownResponse]:
+    return MajorServices.get_dropdown_by_ids(
+        session=session,
+        ids=payload.ids,
+        request=request,
+    )
 
 
 # =========================== get major by id ===========================

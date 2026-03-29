@@ -2,6 +2,7 @@ from typing import Optional
 from pydantic import Field
 from sqlmodel import SQLModel
 from datetime import date
+from uuid import UUID
 
 class BaseQueryParams(SQLModel):
     skip: int = Field(0, ge=0)
@@ -12,3 +13,7 @@ class BaseQueryParams(SQLModel):
 class DateRange(SQLModel):
     start_date: Optional[date] = Field(None)
     end_date: Optional[date] = Field(None)
+
+
+class IdsRequest(SQLModel):
+    ids: list[UUID]

@@ -86,6 +86,18 @@ class SpecializationServices:
         return [SpecializationDropdownResponse.model_validate(t) for t in results]
 
     @staticmethod
+    def get_dropdown_by_ids(
+        *, session: Session, ids: List[uuid.UUID], request: Request
+    ) -> List[SpecializationDropdownResponse]:
+        if not ids:
+            return []
+
+        statement = select(Specializations).where(Specializations.id.in_(ids))
+        results = session.exec(statement).all()
+
+        return [SpecializationDropdownResponse.model_validate(t) for t in results]
+
+    @staticmethod
     def get_by_id(
         *, session: Session, specialization_id: uuid.UUID, request: Request
     ) -> SpecializationPublic:

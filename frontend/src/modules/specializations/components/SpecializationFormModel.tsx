@@ -1,5 +1,5 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import React, { useMemo, useState, useEffect } from "react";
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -11,11 +11,13 @@ import type { ISpecializations } from "../types";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
-import { useGetDepartment } from "../../department/apis/getDepartments";
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import { useCreateSpecialization } from "../apis/addSpecialization";
 import { useEditSpecialization } from "../apis/editSpecialization";
-import { useGetMajor } from "../../majors/apis/getMajors";
+import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
+import { useMajorsDropDown } from "../../majors/apis/getMajorsDropDown";
+import { useMajorsDropDownByIds } from "../../majors/apis/getMajorsDropDownByIds";
+import type { IMajorsDropDown } from "../../majors/types";
 
 interface SpecializationsFormProps {
     open: boolean;
@@ -36,7 +38,7 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
     const [isChanged, setIsChanged] = useState(false);
     const [pendingPayload, setPendingPayload] = useState<ISpecializations | null>(null);
-    const [searchDepartMent, setSearchDepartMent] = useState("");
+    const [searchMajor, setSearchMajor] = useState("");
 
     const currentValues: ISpecializations = {
         specialization_code: specializationCode.trim(),
@@ -48,16 +50,25 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
         ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
     };
 
-    const Params = {
-        limit: 5,
+    const majorParams = {
+        limit: 10,
         skip: 0,
-        search: searchDepartMent || undefined
+        status: STATUS.ACTIVE,
+        search: searchMajor || undefined
     };
 
-    const { data: major, isLoading: isLoadingMajor, error: errorMajor } = useGetMajor(Params);
+    const { data: majorOptions = [] } = useMajorsDropDown(majorParams);
+    const { data: selectedMajorOptions = [] } = useMajorsDropDownByIds(
+        majorId ? { ids: [majorId] } : { ids: [] }
+    );
     const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({mode, isChanged, onClose});
     const { mutateAsync: createSpecialization } = useCreateSpecialization({});
     const { mutateAsync: editSpecialization } = useEditSpecialization({});
+
+    const autocompleteMajorOptions = useMemo(() => {
+        const merged = [...selectedMajorOptions, ...majorOptions];
+        return Array.from(new Map(merged.map((item) => [item.id, item])).values());
+    }, [selectedMajorOptions, majorOptions]);
 
     useEffect(() => {
         if (mode === "edit" && initialValues) {
@@ -177,21 +188,15 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                 </LocalizationProvider>
 
                 <LabelPrimary value="Ngành" required />
-                <Select
+                <MainAutocomplete
+                    options={autocompleteMajorOptions}
                     value={majorId}
-                    onChange={(e) => setMajorId(e.target.value)}
-                    fullWidth
-                    id="outlined-select"
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                    MenuProps={{
-                        disableScrollLock: true,   
-                    }}
-                >
-                    {(major?.data ?? []).map((row) => (
-                        <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
-                    ))}
-                </Select>
+                    onChange={setMajorId}
+                    onSearchChange={setSearchMajor}
+                    getOptionLabel={(option) => `${option.major_name} (${option.major_code})`}
+                    getOptionId={(option) => option.id.toString()}
+                    placeholder="Chọn ngành"
+                />
 
                 <LabelPrimary value="Mô tả" />
                 <TextField

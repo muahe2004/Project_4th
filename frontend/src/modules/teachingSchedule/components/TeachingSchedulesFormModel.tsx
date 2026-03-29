@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogActions,
@@ -26,9 +26,13 @@ import {
 } from "../../../utils/validation/validations";
 
 import { useClassesDropDown } from "../../classes/apis/getClassDropDown";
+import { useClassesDropDownByIds } from "../../classes/apis/getClassDropDownByIds";
 import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
+import { useTeacherDropdownByIds } from "../../teachers/apis/getTeacherDropDownByIds";
 import { useRoomDropDown } from "../apis/getRoomDropDown";
+import { useRoomDropDownByIds } from "../apis/getRoomDropDownByIds";
 import { useSubjectDropDown } from "../apis/getSubjectDropDown";
+import { useSubjectDropDownByIds } from "../apis/getSubjectDropDownByIds";
 import { useCreateTeachingSchedule } from "../apis/addTeachingSchedule";
 import { useUpdateTeachingSchedule } from "../apis/updateTeachingSchedule";
 import type {
@@ -103,27 +107,51 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
     skip: (classPage - 1) * 5,
     search: searchClass || undefined,
   });
+  const { data: selectedClasses = [] } = useClassesDropDownByIds(
+    formValues.classId ? { ids: [formValues.classId] } : { ids: [] }
+  );
 
   const { data: teachers = [] } = useTeacherDropdown({
     limit: 5,
     skip: (teacherPage - 1) * 5,
     search: searchTeacher || undefined,
   });
+  const { data: selectedTeachers = [] } = useTeacherDropdownByIds(
+    formValues.teacherId ? { ids: [formValues.teacherId] } : { ids: [] }
+  );
 
   const { data: rooms = [] } = useRoomDropDown({
     limit: 5,
     skip: (roomPage - 1) * 5,
     search: searchRoom || undefined,
   });
+  const { data: selectedRooms = [] } = useRoomDropDownByIds(
+    formValues.roomId ? { ids: [formValues.roomId] } : { ids: [] }
+  );
 
-  const { data: subjectResponse } = useSubjectDropDown({
+  const { data: subjects = [] } = useSubjectDropDown({
     limit: 5,
     skip: (subjectPage - 1) * 5,
     search: searchSubject || undefined,
   });
-  const subjects = subjectResponse?.data ?? [];
-  const selectedRoomOption = rooms.find(
-    (item) => item.id.toString() === formValues.roomId
+  const { data: selectedSubjects = [] } = useSubjectDropDownByIds(
+    formValues.subjectId ? { ids: [formValues.subjectId] } : { ids: [] }
+  );
+  const classOptions = useMemo(
+    () => Array.from(new Map([...selectedClasses, ...classes].map((item) => [item.id, item])).values()),
+    [selectedClasses, classes]
+  );
+  const teacherOptions = useMemo(
+    () => Array.from(new Map([...selectedTeachers, ...teachers].map((item) => [item.id, item])).values()),
+    [selectedTeachers, teachers]
+  );
+  const roomOptions = useMemo(
+    () => Array.from(new Map([...selectedRooms, ...rooms].map((item) => [item.id, item])).values()),
+    [selectedRooms, rooms]
+  );
+  const subjectOptions = useMemo(
+    () => Array.from(new Map([...selectedSubjects, ...subjects].map((item) => [item.id, item])).values()),
+    [selectedSubjects, subjects]
   );
 
   const { mutateAsync: createTeachingSchedule } = useCreateTeachingSchedule({});
@@ -386,7 +414,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           <Grid size={6}>
             <LabelPrimary value="Lớp" required />
             <MainAutocomplete
-              options={classes}
+              options={classOptions}
               value={
                 formValues.classId
                   ? {
@@ -397,7 +425,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
                   : null
               }
               onChange={(selectedId) => {
-                const selected = classes.find(
+                const selected = classOptions.find(
                   (item) => item.id.toString() === selectedId
                 );
                 setFormValues((prev) => ({
@@ -423,7 +451,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           <Grid size={6}>
             <LabelPrimary value="Giảng viên" />
             <MainAutocomplete
-              options={teachers}
+              options={teacherOptions}
               value={
                 formValues.teacherId
                   ? {
@@ -433,7 +461,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
                   : null
               }
               onChange={(selectedId) => {
-                const selected = teachers.find(
+                const selected = teacherOptions.find(
                   (item) => item.id.toString() === selectedId
                 );
                 setFormValues((prev) => ({
@@ -453,7 +481,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           <Grid size={6}>
             <LabelPrimary value="Môn học" required />
             <MainAutocomplete
-              options={subjects}
+              options={subjectOptions}
               value={
                 formValues.subjectId
                   ? {
@@ -464,7 +492,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
                   : null
               }
               onChange={(selectedId) => {
-                const selected = subjects.find(
+                const selected = subjectOptions.find(
                   (item) => item.id.toString() === selectedId
                 );
                 setFormValues((prev) => ({
@@ -488,19 +516,19 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           <Grid size={6}>
             <LabelPrimary value="Phòng học" />
             <MainAutocomplete
-              options={rooms}
+              options={roomOptions}
               value={
                 formValues.roomId
                   ? {
                       id: formValues.roomId,
                       room_number: Number(formValues.roomNumber),
                       type: formValues.roomType,
-                      seats: selectedRoomOption?.seats ?? 0,
+                      seats: roomOptions.find((item) => item.id.toString() === formValues.roomId)?.seats ?? 0,
                     }
                   : null
               }
               onChange={(selectedId) => {
-                const selected = rooms.find(
+                const selected = roomOptions.find(
                   (item) => item.id.toString() === selectedId
                 );
                 setFormValues((prev) => ({

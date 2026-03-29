@@ -50,3 +50,9 @@ class SubjectDeleteResponse(SQLModel):
 class SubjectListResponse(SQLModel):
     total: int
     data: List[SubjectPublic]
+
+
+class SubjectDropdownResponse(SQLModel):
+    id: UUID_TYPE
+    subject_code: str
+    name: str

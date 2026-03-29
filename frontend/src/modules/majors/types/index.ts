@@ -9,3 +9,9 @@ export interface IMajors {
   updated_at?: string;
   department_id: string;
 }
+
+export interface IMajorsDropDown {
+  id: string;
+  major_code: string;
+  major_name: string;
+}

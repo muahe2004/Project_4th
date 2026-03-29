@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -18,7 +18,9 @@ import { useConfirmCloseForm } from "../../../hooks/useConfirm";
 import { useCreateClass } from "../apis/addClass";
 import { useEditClass } from "../apis/editClass";
 import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
+import { useTeacherDropdownByIds } from "../../teachers/apis/getTeacherDropDownByIds";
 import { useSpecializationsDropDown } from "../../specializations/apis/getSpecializationDropDown";
+import { useSpecializationsDropDownByIds } from "../../specializations/apis/getSpecializationDropDownByIds";
 
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import {
@@ -83,14 +85,26 @@ const ClassForm: React.FC<ClassFormProps> = ({
         skip: (teacherPage - 1) * 5,
         search: searchTeacher || undefined,
     });
+    const { data: selectedTeacherOptions = [] } = useTeacherDropdownByIds(
+        formValues.teacherId ? { ids: [formValues.teacherId] } : { ids: [] }
+    );
 
     const { data: specializations = [] } = useSpecializationsDropDown({
         limit: 5,
         skip: (specializationPage - 1) * 5,
         search: searchSpecialization || undefined,
     });
-    const teacherOptions = Array.isArray(teacher) ? teacher : [];
-    const specializationOptions = Array.isArray(specializations) ? specializations : [];
+    const { data: selectedSpecializationOptions = [] } = useSpecializationsDropDownByIds(
+        formValues.specializationId ? { ids: [formValues.specializationId] } : { ids: [] }
+    );
+    const teacherOptions = useMemo(
+        () => Array.from(new Map([...selectedTeacherOptions, ...teacher].map((item) => [item.id, item])).values()),
+        [selectedTeacherOptions, teacher]
+    );
+    const specializationOptions = useMemo(
+        () => Array.from(new Map([...selectedSpecializationOptions, ...specializations].map((item) => [item.id, item])).values()),
+        [selectedSpecializationOptions, specializations]
+    );
 
     const { openConfirm, setOpenConfirm, handleCloseClick } =
         useConfirmCloseForm({ mode, isChanged, onClose });

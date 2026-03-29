@@ -357,6 +357,17 @@ class TeacherServices:
         return [TeacherDropdownResponse.model_validate(t) for t in results]
 
     @staticmethod
+    def get_dropdown_by_ids(
+        *, session: Session, ids: List[uuid.UUID], request: Request
+    ) -> List[TeacherDropdownResponse]:
+        if not ids:
+            return []
+
+        statement = select(Teachers).where(Teachers.id.in_(ids))
+        results = session.exec(statement).all()
+        return [TeacherDropdownResponse.model_validate(t) for t in results]
+
+    @staticmethod
     def get_by_id(
         *, session: Session, teacher_id: uuid.UUID, request: Request
     ) -> TeacherPublic:

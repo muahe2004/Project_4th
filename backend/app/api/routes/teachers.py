@@ -2,6 +2,7 @@ import uuid
 
 from app.services.teachers import TeacherServices
 from app.models.schemas.common.query import BaseQueryParams, DateRange
+from app.models.schemas.common.query import IdsRequest
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.teachers.teacher_schemas import (
@@ -74,6 +75,18 @@ def get_teachers_dropdown(
     session: SessionDep, query: TeacherSearchParams = Depends()
 ) -> List[TeacherDropdownResponse]:
     return TeacherServices.get_dropdown(session=session, query=query)
+
+
+# =========================== GET DROPDOWN TEACHERS BY IDS ===========================
+@router.post("/dropdown-by-ids", response_model=List[TeacherDropdownResponse])
+def get_teachers_dropdown_by_ids(
+    session: SessionDep, payload: IdsRequest, request: Request
+) -> List[TeacherDropdownResponse]:
+    return TeacherServices.get_dropdown_by_ids(
+        session=session,
+        ids=payload.ids,
+        request=request,
+    )
 
 
 # =========================== get teacher by id ===========================

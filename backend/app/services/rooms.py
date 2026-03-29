@@ -247,6 +247,17 @@ class RoomServices:
         return [RoomDropDownResponse.model_validate(room) for room in results]
 
     @staticmethod
+    def get_dropdown_by_ids(
+        *, session: Session, ids: List[uuid.UUID], request: Request
+    ) -> List[RoomDropDownResponse]:
+        if not ids:
+            return []
+
+        statement = select(Rooms).where(Rooms.id.in_(ids))
+        results = session.exec(statement).all()
+        return [RoomDropDownResponse.model_validate(room) for room in results]
+
+    @staticmethod
     def get_by_id(
         *, session: Session, room_id: uuid.UUID, request: Request
     ) -> RoomsPublic:

@@ -53,5 +53,11 @@ class MajorDeleteResponse(SQLModel):
     id: UUID
 
 
+class MajorDropDownResponse(SQLModel):
+    id: UUID
+    major_code: str
+    major_name: str
+
+
 class MajorQueryParams(BaseQueryParams):
     department_id: Optional[UUID] = Field(None)

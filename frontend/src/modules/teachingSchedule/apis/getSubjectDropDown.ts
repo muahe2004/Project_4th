@@ -3,11 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { URL_API_SUBJECT } from "../../../constants/config";
 import type { ISubjectDropDown } from "../types";
 
-export interface SubjectDropDownListResponse {
-  total: number;
-  data: ISubjectDropDown[];
-}
-
 export interface SubjectDropDownParams {
   limit: number;
   skip: number;
@@ -17,8 +12,8 @@ export interface SubjectDropDownParams {
 
 const getSubjectDropDown = async (
   params: SubjectDropDownParams
-): Promise<SubjectDropDownListResponse> => {
-  const res = await axios.get<SubjectDropDownListResponse>(`${URL_API_SUBJECT}`, {
+): Promise<ISubjectDropDown[]> => {
+  const res = await axios.get<ISubjectDropDown[]>(`${URL_API_SUBJECT}/dropdown`, {
     params,
     withCredentials: true,
   });
@@ -26,7 +21,7 @@ const getSubjectDropDown = async (
 };
 
 export const useSubjectDropDown = (params: SubjectDropDownParams) => {
-  return useQuery<SubjectDropDownListResponse, AxiosError<{ detail?: string }>>({
+  return useQuery<ISubjectDropDown[], AxiosError<{ detail?: string }>>({
     queryKey: ["subject-dropdown", params],
     queryFn: () => getSubjectDropDown(params),
   });

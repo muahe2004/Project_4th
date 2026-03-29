@@ -53,6 +53,60 @@ class DepartmentServices:
         return departments, total
 
     @staticmethod
+    def get_dropdown(
+        *, session: Session, query: BaseQueryParams
+    ) -> List[DepartmentDropDownResponse]:
+        statement = select(Departments)
+
+        conditions = []
+        if query.status:
+            conditions.append(Departments.status == query.status)
+
+        if query.search:
+            conditions.append(
+                or_(
+                    Departments.department_code.ilike(f"%{query.search}%"),
+                    Departments.name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        statement = statement.order_by(desc(Departments.created_at))
+        statement = statement.offset(query.skip).limit(query.limit)
+
+        departments = session.exec(statement).all()
+
+        return [
+            DepartmentDropDownResponse(
+                id=department.id,
+                department_code=department.department_code,
+                department_name=department.name,
+            )
+            for department in departments
+        ]
+
+    @staticmethod
+    def get_dropdown_by_ids(
+        *, session: Session, ids: List[uuid.UUID], request: Request
+    ) -> List[DepartmentDropDownResponse]:
+        if not ids:
+            return []
+
+        statement = select(Departments).where(Departments.id.in_(ids))
+        departments = session.exec(statement).all()
+
+        return [
+            DepartmentDropDownResponse(
+                id=department.id,
+                department_code=department.department_code,
+                department_name=department.name,
+            )
+            for department in departments
+        ]
+
+    @staticmethod
     def get_by_id(
         *, session: Session, department_id: uuid.UUID, request: Request
     ) -> DepartmentPublic:

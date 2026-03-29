@@ -1,6 +1,7 @@
 import uuid
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
+from app.models.schemas.common.query import BaseQueryParams, DateRange, IdsRequest
 from app.models.schemas.rooms.room_schemas import (
     RoomDropDownResponse,
     RoomListResponse,
@@ -13,7 +14,6 @@ from app.models.schemas.rooms.room_schemas import (
 )
 from app.services.rooms import RoomServices
 from typing import List
-from app.models.schemas.common.query import BaseQueryParams, DateRange
 
 router = APIRouter()
 
@@ -31,6 +31,18 @@ def get_rooms_dropdown(
     session: SessionDep, query: RoomSearchParams = Depends()
 ) -> List[RoomDropDownResponse]:
     return RoomServices.get_dropdown(session=session, query=query)
+
+
+# =========================== get dropdown rooms by ids ===========================
+@router.post("/dropdown-by-ids", response_model=List[RoomDropDownResponse])
+def get_rooms_dropdown_by_ids(
+    session: SessionDep, payload: IdsRequest, request: Request
+) -> List[RoomDropDownResponse]:
+    return RoomServices.get_dropdown_by_ids(
+        session=session,
+        ids=payload.ids,
+        request=request,
+    )
 
 # ===========================  ===========================
 @router.get(

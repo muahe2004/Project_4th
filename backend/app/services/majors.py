@@ -7,6 +7,7 @@ from typing import List, Tuple
 
 from app.models.models import Majors
 from app.models.schemas.majors.major_schemas import (
+    MajorDropDownResponse,
     MajorPublic,
     MajorCreate,
     MajorQueryParams,
@@ -53,6 +54,63 @@ class MajorServices:
         majors = session.exec(statement).all()
 
         return majors, total
+
+    @staticmethod
+    def get_dropdown(
+        *, session: Session, query: MajorQueryParams
+    ) -> List[MajorDropDownResponse]:
+        statement = select(Majors)
+
+        conditions = []
+        if query.status:
+            conditions.append(Majors.status == query.status)
+
+        if query.department_id:
+            conditions.append(Majors.department_id == query.department_id)
+
+        if query.search:
+            conditions.append(
+                or_(
+                    Majors.major_code.ilike(f"%{query.search}%"),
+                    Majors.name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        statement = statement.order_by(desc(Majors.created_at))
+        statement = statement.offset(query.skip).limit(query.limit)
+
+        results = session.exec(statement).all()
+
+        return [
+            MajorDropDownResponse(
+                id=major.id,
+                major_code=major.major_code,
+                major_name=major.name,
+            )
+            for major in results
+        ]
+
+    @staticmethod
+    def get_dropdown_by_ids(
+        *, session: Session, ids: List[uuid.UUID], request: Request
+    ) -> List[MajorDropDownResponse]:
+        if not ids:
+            return []
+
+        statement = select(Majors).where(Majors.id.in_(ids))
+        results = session.exec(statement).all()
+
+        return [
+            MajorDropDownResponse(
+                id=major.id,
+                major_code=major.major_code,
+                major_name=major.name,
+            )
+            for major in results
+        ]
 
     @staticmethod
     def get_by_id(

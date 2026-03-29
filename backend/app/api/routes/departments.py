@@ -2,7 +2,9 @@ import uuid
 
 from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
+from app.models.schemas.common.query import BaseQueryParams, IdsRequest
 from app.models.schemas.departments.department_schemas import (
+    DepartmentDropDownResponse,
     DepartmentListResponse,
     DepartmentPublic,
     DepartmentCreate,
@@ -11,7 +13,7 @@ from app.models.schemas.departments.department_schemas import (
 )
 from app.services.departments import DepartmentServices
 
-from app.models.schemas.common.query import BaseQueryParams
+from typing import List
 
 router = APIRouter()
 
@@ -21,6 +23,26 @@ router = APIRouter()
 def get_departments(session: SessionDep, query: BaseQueryParams = Depends()):
     departments, total = DepartmentServices.get_all(session=session, query=query)
     return DepartmentListResponse(total=total, data=departments)
+
+
+# =========================== get dropdown departments ===========================
+@router.get("/dropdown", response_model=List[DepartmentDropDownResponse])
+def get_departments_dropdown(
+    session: SessionDep, query: BaseQueryParams = Depends()
+) -> List[DepartmentDropDownResponse]:
+    return DepartmentServices.get_dropdown(session=session, query=query)
+
+
+# =========================== get dropdown departments by ids ===========================
+@router.post("/dropdown-by-ids", response_model=List[DepartmentDropDownResponse])
+def get_departments_dropdown_by_ids(
+    session: SessionDep, payload: IdsRequest, request: Request
+) -> List[DepartmentDropDownResponse]:
+    return DepartmentServices.get_dropdown_by_ids(
+        session=session,
+        ids=payload.ids,
+        request=request,
+    )
 
 
 # =========================== get department by id ===========================

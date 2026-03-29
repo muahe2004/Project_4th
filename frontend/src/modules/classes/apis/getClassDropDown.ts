@@ -6,7 +6,8 @@ import type { IClassesDropDown } from '../types';
 export interface Params {
     limit: number;
     skip: number;
-    department_id?: string;
+    specialization_id?: string;
+    teacher_id?: string;
     search?: string;
 }
 

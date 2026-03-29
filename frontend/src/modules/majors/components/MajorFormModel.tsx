@@ -1,5 +1,5 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import React, { useMemo, useState, useEffect } from "react";
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -11,10 +11,13 @@ import type { IMajors } from "../types";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
-import { useGetDepartment } from "../../department/apis/getDepartments";
+import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
+import { useDepartmentsDropDown } from "../../department/apis/getDepartmentsDropDown";
+import { useDepartmentsDropDownByIds } from "../../department/apis/getDepartmentsDropDownByIds";
 import { useCreateMajor } from "../apis/addMajor";
 import { useEditMajor } from "../apis/editMajor";
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
+import type { IDepartmentsDropDown } from "../../department/types";
 
 interface MajorFormProps {
     open: boolean;
@@ -35,7 +38,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
     const [isChanged, setIsChanged] = useState(false);
     const [pendingPayload, setPendingPayload] = useState<IMajors | null>(null);
-    const [searchDepartMent, setSearchDepartMent] = useState("");
+    const [searchDepartment, setSearchDepartment] = useState("");
 
     const currentValues: IMajors = {
         major_code: majorCode.trim(),
@@ -47,16 +50,25 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
         ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
     };
 
-    const Params = {
-        limit: 5,
+    const departmentParams = {
+        limit: 10,
         skip: 0,
-        search: searchDepartMent || undefined
+        status: STATUS.ACTIVE,
+        search: searchDepartment || undefined
     };
 
-    const { data: department, isLoading: isLoadingDeparment, error: errorDepatment } = useGetDepartment(Params);
+    const { data: departmentOptions = [] } = useDepartmentsDropDown(departmentParams);
+    const { data: selectedDepartmentOptions = [] } = useDepartmentsDropDownByIds(
+        departmentId ? { ids: [departmentId] } : { ids: [] }
+    );
     const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({mode, isChanged, onClose});
     const { mutateAsync: createMajor } = useCreateMajor({});
     const { mutateAsync: editMajor } = useEditMajor({});
+
+    const autocompleteDepartmentOptions = useMemo(() => {
+        const merged = [...selectedDepartmentOptions, ...departmentOptions];
+        return Array.from(new Map(merged.map((item) => [item.id, item])).values());
+    }, [selectedDepartmentOptions, departmentOptions]);
 
     useEffect(() => {
         if (mode === "edit" && initialValues) {
@@ -144,7 +156,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
     return (
         <Dialog open={open} onClose={handleCloseClick} className="primary-dialog department-form" maxWidth="sm" fullWidth>
             <DialogTitle className="primary-dialog-title">
-                {mode === "add" ? "ADD DEPARTMENT" : "Sửa ngành"}
+                {mode === "add" ? "ADD MAJOR" : "Sửa ngành"}
             </DialogTitle>
             <DialogContent className="primary-dialog-content">
                 <LabelPrimary value="Mã ngành" required />
@@ -176,21 +188,15 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                 </LocalizationProvider>
 
                 <LabelPrimary value="Khoa" required />
-                <Select
+                <MainAutocomplete
+                    options={autocompleteDepartmentOptions}
                     value={departmentId}
-                    onChange={(e) => setDepartmentId(e.target.value)}
-                    fullWidth
-                    id="outlined-select"
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                    MenuProps={{
-                        disableScrollLock: true,   
-                    }}
-                >
-                    {(department?.data ?? []).map((row) => (
-                        <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
-                    ))}
-                </Select>
+                    onChange={setDepartmentId}
+                    onSearchChange={setSearchDepartment}
+                    getOptionLabel={(option) => `${option.department_name} (${option.department_code})`}
+                    getOptionId={(option) => option.id.toString()}
+                    placeholder="Chọn khoa"
+                />
 
                 <LabelPrimary value="Mô tả" />
                 <TextField

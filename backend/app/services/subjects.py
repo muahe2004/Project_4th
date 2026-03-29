@@ -11,6 +11,7 @@ from app.models.schemas.subjects.subject_schemas import (
     SubjectCreate,
     SubjectUpdate,
     SubjectDeleteResponse,
+    SubjectDropdownResponse,
 )
 from app.enums.status import StatusEnum
 from app.models.models import LearningSchedules
@@ -49,6 +50,60 @@ class SubjectServices:
         subjects = session.exec(statement).all()
 
         return subjects, total
+
+    @staticmethod
+    def get_dropdown(
+        *, session: Session, query: BaseQueryParams
+    ) -> List[SubjectDropdownResponse]:
+        statement = select(Subjects)
+
+        conditions = []
+        if query.status:
+            conditions.append(Subjects.status == query.status)
+
+        if query.search:
+            conditions.append(
+                or_(
+                    Subjects.subject_code.ilike(f"%{query.search}%"),
+                    Subjects.name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        statement = statement.order_by(desc(Subjects.created_at))
+        statement = statement.offset(query.skip).limit(query.limit)
+
+        subjects = session.exec(statement).all()
+
+        return [
+            SubjectDropdownResponse(
+                id=subject.id,
+                subject_code=subject.subject_code,
+                name=subject.name,
+            )
+            for subject in subjects
+        ]
+
+    @staticmethod
+    def get_dropdown_by_ids(
+        *, session: Session, ids: List[uuid.UUID], request: Request
+    ) -> List[SubjectDropdownResponse]:
+        if not ids:
+            return []
+
+        statement = select(Subjects).where(Subjects.id.in_(ids))
+        subjects = session.exec(statement).all()
+
+        return [
+            SubjectDropdownResponse(
+                id=subject.id,
+                subject_code=subject.subject_code,
+                name=subject.name,
+            )
+            for subject in subjects
+        ]
 
     @staticmethod
     def get_by_id(

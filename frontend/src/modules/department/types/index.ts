@@ -8,3 +8,9 @@ export interface IDepartments {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface IDepartmentsDropDown {
+  id: string;
+  department_code: string;
+  department_name: string;
+}
