@@ -1,30 +1,22 @@
+from sqlmodel import Field
 import uuid
 from app.models.schemas.academic_terms.academic_term_schemas import AcademicTermBase
-from sqlmodel import Field
+from app.models.schemas.training_program.training_program_schemas import TrainingProgramBase
+from app.models.schemas.training_program.training_program_subject_schemas import TrainingProgramSubjectBase
 from app.models.schemas.departments.department_schemas import DepartmentBase
 from app.models.schemas.majors.major_schemas import MajorBase
 from app.models.schemas.subjects.subject_schemas import SubjectBase
-from app.models.schemas.learning_schedules.learning_schedule_schemas import (
-    LearningScheduleBase,
-)
-from app.models.schemas.examination_schedules.examination_schedule_schemas import (
-    ExaminationScheduleBase,
-)
-from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
-    TeachingScheduleBase,
-)
+from app.models.schemas.learning_schedules.learning_schedule_schemas import (LearningScheduleBase,)
+from app.models.schemas.examination_schedules.examination_schedule_schemas import (ExaminationScheduleBase)
+from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (TeachingScheduleBase)
 from app.models.schemas.classes.class_schemas import ClassBase
 from app.models.schemas.teachers.teacher_schemas import TeacherBase
 from app.models.schemas.students.student_schemas import StudentBase
 from app.models.schemas.specializations.specialization_schemas import SpecializationBase
 from app.models.schemas.rooms.room_schemas import RoomBase
 from app.models.schemas.tuition_fees.tuition_fee_schemas import TuitionFeeBase
-from app.models.schemas.user_informations.user_information_schemas import (
-    UserInformationBase,
-)
-from app.models.schemas.score_components.score_component_schemas import (
-    ScoreComponentBase,
-)
+from app.models.schemas.user_informations.user_information_schemas import (UserInformationBase)
+from app.models.schemas.score_components.score_component_schemas import (ScoreComponentBase)
 from app.models.schemas.scores.score_schemas import ScoresBase
 from app.models.schemas.relatives.relative_schemas import RelativeBase
 from app.models.schemas.classes.student_class_schemas import StudentClassBase
@@ -79,6 +71,13 @@ class Specializations(SpecializationBase, table=True):
     __tablename__ = "specializations"
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
+class TrainingProgram(TrainingProgramBase, table=True):
+    __tablename__ = "training_program"
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+class TrainingProgramSubject(TrainingProgramSubjectBase, table=True):
+    __tablename__ = "training_program_subject"
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
 class Rooms(RoomBase, table=True):
     __tablename__ = "rooms"
