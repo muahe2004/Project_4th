@@ -8,7 +8,14 @@ from sqlalchemy.orm import aliased
 from sqlalchemy import String, cast, func
 
 from app.enums.status import StatusEnum
-from app.models.models import ExaminationSchedules, Classes, Subjects, Rooms, Teachers
+from app.models.models import (
+    ExaminationSchedules,
+    Classes,
+    Subjects,
+    Rooms,
+    Teachers,
+    StudentClass,
+)
 from app.models.schemas.examination_schedules.examination_schedule_schemas import (
     ExaminationSchedulePublic,
     ExaminationScheduleCreate,
@@ -107,6 +114,21 @@ class ExaminationScheduleServices:
     ):
         teacher_one = aliased(Teachers)
         teacher_two = aliased(Teachers)
+        student_class_subquery = None
+
+        if query.student_id:
+            student_class_subquery = (
+                select(StudentClass.class_id)
+                .where(
+                    StudentClass.student_id == query.student_id,
+                    (
+                        (StudentClass.status == StatusEnum.ACTIVE)
+                        | (StudentClass.status.is_(None))
+                    ),
+                )
+                .distinct()
+                .subquery()
+            )
 
         statement = (
             select(
@@ -142,6 +164,12 @@ class ExaminationScheduleServices:
             .outerjoin(teacher_one, teacher_one.id == ExaminationSchedules.invigilator_1_id)
             .outerjoin(teacher_two, teacher_two.id == ExaminationSchedules.invigilator_2_id)
         )
+
+        if student_class_subquery is not None:
+            statement = statement.join(
+                student_class_subquery,
+                student_class_subquery.c.class_id == ExaminationSchedules.class_id,
+            )
 
         conditions = []
 
@@ -190,6 +218,20 @@ class ExaminationScheduleServices:
         statement, conditions = ExaminationScheduleServices._build_query_statement(
             query=query, date_range=date_range
         )
+        student_class_subquery = None
+        if query.student_id:
+            student_class_subquery = (
+                select(StudentClass.class_id)
+                .where(
+                    StudentClass.student_id == query.student_id,
+                    (
+                        (StudentClass.status == StatusEnum.ACTIVE)
+                        | (StudentClass.status.is_(None))
+                    ),
+                )
+                .distinct()
+                .subquery()
+            )
 
         count_stmt = (
             select(func.count())
@@ -198,6 +240,11 @@ class ExaminationScheduleServices:
             .join(Subjects, Subjects.id == ExaminationSchedules.subject_id)
             .outerjoin(Rooms, Rooms.id == ExaminationSchedules.room_id)
         )
+        if student_class_subquery is not None:
+            count_stmt = count_stmt.join(
+                student_class_subquery,
+                student_class_subquery.c.class_id == ExaminationSchedules.class_id,
+            )
         if conditions:
             count_stmt = count_stmt.where(*conditions)
         total = session.exec(count_stmt).one()

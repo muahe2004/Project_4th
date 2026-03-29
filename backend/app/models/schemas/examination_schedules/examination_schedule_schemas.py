@@ -83,3 +83,4 @@ class ExaminationScheduleQueryParams(BaseQueryParams):
     subject_id: Optional[UUID] = Field(None)
     invigilator_id: Optional[UUID] = Field(None)
     class_id: Optional[UUID] = Field(None)
+    student_id: Optional[UUID] = Field(None)
