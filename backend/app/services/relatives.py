@@ -4,6 +4,7 @@ from sqlmodel import Session, select, delete
 from starlette import status
 from typing import List
 
+from app.enums.roles import RoleEnum
 from app.models.models import Relatives
 from app.models.schemas.relatives.relative_schemas import (
     RelativePublic,
@@ -19,6 +20,44 @@ class RelativeServices:
     def get_all(*, session: Session) -> List[RelativePublic]:
         relatives = session.exec(select(Relatives)).all()
         return relatives
+
+    @staticmethod
+    def get_current_user_relatives(
+        *, session: Session, current_user: dict
+    ) -> List[RelativePublic]:
+        user_id = current_user.get("id")
+        role = current_user.get("role")
+
+        if not user_id or not role:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Unauthorized",
+            )
+
+        try:
+            current_user_id = uuid.UUID(str(user_id))
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Unauthorized",
+            ) from exc
+
+        if role == RoleEnum.TEACHER:
+            relatives = session.exec(
+                select(Relatives).where(Relatives.teacher_id == current_user_id)
+            ).all()
+            return [RelativePublic.model_validate(relative) for relative in relatives]
+
+        if role == RoleEnum.STUDENT:
+            relatives = session.exec(
+                select(Relatives).where(Relatives.student_id == current_user_id)
+            ).all()
+            return [RelativePublic.model_validate(relative) for relative in relatives]
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only teacher or student can access relatives",
+        )
 
     @staticmethod
     def get_by_id(

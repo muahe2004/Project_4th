@@ -1,12 +1,13 @@
 import uuid
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.user_informations.user_information_schemas import (
     UserInformationPublic,
     UserInformationUpdate,
     UserInformationDeleteResponse,
 )
+from app.services.auth import AuthServices
 from app.services.user_information import User_Information_Services
 from typing import List
 
@@ -17,6 +18,17 @@ router = APIRouter()
 @router.get("", response_model=List[UserInformationPublic])
 def get_all_user_information(session: SessionDep) -> List[UserInformationPublic]:
     return User_Information_Services.get_all(session=session)
+
+
+# =========================== get current user information ===========================
+@router.get("/me", response_model=UserInformationPublic)
+def get_current_user_information(
+    session: SessionDep,
+    current_user=Depends(AuthServices.get_current_user),
+) -> UserInformationPublic:
+    return User_Information_Services.get_current_user_information(
+        session=session, current_user=current_user
+    )
 
 
 # =========================== get user information by user id ===========================

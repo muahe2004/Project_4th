@@ -1,6 +1,7 @@
 import uuid
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
+from app.services.auth import AuthServices
 from app.models.schemas.relatives.relative_schemas import (
     RelativePublic,
     RelativeCreate,
@@ -17,6 +18,17 @@ router = APIRouter()
 @router.get("", response_model=List[RelativePublic])
 def get_relatives(session: SessionDep) -> List[RelativePublic]:
     return RelativeServices.get_all(session=session)
+
+
+# =========================== get current user relatives ===========================
+@router.get("/me", response_model=List[RelativePublic])
+def get_current_user_relatives(
+    session: SessionDep,
+    current_user=Depends(AuthServices.get_current_user),
+) -> List[RelativePublic]:
+    return RelativeServices.get_current_user_relatives(
+        session=session, current_user=current_user
+    )
 
 
 # =========================== get relative by id ===========================

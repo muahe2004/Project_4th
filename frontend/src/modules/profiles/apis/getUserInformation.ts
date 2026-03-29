@@ -46,6 +46,18 @@ const getInformationStudent = async (id: string): Promise<UserInformationRespons
     }
 };
 
+const getCurrentUserInformation = async (): Promise<UserInformationResponse> => {
+    try {
+        const res = await axios.get<UserInformationResponse>(`${URL_API_USER_INFORMATION}/me`, { withCredentials: true });
+        return res.data;
+    } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+            throw error;
+        }
+        throw new Error('Unexpected error');
+    }
+};
+
 export const useGetProfileTeacher = (id?: string, enabled: boolean = true) => {
   return useQuery<UserInformationResponse, AxiosError<{ detail?: string }>>({
     queryKey: ["teacher-information", id],
@@ -59,5 +71,13 @@ export const useGetProfileStudent = (id?: string, enabled: boolean = true) => {
         queryKey: ["student-information", id],
         queryFn: () => getInformationStudent(id!),
         enabled: !!id && enabled,
+    });
+};
+
+export const useGetCurrentUserInformation = (enabled: boolean = true) => {
+    return useQuery<UserInformationResponse, AxiosError<{ detail?: string }>>({
+        queryKey: ["current-user-information"],
+        queryFn: () => getCurrentUserInformation(),
+        enabled,
     });
 };

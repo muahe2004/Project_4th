@@ -15,6 +15,9 @@ export const URL_API_STUTDENT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/stude
 // User information
 export const URL_API_USER_INFORMATION = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/user_information`;
 
+// Relatives
+export const URL_API_RELATIVES = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/relatives`;
+
 // Department
 export const URL_API_DEPARTMENT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/departments`;
 
