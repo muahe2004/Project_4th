@@ -15,7 +15,15 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from "../../stores/useAuthStore";
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
-import { homeUrl, profileUrl, signinUrl, gradesUrl, studentLearningSchedules, teacherTeachingSchedules } from "../../routes/urls"
+import {
+  homeUrl,
+  profileUrl,
+  signinUrl,
+  gradesUrl,
+  studentLearningSchedules,
+  teacherTeachingSchedules,
+  courseRegistrationUrl,
+} from "../../routes/urls"
 import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
 import { ROLES } from '../../constants/roles';
@@ -68,7 +76,14 @@ const Header: React.FC = () => {
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.trainingProgram')}</Button>
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.admission')}</Button>
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.scholarship')}</Button>
-          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.register')}</Button>
+          <Button
+            className="header-navbar__item"
+            disableRipple
+            color="inherit"
+            onClick={() => handleNavigate(courseRegistrationUrl)}
+          >
+            {t('header_navbar.register')}
+          </Button>
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.onlineLearning')}</Button>
         </Stack>
 

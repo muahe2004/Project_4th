@@ -7,6 +7,7 @@ export const profileUrl = "/my-profile";
 export const gradesUrl = "/grades";
 export const studentLearningSchedules = "student-learning-schedules"
 export const teacherTeachingSchedules = "teacher-teaching-schedules"
+export const courseRegistrationUrl = "/course-registration"
 
 // ADMIN
 export const layOutAdminUrl = "/admin"
