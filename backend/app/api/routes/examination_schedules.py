@@ -1,30 +1,42 @@
 import uuid
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
+from app.models.schemas.common.query import DateRange
 from app.models.schemas.examination_schedules.examination_schedule_schemas import (
     ExaminationSchedulePublic,
     ExaminationScheduleCreate,
     ExaminationScheduleUpdate,
     ExaminationScheduleDeleteResponse,
+    ExaminationScheduleResponse,
+    ListExaminationScheduleResponse,
+    ExaminationScheduleQueryParams,
 )
 from app.services.examination_schedules import ExaminationScheduleServices
-from typing import List
 
 router = APIRouter()
 
 
 # =========================== get all ===========================
-@router.get("", response_model=List[ExaminationSchedulePublic])
-def get_examination_schedules(session: SessionDep) -> List[ExaminationSchedulePublic]:
-    return ExaminationScheduleServices.get_all(session=session)
+@router.get("", response_model=ListExaminationScheduleResponse)
+def get_examination_schedules(
+    session: SessionDep,
+    query: ExaminationScheduleQueryParams = Depends(),
+    date_range: DateRange = Depends(),
+) -> ListExaminationScheduleResponse:
+    data, total = ExaminationScheduleServices.get_all(
+        session=session,
+        query=query,
+        date_range=date_range,
+    )
+    return ListExaminationScheduleResponse(data=data, total=total)
 
 
 # =========================== get by id ===========================
-@router.get("/{id}", response_model=ExaminationSchedulePublic)
+@router.get("/{id}", response_model=ExaminationScheduleResponse)
 def get_examination_schedules_by_id(
     session: SessionDep, id: uuid.UUID, request: Request
-) -> ExaminationSchedulePublic:
+) -> ExaminationScheduleResponse:
     return ExaminationScheduleServices.get_by_id(
         session=session, examination_schedules_id=id, request=request
     )
