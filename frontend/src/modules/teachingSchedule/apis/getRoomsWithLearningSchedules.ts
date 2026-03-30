@@ -7,6 +7,8 @@ import type { IRoomWithLearningSchedulesResponse } from "../types";
 export interface RoomWithLearningSchedulesParams {
   limit: number;
   skip: number;
+  start_date?: string;
+  end_date?: string;
 }
 
 const getRoomsWithLearningSchedules = async (

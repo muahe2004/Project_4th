@@ -110,6 +110,8 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
   const { data: selectedClasses = [] } = useClassesDropDownByIds(
     formValues.classId ? { ids: [formValues.classId] } : { ids: [] }
   );
+  const safeClasses = Array.isArray(classes) ? classes : [];
+  const safeSelectedClasses = Array.isArray(selectedClasses) ? selectedClasses : [];
 
   const { data: teachers = [] } = useTeacherDropdown({
     limit: 5,
@@ -138,8 +140,8 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
     formValues.subjectId ? { ids: [formValues.subjectId] } : { ids: [] }
   );
   const classOptions = useMemo(
-    () => Array.from(new Map([...selectedClasses, ...classes].map((item) => [item.id, item])).values()),
-    [selectedClasses, classes]
+    () => Array.from(new Map([...safeSelectedClasses, ...safeClasses].map((item) => [item.id, item])).values()),
+    [safeSelectedClasses, safeClasses]
   );
   const teacherOptions = useMemo(
     () => Array.from(new Map([...selectedTeachers, ...teachers].map((item) => [item.id, item])).values()),

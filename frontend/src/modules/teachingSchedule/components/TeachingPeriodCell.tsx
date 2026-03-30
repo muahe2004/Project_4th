@@ -43,7 +43,9 @@ export function TeachingPeriodCell({ period, schedules }: TeachingPeriodCellProp
 
   return (
     <div
-      className={`teaching-room-cell ${hasSchedule ? "teaching-room-cell--busy" : ""}`}
+      className={`teaching-room-cell ${
+        hasSchedule ? "teaching-room-cell--busy" : "teaching-room-cell--empty"
+      }`}
       title={buildTooltip(schedules)}
     >
       <span>{String(period).padStart(2, "0")}</span>

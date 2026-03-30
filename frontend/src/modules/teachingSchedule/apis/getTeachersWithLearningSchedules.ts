@@ -9,6 +9,8 @@ export interface TeacherWithLearningSchedulesParams {
   skip: number;
   status?: string;
   search?: string;
+  start_date?: string;
+  end_date?: string;
 }
 
 const getTeachersWithLearningSchedules = async (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
@@ -7,6 +7,7 @@ import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import { STATUS_OPTIONS } from "../../../constants/status";
 import Loading from "../../../components/Loading/Loading";
+import WeekPicker from "../../../components/WeekPicker/WeekPicker";
 import { useGetTeachingSchedules } from "../apis/getTeachingSchedules";
 import TeachingSchedulesTable from "../components/TeachingSchedulesTable";
 import TeachingScheduleByRoom from "../components/TeachingScheduleByRoom";
@@ -18,12 +19,14 @@ import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useDeleteTeachingSchedule } from "../apis/deleteTeachingSchedules";
 import type { ITeachingScheduleResponse } from "../types";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
+import { getWeekDateRange } from "../../../utils/date/weekRange";
 
 export function TeachingSchedules() {
   const { showSnackbar } = useSnackbar();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [scheduleView, setScheduleView] = useState<"table" | "room" | "teacher" | "class">("table");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [openForm, setOpenForm] = useState(false);
@@ -35,12 +38,14 @@ export function TeachingSchedules() {
   const [deletingTeachingSchedule, setDeletingTeachingSchedule] = useState<
     ITeachingScheduleResponse | undefined
   >(undefined);
+  const dateRange = useMemo(() => getWeekDateRange(selectedDate), [selectedDate]);
 
   const params = {
     limit: scheduleView === "table" ? rowsPerPage : 2000,
     skip: scheduleView === "table" ? (page - 1) * rowsPerPage : 0,
     ...(search && { search }),
     ...(status && { status }),
+    ...dateRange,
   };
 
   const { data: teachingSchedules, isLoading } = useGetTeachingSchedules(
@@ -164,12 +169,20 @@ export function TeachingSchedules() {
         </Button>
       </Box>
 
+      <WeekPicker
+        selectedDate={selectedDate}
+        onChangeDate={(date) => {
+          setSelectedDate(date);
+          setPage(1);
+        }}
+      />
+
       {scheduleView === "room" ? (
-        <TeachingScheduleByRoom search={search} status={status} />
+        <TeachingScheduleByRoom search={search} status={status} selectedDate={selectedDate} />
       ) : scheduleView === "teacher" ? (
-        <TeachingScheduleByTeacher search={search} status={status} />
+        <TeachingScheduleByTeacher search={search} status={status} selectedDate={selectedDate} />
       ) : scheduleView === "class" ? (
-        <TeachingScheduleByClass search={search} status={status} />
+        <TeachingScheduleByClass search={search} status={status} selectedDate={selectedDate} />
       ) : (
         <>
           <TeachingSchedulesTable

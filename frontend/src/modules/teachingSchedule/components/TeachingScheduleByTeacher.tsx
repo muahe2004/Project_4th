@@ -8,6 +8,7 @@ import type {
   ITeacherWithLearningSchedules,
   ITeachingScheduleWithRelations,
 } from "../types";
+import { getWeekDateRange } from "../../../utils/date/weekRange";
 import "./styles/TeachingScheduleByRoom.css";
 
 interface TeacherGroup {
@@ -66,24 +67,29 @@ function toTeacherGroups(data: ITeacherWithLearningSchedules[]): TeacherGroup[] 
 interface TeachingScheduleByTeacherProps {
   search?: string;
   status?: string;
+  selectedDate: Date;
 }
 
 export function TeachingScheduleByTeacher({
   search,
   status,
+  selectedDate,
 }: TeachingScheduleByTeacherProps) {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
     setPage(1);
-  }, [search, status]);
+  }, [search, status, selectedDate]);
+
+  const dateRange = useMemo(() => getWeekDateRange(selectedDate), [selectedDate]);
 
   const params = {
     limit: rowsPerPage,
     skip: (page - 1) * rowsPerPage,
     ...(search && { search }),
     ...(status && { status }),
+    ...dateRange,
   };
 
   const {

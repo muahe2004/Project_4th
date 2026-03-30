@@ -21,7 +21,7 @@ const getClassesDropDown = async (params: Params): Promise<IClassesDropDown[]> =
 
 export const useClassesDropDown = (params: Params) => {
     return useQuery<IClassesDropDown[], AxiosError<{ detail?: string }>>({
-        queryKey: ['classes', params],
+        queryKey: ['classes-dropdown', params],
         queryFn: () => getClassesDropDown(params),
     });
 };

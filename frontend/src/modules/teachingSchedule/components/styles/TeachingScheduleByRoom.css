@@ -154,6 +154,12 @@
   padding: 0;
 }
 
+.teaching-room-cell--empty {
+  background: #f8fafc;
+  border-color: #d8dee9;
+  color: #94a3b8;
+}
+
 .teaching-room-cell--busy {
   background: var(--primary-color);
   border-color: var(--primary-color);

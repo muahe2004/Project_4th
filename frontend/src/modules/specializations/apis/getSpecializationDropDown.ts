@@ -20,7 +20,7 @@ const getSpecializationsDropDown = async (params: Params): Promise<Specializatio
 
 export const useSpecializationsDropDown = (params: Params) => {
     return useQuery<SpecializationsDropDown[], AxiosError<{ detail?: string }>>({
-        queryKey: ['specializations', params],
+        queryKey: ['specializations-dropdown', params],
         queryFn: () => getSpecializationsDropDown(params),
     });
 };

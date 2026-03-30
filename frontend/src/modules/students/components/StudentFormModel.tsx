@@ -160,9 +160,11 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
     const { data: selectedClasses = [] } = useClassesDropDownByIds(
         student.class_id ? { ids: [student.class_id] } : { ids: [] }
     );
+    const safeClasses = Array.isArray(classes) ? classes : [];
+    const safeSelectedClasses = Array.isArray(selectedClasses) ? selectedClasses : [];
     const classOptions = useMemo(
-        () => Array.from(new Map([...selectedClasses, ...classes].map((item) => [item.id, item])).values()),
-        [selectedClasses, classes]
+        () => Array.from(new Map([...safeSelectedClasses, ...safeClasses].map((item) => [item.id, item])).values()),
+        [safeSelectedClasses, safeClasses]
     );
     const handleClassSearchChange = (value: string) => {
         setSearchSpecialization(value);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
@@ -9,12 +9,15 @@ import { STATUS_OPTIONS } from "../../../constants/status";
 import Button from "../../../components/Button/Button";
 import Loading from "../../../components/Loading/Loading";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
+import WeekPicker from "../../../components/WeekPicker/WeekPicker";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useGetExaminationSchedules } from "../apis/getExaminationSchedule";
 import { useDeleteExaminationSchedule } from "../apis/deleteExaminationSchedule";
 import ExaminationScheduleFormModel from "../components/ExaminationScheduleFormModel";
+import ExaminationScheduleByClass from "../components/ExaminationScheduleByClass";
 import ExaminationScheduleTable from "../components/ExaminationScheduleTable";
 import type { IExaminationScheduleResponse } from "../types";
+import { getWeekDateRange } from "../../../utils/date/weekRange";
 
 
 export function ExaminationSchedules() {
@@ -29,15 +32,19 @@ export function ExaminationSchedules() {
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [pendingDeleteSchedule, setPendingDeleteSchedule] =
         useState<IExaminationScheduleResponse | undefined>(undefined);
+    const [viewMode, setViewMode] = useState<"table" | "class">("table");
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const { showSnackbar } = useSnackbar();
     const deleteExaminationScheduleMutation = useDeleteExaminationSchedule();
+    const dateRange = useMemo(() => getWeekDateRange(selectedDate), [selectedDate]);
 
     const params = {
         limit: rowsPerPage,
         skip: (page - 1) * rowsPerPage,
         ...(search && { search }),
         ...(status && { status }),
+        ...dateRange,
     };
 
     const { data: examinationSchedules, isLoading } = useGetExaminationSchedules(params);
@@ -111,29 +118,57 @@ export function ExaminationSchedules() {
                         setPage(1);
                     }}
                 />
+                
                 <Button
                     onClick={handleOpenAddForm}
                     className="btn-spacing-left">
                     Add Examination Schedule
                 </Button>
+                <Button
+                    onClick={() => {
+                        setViewMode((current) =>
+                            current === "table" ? "class" : "table"
+                        );
+                    }}
+                    className="btn-spacing-left">
+                    {viewMode === "table" ? "Class UI" : "Table UI"}
+                </Button>
             </Box>
 
-            <ExaminationScheduleTable
-                examinationSchedules={examinationSchedules}
-                onEdit={handleOpenEditForm}
-                onDelete={handleRequestDelete}
-            />
-
-            <PaginationUniCore
-                totalItems={examinationSchedules?.total || 0}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                onPageChange={(p) => setPage(p)}
-                onRowsPerPageChange={(r) => {
-                    setRowsPerPage(r);
+            <WeekPicker
+                selectedDate={selectedDate}
+                onChangeDate={(date) => {
+                    setSelectedDate(date);
                     setPage(1);
                 }}
-            ></PaginationUniCore>
+            />
+
+            {viewMode === "table" ? (
+                <ExaminationScheduleTable
+                    examinationSchedules={examinationSchedules}
+                    onEdit={handleOpenEditForm}
+                    onDelete={handleRequestDelete}
+                />
+            ) : (
+                <ExaminationScheduleByClass
+                    search={search}
+                    status={status}
+                    selectedDate={selectedDate}
+                />
+            )}
+
+            {viewMode === "table" && (
+                <PaginationUniCore
+                    totalItems={examinationSchedules?.total || 0}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    onPageChange={(p) => setPage(p)}
+                    onRowsPerPageChange={(r) => {
+                        setRowsPerPage(r);
+                        setPage(1);
+                    }}
+                ></PaginationUniCore>
+            )}
 
             <ExaminationScheduleFormModel
                 open={openForm}

@@ -124,6 +124,7 @@ body {
   max-height: 55vh;
   background: transparent !important;
   margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .primary-thead {

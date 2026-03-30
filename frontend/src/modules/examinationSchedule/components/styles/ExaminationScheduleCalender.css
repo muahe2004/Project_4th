@@ -1,0 +1,137 @@
+/* .examination-calender {
+  margin-top: 10px;
+  min-height: 0;
+  flex: 1;
+}
+
+.examination-calender__wrapper {
+  border: 1px solid #d9d9d9;
+  overflow: auto;
+  max-height: calc(100vh - 260px);
+  min-height: 0;
+}
+
+.examination-calender__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 90px repeat(7, minmax(0, 1fr));
+  background: #fff;
+}
+
+.examination-calender__grid > * {
+  min-width: 0;
+}
+
+.examination-calender__head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #ffffff;
+  border-right: 1px solid #d8d8d8;
+  border-bottom: 1px solid #d8d8d8;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 10px 0;
+}
+
+.examination-calender__head strong {
+  font-size: 15px;
+  text-transform: capitalize;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 4px;
+}
+
+.examination-calender__head span {
+  font-size: 18px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.examination-calender__head-nav {
+  background: var(--primary-color);
+  color: #fff;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  z-index: 4;
+}
+
+.examination-calender__head-nav span {
+  font-size: 16px;
+}
+
+.examination-calender__time-column {
+  border-right: 1px solid #d8d8d8;
+  position: relative;
+}
+
+.examination-calender__time-label {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+  color: #7d8799;
+  font-size: 13px;
+  pointer-events: none;
+  margin-top: 10px;
+}
+
+.examination-calender__day-column {
+  border-right: 1px solid #d8d8d8;
+  position: relative;
+}
+
+.examination-calender__hour-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed #d3d8df;
+}
+
+.examination-calender__event {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+}
+
+@media (max-width: 1200px) {
+  .examination-calender__grid {
+    grid-template-columns: 72px repeat(7, minmax(0, 1fr));
+  }
+
+  .examination-calender__head {
+    min-height: 66px;
+  }
+
+  .examination-calender__head strong {
+    font-size: 12px;
+  }
+
+  .examination-calender__head span {
+    font-size: 14px;
+  }
+
+  .examination-calender__head-nav span {
+    font-size: 12px;
+  }
+
+  .examination-calender__time-label {
+    font-size: 11px;
+  }
+}
+
+.examination-schedule-calendar-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  height: calc(100vh - 220px);
+  overflow: hidden;
+} */

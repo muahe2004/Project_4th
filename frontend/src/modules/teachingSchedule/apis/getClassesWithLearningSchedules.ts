@@ -9,6 +9,8 @@ export interface ClassWithLearningSchedulesParams {
   skip: number;
   status?: string;
   search?: string;
+  start_date?: string;
+  end_date?: string;
 }
 
 const getClassesWithLearningSchedules = async (

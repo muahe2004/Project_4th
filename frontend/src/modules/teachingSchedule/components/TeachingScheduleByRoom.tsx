@@ -8,6 +8,7 @@ import type {
   IRoomWithLearningSchedules,
   ITeachingScheduleWithRelations,
 } from "../types";
+import { getWeekDateRange } from "../../../utils/date/weekRange";
 import "./styles/TeachingScheduleByRoom.css";
 
 interface RoomGroup {
@@ -66,24 +67,29 @@ function toRoomGroups(data: IRoomWithLearningSchedules[]): RoomGroup[] {
 interface TeachingScheduleByRoomProps {
   search?: string;
   status?: string;
+  selectedDate: Date;
 }
 
 export function TeachingScheduleByRoom({
   search,
   status,
+  selectedDate,
 }: TeachingScheduleByRoomProps) {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
     setPage(1);
-  }, [search, status]);
+  }, [search, status, selectedDate]);
+
+  const dateRange = useMemo(() => getWeekDateRange(selectedDate), [selectedDate]);
 
   const params = {
     limit: rowsPerPage,
     skip: (page - 1) * rowsPerPage,
     ...(search && { search }),
     ...(status && { status }),
+    ...dateRange,
   };
 
   const {

@@ -15,6 +15,8 @@ export interface Params {
   search?: string;
   teacher_id?: string;
   student_id?: string;
+  start_date?: string;
+  end_date?: string;
 }
 
 const getTeachingSchedules = async (

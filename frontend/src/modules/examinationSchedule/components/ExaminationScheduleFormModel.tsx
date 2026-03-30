@@ -123,6 +123,8 @@ export function ExaminationScheduleFormModel({
   const { data: selectedClasses = [] } = useClassesDropDownByIds(
     formValues.classId ? { ids: [formValues.classId] } : { ids: [] }
   );
+  const safeClasses = Array.isArray(classes) ? classes : [];
+  const safeSelectedClasses = Array.isArray(selectedClasses) ? selectedClasses : [];
 
   const { data: subjects = [] } = useSubjectDropDown({
     limit: 10,
@@ -161,9 +163,9 @@ export function ExaminationScheduleFormModel({
   const classOptions = useMemo(
     () =>
       Array.from(
-        new Map([...selectedClasses, ...classes].map((item) => [item.id, item])).values()
+        new Map([...safeSelectedClasses, ...safeClasses].map((item) => [item.id, item])).values()
       ),
-    [selectedClasses, classes]
+    [safeSelectedClasses, safeClasses]
   );
   const subjectOptions = useMemo(
     () =>
