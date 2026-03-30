@@ -372,7 +372,7 @@ class ExaminationScheduleServices:
                 detail="Examination Schedule not found",
             )
 
-        if examination_schedule.status == StatusEnum.ACTIVE:
+        if examination_schedule.status != StatusEnum.INACTIVE:
             examination_schedule.status = StatusEnum.INACTIVE
             session.commit()
             return ExaminationScheduleDeleteResponse(

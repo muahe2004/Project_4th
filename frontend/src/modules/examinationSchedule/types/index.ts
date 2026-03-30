@@ -53,3 +53,20 @@ export interface IExaminationScheduleQueryParams {
   start_date?: string;
   end_date?: string;
 }
+
+export interface IExaminationScheduleCreatePayload {
+  class_id: string;
+  subject_id: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  room_id?: string | null;
+  schedule_type?: string | null;
+  status?: string | null;
+  invigilator_1_id?: string | null;
+  invigilator_2_id?: string | null;
+}
+
+export type IExaminationScheduleUpdatePayload = Partial<IExaminationScheduleCreatePayload> & {
+  updated_at?: string;
+};

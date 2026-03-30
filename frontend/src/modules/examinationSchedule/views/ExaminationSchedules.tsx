@@ -8,8 +8,13 @@ import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import { STATUS_OPTIONS } from "../../../constants/status";
 import Button from "../../../components/Button/Button";
 import Loading from "../../../components/Loading/Loading";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useGetExaminationSchedules } from "../apis/getExaminationSchedule";
+import { useDeleteExaminationSchedule } from "../apis/deleteExaminationSchedule";
+import ExaminationScheduleFormModel from "../components/ExaminationScheduleFormModel";
 import ExaminationScheduleTable from "../components/ExaminationScheduleTable";
+import type { IExaminationScheduleResponse } from "../types";
 
 
 export function ExaminationSchedules() {
@@ -17,6 +22,16 @@ export function ExaminationSchedules() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("");
+    const [openForm, setOpenForm] = useState(false);
+    const [mode, setMode] = useState<"add" | "edit">("add");
+    const [selectedExaminationSchedule, setSelectedExaminationSchedule] =
+        useState<IExaminationScheduleResponse | undefined>(undefined);
+    const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+    const [pendingDeleteSchedule, setPendingDeleteSchedule] =
+        useState<IExaminationScheduleResponse | undefined>(undefined);
+
+    const { showSnackbar } = useSnackbar();
+    const deleteExaminationScheduleMutation = useDeleteExaminationSchedule();
 
     const params = {
         limit: rowsPerPage,
@@ -26,6 +41,43 @@ export function ExaminationSchedules() {
     };
 
     const { data: examinationSchedules, isLoading } = useGetExaminationSchedules(params);
+
+    const handleOpenAddForm = () => {
+        setMode("add");
+        setSelectedExaminationSchedule(undefined);
+        setOpenForm(true);
+    };
+
+    const handleOpenEditForm = (schedule: IExaminationScheduleResponse) => {
+        setMode("edit");
+        setSelectedExaminationSchedule(schedule);
+        setOpenForm(true);
+    };
+
+    const handleRequestDelete = (schedule: IExaminationScheduleResponse) => {
+        setPendingDeleteSchedule(schedule);
+        setOpenDeleteConfirm(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (!pendingDeleteSchedule?.id) {
+            showSnackbar("Không tìm thấy lịch thi để xoá", "error");
+            setOpenDeleteConfirm(false);
+            return;
+        }
+
+        deleteExaminationScheduleMutation.mutate(pendingDeleteSchedule.id, {
+            onSuccess: (response) => {
+                showSnackbar(response?.message ?? "Xoá lịch thi thành công", "success");
+                setOpenDeleteConfirm(false);
+                setPendingDeleteSchedule(undefined);
+            },
+            onError: (error: any) => {
+                const detail = error?.response?.data?.detail ?? "Xoá lịch thi thất bại";
+                showSnackbar(detail, "error");
+            },
+        });
+    };
 
     if (isLoading) {
         return (
@@ -60,17 +112,17 @@ export function ExaminationSchedules() {
                     }}
                 />
                 <Button
-                    onClick={() => {
-                        // setMode("add");
-                        // setSelectedStudent(undefined);
-                        // setOpen(true);
-                    }}
+                    onClick={handleOpenAddForm}
                     className="btn-spacing-left">
                     Add Examination Schedule
                 </Button>
             </Box>
 
-            <ExaminationScheduleTable examinationSchedules={examinationSchedules} />
+            <ExaminationScheduleTable
+                examinationSchedules={examinationSchedules}
+                onEdit={handleOpenEditForm}
+                onDelete={handleRequestDelete}
+            />
 
             <PaginationUniCore
                 totalItems={examinationSchedules?.total || 0}
@@ -82,6 +134,24 @@ export function ExaminationSchedules() {
                     setPage(1);
                 }}
             ></PaginationUniCore>
+
+            <ExaminationScheduleFormModel
+                open={openForm}
+                mode={mode}
+                initialValues={selectedExaminationSchedule}
+                onClose={() => setOpenForm(false)}
+            />
+
+            <ConfirmDialog
+                open={openDeleteConfirm}
+                title="Xác nhận xoá"
+                message="Bạn có chắc muốn xoá lịch thi này không?"
+                onConfirm={handleConfirmDelete}
+                onCancel={() => {
+                    setOpenDeleteConfirm(false);
+                    setPendingDeleteSchedule(undefined);
+                }}
+            />
         </main>
     )
 }

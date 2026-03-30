@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import {
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -8,6 +9,8 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import EditSquareIcon from "@mui/icons-material/EditSquare";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
@@ -18,10 +21,14 @@ interface ExaminationScheduleTableProps {
     data: IExaminationScheduleResponse[];
     total: number;
   };
+  onEdit?: (examinationSchedule: IExaminationScheduleResponse) => void;
+  onDelete?: (examinationSchedule: IExaminationScheduleResponse) => void;
 }
 
 export function ExaminationScheduleTable({
   examinationSchedules,
+  onEdit,
+  onDelete,
 }: ExaminationScheduleTableProps) {
   const rows = examinationSchedules?.data ?? [];
 
@@ -54,12 +61,15 @@ export function ExaminationScheduleTable({
             <TableCell className="primary-thead__cell" align="center">
               Trạng thái
             </TableCell>
+            <TableCell className="primary-thead__cell" align="center">
+              Actions
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody className="sticky-tbody">
           {rows.length === 0 && (
             <TableRow className="sticky-trow">
-              <TableCell className="sticky-tcell" align="center" colSpan={8}>
+              <TableCell className="sticky-tcell" align="center" colSpan={9}>
                 Không có dữ liệu
               </TableCell>
             </TableRow>
@@ -98,6 +108,20 @@ export function ExaminationScheduleTable({
                   sx={{ color: getStatusColor(row.status || "") }}
                 >
                   {getStatusDisplay(row.status || "")}
+                </TableCell>
+                <TableCell className="sticky-tcell" align="center">
+                  <IconButton
+                    className="primary-tcell__button--icon"
+                    onClick={() => onEdit?.(row)}
+                  >
+                    <EditSquareIcon />
+                  </IconButton>
+                  <IconButton
+                    className="primary-tcell__button--icon primary-tcell__button--delete"
+                    onClick={() => onDelete?.(row)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             );
