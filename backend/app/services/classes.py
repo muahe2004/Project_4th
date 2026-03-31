@@ -22,6 +22,7 @@ from app.models.schemas.classes.class_schemas import (
     ClassesForRegister,
     ClassesRegisterSpecialization,
     ClassesRegisterTeacher,
+    ClassesRegisterSubject,
     ClassWithLearningSchedules,
     ClassesResponse,
 )
@@ -46,6 +47,7 @@ class ClassServices:
             Classes.status,
             Classes.class_type,
             Classes.registration_status,
+            Classes.subject_id,
             Classes.created_at,
             Classes.updated_at,
             Classes.specialization_id,
@@ -138,10 +140,11 @@ class ClassServices:
             )
 
         base_stmt = (
-            select(Classes, Teachers, Specializations)
+            select(Classes, Teachers, Specializations, Subjects)
             .select_from(Classes)
             .join(Teachers, Teachers.id == Classes.teacher_id)
             .join(Specializations, Specializations.id == Classes.specialization_id)
+            .join(Subjects, Subjects.id == Classes.subject_id)
             .where(and_(*conditions))
         )
 
@@ -158,7 +161,7 @@ class ClassServices:
         rows = session.exec(statement).all()
 
         classes_register = []
-        for class_row, teacher_row, specialization_row in rows:
+        for class_row, teacher_row, specialization_row, subject_row in rows:
             classes_register.append(
                 ClassesForRegister(
                     class_info=ClassPublic.model_validate(class_row),
@@ -173,6 +176,12 @@ class ClassServices:
                         specialization_id=specialization_row.id,
                         specialization_code=specialization_row.specialization_code,
                         specialization_name=specialization_row.name,
+                    ),
+                    subject_info=ClassesRegisterSubject(
+                        subject_id=subject_row.id,
+                        subject_code=subject_row.subject_code,
+                        subject_name=subject_row.name,
+                        subject_credit=subject_row.credit,
                     ),
                 )
             )

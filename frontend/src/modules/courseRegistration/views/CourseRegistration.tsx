@@ -45,7 +45,7 @@ export function CourseRegistration() {
 
             <Box className="admin-main-box">
                 <SearchEngine
-                    placeholder="Tìm theo mã lớp, tên lớp, giảng viên, chuyên ngành..."
+                    placeholder="Tìm theo mã lớp, tên lớp, môn học, giảng viên, chuyên ngành..."
                     onSearch={(val) => {
                         setSearch(val);
                         setPage(1);
@@ -73,6 +73,9 @@ export function CourseRegistration() {
                                 Chuyên ngành
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
+                                Môn học
+                            </TableCell>
+                            <TableCell className="primary-thead__cell" align="center">
                                 Loại lớp
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
@@ -97,6 +100,10 @@ export function CourseRegistration() {
                                 </TableCell>
                                 <TableCell className="sticky-tcell" align="left">
                                     {row.specialization_info.specialization_name}
+                                </TableCell>
+                                <TableCell className="sticky-tcell" align="left">
+                                    {row.subject_info.subject_code} - {row.subject_info.subject_name} (
+                                    {row.subject_info.subject_credit})
                                 </TableCell>
                                 <TableCell className="sticky-tcell" align="center">
                                     {row.class_info.class_type}

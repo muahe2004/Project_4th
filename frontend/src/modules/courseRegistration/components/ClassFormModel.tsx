@@ -21,6 +21,8 @@ import { useCreateClass } from "../../classes/apis/addClass";
 import { useEditClass } from "../../classes/apis/editClass";
 import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
 import { useSpecializationsDropDown } from "../../specializations/apis/getSpecializationDropDown";
+import { useSubjectDropDown } from "../../teachingSchedule/apis/getSubjectDropDown";
+import { useSubjectDropDownByIds } from "../../teachingSchedule/apis/getSubjectDropDownByIds";
 
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import {
@@ -53,6 +55,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
         size: 0,
         classType: "",
         registrationStatus: "closed",
+        subjectId: "",
         teacherId: "",
         teacherName: "",
         specializationId: "",
@@ -65,6 +68,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
         size: "",
         classType: "",
         registrationStatus: "",
+        subjectId: "",
         teacherId: "",
         teacherName: "",
         specializationId: "",
@@ -81,8 +85,10 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
     const [teacherPage, setTeacherPage] = useState(1);
     const [specializationPage, setSpecializationPage] = useState(1);
+    const [subjectPage, setSubjectPage] = useState(1);
     const [searchTeacher, setSearchTeacher] = useState("");
     const [searchSpecialization, setSearchSpecialization] = useState("");
+    const [searchSubject, setSearchSubject] = useState("");
 
     const { data: teacher = [] } = useTeacherDropdown({
         limit: 5,
@@ -95,8 +101,19 @@ const ClassForm: React.FC<ClassFormProps> = ({
         skip: (specializationPage - 1) * 5,
         search: searchSpecialization || undefined,
     });
+    const { data: subjects = [] } = useSubjectDropDown({
+        limit: 5,
+        skip: (subjectPage - 1) * 5,
+        search: searchSubject || undefined,
+    });
+    const { data: selectedSubjectOptions = [] } = useSubjectDropDownByIds(
+        formValues.subjectId ? { ids: [formValues.subjectId] } : { ids: [] }
+    );
     const teacherOptions = Array.isArray(teacher) ? teacher : [];
     const specializationOptions = Array.isArray(specializations) ? specializations : [];
+    const subjectOptions = Array.from(
+        new Map([...selectedSubjectOptions, ...subjects].map((item) => [item.id, item])).values()
+    );
 
     const { openConfirm, setOpenConfirm, handleCloseClick } =
         useConfirmCloseForm({ mode, isChanged, onClose });
@@ -112,6 +129,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
         size: () => "",
         classType: () => "",
         registrationStatus: () => "",
+        subjectId: () => "",
         teacherName: () => "",
         specializationName: () => "",
     };
@@ -145,6 +163,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 size: initialValues.size || 0,
                 classType: initialValues.class_type || "",
                 registrationStatus: initialValues.registration_status || "closed",
+                subjectId: initialValues.subject_id || "",
                 teacherId: initialValues.teacher_id || "",
                 teacherName: initialValues.teacher_name || "",
                 specializationId: initialValues.specialization_id || "",
@@ -157,6 +176,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 size: 0,
                 classType: "",
                 registrationStatus: "closed",
+                subjectId: "",
                 teacherId: "",
                 teacherName: "",
                 specializationId: "",
@@ -186,6 +206,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
             size: formValues.size,
             class_type: formValues.classType.trim() || null,
             registration_status: formValues.registrationStatus || "closed",
+            subject_id: formValues.subjectId || null,
             specialization_id: formValues.specializationId,
             teacher_id: formValues.teacherId,
             ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
@@ -201,6 +222,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 formValues.size !== 0 ||
                 formValues.classType.trim() !== "" ||
                 formValues.registrationStatus !== "closed" ||
+                formValues.subjectId !== "" ||
                 formValues.teacherId !== "" ||
                 formValues.specializationId !== "";
             setIsChanged(hasInput);
@@ -219,6 +241,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
             size: formValues.size,
             class_type: formValues.classType.trim() || null,
             registration_status: formValues.registrationStatus || "closed",
+            subject_id: formValues.subjectId || null,
             ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
         };
 
@@ -351,6 +374,33 @@ const ClassForm: React.FC<ClassFormProps> = ({
                                 </MenuItem>
                             ))}
                         </TextField>
+                    </Grid>
+
+                    <Grid size={6}>
+                        <LabelPrimary value="Môn học" />
+                        <MainAutocomplete
+                            options={subjectOptions}
+                            value={
+                                formValues.subjectId
+                                    ? subjectOptions.find(
+                                          (subject) => subject.id.toString() === formValues.subjectId
+                                      ) ?? null
+                                    : null
+                            }
+                            onChange={(id) =>
+                                setFormValues((prev) => ({ ...prev, subjectId: id }))
+                            }
+                            onSearchChange={setSearchSubject}
+                            onResetPage={() => setSubjectPage(1)}
+                            getOptionLabel={(option) =>
+                                option.subject_code
+                                    ? `${option.subject_code} - ${option.name}`
+                                    : option.name
+                            }
+                            getOptionId={(option) => option.id?.toString() || ""}
+                            className="primary-dialog-input"
+                            placeholder="Chọn môn học"
+                        />
                     </Grid>
 
                     <Grid size={6}>

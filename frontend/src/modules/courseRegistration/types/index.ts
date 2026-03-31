@@ -14,10 +14,18 @@ export interface IClassesRegisterSpecialization {
     specialization_name: string;
 }
 
+export interface IClassesRegisterSubject {
+    subject_id: string;
+    subject_code: string;
+    subject_name: string;
+    subject_credit: number;
+}
+
 export interface IClassesForRegister {
     class_info: IClasses;
     teacher_info: IClassesRegisterTeacher;
     specialization_info: IClassesRegisterSpecialization;
+    subject_info: IClassesRegisterSubject;
 }
 
 export interface IClassesForRegisterResponse {

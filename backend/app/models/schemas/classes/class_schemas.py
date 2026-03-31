@@ -17,6 +17,7 @@ class ClassBase(SQLModel):
     teacher_id: UUID | None = Field(default=None, foreign_key="teachers.id")
     class_type: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     registration_status: str | None = Field(default="closed", sa_column=Column(String(20), nullable=True, default="closed"))
+    subject_id: UUID | None = Field(default=None, foreign_key="subjects.id") # for class_type = course_section
 
 class ClassPublic(ClassBase):
     id: UUID
@@ -46,10 +47,17 @@ class ClassesRegisterSpecialization(SQLModel):
     specialization_code: str
     specialization_name: str
 
+class ClassesRegisterSubject(SQLModel):
+    subject_id: UUID
+    subject_code: str
+    subject_name: str
+    subject_credit: int
+
 class ClassesForRegister(SQLModel):
     class_info: ClassPublic
     teacher_info: ClassesRegisterTeacher
     specialization_info: ClassesRegisterSpecialization
+    subject_info: ClassesRegisterSubject
 
 class ClassesForRegisterResponse(SQLModel):
     data: List[ClassesForRegister]
@@ -71,6 +79,7 @@ class ClassUpdate(SQLModel):
         default=None, foreign_key="specializations.id"
     )
     teacher_id: Optional[UUID] = Field(default=None, foreign_key="teachers.id")
+    subject_id: Optional[UUID] = Field(default=None, foreign_key="subjects.id")
     class_type: Optional[str] = Field(
         default=None, sa_column=Column(String(50), nullable=True)
     )
