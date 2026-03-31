@@ -2,6 +2,7 @@ import uuid
 from app.models.schemas.common.query import BaseQueryParams, DateRange
 from app.models.schemas.learning_schedules.learning_schedule_schemas import LearningSchedulePublic
 from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleInClass, TeachingScheduleRoomInfo, TeachingScheduleSubjectInfo, TeachingScheduleTeacherInfo
+from app.enums.class_type import ClassRegistrationStatus, ClassesTypeEnum
 from fastapi import HTTPException, Request
 from sqlmodel import Session, and_, or_, select, func, desc
 from starlette import status
@@ -17,6 +18,9 @@ from app.models.schemas.classes.class_schemas import (
     ClassQueryParams,
     ClassUpdate,
     ClassDeleteResponse,
+    ClassesForRegister,
+    ClassesRegisterSpecialization,
+    ClassesRegisterTeacher,
     ClassWithLearningSchedules,
     ClassesResponse,
 )
@@ -99,6 +103,79 @@ class ClassServices:
             classes.append(ClassesResponse(**data))
 
         return classes, total
+
+    @staticmethod
+    def get_classes_register(
+        *, session: Session, query: ClassQueryParams
+    ) -> Tuple[List[ClassesForRegister], int]:
+        conditions = [
+            Classes.class_type == ClassesTypeEnum.COURSE_SECTION,
+            Classes.registration_status == ClassRegistrationStatus.OPEN,
+        ]
+
+        if query.status:
+            conditions.append(Classes.status == query.status)
+
+        if query.specialization_id:
+            conditions.append(Classes.specialization_id == query.specialization_id)
+
+        if query.teacher_id:
+            conditions.append(Classes.teacher_id == query.teacher_id)
+
+        if query.search:
+            search_pattern = f"%{query.search}%"
+            conditions.append(
+                or_(
+                    Classes.class_code.ilike(search_pattern),
+                    Classes.class_name.ilike(search_pattern),
+                    Teachers.teacher_code.ilike(search_pattern),
+                    Teachers.name.ilike(search_pattern),
+                    Specializations.specialization_code.ilike(search_pattern),
+                    Specializations.name.ilike(search_pattern),
+                )
+            )
+
+        base_stmt = (
+            select(Classes, Teachers, Specializations)
+            .select_from(Classes)
+            .join(Teachers, Teachers.id == Classes.teacher_id)
+            .join(Specializations, Specializations.id == Classes.specialization_id)
+            .where(and_(*conditions))
+        )
+
+        total = session.exec(
+            select(func.count()).select_from(base_stmt.subquery())
+        ).one()
+
+        statement = (
+            base_stmt.order_by(desc(Classes.created_at))
+            .offset(query.skip)
+            .limit(query.limit)
+        )
+
+        rows = session.exec(statement).all()
+
+        classes_register = []
+        for class_row, teacher_row, specialization_row in rows:
+            classes_register.append(
+                ClassesForRegister(
+                    class_info=ClassPublic.model_validate(class_row),
+                    teacher_info=ClassesRegisterTeacher(
+                        teacher_id=teacher_row.id,
+                        teacher_name=teacher_row.name,
+                        teacher_code=teacher_row.teacher_code,
+                        teacher_email=teacher_row.email,
+                        teacher_phone=teacher_row.phone,
+                    ),
+                    specialization_info=ClassesRegisterSpecialization(
+                        specialization_id=specialization_row.id,
+                        specialization_code=specialization_row.specialization_code,
+                        specialization_name=specialization_row.name,
+                    ),
+                )
+            )
+
+        return classes_register, total
 
     # get class and learning schedule
     @staticmethod

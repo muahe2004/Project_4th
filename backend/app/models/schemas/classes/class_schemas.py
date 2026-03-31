@@ -34,6 +34,27 @@ class ClassesResponse(ClassPublic):
     specialization_name: str
     teacher_name: str
 
+class ClassesRegisterTeacher(SQLModel):
+    teacher_id: UUID
+    teacher_name: str
+    teacher_code: str
+    teacher_email: Optional[str] = None
+    teacher_phone: Optional[str] = None
+
+class ClassesRegisterSpecialization(SQLModel):
+    specialization_id: UUID
+    specialization_code: str
+    specialization_name: str
+
+class ClassesForRegister(SQLModel):
+    class_info: ClassPublic
+    teacher_info: ClassesRegisterTeacher
+    specialization_info: ClassesRegisterSpecialization
+
+class ClassesForRegisterResponse(SQLModel):
+    data: List[ClassesForRegister]
+    total: int
+    
 class ClassCreate(ClassBase):
     pass
 

@@ -11,6 +11,7 @@ from app.models.schemas.classes.class_schemas import (
     ClassQueryParams,
     ClassUpdate,
     ClassDeleteResponse,
+    ClassesForRegisterResponse,
     ClassWithLearningSchedulesResponse,
     IdsRequest,
 )
@@ -25,6 +26,19 @@ router = APIRouter()
 def get_classes(session: SessionDep, query: ClassQueryParams = Depends()):
     classes, total = ClassServices.get_all(session=session, query=query)
     return ClassListResponse(total=total, data=classes)
+
+
+# =========================== get classes for register ===========================
+@router.get(
+    "/register",
+    response_model=ClassesForRegisterResponse,
+)
+def get_classes_for_register(
+    session: SessionDep,
+    query: ClassQueryParams = Depends(),
+):
+    data, total = ClassServices.get_classes_register(session=session, query=query)
+    return ClassesForRegisterResponse(total=total, data=data)
 
 # ===========================  ===========================
 @router.get(
