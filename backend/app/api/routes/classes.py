@@ -16,7 +16,7 @@ from app.models.schemas.classes.class_schemas import (
     IdsRequest,
 )
 from app.models.schemas.classes.student_class_schemas import (
-    StudentClassCreate,
+    StudentClassRegisterRequest,
     StudentClassPublic,
 )
 from app.services.classes import ClassServices
@@ -48,12 +48,12 @@ def get_classes_for_register(
 # =========================== register course section ===========================
 @router.post(
     "/register",
-    response_model=StudentClassPublic,
+    response_model=list[StudentClassPublic],
 )
 def register_course_section(
     session: SessionDep,
-    data: StudentClassCreate,
-) -> StudentClassPublic:
+    data: StudentClassRegisterRequest,
+) -> list[StudentClassPublic]:
     return ClassServices.register_course_section(session=session, class_register=data)
 
 # ===========================  ===========================

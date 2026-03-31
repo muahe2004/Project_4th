@@ -23,6 +23,18 @@ class StudentClassPublic(StudentClassBase):
 class StudentClassCreate(StudentClassBase):
     pass
 
+class StudentClassRegisterCourseSection(SQLModel):
+    class_id: UUID_TYPE = Field(foreign_key="classes.id")
+    status: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
+    class_type: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
+
+
+class StudentClassRegisterRequest(SQLModel):
+    student_id: UUID_TYPE
+    created_at: datetime = Field(sa_column=Column(DateTime, nullable=False))
+    updated_at: datetime = Field(sa_column=Column(DateTime, nullable=False))
+    course_sections: list[StudentClassRegisterCourseSection]
+
 class StudentClassUpdate(BaseModel):
     student_id: Optional[UUID_TYPE] = Field(default=None, sa_column=Column(PG_UUID(as_uuid=True), nullable=True))
     class_id: UUID_TYPE = Field(foreign_key="classes.id")

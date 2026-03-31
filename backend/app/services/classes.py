@@ -3,7 +3,6 @@ from app.models.schemas.common.query import BaseQueryParams, DateRange
 from app.models.schemas.learning_schedules.learning_schedule_schemas import LearningSchedulePublic
 from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleInClass, TeachingScheduleRoomInfo, TeachingScheduleSubjectInfo, TeachingScheduleTeacherInfo
 from app.enums.class_type import ClassRegistrationStatus, ClassesTypeEnum, ClassTypeEnum
-from app.models.schemas.classes.student_class_schemas import StudentClassCreate
 from fastapi import HTTPException, Request
 from sqlmodel import Session, and_, or_, select, func, desc
 from starlette import status
@@ -26,7 +25,10 @@ from app.models.schemas.classes.class_schemas import (
     ClassWithLearningSchedules,
     ClassesResponse,
 )
-from app.models.schemas.classes.student_class_schemas import StudentClassPublic
+from app.models.schemas.classes.student_class_schemas import (
+    StudentClassPublic,
+    StudentClassRegisterRequest,
+)
 from app.models.models import Students
 
 from app.enums.status import StatusEnum
@@ -486,43 +488,69 @@ class ClassServices:
     def register_course_section(
         *,
         session: Session,
-        class_register: StudentClassCreate
-    ) -> StudentClassPublic:
-        target_class = session.get(Classes, class_register.class_id)
-        if not target_class:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Class not found",
+        class_register: StudentClassRegisterRequest
+    ) -> List[StudentClassPublic]:
+        if not class_register.course_sections:
+            return []
+
+        seen_class_ids: set[uuid.UUID] = set()
+        new_student_classes: list[StudentClass] = []
+
+        for course_section in class_register.course_sections:
+            if course_section.class_id in seen_class_ids:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Duplicate class in request payload.",
+                )
+            seen_class_ids.add(course_section.class_id)
+
+            target_class = session.get(Classes, course_section.class_id)
+            if not target_class:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Class not found",
+                )
+
+            if target_class.class_type != ClassesTypeEnum.COURSE_SECTION:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Class is not available for registration.",
+                )
+
+            if target_class.registration_status != ClassRegistrationStatus.OPEN:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Class registration is closed.",
+                )
+
+            existing = session.exec(
+                select(StudentClass).where(
+                    StudentClass.class_id == course_section.class_id,
+                    StudentClass.student_id == class_register.student_id,
+                )
+            ).first()
+
+            if existing:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Student already exists in class.",
+                )
+
+            new_student_classes.append(
+                StudentClass(
+                    student_id=class_register.student_id,
+                    class_id=course_section.class_id,
+                    status=course_section.status,
+                    class_type=course_section.class_type,
+                    created_at=class_register.created_at,
+                    updated_at=class_register.updated_at,
+                )
             )
 
-        if target_class.class_type != ClassesTypeEnum.COURSE_SECTION:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Class is not available for registration.",
-            )
-
-        if target_class.registration_status != ClassRegistrationStatus.OPEN:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Class registration is closed.",
-            )
-
-        existing = session.exec(
-            select(StudentClass).where(
-                StudentClass.class_id == class_register.class_id,
-                StudentClass.student_id == class_register.student_id
-            )
-        ).first()
-
-        if existing:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Student already exists in class.",
-            )
-
-        new_student_class = StudentClass(**class_register.model_dump(exclude_unset=True))
-        session.add(new_student_class)
+        session.add_all(new_student_classes)
         session.commit()
-        session.refresh(new_student_class)
 
-        return StudentClassPublic.model_validate(new_student_class)
+        for new_student_class in new_student_classes:
+            session.refresh(new_student_class)
+
+        return [StudentClassPublic.model_validate(item) for item in new_student_classes]
