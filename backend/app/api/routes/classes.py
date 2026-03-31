@@ -15,6 +15,10 @@ from app.models.schemas.classes.class_schemas import (
     ClassWithLearningSchedulesResponse,
     IdsRequest,
 )
+from app.models.schemas.classes.student_class_schemas import (
+    StudentClassCreate,
+    StudentClassPublic,
+)
 from app.services.classes import ClassServices
 from typing import List
 
@@ -39,6 +43,18 @@ def get_classes_for_register(
 ):
     data, total = ClassServices.get_classes_register(session=session, query=query)
     return ClassesForRegisterResponse(total=total, data=data)
+
+
+# =========================== register course section ===========================
+@router.post(
+    "/register",
+    response_model=StudentClassPublic,
+)
+def register_course_section(
+    session: SessionDep,
+    data: StudentClassCreate,
+) -> StudentClassPublic:
+    return ClassServices.register_course_section(session=session, class_register=data)
 
 # ===========================  ===========================
 @router.get(

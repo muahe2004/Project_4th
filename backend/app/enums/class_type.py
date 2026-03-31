@@ -1,9 +1,9 @@
 from enum import Enum
 
 class ClassTypeEnum(str, Enum): # for student_class
-    PRIMARY = "PRIMARY"
-    SECONDARY = "SECONDARY"
-    OTHER = "OTHER"
+    PRIMARY = "primary"
+    SECONDARY = "secondary"
+    OTHER = "other"
 
 class ClassesTypeEnum(str, Enum): # for classes table
     HOMEROOM = "homeroom"
