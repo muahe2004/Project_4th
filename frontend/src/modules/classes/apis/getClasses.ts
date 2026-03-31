@@ -12,6 +12,8 @@ export interface Params {
   skip: number;
   limit: number;
   specialization_id?: string;
+  class_type?: string;
+  registration_status?: string;
 }
 
 const getClasss = async (params: Params): Promise<ClassListResponse> => {

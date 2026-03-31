@@ -23,6 +23,8 @@ export const useEditClass = (
         mutationFn: ({id, data}) => editClass(id, data),
         onSuccess: (data, variables, context) => {
             queryClient.invalidateQueries({ queryKey: ["classes"] });
+            queryClient.invalidateQueries({ queryKey: ["classes-dropdown"] });
+            queryClient.invalidateQueries({ queryKey: ["classes-with-learning-schedules"] });
             config?.onSuccess?.(data, variables, context);
         },
         ...config,

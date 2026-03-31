@@ -4,6 +4,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Grid,
+    MenuItem,
     TextField,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -25,9 +27,9 @@ import { useSpecializationsDropDownByIds } from "../../specializations/apis/getS
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import {
     isRequired,
-    positiveIntegerSlotProps,
 } from "../../../utils/validation/validations";
 import { STATUS } from "../../../constants/status";
+import { CLASSTYPE, REGISTRATION_STATUS_OPTIONS } from "../../../constants/classes";
 import type { IClasses, IClassesResponse } from "../types";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
 
@@ -51,6 +53,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
         classCode: "",
         className: "",
         size: 0,
+        classType: "",
+        registrationStatus: "closed",
         teacherId: "",
         teacherName: "",
         specializationId: "",
@@ -61,6 +65,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
         classCode: "",
         className: "",
         size: "",
+        classType: "",
+        registrationStatus: "",
         teacherId: "",
         teacherName: "",
         specializationId: "",
@@ -118,6 +124,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
         specializationId: (value) => (!isRequired(value) ? "Chuyên ngành là bắt buộc!" : ""),
         className: () => "",
         size: () => "",
+        classType: () => "",
+        registrationStatus: () => "",
         teacherName: () => "",
         specializationName: () => "",
     };
@@ -149,6 +157,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 classCode: initialValues.class_code || "",
                 className: initialValues.class_name || "",
                 size: initialValues.size || 0,
+                classType: initialValues.class_type || "",
+                registrationStatus: initialValues.registration_status || "closed",
                 teacherId: initialValues.teacher_id || "",
                 teacherName: initialValues.teacher_name || "",
                 specializationId: initialValues.specialization_id || "",
@@ -159,6 +169,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 classCode: "",
                 className: "",
                 size: 0,
+                classType: "",
+                registrationStatus: "closed",
                 teacherId: "",
                 teacherName: "",
                 specializationId: "",
@@ -169,6 +181,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
             classCode: "",
             className: "",
             size: "",
+            classType: "",
+            registrationStatus: "",
             teacherId: "",
             teacherName: "",
             specializationId: "",
@@ -184,6 +198,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
             class_name: formValues.className.trim(),
             status: STATUS.ACTIVE,
             size: formValues.size,
+            class_type: formValues.classType.trim() || null,
+            registration_status: formValues.registrationStatus || "closed",
             specialization_id: formValues.specializationId,
             teacher_id: formValues.teacherId,
             ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
@@ -197,6 +213,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 formValues.classCode.trim() !== "" ||
                 formValues.className.trim() !== "" ||
                 formValues.size !== 0 ||
+                formValues.classType.trim() !== "" ||
+                formValues.registrationStatus !== "closed" ||
                 formValues.teacherId !== "" ||
                 formValues.specializationId !== "";
             setIsChanged(hasInput);
@@ -213,6 +231,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
             teacher_id: formValues.teacherId,
             specialization_id: formValues.specializationId,
             size: formValues.size,
+            class_type: formValues.classType.trim() || null,
+            registration_status: formValues.registrationStatus || "closed",
             ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
         };
 
@@ -260,94 +280,155 @@ const ClassForm: React.FC<ClassFormProps> = ({
             </DialogTitle>
 
             <DialogContent className="primary-dialog-content">
-                <LabelPrimary value="Mã lớp" required />
-                <TextField
-                    value={formValues.classCode}
-                    onChange={(e) =>
-                        setFormValues((prev) => ({ ...prev, classCode: e.target.value }))
-                    }
-                    onBlur={() => handleBlur("classCode")}
-                    fullWidth
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                    error={Boolean(errors.classCode)}
-                    helperText={errors.classCode}
-                />
+                <Grid container spacing={2}>
+                    <Grid size={6}>
+                        <LabelPrimary value="Mã lớp" required />
+                        <TextField
+                            value={formValues.classCode}
+                            onChange={(e) =>
+                                setFormValues((prev) => ({ ...prev, classCode: e.target.value }))
+                            }
+                            onBlur={() => handleBlur("classCode")}
+                            fullWidth
+                            variant="outlined"
+                            className="main-text__field primary-dialog-input"
+                            error={Boolean(errors.classCode)}
+                            helperText={errors.classCode}
+                        />
+                    </Grid>
 
-                <LabelPrimary value="Tên lớp" />
-                <TextField
-                    value={formValues.className}
-                    onChange={(e) =>
-                        setFormValues((prev) => ({ ...prev, className: e.target.value }))
-                    }
-                    fullWidth
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                />
+                    <Grid size={6}>
+                        <LabelPrimary value="Tên lớp" />
+                        <TextField
+                            value={formValues.className}
+                            onChange={(e) =>
+                                setFormValues((prev) => ({ ...prev, className: e.target.value }))
+                            }
+                            fullWidth
+                            variant="outlined"
+                            className="main-text__field primary-dialog-input"
+                        />
+                    </Grid>
 
-                <LabelPrimary value="Sĩ số" />
-                <TextField
-                    type="number"
-                    value={formValues.size}
-                    onChange={(e) =>
-                        setFormValues((prev) => ({ ...prev, size: Number(e.target.value) }))
-                    }
-                    fullWidth
-                    variant="outlined"
-                    className="main-text__field primary-dialog-input"
-                    slotProps={positiveIntegerSlotProps}
-                />
+                    <Grid size={6}>
+                        <LabelPrimary value="Sĩ số" />
+                        <TextField
+                            type="number"
+                            value={formValues.size}
+                            onChange={(e) =>
+                                setFormValues((prev) => ({ ...prev, size: Number(e.target.value) }))
+                            }
+                            fullWidth
+                            variant="outlined"
+                            className="main-text__field primary-dialog-input"
+                        />
+                    </Grid>
 
-                <LabelPrimary value="Chuyên Ngành" required />
-                <MainAutocomplete
-                    options={specializationOptions}
-                    value={
-                        formValues.specializationId
-                            ? { id: formValues.specializationId, name: formValues.specializationName }
-                            : null
-                    }
-                    onChange={(id) => {
-                        const selected = specializationOptions.find((s) => s.id.toString() === id);
-                        setFormValues((prev) => ({
-                            ...prev,
-                            specializationId: id,
-                            specializationName: selected?.name || "",
-                        }));
-                        setErrors((prev) => ({ ...prev, specializationId: "" }));
-                    }}
+                    <Grid size={6}>
+                        <LabelPrimary value="Loại lớp" />
+                        <TextField
+                            select
+                            value={formValues.classType}
+                            onChange={(e) =>
+                                setFormValues((prev) => ({ ...prev, classType: e.target.value }))
+                            }
+                            fullWidth
+                            variant="outlined"
+                            className="main-text__field primary-dialog-input"
+                        >
+                            {Object.values(CLASSTYPE).map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
 
-                    onSearchChange={setSearchSpecialization}
-                    onResetPage={() => setSpecializationPage(1)}
-                    getOptionLabel={(option) => option.name}
-                    getOptionId={(option) => option.id?.toString() || ""}
-                    className="primary-dialog-input"
-                    error={Boolean(errors.specializationId)}
-                    helperText={errors.specializationId}
-                />
+                    <Grid size={6}>
+                        <LabelPrimary value="Trạng thái đăng ký" />
+                        <TextField
+                            select
+                            value={formValues.registrationStatus}
+                            onChange={(e) =>
+                                setFormValues((prev) => ({
+                                    ...prev,
+                                    registrationStatus: e.target.value,
+                                }))
+                            }
+                            fullWidth
+                            variant="outlined"
+                            className="main-text__field primary-dialog-input"
+                        >
+                            {Object.values(REGISTRATION_STATUS_OPTIONS).map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
 
-                <LabelPrimary value="Giáo viên chủ nhiệm" required />
-                <MainAutocomplete
-                    options={teacherOptions}
-                    value={
-                        formValues.teacherId ? { id: formValues.teacherId, name: formValues.teacherName } : null
-                    }
-                    onChange={(id) => {
-                        setFormValues((prev) => ({
-                            ...prev,
-                            teacherId: id,
-                            teacherName: teacherOptions.find((t) => t.id.toString() === id)?.name || "",
-                        }));
-                        setErrors(prev => ({ ...prev, teacherId: "" }));
-                    }}
+                    <Grid size={6}>
+                        <LabelPrimary value="Chuyên Ngành" required />
+                        <MainAutocomplete
+                            options={specializationOptions}
+                            value={
+                                formValues.specializationId
+                                    ? {
+                                          id: formValues.specializationId,
+                                          name: formValues.specializationName,
+                                      }
+                                    : null
+                            }
+                            onChange={(id) => {
+                                const selected = specializationOptions.find(
+                                    (s) => s.id.toString() === id
+                                );
+                                setFormValues((prev) => ({
+                                    ...prev,
+                                    specializationId: id,
+                                    specializationName: selected?.name || "",
+                                }));
+                                setErrors((prev) => ({ ...prev, specializationId: "" }));
+                            }}
+                            onSearchChange={setSearchSpecialization}
+                            onResetPage={() => setSpecializationPage(1)}
+                            getOptionLabel={(option) => option.name}
+                            getOptionId={(option) => option.id?.toString() || ""}
+                            className="primary-dialog-input"
+                            error={Boolean(errors.specializationId)}
+                            helperText={errors.specializationId}
+                        />
+                    </Grid>
 
-                    onSearchChange={setSearchTeacher}
-                    onResetPage={() => setTeacherPage(1)}
-                    getOptionLabel={(option) => option.name}
-                    getOptionId={(option) => option.id?.toString() || ""}
-                    className="primary-dialog-input"
-                    error={Boolean(errors.teacherId)}
-                    helperText={errors.teacherId}
-                />
+                    <Grid size={6}>
+                        <LabelPrimary value="Giáo viên chủ nhiệm" required />
+                        <MainAutocomplete
+                            options={teacherOptions}
+                            value={
+                                formValues.teacherId
+                                    ? { id: formValues.teacherId, name: formValues.teacherName }
+                                    : null
+                            }
+                            onChange={(id) => {
+                                setFormValues((prev) => ({
+                                    ...prev,
+                                    teacherId: id,
+                                    teacherName:
+                                        teacherOptions.find((t) => t.id.toString() === id)?.name ||
+                                        "",
+                                }));
+                                setErrors((prev) => ({ ...prev, teacherId: "" }));
+                            }}
+                            onSearchChange={setSearchTeacher}
+                            onResetPage={() => setTeacherPage(1)}
+                            getOptionLabel={(option) => option.name}
+                            getOptionId={(option) => option.id?.toString() || ""}
+                            className="primary-dialog-input"
+                            error={Boolean(errors.teacherId)}
+                            helperText={errors.teacherId}
+                        />
+                    </Grid>
+                </Grid>
             </DialogContent>
 
             <DialogActions className="primary-dialog-actions">

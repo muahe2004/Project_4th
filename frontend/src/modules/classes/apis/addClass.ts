@@ -23,7 +23,13 @@ export const useCreateClass = ({ config }: UseCreateClassOptions) => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["classes"],
-            })
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["classes-dropdown"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["classes-with-learning-schedules"],
+            });
         },
         ...config
     })

@@ -38,6 +38,8 @@ class ClassServices:
             Classes.class_name,
             Classes.size,
             Classes.status,
+            Classes.class_type,
+            Classes.registration_status,
             Classes.created_at,
             Classes.updated_at,
             Classes.specialization_id,
@@ -57,6 +59,12 @@ class ClassServices:
 
         if query.teacher_id:
             conditions.append(Classes.teacher_id == query.teacher_id)
+
+        if query.class_type:
+            conditions.append(Classes.class_type == query.class_type)
+
+        if query.registration_status:
+            conditions.append(Classes.registration_status == query.registration_status)
 
         if query.search:
             conditions.append(
@@ -258,6 +266,12 @@ class ClassServices:
 
         if query.status:
             conditions.append(Classes.status == query.status)
+
+        if query.class_type:
+            conditions.append(Classes.class_type == query.class_type)
+
+        if query.registration_status:
+            conditions.append(Classes.registration_status == query.registration_status)
 
         if query.search:
             search_pattern = f"%{query.search}%"

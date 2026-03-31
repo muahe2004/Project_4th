@@ -10,17 +10,13 @@ class ClassBase(SQLModel):
     class_code: str = Field(sa_column=Column(String(12), nullable=False, unique=True))
     class_name: Optional[str] = Field(sa_column=Column(String(100), nullable=True))
     size: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
-    status: str | None = Field(
-        default=None, sa_column=Column(String(50), nullable=True)
-    )
-    created_at: datetime = Field(
-        default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
-    )
-    updated_at: datetime = Field(
-        default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
-    )
+    status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
+    created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
+    updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     specialization_id: UUID = Field(foreign_key="specializations.id")
     teacher_id: UUID | None = Field(default=None, foreign_key="teachers.id")
+    class_type: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
+    registration_status: str | None = Field(default="closed", sa_column=Column(String(20), nullable=True, default="closed"))
 
 class ClassPublic(ClassBase):
     id: UUID
@@ -54,6 +50,12 @@ class ClassUpdate(SQLModel):
         default=None, foreign_key="specializations.id"
     )
     teacher_id: Optional[UUID] = Field(default=None, foreign_key="teachers.id")
+    class_type: Optional[str] = Field(
+        default=None, sa_column=Column(String(50), nullable=True)
+    )
+    registration_status: Optional[str] = Field(
+        default=None, sa_column=Column(String(20), nullable=True)
+    )
     updated_at: datetime = Field(
         default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
     )
@@ -65,6 +67,8 @@ class ClassDeleteResponse(SQLModel):
 class ClassQueryParams(BaseQueryParams):
     specialization_id: Optional[UUID] = Field(None)
     teacher_id: Optional[UUID] = Field(None)
+    class_type: Optional[str] = Field(None)
+    registration_status: Optional[str] = Field(None)
 
 class ClassListResponse(SQLModel):
     total: int

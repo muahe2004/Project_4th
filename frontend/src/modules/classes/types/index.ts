@@ -6,6 +6,8 @@ export interface IClasses {
     size: number;
     status: string;
     teacher_id: string;
+    class_type?: string | null;
+    registration_status?: string | null;
     created_at?: string;
     updated_at?: string;
 }

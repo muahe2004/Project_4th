@@ -8,6 +8,8 @@ export interface Params {
     skip: number;
     specialization_id?: string;
     teacher_id?: string;
+    class_type?: string;
+    registration_status?: string;
     search?: string;
 }
 
