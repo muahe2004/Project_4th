@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from app.models.schemas.common.query import BaseQueryParams, DateRange
 from app.models.schemas.learning_schedules.learning_schedule_schemas import LearningSchedulePublic
 from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleInClass, TeachingScheduleRoomInfo, TeachingScheduleSubjectInfo, TeachingScheduleTeacherInfo
@@ -38,6 +39,21 @@ from app.services.common import build_date_conditions
 
 class ClassServices:
     @staticmethod
+    def _validate_registration_window(
+        registration_open_at: datetime | None,
+        registration_close_at: datetime | None,
+    ) -> None:
+        if (
+            registration_open_at is not None
+            and registration_close_at is not None
+            and registration_open_at > registration_close_at
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="registration_open_at must be less than or equal to registration_close_at.",
+            )
+
+    @staticmethod
     def get_all(
         *, session: Session, query: ClassQueryParams
     ) -> Tuple[List[ClassesResponse], int]:
@@ -50,6 +66,8 @@ class ClassServices:
             Classes.class_type,
             Classes.registration_status,
             Classes.subject_id,
+            Classes.registration_open_at,
+            Classes.registration_close_at,
             Classes.created_at,
             Classes.updated_at,
             Classes.specialization_id,
@@ -114,9 +132,18 @@ class ClassServices:
     def get_classes_register(
         *, session: Session, query: ClassQueryParams
     ) -> Tuple[List[ClassesForRegister], int]:
+        now = datetime.now()
         conditions = [
             Classes.class_type == ClassesTypeEnum.COURSE_SECTION,
             Classes.registration_status == ClassRegistrationStatus.OPEN,
+            or_(
+                Classes.registration_open_at.is_(None),
+                Classes.registration_open_at <= now,
+            ),
+            or_(
+                Classes.registration_close_at.is_(None),
+                Classes.registration_close_at >= now,
+            ),
         ]
 
         if query.status:
@@ -411,6 +438,10 @@ class ClassServices:
         session: Session,
         class_: ClassCreate,
     ) -> ClassPublic:
+        ClassServices._validate_registration_window(
+            class_.registration_open_at,
+            class_.registration_close_at,
+        )
         existing = session.exec(
             select(Classes).where(Classes.class_code == class_.class_code)
         ).first()
@@ -438,6 +469,18 @@ class ClassServices:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Class not found"
             )
+
+        next_open_at = (
+            class_data.registration_open_at
+            if "registration_open_at" in class_data.model_fields_set
+            else class_.registration_open_at
+        )
+        next_close_at = (
+            class_data.registration_close_at
+            if "registration_close_at" in class_data.model_fields_set
+            else class_.registration_close_at
+        )
+        ClassServices._validate_registration_window(next_open_at, next_close_at)
 
         update_data = class_data.model_dump(exclude_unset=True)
         for field, value in update_data.items():
@@ -495,6 +538,7 @@ class ClassServices:
 
         seen_class_ids: set[uuid.UUID] = set()
         new_student_classes: list[StudentClass] = []
+        now = datetime.now()
 
         for course_section in class_register.course_sections:
             if course_section.class_id in seen_class_ids:
@@ -518,6 +562,24 @@ class ClassServices:
                 )
 
             if target_class.registration_status != ClassRegistrationStatus.OPEN:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Class registration is closed.",
+                )
+
+            if (
+                target_class.registration_open_at is not None
+                and target_class.registration_open_at > now
+            ):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Class registration has not opened yet.",
+                )
+
+            if (
+                target_class.registration_close_at is not None
+                and target_class.registration_close_at < now
+            ):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Class registration is closed.",

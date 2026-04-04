@@ -18,6 +18,8 @@ class ClassBase(SQLModel):
     class_type: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     registration_status: str | None = Field(default="closed", sa_column=Column(String(20), nullable=True, default="closed"))
     subject_id: UUID | None = Field(default=None, foreign_key="subjects.id") # for class_type = course_section
+    registration_open_at: datetime | None = Field( default=None, sa_column=Column(DateTime, nullable=True))
+    registration_close_at: datetime | None = Field( default=None, sa_column=Column(DateTime, nullable=True))
 
 class ClassPublic(ClassBase):
     id: UUID
@@ -85,6 +87,12 @@ class ClassUpdate(SQLModel):
     )
     registration_status: Optional[str] = Field(
         default=None, sa_column=Column(String(20), nullable=True)
+    )
+    registration_open_at: datetime | None = Field(
+        default=None, sa_column=Column(DateTime, nullable=True)
+    )
+    registration_close_at: datetime | None = Field(
+        default=None, sa_column=Column(DateTime, nullable=True)
     )
     updated_at: datetime = Field(
         default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)

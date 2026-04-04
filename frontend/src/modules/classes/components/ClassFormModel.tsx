@@ -9,6 +9,9 @@ import {
     TextField,
 } from "@mui/material";
 import dayjs from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
@@ -57,6 +60,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
         size: 0,
         classType: "",
         registrationStatus: "closed",
+        registrationOpenAt: "",
+        registrationCloseAt: "",
         subjectId: "",
         teacherId: "",
         teacherName: "",
@@ -70,6 +75,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
         size: "",
         classType: "",
         registrationStatus: "",
+        registrationOpenAt: "",
+        registrationCloseAt: "",
         subjectId: "",
         teacherId: "",
         teacherName: "",
@@ -144,9 +151,57 @@ const ClassForm: React.FC<ClassFormProps> = ({
         size: () => "",
         classType: () => "",
         registrationStatus: () => "",
+        registrationOpenAt: () => "",
+        registrationCloseAt: () => "",
         subjectId: () => "",
         teacherName: () => "",
         specializationName: () => "",
+    };
+
+    const validateRegistrationWindow = (openAt: string, closeAt: string): string => {
+        if (!openAt || !closeAt) {
+            return "";
+        }
+        if (dayjs(openAt).isAfter(dayjs(closeAt))) {
+            return "Thời gian mở đăng ký phải nhỏ hơn hoặc bằng thời gian đóng đăng ký";
+        }
+        return "";
+    };
+
+    const toInputDateTime = (value?: string | null): string => {
+        if (!value) {
+            return "";
+        }
+        const parsed = dayjs(value);
+        if (!parsed.isValid()) {
+            return "";
+        }
+        return parsed.format("YYYY-MM-DD");
+    };
+
+    const toDateValue = (value: string): Date | null => {
+        if (!value) {
+            return null;
+        }
+        const parsed = dayjs(value, "YYYY-MM-DD");
+        if (!parsed.isValid()) {
+            return null;
+        }
+        return parsed.toDate();
+    };
+
+    const toDayValue = (value: Date | null): string => {
+        if (!value) {
+            return "";
+        }
+        return dayjs(value).format("YYYY-MM-DD");
+    };
+
+    const toEndOfDayDateTime = (value: string): string | null => {
+        if (!value) {
+            return null;
+        }
+        return dayjs(value).hour(23).minute(59).second(0).format("YYYY-MM-DDTHH:mm:ss");
     };
 
     const handleBlur = (field: keyof typeof formValues) => {
@@ -166,6 +221,15 @@ const ClassForm: React.FC<ClassFormProps> = ({
             if (error) valid = false;
         });
 
+        const windowError = validateRegistrationWindow(
+            formValues.registrationOpenAt,
+            formValues.registrationCloseAt
+        );
+        newErrors.registrationCloseAt = windowError;
+        if (windowError) {
+            valid = false;
+        }
+
         setErrors(newErrors);
         return valid;
     };
@@ -178,6 +242,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 size: initialValues.size || 0,
                 classType: initialValues.class_type || "",
                 registrationStatus: initialValues.registration_status || "closed",
+                registrationOpenAt: toInputDateTime(initialValues.registration_open_at),
+                registrationCloseAt: toInputDateTime(initialValues.registration_close_at),
                 subjectId: initialValues.subject_id || "",
                 teacherId: initialValues.teacher_id || "",
                 teacherName: initialValues.teacher_name || "",
@@ -191,6 +257,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 size: 0,
                 classType: "",
                 registrationStatus: "closed",
+                registrationOpenAt: "",
+                registrationCloseAt: "",
                 subjectId: "",
                 teacherId: "",
                 teacherName: "",
@@ -204,6 +272,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
             size: "",
             classType: "",
             registrationStatus: "",
+            registrationOpenAt: "",
+            registrationCloseAt: "",
             subjectId: "",
             teacherId: "",
             teacherName: "",
@@ -222,6 +292,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
             size: formValues.size,
             class_type: formValues.classType.trim() || null,
             registration_status: formValues.registrationStatus || "closed",
+            registration_open_at: toEndOfDayDateTime(formValues.registrationOpenAt),
+            registration_close_at: toEndOfDayDateTime(formValues.registrationCloseAt),
             subject_id: formValues.subjectId || null,
             specialization_id: formValues.specializationId,
             teacher_id: formValues.teacherId,
@@ -238,6 +310,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 formValues.size !== 0 ||
                 formValues.classType.trim() !== "" ||
                 formValues.registrationStatus !== "closed" ||
+                formValues.registrationOpenAt !== "" ||
+                formValues.registrationCloseAt !== "" ||
                 formValues.subjectId !== "" ||
                 formValues.teacherId !== "" ||
                 formValues.specializationId !== "";
@@ -257,6 +331,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
             size: formValues.size,
             class_type: formValues.classType.trim() || null,
             registration_status: formValues.registrationStatus || "closed",
+            registration_open_at: toEndOfDayDateTime(formValues.registrationOpenAt),
+            registration_close_at: toEndOfDayDateTime(formValues.registrationCloseAt),
             subject_id: formValues.subjectId || null,
             ...(mode === "edit" ? { updated_at: dayjs().format("YYYY-MM-DD") } : {}),
         };
@@ -390,6 +466,64 @@ const ClassForm: React.FC<ClassFormProps> = ({
                                 </MenuItem>
                             ))}
                         </TextField>
+                    </Grid>
+
+                    <Grid size={6}>
+                        <LabelPrimary value="Mở đăng ký lúc" />
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                                value={toDateValue(formValues.registrationOpenAt)}
+                                onChange={(value) => {
+                                    const nextOpenAt = toDayValue(value);
+                                    const error = validateRegistrationWindow(
+                                        nextOpenAt,
+                                        formValues.registrationCloseAt
+                                    );
+                                    setFormValues((prev) => ({
+                                        ...prev,
+                                        registrationOpenAt: nextOpenAt,
+                                    }));
+                                    setErrors((prev) => ({ ...prev, registrationCloseAt: error }));
+                                }}
+                                className="main-text__field primary-dialog-input"
+                                slotProps={{
+                                    textField: {
+                                        fullWidth: true,
+                                        error: Boolean(errors.registrationOpenAt),
+                                        helperText: errors.registrationOpenAt,
+                                    },
+                                }}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
+
+                    <Grid size={6}>
+                        <LabelPrimary value="Đóng đăng ký lúc" />
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                                value={toDateValue(formValues.registrationCloseAt)}
+                                onChange={(value) => {
+                                    const nextCloseAt = toDayValue(value);
+                                    const error = validateRegistrationWindow(
+                                        formValues.registrationOpenAt,
+                                        nextCloseAt
+                                    );
+                                    setFormValues((prev) => ({
+                                        ...prev,
+                                        registrationCloseAt: nextCloseAt,
+                                    }));
+                                    setErrors((prev) => ({ ...prev, registrationCloseAt: error }));
+                                }}
+                                className="main-text__field primary-dialog-input"
+                                slotProps={{
+                                    textField: {
+                                        fullWidth: true,
+                                        error: Boolean(errors.registrationCloseAt),
+                                        helperText: errors.registrationCloseAt,
+                                    },
+                                }}
+                            />
+                        </LocalizationProvider>
                     </Grid>
 
                     <Grid size={6}>
