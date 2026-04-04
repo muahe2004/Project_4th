@@ -25,7 +25,7 @@ class TeacherBase(BaseModel):
     name: str = Field(sa_column=Column(String(100), nullable=False))
     date_of_birth: Optional[datetime] = Field(default=None)
     gender: Optional[str] = Field(
-        default=None, sa_column=Column(String(1), nullable=False)
+        default=None, sa_column=Column(String(1), nullable=True)
     )
     email: Optional[str] = Field(
         default=None, sa_column=Column(String(100), nullable=False, unique=True)

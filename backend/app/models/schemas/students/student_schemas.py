@@ -3,6 +3,7 @@ from uuid import UUID as UUID_TYPE
 from sqlmodel import SQLModel, Field, Column, String, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from typing import List, Optional
+from enum import StrEnum 
 
 from app.models.schemas.common.query import BaseQueryParams
 from app.models.schemas.relatives.relative_schemas import (
@@ -24,7 +25,7 @@ class StudentBase(BaseModel):
     name: str = Field(sa_column=Column(String(100), nullable=False))
     date_of_birth: Optional[datetime] = Field(default=None)
     gender: Optional[str] = Field(
-        default=None, sa_column=Column(String(1), nullable=False)
+        default=None, sa_column=Column(String(1), nullable=True)
     )
     email: Optional[str] = Field(
         default=None, sa_column=Column(String(100), nullable=False, unique=True)
@@ -85,6 +86,9 @@ class StudentUpdate(BaseModel):
     name: Optional[str] = Field(
         default=None, sa_column=Column(String(100), nullable=True)
     )
+    gender: Optional[str] = Field(
+        default=None, sa_column=Column(String(1), nullable=True)
+    )
     email: Optional[str] = Field(
         default=None, sa_column=Column(String(100), nullable=False, unique=True)
     )
@@ -131,3 +135,44 @@ class ListStudentResponse(BaseModel):
 
 class StudentQueryParams(BaseQueryParams):
     class_id: Optional[UUID_TYPE] = Field(None)
+
+class StudentFileData(SQLModel):
+    student_code: str | None = Field(default=None)
+    name: str | None = Field(default=None)
+    gender: str | None = Field(default=None)
+    date_of_birth: datetime | None = Field(default=None)
+    email: str | None = Field(default=None)
+    phone: str | None = Field(default=None)
+    address: str | None = Field(default=None)
+    class_id: UUID_TYPE | None = Field(default=None)
+    class_code: str | None = Field(default=None)
+    class_name: str | None = Field(default=None)
+
+
+class StudentFileInvalidRow(StudentFileData):
+    row: int
+    errors: list[str] = Field(default_factory=list)
+
+
+class StudentFileInfo(SQLModel):
+    file_name: str
+    headers: list[str] = Field(default_factory=list)
+    header_row: int
+    total_rows: int
+    valid_rows_count: int
+    invalid_rows_count: int
+
+class StudentFileDataResponse(SQLModel):
+    file_information: StudentFileInfo
+    students: list[StudentFileData] = Field(default_factory=list)
+    invalid_students: list[StudentFileInvalidRow] = Field(default_factory=list)
+
+class StudentUploadField(StrEnum):
+    CODE = "student_code"
+    NAME = "name"
+    GENDER = "gender"
+    CLASS_CODE = "class_code"
+    DATE_OF_BIRTH = "date_of_birth"
+    ADDRESS = "address"
+    PHONE = "phone"
+    EMAIL = "email"

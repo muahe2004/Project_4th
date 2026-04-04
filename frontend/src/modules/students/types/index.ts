@@ -107,3 +107,36 @@ export interface IStudentRelativesCreate {
     address?: string | null;
     relationship?: string | null;
 }
+
+export interface IStudentFileData {
+    student_code?: string | null;
+    name?: string | null;
+    gender?: string | null;
+    date_of_birth?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    class_id?: string | null;
+    class_code?: string | null;
+    class_name?: string | null;
+}
+
+export interface IStudentFileInvalidRow extends IStudentFileData {
+    row: number;
+    errors: string[];
+}
+
+export interface IStudentFileInfo {
+    file_name: string;
+    headers: string[];
+    header_row: number;
+    total_rows: number;
+    valid_rows_count: number;
+    invalid_rows_count: number;
+}
+
+export interface IStudentUploadResponse {
+    file_information: IStudentFileInfo;
+    students: IStudentFileData[];
+    invalid_students: IStudentFileInvalidRow[];
+}

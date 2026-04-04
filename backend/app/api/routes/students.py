@@ -1,10 +1,12 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, UploadFile, File
 from app.api.deps import SessionDep
 from app.models.schemas.students.student_schemas import (
     ListStudentResponse,
     StudentCreateResponse,
+    StudentFileData,
+    StudentFileDataResponse,
     StudentPublic,
     StudentCreateWithUserInfor,
     StudentQueryParams,
@@ -66,3 +68,24 @@ def delete_multiple_studentes(
     session: SessionDep, student_ids: List[uuid.UUID]
 ) -> List[StudentDeleteResponse]:
     return StudentServices.delete_many(session=session, student_ids=student_ids)
+
+
+# =========================== upload student file (preview) ===========================
+@router.post("/upload-file")
+async def upload_student_file(
+    session: SessionDep,
+    file: UploadFile = File(...),
+) -> StudentFileDataResponse:
+    return await StudentServices.upload_file_student(session=session, file=file)
+
+
+# =========================== import students to DB ===========================
+@router.post("/import-list", response_model=List[StudentFileData])
+def import_list_student(
+    session: SessionDep,
+    list_student: List[StudentFileData],
+) -> List[StudentFileData]:
+    return StudentServices.import_list_student(
+        session=session,
+        list_student=list_student,
+    )

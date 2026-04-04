@@ -1,12 +1,15 @@
 import uuid
+from io import BytesIO
 from datetime import datetime
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, UploadFile
 from sqlmodel import Session, and_, func, or_, select
 from starlette import status
 from app.middleware.hashing import hash_password
 from typing import List
+from openpyxl import load_workbook
 
 from app.models.models import (
+    Classes,
     Relatives,
     StudentClass,
     Students,
@@ -15,6 +18,11 @@ from app.models.models import (
 )
 from app.models.schemas.students.student_schemas import (
     StudentCreateResponse,
+    StudentFileData,
+    StudentFileDataResponse,
+    StudentFileInfo,
+    StudentFileInvalidRow,
+    StudentUploadField,
     StudentPublic,
     StudentCreateWithUserInfor,
     StudentUpdate,
@@ -30,6 +38,7 @@ from app.models.schemas.relatives.relative_schemas import RelativePublic
 from app.services.user_information import User_Information_Services
 from app.services.relatives import RelativeServices
 from app.services.classes import ClassServices
+from app.services.common import parse_excel_datetime, to_clean_text
 from app.enums.status import StatusEnum
 from app.enums.class_type import ClassTypeEnum
 
@@ -41,6 +50,19 @@ def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
 def _sanitize_user_information_payload(payload: dict) -> dict:
     ignored_fields = {"student_id", "teacher_id", "created_at", "updated_at", "id"}
     return {key: value for key, value in payload.items() if key not in ignored_fields}
+
+
+def _normalize_gender(raw_value: object) -> str | None:
+    text_value = to_clean_text(raw_value)
+    if not text_value:
+        return None
+
+    normalized = text_value.strip().lower()
+    if normalized == "nam":
+        return "1"
+    if normalized in {"nữ", "nu"}:
+        return "2"
+    return "3"
 
 
 class StudentServices:
@@ -495,3 +517,299 @@ class StudentServices:
             results.append(StudentDeleteResponse(id=str(student_id), message=message))
 
         return results
+
+    @staticmethod
+    async def upload_file_student(
+        *,
+        session: Session,
+        file: UploadFile,
+    ) -> StudentFileDataResponse:
+        # validate file extension
+        filename = file.filename or ""
+        if not filename.lower().endswith(".xlsx"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only .xlsx files are supported.",
+            )
+
+        # read file content
+        content = await file.read()
+        if not content:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Uploaded file is empty.",
+            )
+
+        # open workbook and get active sheet
+        workbook = load_workbook(BytesIO(content), data_only=True)
+        worksheet = workbook.active
+
+        # read all rows from sheet
+        rows = list(worksheet.iter_rows(values_only=True))
+        if not rows:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Excel sheet is empty.",
+            )
+
+        # mapping header to field
+        expected_header_labels = {
+            StudentUploadField.CODE: "Mã SV",
+            StudentUploadField.NAME: "Họ và tên",
+            StudentUploadField.GENDER: "GT",
+            StudentUploadField.CLASS_CODE: "Lớp",
+            StudentUploadField.DATE_OF_BIRTH: "Ngày sinh",
+            StudentUploadField.ADDRESS: "Nơi sinh",
+            StudentUploadField.PHONE: "Điện thoại",
+            StudentUploadField.EMAIL: "Email",
+        }
+        header_row_index = 6
+        if len(rows) < header_row_index:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    f"File does not contain header row {header_row_index}. "
+                    "Please use the correct template."
+                ),
+            )
+
+        # student_code -> column 1, name -> column 2, class_code -> column 4,...
+        fixed_column_indexes = {
+            StudentUploadField.CODE: 1,
+            StudentUploadField.NAME: 2,
+            StudentUploadField.GENDER: 3,
+            StudentUploadField.CLASS_CODE: 4,
+            StudentUploadField.DATE_OF_BIRTH: 5,
+            StudentUploadField.ADDRESS: 6,
+            StudentUploadField.PHONE: 7,
+            StudentUploadField.EMAIL: 8,
+        }
+
+        parsed_rows: list[StudentFileData] = []
+        invalid_rows: list[StudentFileInvalidRow] = []
+
+        # parse each data row below header row
+        for row_index, row_values in enumerate(rows[header_row_index:], start=header_row_index + 1):
+            if row_values is None:
+                continue
+
+            # get value by fixed template column index
+            def cell(field_name: StudentUploadField) -> object | None:
+                col_index = fixed_column_indexes[field_name]
+                if col_index >= len(row_values):
+                    return None
+                return row_values[col_index]
+
+            student_code = to_clean_text(cell(StudentUploadField.CODE))
+            student_name = to_clean_text(cell(StudentUploadField.NAME))
+            gender = _normalize_gender(cell(StudentUploadField.GENDER))
+            date_of_birth_raw = cell(StudentUploadField.DATE_OF_BIRTH)
+            email = to_clean_text(cell(StudentUploadField.EMAIL))
+            phone = to_clean_text(cell(StudentUploadField.PHONE))
+            address = to_clean_text(cell(StudentUploadField.ADDRESS))
+            class_code = to_clean_text(cell(StudentUploadField.CLASS_CODE))
+            class_id = None
+            class_name = None
+            if class_code:
+                class_record = session.exec(
+                    select(Classes).where(Classes.class_code == class_code)
+                ).first()
+                if class_record:
+                    class_id = class_record.id
+                    class_name = class_record.class_name
+
+            # skip rows that are fully empty in target columns
+            if all(
+                value in (None, "")
+                for value in (
+                    student_code,
+                    student_name,
+                    date_of_birth_raw,
+                    email,
+                    phone,
+                    address,
+                    class_code,
+                )
+            ):
+                continue
+
+            # parse and validate date field
+            try:
+                date_of_birth = parse_excel_datetime(date_of_birth_raw)
+            except ValueError as exc:
+                invalid_rows.append(
+                    StudentFileInvalidRow(
+                        row=row_index,
+                        student_code=student_code,
+                        name=student_name,
+                        gender=gender,
+                        date_of_birth=None,
+                        email=email,
+                        phone=phone,
+                        address=address,
+                        class_id=class_id,
+                        class_code=class_code,
+                        class_name=class_name,
+                        errors=[str(exc)],
+                    )
+                )
+                continue
+
+            # validate required fields
+            row_errors: list[str] = []
+            if not student_code:
+                row_errors.append("Student Code is required.")
+            if not student_name:
+                row_errors.append("Student Name is required.")
+            if not gender:
+                row_errors.append("Gender is required.")
+            if not email:
+                row_errors.append("Email is required.")
+            if not class_code:
+                row_errors.append("Class Code is required.")
+
+            if row_errors:
+                invalid_rows.append(
+                    StudentFileInvalidRow(
+                        row=row_index,
+                        student_code=student_code,
+                        name=student_name,
+                        gender=gender,
+                        date_of_birth=date_of_birth,
+                        email=email,
+                        phone=phone,
+                        address=address,
+                        class_id=class_id,
+                        class_code=class_code,
+                        class_name=class_name,
+                        errors=row_errors,
+                    )
+                )
+                continue
+
+            parsed_rows.append(
+                StudentFileData(
+                    student_code=student_code,
+                    name=student_name,
+                    gender=gender,
+                    date_of_birth=date_of_birth,
+                    email=email,
+                    phone=phone,
+                    address=address,
+                    class_id=class_id,
+                    class_code=class_code,
+                    class_name=class_name,
+                )
+            )
+
+        return StudentFileDataResponse(
+            file_information=StudentFileInfo(
+                file_name=filename,
+                headers=list(expected_header_labels.values()),
+                header_row=header_row_index,
+                total_rows=max(len(rows) - header_row_index, 0),
+                valid_rows_count=len(parsed_rows),
+                invalid_rows_count=len(invalid_rows),
+            ),
+            students=parsed_rows,
+            invalid_students=invalid_rows,
+        )
+
+    @staticmethod
+    def import_list_student(
+        *,
+        session: Session,
+        list_student: List[StudentFileData],
+    ) -> List[StudentFileData]:
+        imported_students: list[StudentFileData] = []
+
+        for student_item in list_student:
+            student_code = (student_item.student_code or "").strip()
+            student_name = (student_item.name or "").strip()
+            email = (student_item.email or "").strip()
+            gender = (student_item.gender or "").strip()
+
+            if not student_code or not student_name or not email or not gender:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="student_code, name, gender, email are required.",
+                )
+            if gender not in {"1", "2", "3"}:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="gender must be one of: 1, 2, 3.",
+                )
+
+            existed_student = session.exec(
+                select(Students).where(
+                    or_(
+                        Students.student_code == student_code,
+                        Students.email == email,
+                    )
+                )
+            ).first()
+            if existed_student:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Student already exists: {student_code} / {email}",
+                )
+
+            new_student = Students(
+                student_code=student_code,
+                name=student_name,
+                date_of_birth=student_item.date_of_birth,
+                gender=gender,
+                email=email,
+                phone=student_item.phone,
+                address=student_item.address,
+                training_program=None,
+                course=None,
+                status=StatusEnum.ACTIVE,
+                password=hash_password(student_code),
+            )
+            session.add(new_student)
+            session.flush()
+
+            # resolve class_id by priority:
+            # 1) use provided class_id
+            # 2) fallback query by class_code
+            resolved_class_id = student_item.class_id
+            resolved_class_code = student_item.class_code
+            resolved_class_name = student_item.class_name
+
+            if resolved_class_id is None and resolved_class_code:
+                class_record = session.exec(
+                    select(Classes).where(Classes.class_code == resolved_class_code)
+                ).first()
+                if class_record:
+                    resolved_class_id = class_record.id
+                    resolved_class_name = class_record.class_name
+
+            # only insert student_class when class_id is resolved
+            if resolved_class_id is not None:
+                session.add(
+                    StudentClass(
+                        student_id=new_student.id,
+                        class_id=resolved_class_id,
+                        status=StatusEnum.ACTIVE,
+                        class_type=ClassTypeEnum.PRIMARY,
+                    )
+                )
+
+            imported_students.append(
+                StudentFileData(
+                    student_code=new_student.student_code,
+                    name=new_student.name,
+                    gender=new_student.gender,
+                    date_of_birth=new_student.date_of_birth,
+                    email=new_student.email,
+                    phone=new_student.phone,
+                    address=new_student.address,
+                    class_id=resolved_class_id,
+                    class_code=resolved_class_code,
+                    class_name=resolved_class_name,
+                )
+            )
+
+        session.commit()
+        return imported_students
