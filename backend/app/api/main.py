@@ -19,6 +19,7 @@ from app.api.routes import (
     examination_schedules,
     auth,
     student_class,
+    export_file,
 )
 
 api_router = APIRouter()
@@ -60,3 +61,4 @@ api_router.include_router(
     student_class.router, prefix="/student_class", tags=["student_class"]
 )
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(export_file.router, prefix="/export-file", tags=["export-file"])
