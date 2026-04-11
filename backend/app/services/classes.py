@@ -20,6 +20,7 @@ from app.models.schemas.classes.class_schemas import (
     ClassUpdate,
     ClassDeleteResponse,
     ClassesForRegister,
+    ClassesRegisterSchedule,
     ClassesRegisterSpecialization,
     ClassesRegisterTeacher,
     ClassesRegisterSubject,
@@ -189,6 +190,45 @@ class ClassServices:
 
         rows = session.exec(statement).all()
 
+        class_ids = [class_row.id for class_row, _, _, _ in rows]
+        schedules_by_class_id: dict = {}
+        registered_class_ids: set[uuid.UUID] = set()
+
+        if class_ids:
+            schedule_rows = session.exec(
+                select(
+                    LearningSchedules.class_id,
+                    LearningSchedules.date,
+                    LearningSchedules.start_period,
+                    LearningSchedules.end_period,
+                )
+                .where(LearningSchedules.class_id.in_(class_ids))
+                .order_by(
+                    LearningSchedules.date.asc(),
+                    LearningSchedules.start_period.asc(),
+                    LearningSchedules.end_period.asc(),
+                )
+            ).all()
+
+            for schedule_row in schedule_rows:
+                schedules_by_class_id.setdefault(schedule_row.class_id, []).append(
+                    ClassesRegisterSchedule(
+                        date=schedule_row.date,
+                        start_period=schedule_row.start_period,
+                        end_period=schedule_row.end_period,
+                    )
+                )
+
+        if query.student_id and class_ids:
+            registered_class_ids = set(
+                session.exec(
+                    select(StudentClass.class_id).where(
+                        StudentClass.student_id == query.student_id,
+                        StudentClass.class_id.in_(class_ids),
+                    )
+                ).all()
+            )
+
         classes_register = []
         for class_row, teacher_row, specialization_row, subject_row in rows:
             classes_register.append(
@@ -212,6 +252,8 @@ class ClassServices:
                         subject_name=subject_row.name,
                         subject_credit=subject_row.credit,
                     ),
+                    schedule_info=schedules_by_class_id.get(class_row.id, []),
+                    is_registered=class_row.id in registered_class_ids,
                 )
             )
 

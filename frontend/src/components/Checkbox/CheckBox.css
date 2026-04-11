@@ -1,0 +1,29 @@
+.uni-checkbox {
+    padding: 0px !important;
+    color: rgba(15, 23, 42, 0.48) !important;
+}
+
+.uni-checkbox.Mui-checked {
+    color: #343d60 !important;
+}
+
+.uni-checkbox.Mui-disabled {
+    color: rgba(15, 23, 42, 0.24) !important;
+    opacity: 0.55;
+    cursor: not-allowed !important;
+}
+
+.uni-checkbox.Mui-disabled .MuiSvgIcon-root {
+    color: rgba(15, 23, 42, 0.24) !important;
+}
+
+.uni-checkbox-label {
+    margin: 0 !important;
+    user-select: none;
+}
+
+.uni-checkbox-label .MuiFormControlLabel-label {
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 500;
+}

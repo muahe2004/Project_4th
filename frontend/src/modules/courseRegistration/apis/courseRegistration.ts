@@ -11,6 +11,7 @@ export interface Params {
     status?: string;
     specialization_id?: string;
     teacher_id?: string;
+    student_id?: string;
 }
 
 const getClassesForRegister = async (

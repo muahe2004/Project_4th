@@ -1,5 +1,9 @@
 import type { IClasses } from "../../classes/types";
 
+export interface IClassesForRegisterInfo extends IClasses {
+    id: string;
+}
+
 export interface IClassesRegisterTeacher {
     teacher_id: string;
     teacher_name: string;
@@ -21,11 +25,19 @@ export interface IClassesRegisterSubject {
     subject_credit: number;
 }
 
+export interface IClassesRegisterSchedule {
+    date: string;
+    start_period: number;
+    end_period: number;
+}
+
 export interface IClassesForRegister {
-    class_info: IClasses;
+    class_info: IClassesForRegisterInfo;
     teacher_info: IClassesRegisterTeacher;
     specialization_info: IClassesRegisterSpecialization;
     subject_info: IClassesRegisterSubject;
+    schedule_info: IClassesRegisterSchedule[];
+    is_registered: boolean;
 }
 
 export interface IClassesForRegisterResponse {

@@ -189,6 +189,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
             size: "",
             classType: "",
             registrationStatus: "",
+            subjectId: "",
             teacherId: "",
             teacherName: "",
             specializationId: "",

@@ -1,0 +1,118 @@
+.mini-calender {
+    width: 360px;
+    padding: 20px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.mini-calender__eyebrow {
+    color: rgba(15, 23, 42, 0.58);
+    font-size: 0.78rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+}
+
+.mini-calender__range {
+    margin-top: 4px !important;
+    color: #0f172a;
+    font-size: 0.98rem !important;
+    font-weight: 500 !important;
+}
+
+.mini-calender__calendar {
+    width: 100%;
+    margin: 0;
+    background-color: transparent;
+}
+
+.mini-calender__calendar .MuiPickersCalendarHeader-root {
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.mini-calender__calendar .MuiPickersCalendarHeader-label {
+    color: #0f172a;
+    font-size: 1.6rem;
+    font-weight: 500;
+}
+
+.mini-calender__calendar .MuiPickersArrowSwitcher-root button {
+    color: rgba(15, 23, 42, 0.72);
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.mini-calender__calendar .MuiDayCalendar-header {
+    justify-content: space-between;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.mini-calender__calendar .MuiDayCalendar-weekDayLabel {
+    width: 40px;
+    color: rgba(15, 23, 42, 0.72);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.mini-calender__calendar .MuiDayCalendar-weekContainer {
+    justify-content: space-between;
+    margin: 0;
+}
+
+.mini-calender__calendar .MuiPickersDay-root {
+    color: #0f172a;
+}
+
+.mini-calender__calendar .Mui-disabled {
+    -webkit-text-fill-color: #0f172a;
+}
+
+.mini-calender__day-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    margin: 0 1px;
+    background-color: transparent;
+}
+
+.mini-calender__day {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: rgba(15, 23, 42, 0.92);
+}
+
+.mini-calender__day--outside {
+    color: rgba(15, 23, 42, 0.34);
+}
+
+.mini-calender__day--selected {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-color: #343d60 !important;
+}
+
+.mini-calender__day--scheduled {
+    color: #343d60 !important;
+    -webkit-text-fill-color: #343d60 !important;
+    background-color: rgba(52, 61, 96, 0.16) !important;
+    border: 1px solid rgba(52, 61, 96, 0.22) !important;
+}
+
+.mini-calender__calendar .mini-calender__day--selected.Mui-disabled {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.mini-calender__calendar .mini-calender__day--scheduled.Mui-disabled {
+    color: #343d60 !important;
+    -webkit-text-fill-color: #343d60 !important;
+}

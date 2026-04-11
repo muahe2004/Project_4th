@@ -3,3 +3,46 @@
 .department-name-tcell {
     width: 30%;
 }
+
+.course-registration__content {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.course-registration__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.course-registration__toolbar > :first-child {
+    flex: 1 1 auto;
+}
+
+.course-registration__table-section {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.course-registration__calendar-section {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 1200px) {
+    .course-registration__content {
+        flex-direction: column-reverse;
+    }
+
+    .course-registration__calendar-section {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .course-registration__toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

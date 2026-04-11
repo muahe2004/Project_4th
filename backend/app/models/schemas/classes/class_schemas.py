@@ -55,11 +55,18 @@ class ClassesRegisterSubject(SQLModel):
     subject_name: str
     subject_credit: int
 
+class ClassesRegisterSchedule(SQLModel):
+    date: datetime = Field(sa_column=Column(DateTime, nullable=False))
+    start_period: int = Field(sa_column=Column(Integer, nullable=False))
+    end_period: int = Field(sa_column=Column(Integer, nullable=False))
+
 class ClassesForRegister(SQLModel):
     class_info: ClassPublic
     teacher_info: ClassesRegisterTeacher
     specialization_info: ClassesRegisterSpecialization
     subject_info: ClassesRegisterSubject
+    schedule_info: List[ClassesRegisterSchedule] = []
+    is_registered: bool = False
 
 class ClassesForRegisterResponse(SQLModel):
     data: List[ClassesForRegister]
@@ -105,6 +112,7 @@ class ClassDeleteResponse(SQLModel):
 class ClassQueryParams(BaseQueryParams):
     specialization_id: Optional[UUID] = Field(None)
     teacher_id: Optional[UUID] = Field(None)
+    student_id: Optional[UUID] = Field(None)
     class_type: Optional[str] = Field(None)
     registration_status: Optional[str] = Field(None)
 
