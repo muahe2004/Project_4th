@@ -97,3 +97,45 @@ class TeachingScheduleSearchParams(BaseQueryParams):
 class ListTeachingScheduleResponse(PydanticBaseModel):
     data: list[TeachingScheduleResponse]
     total: int
+
+class ImportTeachingSchedulePeriod(SQLModel):
+    start_date: datetime
+    end_date: datetime
+
+class ImportTeachingScheduleSubject(SQLModel):
+    subject_code: str
+    subject_name: str
+
+class ImportTeachingScheduleTeacher(SQLModel):
+    teacher_code: str
+    teacher_name: str
+
+class ImportTeachingCalenderDay(SQLModel):
+    weekday_number: int
+    date: datetime
+
+
+class ImportTeachingCalenderImportedItem(SQLModel):
+    row: int
+    date: datetime
+    learning_schedule_id: UUID
+    teaching_schedule_id: UUID
+
+
+class ImportTeachingCalenderItem(SQLModel):
+    subject: ImportTeachingScheduleSubject
+    teacher: ImportTeachingScheduleTeacher
+    weeekday: int
+    room: int
+    lesson_periods: str
+    study_weeks: str
+
+
+class ImportTeachingCalenderResponse(SQLModel):
+    items: list[ImportTeachingCalenderImportedItem] = Field(default_factory=list)
+
+
+class ImportTeachingCalenderInput(SQLModel):
+    period: ImportTeachingSchedulePeriod
+    class_code: str
+    schedules: list[ImportTeachingCalenderItem] = Field(default_factory=list)

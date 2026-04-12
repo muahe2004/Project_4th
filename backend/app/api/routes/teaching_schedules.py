@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.common.query import DateRange
 from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
+    ImportTeachingCalenderInput,
+    ImportTeachingCalenderResponse,
     ListTeachingScheduleResponse,
     TeachingScheduleSearchParams,
     TeachingSchedulPublic,
@@ -73,3 +75,16 @@ def delete_teaching_schedule(
     session: SessionDep, id: uuid.UUID
 ) -> TeachingScheduleDeleteResponse:
     return TeachingScheduleServices.delete(session=session, teaching_schedule_id=id)
+
+
+@router.post("/import-calender", response_model=ImportTeachingCalenderResponse)
+def import_teaching_calender(
+    request: Request,
+    session: SessionDep,
+    calender: ImportTeachingCalenderInput,
+) -> ImportTeachingCalenderResponse:
+    return TeachingScheduleServices.import_calender(
+        session=session,
+        request=request,
+        calender=calender,
+    )

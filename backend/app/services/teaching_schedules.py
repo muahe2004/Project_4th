@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 from app.enums.status import StatusEnum
 from fastapi import HTTPException, Request
@@ -21,6 +21,10 @@ from app.models.schemas.learning_schedules.learning_schedule_schemas import (
 )
 from app.models.schemas.common.query import DateRange
 from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
+    ImportTeachingCalenderDay,
+    ImportTeachingCalenderInput,
+    ImportTeachingCalenderImportedItem,
+    ImportTeachingCalenderResponse,
     TeachingScheduleClassInfo,
     TeachingScheduleRoomInfo,
     TeachingScheduleResponse,
@@ -38,6 +42,85 @@ from app.services.common import build_date_conditions
 
 
 class TeachingScheduleServices:
+    @staticmethod
+    def _validate_weekday_number(weekday_number: int) -> None:
+        if weekday_number not in {2, 3, 4, 5, 6, 7, 8}:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="weekday must be one of: 2, 3, 4, 5, 6, 7, 8.",
+            )
+
+    @staticmethod
+    def _weekday_number(date_value: datetime) -> int:
+        weekday_map = {
+            0: 2,
+            1: 3,
+            2: 4,
+            3: 5,
+            4: 6,
+            5: 7,
+            6: 8,
+        }
+        return weekday_map[date_value.weekday()]
+
+    @staticmethod
+    def _parse_lesson_periods(lesson_periods: str) -> list[tuple[int, int]]:
+        blocks: list[tuple[int, int]] = []
+        block_start: int | None = None
+
+        for index, char in enumerate(lesson_periods, start=1):
+            if char != "-" and block_start is None:
+                block_start = index
+            elif char == "-" and block_start is not None:
+                blocks.append((block_start, index - 1))
+                block_start = None
+
+        if block_start is not None:
+            blocks.append((block_start, len(lesson_periods)))
+
+        if not blocks:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="lesson_periods must contain at least one study period.",
+            )
+        return blocks
+
+    @staticmethod
+    def _parse_study_week_indexes(study_weeks: str) -> list[int]:
+        indexes = [index for index, char in enumerate(study_weeks, start=1) if char != "-"]
+        if not indexes:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="study_weeks must contain at least one study week.",
+            )
+        return indexes
+
+    @staticmethod
+    def _build_duplicate_schedule_message(
+        *,
+        class_code: str,
+        subject_code: str,
+        subject_name: str,
+        date_value: datetime,
+        start_period: int,
+        end_period: int,
+    ) -> str:
+        return (
+            f"Lớp {class_code} đã có lịch học môn {subject_code} - {subject_name} "
+            f"vào ngày {date_value.strftime('%d/%m/%Y')} từ tiết {start_period} đến tiết {end_period}"
+        )
+
+    @staticmethod
+    def _resolve_date_for_week(
+        *,
+        period_start_date: datetime,
+        week_index: int,
+        weekday_number: int,
+    ) -> datetime:
+        start_weekday_number = TeachingScheduleServices._weekday_number(period_start_date)
+        weekday_offset = (weekday_number - start_weekday_number) % 7
+        return period_start_date + timedelta(days=((week_index - 1) * 7) + weekday_offset)
+
     @staticmethod
     def get_all(
         *, session: Session, query: TeachingScheduleSearchParams, date_range: DateRange
@@ -391,3 +474,209 @@ class TeachingScheduleServices:
             id=str(teaching_schedule.id),
             message="Teaching Schedule and related Learning Schedule deleted successfully",
         )
+    
+    @staticmethod
+    def import_calender(
+        *, session: Session, request: Request, calender: ImportTeachingCalenderInput 
+    ) -> ImportTeachingCalenderResponse:
+        start_date = calender.period.start_date
+        end_date = calender.period.end_date
+
+        if end_date < start_date:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="end_date must be greater than or equal to start_date.",
+            )
+
+        class_record = session.exec(
+            select(Classes).where(Classes.class_code == calender.class_code)
+        ).first()
+        if not class_record:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Class not found with class_code={calender.class_code}",
+            )
+
+        imported_items: list[ImportTeachingCalenderImportedItem] = []
+        pending_learning_schedules: list[dict] = []
+
+        subject_codes = list({schedule.subject.subject_code for schedule in calender.schedules})
+        teacher_codes = list({schedule.teacher.teacher_code for schedule in calender.schedules})
+        room_numbers = list({schedule.room for schedule in calender.schedules})
+
+        subject_records = session.exec(
+            select(Subjects).where(Subjects.subject_code.in_(subject_codes))
+        ).all() if subject_codes else []
+        teacher_records = session.exec(
+            select(Teachers).where(Teachers.teacher_code.in_(teacher_codes))
+        ).all() if teacher_codes else []
+        room_records = session.exec(
+            select(Rooms).where(Rooms.room_number.in_(room_numbers))
+        ).all() if room_numbers else []
+
+        subject_map = {subject.subject_code: subject for subject in subject_records}
+        teacher_map = {teacher.teacher_code: teacher for teacher in teacher_records}
+        room_map = {room.room_number: room for room in room_records}
+
+        try:
+            for row_index, schedule in enumerate(calender.schedules, start=1):
+                subject_record = subject_map.get(schedule.subject.subject_code)
+                if not subject_record:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail=f"Subject not found with subject_code={schedule.subject.subject_code}",
+                    )
+
+                teacher_record = teacher_map.get(schedule.teacher.teacher_code)
+                if not teacher_record:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail=f"Teacher not found with teacher_code={schedule.teacher.teacher_code}",
+                    )
+
+                room_record = room_map.get(schedule.room)
+                if not room_record:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail=f"Room not found with room_number={schedule.room}",
+                    )
+
+                period_blocks = TeachingScheduleServices._parse_lesson_periods(
+                    schedule.lesson_periods
+                )
+                study_week_indexes = TeachingScheduleServices._parse_study_week_indexes(
+                    schedule.study_weeks
+                )
+                weekday_number = schedule.weeekday
+                TeachingScheduleServices._validate_weekday_number(weekday_number)
+
+                for week_index in study_week_indexes:
+                    matched_date = TeachingScheduleServices._resolve_date_for_week(
+                        period_start_date=start_date,
+                        week_index=week_index,
+                        weekday_number=weekday_number,
+                    )
+                    if matched_date > end_date:
+                        continue
+
+                    for start_period, end_period in period_blocks:
+                        pending_learning_schedules.append(
+                            {
+                                "row": row_index,
+                                "class_id": class_record.id,
+                                "class_code": class_record.class_code,
+                                "subject_id": subject_record.id,
+                                "subject_code": subject_record.subject_code,
+                                "subject_name": subject_record.name,
+                                "teacher_id": teacher_record.id,
+                                "room_id": room_record.id,
+                                "date": matched_date,
+                                "start_period": start_period,
+                                "end_period": end_period,
+                            }
+                        )
+
+            subject_ids = list({item["subject_id"] for item in pending_learning_schedules})
+            existing_learning_schedules = session.exec(
+                select(LearningSchedules).where(
+                    LearningSchedules.class_id == class_record.id,
+                    LearningSchedules.subject_id.in_(subject_ids),
+                    LearningSchedules.date >= start_date,
+                    LearningSchedules.date <= end_date,
+                    or_(
+                        LearningSchedules.status == StatusEnum.ACTIVE,
+                        LearningSchedules.status.is_(None),
+                    ),
+                )
+            ).all() if subject_ids else []
+
+            existing_group_map: dict[tuple[uuid.UUID, datetime], list[LearningSchedules]] = {}
+            for existing_item in existing_learning_schedules:
+                group_key = (existing_item.subject_id, existing_item.date)
+                existing_group_map.setdefault(group_key, []).append(existing_item)
+
+            pending_group_map: dict[tuple[uuid.UUID, datetime], list[dict]] = {}
+            for item in pending_learning_schedules:
+                group_key = (item["subject_id"], item["date"])
+                pending_group_map.setdefault(group_key, []).append(item)
+
+            for group_key, pending_items in pending_group_map.items():
+                pending_items.sort(key=lambda item: (item["start_period"], item["end_period"]))
+
+                for pending_item in pending_items:
+                    for existing_item in existing_group_map.get(group_key, []):
+                        if (
+                            existing_item.start_period <= pending_item["end_period"]
+                            and existing_item.end_period >= pending_item["start_period"]
+                        ):
+                            raise HTTPException(
+                                status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=TeachingScheduleServices._build_duplicate_schedule_message(
+                                    class_code=pending_item["class_code"],
+                                    subject_code=pending_item["subject_code"],
+                                    subject_name=pending_item["subject_name"],
+                                    date_value=pending_item["date"],
+                                    start_period=existing_item.start_period,
+                                    end_period=existing_item.end_period,
+                                ),
+                            )
+
+                for index, pending_item in enumerate(pending_items[:-1]):
+                    next_item = pending_items[index + 1]
+                    if pending_item["end_period"] >= next_item["start_period"]:
+                        raise HTTPException(
+                            status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=TeachingScheduleServices._build_duplicate_schedule_message(
+                                class_code=pending_item["class_code"],
+                                subject_code=pending_item["subject_code"],
+                                subject_name=pending_item["subject_name"],
+                                date_value=pending_item["date"],
+                                start_period=next_item["start_period"],
+                                end_period=next_item["end_period"],
+                            ),
+                        )
+
+            for item in pending_learning_schedules:
+                learning_schedule = LearningSchedules(
+                    class_id=item["class_id"],
+                    subject_id=item["subject_id"],
+                    date=item["date"],
+                    start_period=item["start_period"],
+                    end_period=item["end_period"],
+                    room_id=item["room_id"],
+                    schedule_type=None,
+                    status=StatusEnum.ACTIVE,
+                    created_at=datetime.now(),
+                    updated_at=datetime.now(),
+                )
+                session.add(learning_schedule)
+                session.flush()
+
+                teaching_schedule = TeachingSchedules(
+                    teacher_id=item["teacher_id"],
+                    learning_schedule_id=learning_schedule.id,
+                    status=StatusEnum.ACTIVE,
+                    created_at=datetime.now(),
+                    updated_at=datetime.now(),
+                )
+                session.add(teaching_schedule)
+                session.flush()
+
+                imported_items.append(
+                    ImportTeachingCalenderImportedItem(
+                        row=item["row"],
+                        date=item["date"],
+                        learning_schedule_id=learning_schedule.id,
+                        teaching_schedule_id=teaching_schedule.id,
+                    )
+                )
+
+            session.commit()
+        except HTTPException:
+            session.rollback()
+            raise
+        except Exception:
+            session.rollback()
+            raise
+
+        return ImportTeachingCalenderResponse(items=imported_items)
