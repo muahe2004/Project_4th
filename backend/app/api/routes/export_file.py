@@ -70,3 +70,10 @@ def export_students_template():
     return ExportFileServices.export_students_template_response(
         file_name="students_template.xlsx",
     )
+
+
+@router.get("/teachers-template")
+def export_teachers_template():
+    return ExportFileServices.export_teachers_template_response(
+        file_name="teachers_template.xlsx",
+    )

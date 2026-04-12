@@ -12,6 +12,7 @@ import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import { STATUS_OPTIONS } from "../../../constants/status";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useDeleteTeacher } from "../apis/deleteTeacher";
+import { useExportExampleFile } from "../apis/exportExampleFile";
 import { useGetTeachers } from "../apis/getTeachers";
 import { useImportTeacher } from "../apis/importTeacher";
 import { useUploadTeacher } from "../apis/uploadTeacher";
@@ -37,6 +38,7 @@ export function Teachers() {
 
   const { showSnackbar } = useSnackbar();
   const deleteTeacherMutation = useDeleteTeacher({});
+  const { mutateAsync: exportExampleFile, isPending: isExportingExampleFile } = useExportExampleFile({});
   const { mutateAsync: importTeacher, isPending: isImportingTeachers } = useImportTeacher({});
   const { mutateAsync: uploadTeacherFile, isPending: isUploadingTeacherFile } = useUploadTeacher({});
 
@@ -144,6 +146,16 @@ export function Teachers() {
           className="btn-spacing-left"
         >
           Add Teacher
+        </Button>
+
+        <Button
+          onClick={() => {
+            void exportExampleFile();
+          }}
+          disabled={isExportingExampleFile}
+          className="btn-spacing-left"
+        >
+          {isExportingExampleFile ? "Đang xuất file..." : "Xuất file mẫu"}
         </Button>
 
         <Button
