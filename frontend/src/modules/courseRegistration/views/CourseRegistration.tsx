@@ -98,14 +98,6 @@ export function CourseRegistration() {
 
     return (
         <main className="admin-main-container">
-            <BreadCrumb
-                className="department-breadcrumb"
-                items={[
-                    { label: "Dashboard", to: dashBoardUrl },
-                    { label: "Đăng ký học phần" },
-                ]}
-            />
-
             <Box className="admin-main-box course-registration__toolbar">
                 <SearchEngine
                     placeholder="Tìm theo mã lớp, tên lớp, môn học, giảng viên, chuyên ngành..."

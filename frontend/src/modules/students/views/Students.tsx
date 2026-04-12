@@ -13,6 +13,7 @@ import Button from "../../../components/Button/Button";
 import StudentFormModel from "../components/StudentFormModel";
 import ImportFormModel from "../components/ImportFormModel";
 import { useDeleteStudent } from "../apis/deleteStudent";
+import { useExportExampleFile } from "../apis/exportExampleFile";
 import { useImportStudents } from "../apis/importStudents";
 import { useUploadStudent } from "../apis/uploadStudent";
 import type { IStudentUploadResponse, IStudentsResponse } from "../types";
@@ -47,6 +48,7 @@ export function Students() {
 
     const { data: students } = useGetStudents(Params);
     const { mutateAsync: deleteStudents } = useDeleteStudent({});
+    const { mutateAsync: exportExampleFile, isPending: isExportingExampleFile } = useExportExampleFile({});
     const { mutateAsync: importStudents, isPending: isImportingStudents } = useImportStudents({});
     const { mutateAsync: uploadStudentFile, isPending: isUploadingStudentFile } = useUploadStudent({});
 
@@ -105,6 +107,15 @@ export function Students() {
                     }}
                     className="btn-spacing-left">
                     Add Student
+                </Button>
+
+                <Button
+                    onClick={() => {
+                        void exportExampleFile();
+                    }}
+                    disabled={isExportingExampleFile}
+                    className="btn-spacing-left">
+                    {isExportingExampleFile ? "Đang xuất file..." : "Xuất file mẫu"}
                 </Button>
 
                 <Button

@@ -62,3 +62,6 @@ export const URL_API_ANSWER = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/answer
 
 // Upload
 export const URL_API_UPLOAD = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/upload`;
+
+// Export
+export const URL_API_EXPORT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/export-file`;
