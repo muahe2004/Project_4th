@@ -110,11 +110,6 @@ class ImportTeachingScheduleTeacher(SQLModel):
     teacher_code: str
     teacher_name: str
 
-class ImportTeachingCalenderDay(SQLModel):
-    weekday_number: int
-    date: datetime
-
-
 class ImportTeachingCalenderImportedItem(SQLModel):
     row: int
     date: datetime
@@ -122,13 +117,49 @@ class ImportTeachingCalenderImportedItem(SQLModel):
     teaching_schedule_id: UUID
 
 
-class ImportTeachingCalenderItem(SQLModel):
-    subject: ImportTeachingScheduleSubject
-    teacher: ImportTeachingScheduleTeacher
+class UploadTeachingCalenderItem(SQLModel):
+    subject_id: UUID | None = None
+    subject_code: str | None = None
+    subject_name: str | None = None
+    teacher_id: UUID | None = None
+    teacher_code: str | None = None
+    teacher_name: str | None = None
     weeekday: int
-    room: int
+    room_id: UUID | None = None
+    room_number: int | None = None
     lesson_periods: str
     study_weeks: str
+
+
+class UploadTeachingCalenderInvalidRow(UploadTeachingCalenderItem):
+    row: int
+    errors: list[str] = Field(default_factory=list)
+
+
+class UploadTeachingCalenderFileInfo(SQLModel):
+    file_name: str
+    headers: list[str] = Field(default_factory=list)
+    header_row: int
+    total_rows: int
+    valid_rows_count: int
+    invalid_rows_count: int
+
+
+class UploadTeachingCalenderResponse(SQLModel):
+    file_information: UploadTeachingCalenderFileInfo
+    schedules: list[UploadTeachingCalenderItem] = Field(default_factory=list)
+    invalid_schedules: list[UploadTeachingCalenderInvalidRow] = Field(default_factory=list)
+
+
+class ImportTeachingCalenderItem(UploadTeachingCalenderItem):
+    subject_id: UUID
+    subject_code: str
+    subject_name: str
+    teacher_id: UUID
+    teacher_code: str
+    teacher_name: str
+    room_id: UUID
+    room_number: int
 
 
 class ImportTeachingCalenderResponse(SQLModel):

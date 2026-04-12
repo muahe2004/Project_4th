@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, UploadFile, File
 from app.api.deps import SessionDep
 from app.models.schemas.common.query import DateRange
 from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
@@ -13,6 +13,7 @@ from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
     TeachingScheduleUpdate,
     TeachingScheduleDeleteResponse,
     TeachingScheduleWithLearningSchedulePublic,
+    UploadTeachingCalenderResponse,
 )
 from app.services.teaching_schedules import TeachingScheduleServices
 
@@ -75,6 +76,14 @@ def delete_teaching_schedule(
     session: SessionDep, id: uuid.UUID
 ) -> TeachingScheduleDeleteResponse:
     return TeachingScheduleServices.delete(session=session, teaching_schedule_id=id)
+
+
+@router.post("/upload-file", response_model=UploadTeachingCalenderResponse)
+async def upload_teaching_calender_file(
+    session: SessionDep,
+    file: UploadFile = File(...),
+) -> UploadTeachingCalenderResponse:
+    return await TeachingScheduleServices.upload_file_calender(session=session, file=file)
 
 
 @router.post("/import-calender", response_model=ImportTeachingCalenderResponse)

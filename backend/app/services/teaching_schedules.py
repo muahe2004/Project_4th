@@ -1,7 +1,9 @@
+from io import BytesIO
 from datetime import datetime, timedelta
 import uuid
 from app.enums.status import StatusEnum
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, UploadFile
+from openpyxl import load_workbook
 from sqlmodel import Session, and_, desc, func, or_, select
 from sqlalchemy import String, cast
 from starlette import status
@@ -21,7 +23,6 @@ from app.models.schemas.learning_schedules.learning_schedule_schemas import (
 )
 from app.models.schemas.common.query import DateRange
 from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
-    ImportTeachingCalenderDay,
     ImportTeachingCalenderInput,
     ImportTeachingCalenderImportedItem,
     ImportTeachingCalenderResponse,
@@ -36,9 +37,13 @@ from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
     TeachingScheduleUpdate,
     TeachingScheduleDeleteResponse,
     TeachingScheduleWithLearningSchedulePublic,
+    UploadTeachingCalenderFileInfo,
+    UploadTeachingCalenderInvalidRow,
+    UploadTeachingCalenderItem,
+    UploadTeachingCalenderResponse,
 )
 from app.services.learning_schedules import LearningScheduleServices
-from app.services.common import build_date_conditions
+from app.services.common import build_date_conditions, to_clean_text
 
 
 class TeachingScheduleServices:
@@ -474,7 +479,200 @@ class TeachingScheduleServices:
             id=str(teaching_schedule.id),
             message="Teaching Schedule and related Learning Schedule deleted successfully",
         )
-    
+
+    @staticmethod
+    async def upload_file_calender(
+        *,
+        session: Session,
+        file: UploadFile,
+    ) -> UploadTeachingCalenderResponse:
+        filename = file.filename or ""
+        if not filename.lower().endswith(".xlsx"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only .xlsx files are supported.",
+            )
+
+        content = await file.read()
+        if not content:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Uploaded file is empty.",
+            )
+
+        workbook = load_workbook(BytesIO(content), data_only=True)
+        worksheet = workbook.active
+        rows = list(worksheet.iter_rows(values_only=True))
+        if not rows:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Excel sheet is empty.",
+            )
+
+        expected_headers = [
+            "TT",
+            "Mã MH",
+            "Tên MH",
+            "Mã GV",
+            "Tên GV",
+            "Thứ",
+            "Tiết Học",
+            "Tuần học",
+            "Phòng",
+        ]
+        header_row_index = 9
+        if len(rows) < header_row_index:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File does not contain the expected header row.",
+            )
+
+        subject_codes = {
+            to_clean_text(row[1])
+            for row in rows[header_row_index + 1:]
+            if row and len(row) > 1 and to_clean_text(row[1])
+        }
+        teacher_codes = {
+            to_clean_text(row[3])
+            for row in rows[header_row_index + 1:]
+            if row and len(row) > 3 and to_clean_text(row[3])
+        }
+        room_numbers = {
+            int(room_value)
+            for row in rows[header_row_index + 1:]
+            if row and len(row) > 8 and (room_value := to_clean_text(row[8])) and str(room_value).isdigit()
+        }
+
+        subject_records = session.exec(
+            select(Subjects).where(Subjects.subject_code.in_(list(subject_codes)))
+        ).all() if subject_codes else []
+        teacher_records = session.exec(
+            select(Teachers).where(Teachers.teacher_code.in_(list(teacher_codes)))
+        ).all() if teacher_codes else []
+        room_records = session.exec(
+            select(Rooms).where(Rooms.room_number.in_(list(room_numbers)))
+        ).all() if room_numbers else []
+
+        subject_map = {subject.subject_code: subject for subject in subject_records}
+        teacher_map = {teacher.teacher_code: teacher for teacher in teacher_records}
+        room_map = {room.room_number: room for room in room_records}
+
+        parsed_rows: list[UploadTeachingCalenderItem] = []
+        invalid_rows: list[UploadTeachingCalenderInvalidRow] = []
+
+        for row_index, row_values in enumerate(rows[header_row_index + 1:], start=header_row_index + 2):
+            if row_values is None:
+                continue
+
+            def cell(col_index: int) -> object | None:
+                if col_index >= len(row_values):
+                    return None
+                return row_values[col_index]
+
+            subject_code = to_clean_text(cell(1))
+            subject_name = to_clean_text(cell(2))
+            teacher_code = to_clean_text(cell(3))
+            teacher_name = to_clean_text(cell(4))
+            weekday_raw = to_clean_text(cell(5))
+            lesson_periods = to_clean_text(cell(6))
+            study_weeks = to_clean_text(cell(7))
+            room_raw = to_clean_text(cell(8))
+
+            if all(
+                value in (None, "")
+                for value in (
+                    subject_code,
+                    subject_name,
+                    teacher_code,
+                    teacher_name,
+                    weekday_raw,
+                    lesson_periods,
+                    study_weeks,
+                    room_raw,
+                )
+            ):
+                continue
+
+            row_errors: list[str] = []
+            weekday_number: int | None = None
+            room_number: int | None = None
+
+            if not subject_code:
+                row_errors.append("Subject Code is required.")
+            if not teacher_code:
+                row_errors.append("Teacher Code is required.")
+            if not weekday_raw:
+                row_errors.append("Weekday is required.")
+            if not lesson_periods:
+                row_errors.append("Lesson periods are required.")
+            if not study_weeks:
+                row_errors.append("Study weeks are required.")
+            if not room_raw:
+                row_errors.append("Room is required.")
+
+            if weekday_raw:
+                try:
+                    weekday_number = int(weekday_raw)
+                    TeachingScheduleServices._validate_weekday_number(weekday_number)
+                except (ValueError, HTTPException):
+                    row_errors.append("Weekday must be one of: 2, 3, 4, 5, 6, 7, 8.")
+
+            if room_raw:
+                if str(room_raw).isdigit():
+                    room_number = int(room_raw)
+                else:
+                    row_errors.append("Room must be a number.")
+
+            subject_record = subject_map.get(subject_code) if subject_code else None
+            teacher_record = teacher_map.get(teacher_code) if teacher_code else None
+            room_record = room_map.get(room_number) if room_number is not None else None
+
+            if subject_code and subject_record is None:
+                row_errors.append(f"Subject not found with subject_code={subject_code}")
+            if teacher_code and teacher_record is None:
+                row_errors.append(f"Teacher not found with teacher_code={teacher_code}")
+            if room_number is not None and room_record is None:
+                row_errors.append(f"Room not found with room_number={room_number}")
+
+            item = UploadTeachingCalenderItem(
+                subject_id=subject_record.id if subject_record else None,
+                subject_code=subject_code,
+                subject_name=subject_name or (subject_record.name if subject_record else None),
+                teacher_id=teacher_record.id if teacher_record else None,
+                teacher_code=teacher_code,
+                teacher_name=teacher_name or (teacher_record.name if teacher_record else None),
+                weeekday=weekday_number or 0,
+                room_id=room_record.id if room_record else None,
+                room_number=room_number,
+                lesson_periods=lesson_periods or "",
+                study_weeks=study_weeks or "",
+            )
+
+            if row_errors:
+                invalid_rows.append(
+                    UploadTeachingCalenderInvalidRow(
+                        **item.model_dump(),
+                        row=row_index,
+                        errors=row_errors,
+                    )
+                )
+                continue
+
+            parsed_rows.append(item)
+
+        return UploadTeachingCalenderResponse(
+            file_information=UploadTeachingCalenderFileInfo(
+                file_name=filename,
+                headers=expected_headers,
+                header_row=header_row_index,
+                total_rows=max(len(rows) - (header_row_index + 1), 0),
+                valid_rows_count=len(parsed_rows),
+                invalid_rows_count=len(invalid_rows),
+            ),
+            schedules=parsed_rows,
+            invalid_schedules=invalid_rows,
+        )
+
     @staticmethod
     def import_calender(
         *, session: Session, request: Request, calender: ImportTeachingCalenderInput 
@@ -500,45 +698,22 @@ class TeachingScheduleServices:
         imported_items: list[ImportTeachingCalenderImportedItem] = []
         pending_learning_schedules: list[dict] = []
 
-        subject_codes = list({schedule.subject.subject_code for schedule in calender.schedules})
-        teacher_codes = list({schedule.teacher.teacher_code for schedule in calender.schedules})
-        room_numbers = list({schedule.room for schedule in calender.schedules})
-
-        subject_records = session.exec(
-            select(Subjects).where(Subjects.subject_code.in_(subject_codes))
-        ).all() if subject_codes else []
-        teacher_records = session.exec(
-            select(Teachers).where(Teachers.teacher_code.in_(teacher_codes))
-        ).all() if teacher_codes else []
-        room_records = session.exec(
-            select(Rooms).where(Rooms.room_number.in_(room_numbers))
-        ).all() if room_numbers else []
-
-        subject_map = {subject.subject_code: subject for subject in subject_records}
-        teacher_map = {teacher.teacher_code: teacher for teacher in teacher_records}
-        room_map = {room.room_number: room for room in room_records}
-
         try:
             for row_index, schedule in enumerate(calender.schedules, start=1):
-                subject_record = subject_map.get(schedule.subject.subject_code)
-                if not subject_record:
+                if not schedule.subject_id:
                     raise HTTPException(
-                        status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Subject not found with subject_code={schedule.subject.subject_code}",
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Missing subject_id at row {row_index}. Please upload/resolve file before import.",
                     )
-
-                teacher_record = teacher_map.get(schedule.teacher.teacher_code)
-                if not teacher_record:
+                if not schedule.teacher_id:
                     raise HTTPException(
-                        status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Teacher not found with teacher_code={schedule.teacher.teacher_code}",
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Missing teacher_id at row {row_index}. Please upload/resolve file before import.",
                     )
-
-                room_record = room_map.get(schedule.room)
-                if not room_record:
+                if not schedule.room_id:
                     raise HTTPException(
-                        status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Room not found with room_number={schedule.room}",
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Missing room_id at row {row_index}. Please upload/resolve file before import.",
                     )
 
                 period_blocks = TeachingScheduleServices._parse_lesson_periods(
@@ -565,11 +740,11 @@ class TeachingScheduleServices:
                                 "row": row_index,
                                 "class_id": class_record.id,
                                 "class_code": class_record.class_code,
-                                "subject_id": subject_record.id,
-                                "subject_code": subject_record.subject_code,
-                                "subject_name": subject_record.name,
-                                "teacher_id": teacher_record.id,
-                                "room_id": room_record.id,
+                                "subject_id": schedule.subject_id,
+                                "subject_code": schedule.subject_code,
+                                "subject_name": schedule.subject_name,
+                                "teacher_id": schedule.teacher_id,
+                                "room_id": schedule.room_id,
                                 "date": matched_date,
                                 "start_period": start_period,
                                 "end_period": end_period,
