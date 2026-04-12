@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
@@ -17,7 +18,10 @@ import Button from "../../../components/Button/Button";
 import TeachingSchedulesFormModel from "../components/TeachingSchedulesFormModel";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useDeleteTeachingSchedule } from "../apis/deleteTeachingSchedules";
-import type { ITeachingScheduleResponse } from "../types";
+import { useImportCalender } from "../apis/importCalender";
+import { useUploadCalender } from "../apis/uploadCalender";
+import ImportFormModel from "../components/ImportFormModel";
+import type { ITeachingScheduleResponse, IUploadTeachingCalenderResponse } from "../types";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { getWeekDateRange } from "../../../utils/date/weekRange";
 
@@ -38,6 +42,9 @@ export function TeachingSchedules() {
   const [deletingTeachingSchedule, setDeletingTeachingSchedule] = useState<
     ITeachingScheduleResponse | undefined
   >(undefined);
+  const [importPreview, setImportPreview] = useState<IUploadTeachingCalenderResponse | null>(null);
+  const [openImportFormModel, setOpenImportFormModel] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const dateRange = useMemo(() => getWeekDateRange(selectedDate), [selectedDate]);
 
   const params = {
@@ -53,6 +60,8 @@ export function TeachingSchedules() {
     scheduleView === "table"
   );
   const deleteTeachingScheduleMutation = useDeleteTeachingSchedule();
+  const { mutateAsync: uploadCalenderFile, isPending: isUploadingCalenderFile } = useUploadCalender({});
+  const { mutateAsync: importCalender, isPending: isImportingCalender } = useImportCalender({});
 
   const handleOpenAddForm = () => {
     setFormMode("add");
@@ -69,6 +78,30 @@ export function TeachingSchedules() {
   const handleOpenDeleteConfirm = (teachingSchedule: ITeachingScheduleResponse) => {
     setDeletingTeachingSchedule(teachingSchedule);
     setOpenDeleteConfirm(true);
+  };
+
+  const handleOpenImportFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImportCalenderFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) {
+      return;
+    }
+
+    try {
+      const uploadedResult = await uploadCalenderFile(selectedFile);
+      setImportPreview(uploadedResult);
+      setOpenImportFormModel(true);
+    } catch (error: any) {
+      const detail = error?.response?.data?.detail ?? "Upload file lịch dạy thất bại";
+      showSnackbar(detail, "error");
+      setImportPreview(null);
+      setOpenImportFormModel(false);
+    } finally {
+      event.target.value = "";
+    }
   };
 
   const handleConfirmDelete = () => {
@@ -167,6 +200,21 @@ export function TeachingSchedules() {
         >
             {scheduleView === "class" ? "Table UI" : "Class UI"}
         </Button>
+
+        <Button
+            className="btn-spacing-left"
+            onClick={handleOpenImportFilePicker}
+            disabled={isUploadingCalenderFile}
+        >
+            {isUploadingCalenderFile ? "Uploading..." : "Import lịch dạy"}
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".xlsx"
+          style={{ display: "none" }}
+          onChange={handleImportCalenderFile}
+        />
       </Box>
 
       <WeekPicker
@@ -226,6 +274,27 @@ export function TeachingSchedules() {
         onCancel={() => {
           setOpenDeleteConfirm(false);
           setDeletingTeachingSchedule(undefined);
+        }}
+      />
+
+      <ImportFormModel
+        open={openImportFormModel}
+        onClose={() => {
+          setOpenImportFormModel(false);
+          setImportPreview(null);
+        }}
+        data={importPreview}
+        isImporting={isImportingCalender}
+        onImport={async (payload) => {
+          try {
+            await importCalender(payload);
+            showSnackbar("Import lịch dạy thành công", "success");
+            setOpenImportFormModel(false);
+            setImportPreview(null);
+          } catch (error: any) {
+            const detail = error?.response?.data?.detail ?? error?.data?.detail ?? "Import lịch dạy thất bại";
+            showSnackbar(detail, "error");
+          }
         }}
       />
     </main>

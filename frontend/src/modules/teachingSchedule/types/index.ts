@@ -177,3 +177,62 @@ export interface ISubjectDropDown {
   subject_code: string;
   name: string;
 }
+
+export interface IUploadTeachingCalenderItem {
+  subject_id?: string | null;
+  subject_code?: string | null;
+  subject_name?: string | null;
+  teacher_id?: string | null;
+  teacher_code?: string | null;
+  teacher_name?: string | null;
+  weeekday: number;
+  room_id?: string | null;
+  room_number?: number | null;
+  lesson_periods: string;
+  study_weeks: string;
+}
+
+export interface IUploadTeachingCalenderInvalidRow extends IUploadTeachingCalenderItem {
+  row: number;
+  errors: string[];
+}
+
+export interface IUploadTeachingCalenderFileInfo {
+  file_name: string;
+  headers: string[];
+  header_row: number;
+  total_rows: number;
+  valid_rows_count: number;
+  invalid_rows_count: number;
+}
+
+export interface IUploadTeachingCalenderResponse {
+  class_code: string;
+  period: {
+    start_date: string;
+    end_date: string;
+  };
+  file_information: IUploadTeachingCalenderFileInfo;
+  schedules: IUploadTeachingCalenderItem[];
+  invalid_schedules: IUploadTeachingCalenderInvalidRow[];
+}
+
+export interface IImportTeachingCalenderPayload {
+  period: {
+    start_date: string;
+    end_date: string;
+  };
+  class_code: string;
+  schedules: IUploadTeachingCalenderItem[];
+}
+
+export interface IImportTeachingCalenderItemResponse {
+  row: number;
+  date: string;
+  learning_schedule_id: string;
+  teaching_schedule_id: string;
+}
+
+export interface IImportTeachingCalenderResponse {
+  items: IImportTeachingCalenderItemResponse[];
+}

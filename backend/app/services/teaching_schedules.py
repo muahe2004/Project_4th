@@ -1,6 +1,7 @@
 from io import BytesIO
 from datetime import datetime, timedelta
 import uuid
+import re
 from app.enums.status import StatusEnum
 from fastapi import HTTPException, Request, UploadFile
 from openpyxl import load_workbook
@@ -47,6 +48,36 @@ from app.services.common import build_date_conditions, to_clean_text
 
 
 class TeachingScheduleServices:
+    @staticmethod
+    def _parse_date_text(date_text: str) -> datetime:
+        normalized_date_text = re.sub(r"/+", "/", date_text.strip())
+        try:
+            return datetime.strptime(normalized_date_text, "%d/%m/%Y")
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid date value in file: {date_text}",
+            ) from exc
+
+    @staticmethod
+    def _parse_period_text(period_text: str) -> tuple[datetime, datetime]:
+        normalized_period_text = re.sub(r"\s+", " ", period_text.strip())
+        parts = [part.strip() for part in normalized_period_text.split("-")]
+        if len(parts) != 2 or not parts[0] or not parts[1]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid study period in file. Expected format: dd/mm/yyyy - dd/mm/yyyy",
+            )
+
+        start_date = TeachingScheduleServices._parse_date_text(parts[0])
+        end_date = TeachingScheduleServices._parse_date_text(parts[1])
+        if end_date < start_date:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid study period in file. end_date must be greater than or equal to start_date.",
+            )
+        return start_date, end_date
+
     @staticmethod
     def _validate_weekday_number(weekday_number: int) -> None:
         if weekday_number not in {2, 3, 4, 5, 6, 7, 8}:
@@ -520,6 +551,22 @@ class TeachingScheduleServices:
             "Tuần học",
             "Phòng",
         ]
+        class_code = to_clean_text(worksheet["C5"].value)
+        period_text = to_clean_text(worksheet["C7"].value)
+        if not class_code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Class code is missing in cell C5.",
+            )
+        if not period_text:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Study period is missing in cell C7.",
+            )
+
+        period_start_date, period_end_date = TeachingScheduleServices._parse_period_text(
+            period_text
+        )
         header_row_index = 9
         if len(rows) < header_row_index:
             raise HTTPException(
@@ -661,6 +708,11 @@ class TeachingScheduleServices:
             parsed_rows.append(item)
 
         return UploadTeachingCalenderResponse(
+            class_code=class_code,
+            period={
+                "start_date": period_start_date,
+                "end_date": period_end_date,
+            },
             file_information=UploadTeachingCalenderFileInfo(
                 file_name=filename,
                 headers=expected_headers,

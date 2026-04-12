@@ -146,6 +146,8 @@ class UploadTeachingCalenderFileInfo(SQLModel):
 
 
 class UploadTeachingCalenderResponse(SQLModel):
+    class_code: str
+    period: ImportTeachingSchedulePeriod
     file_information: UploadTeachingCalenderFileInfo
     schedules: list[UploadTeachingCalenderItem] = Field(default_factory=list)
     invalid_schedules: list[UploadTeachingCalenderInvalidRow] = Field(default_factory=list)
