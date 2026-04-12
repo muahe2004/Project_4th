@@ -3,7 +3,7 @@ import uuid
 from app.services.teachers import TeacherServices
 from app.models.schemas.common.query import BaseQueryParams, DateRange
 from app.models.schemas.common.query import IdsRequest
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, UploadFile, File
 from app.api.deps import SessionDep
 from app.models.schemas.teachers.teacher_schemas import (
     ListTeacherResponse,
@@ -15,6 +15,8 @@ from app.models.schemas.teachers.teacher_schemas import (
     TeacherUpdate,
     TeacherDeleteResponse,
     TeacherCreateWithUserInfor,
+    TeacherFileData,
+    TeacherFileDataResponse,
     TeacherWithLearningSchedulesResponse,
 )
 
@@ -126,3 +128,22 @@ def delete_multiple_teachers(
     teacher_ids: List[uuid.UUID],
 ) -> List[TeacherDeleteResponse]:
     return TeacherServices.delete_many(session=session, teacher_ids=teacher_ids)
+
+
+@router.post("/upload-file")
+async def upload_teacher_file(
+    session: SessionDep,
+    file: UploadFile = File(...),
+) -> TeacherFileDataResponse:
+    return await TeacherServices.upload_file_teacher(session=session, file=file)
+
+
+@router.post("/import-list", response_model=List[TeacherFileData])
+def import_list_teacher(
+    session: SessionDep,
+    list_teacher: List[TeacherFileData],
+) -> List[TeacherFileData]:
+    return TeacherServices.import_list_teacher(
+        session=session,
+        list_teacher=list_teacher,
+    )

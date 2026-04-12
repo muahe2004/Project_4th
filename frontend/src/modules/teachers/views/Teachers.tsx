@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import { Box } from "@mui/material";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
@@ -12,9 +13,12 @@ import { STATUS_OPTIONS } from "../../../constants/status";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useDeleteTeacher } from "../apis/deleteTeacher";
 import { useGetTeachers } from "../apis/getTeachers";
+import { useImportTeacher } from "../apis/importTeacher";
+import { useUploadTeacher } from "../apis/uploadTeacher";
+import ImportFormModel from "../components/ImportFormModel";
 import TeacherFormModel from "../components/TeacherFormModel";
 import TeacherTable from "../components/TeachetTable";
-import type { ITeacherResponse } from "../types";
+import type { ITeacherResponse, ITeacherUploadResponse } from "../types";
 
 export function Teachers() {
   const [page, setPage] = useState(1);
@@ -27,9 +31,14 @@ export function Teachers() {
   const [selectedTeacher, setSelectedTeacher] = useState<ITeacherResponse | undefined>(
     undefined
   );
+  const [importPreview, setImportPreview] = useState<ITeacherUploadResponse | null>(null);
+  const [openImportFormModel, setOpenImportFormModel] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const { showSnackbar } = useSnackbar();
   const deleteTeacherMutation = useDeleteTeacher({});
+  const { mutateAsync: importTeacher, isPending: isImportingTeachers } = useImportTeacher({});
+  const { mutateAsync: uploadTeacherFile, isPending: isUploadingTeacherFile } = useUploadTeacher({});
 
   const params = {
     limit: rowsPerPage,
@@ -43,6 +52,29 @@ export function Teachers() {
     isLoading,
     refetch,
   } = useGetTeachers(params);
+
+  const handleOpenImportFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImportTeacherFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) {
+      return;
+    }
+
+    try {
+      const uploadedResult = await uploadTeacherFile(selectedFile);
+      setImportPreview(uploadedResult);
+      setOpenImportFormModel(true);
+    } catch (error) {
+      console.error("Upload teacher file failed:", error);
+      setImportPreview(null);
+      setOpenImportFormModel(false);
+    } finally {
+      event.target.value = "";
+    }
+  };
 
   const handleDeleteTeacher = (teacher?: ITeacherResponse) => {
     if (!teacher?.id) {
@@ -113,6 +145,21 @@ export function Teachers() {
         >
           Add Teacher
         </Button>
+
+        <Button
+          onClick={handleOpenImportFilePicker}
+          disabled={isUploadingTeacherFile}
+          className="btn-spacing-left"
+        >
+          {isUploadingTeacherFile ? "Importing..." : "Import Teacher"}
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".xlsx"
+          style={{ display: "none" }}
+          onChange={handleImportTeacherFile}
+        />
       </Box>
 
       <TeacherTable
@@ -141,6 +188,24 @@ export function Teachers() {
         mode={mode}
         initialValues={selectedTeacher}
         onClose={() => setOpen(false)}
+      />
+
+      <ImportFormModel
+        open={openImportFormModel}
+        onClose={() => setOpenImportFormModel(false)}
+        data={importPreview}
+        isImporting={isImportingTeachers}
+        onImport={async (teachersPayload) => {
+          try {
+            await importTeacher(teachersPayload);
+            showSnackbar("Import giảng viên thành công", "success");
+            setOpenImportFormModel(false);
+            setImportPreview(null);
+          } catch (error: any) {
+            const detail = error?.response?.data?.detail ?? error?.data?.detail ?? "Import giảng viên thất bại";
+            showSnackbar(detail, "error");
+          }
+        }}
       />
     </main>
   );

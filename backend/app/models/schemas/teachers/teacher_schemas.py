@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import StrEnum
 from typing import List, Optional
 from uuid import UUID as UUID_TYPE
 from app.models.schemas.relatives.relative_schemas import (
@@ -137,6 +138,46 @@ class TeacherSearchParams(BaseQueryParams):
 class ListTeacherResponse(BaseModel):
     data: list[TeacherResponse]
     total: int
+
+
+class TeacherFileData(SQLModel):
+    teacher_code: str | None = Field(default=None)
+    name: str | None = Field(default=None)
+    gender: str | None = Field(default=None)
+    date_of_birth: datetime | None = Field(default=None)
+    email: str | None = Field(default=None)
+    phone: str | None = Field(default=None)
+    address: str | None = Field(default=None)
+
+
+class TeacherFileInvalidRow(TeacherFileData):
+    row: int
+    errors: list[str] = Field(default_factory=list)
+
+
+class TeacherFileInfo(SQLModel):
+    file_name: str
+    headers: list[str] = Field(default_factory=list)
+    header_row: int
+    total_rows: int
+    valid_rows_count: int
+    invalid_rows_count: int
+
+
+class TeacherFileDataResponse(SQLModel):
+    file_information: TeacherFileInfo
+    teachers: list[TeacherFileData] = Field(default_factory=list)
+    invalid_teachers: list[TeacherFileInvalidRow] = Field(default_factory=list)
+
+
+class TeacherUploadField(StrEnum):
+    CODE = "teacher_code"
+    NAME = "name"
+    GENDER = "gender"
+    DATE_OF_BIRTH = "date_of_birth"
+    ADDRESS = "address"
+    PHONE = "phone"
+    EMAIL = "email"
 
 
 class TeacherCreateResponse(TeacherPublic):

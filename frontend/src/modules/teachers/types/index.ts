@@ -129,3 +129,33 @@ export interface TeacherDropDown {
   id: string;
   name: string;
 }
+
+export interface ITeacherFileData {
+  teacher_code?: string | null;
+  name?: string | null;
+  gender?: string | null;
+  date_of_birth?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+}
+
+export interface ITeacherFileInvalidRow extends ITeacherFileData {
+  row: number;
+  errors: string[];
+}
+
+export interface ITeacherFileInfo {
+  file_name: string;
+  headers: string[];
+  header_row: number;
+  total_rows: number;
+  valid_rows_count: number;
+  invalid_rows_count: number;
+}
+
+export interface ITeacherUploadResponse {
+  file_information: ITeacherFileInfo;
+  teachers: ITeacherFileData[];
+  invalid_teachers: ITeacherFileInvalidRow[];
+}

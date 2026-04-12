@@ -353,11 +353,16 @@ export function GradesPage() {
       return undefined;
     }
 
-    const studiedCredits = scoreRows.reduce((sum, row) => sum + row.credits, 0);
     const rowsForGpa = scoreRows.filter(
       (row): row is ScoreTableRowWithAverages =>
         row.avg10 !== null && row.avg4 !== null
     );
+
+    if (rowsForGpa.length === 0) {
+      return undefined;
+    }
+
+    const studiedCredits = scoreRows.reduce((sum, row) => sum + row.credits, 0);
     const gpaCredits = rowsForGpa.reduce((sum, row) => sum + row.credits, 0);
 
     const accumulatedCredits = rowsForGpa.reduce((sum, row) => {

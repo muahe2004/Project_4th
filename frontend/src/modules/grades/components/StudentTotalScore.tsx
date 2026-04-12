@@ -14,18 +14,6 @@ function formatNumber(value: number): string {
 }
 
 export function StudentTotalScore({ summary }: StudentTotalScoreProps) {
-  const row = summary ?? {
-    student_code: "-",
-    name: "-",
-    grade4: "-",
-    grade10: "-",
-    gpa4: 0,
-    accumulated_gpa4: 0,
-    accumulated_gpa10: 0,
-    accumulated_credits: 0,
-    studied_credits: 0,
-  };
-
   return (
     <Box className="student-tableScore">
       <TableContainer className="primary-table-container" component={Paper}>
@@ -44,27 +32,35 @@ export function StudentTotalScore({ summary }: StudentTotalScoreProps) {
             </TableRow>
           </TableHead>
           <TableBody className="primary-tbody">
-            <TableRow className="primary-trow">
-              <TableCell className="primary-tcell" align="left">{row.student_code}</TableCell>
-              <TableCell className="primary-tcell" align="left">{row.name}</TableCell>
-              <TableCell
-                className={`primary-tcell ${getGradeColor(row.grade4)}`}
-                align="center"
-              >
-                {row.grade4}
-              </TableCell>
-              <TableCell
-                className={`primary-tcell ${getGradeColor(row.grade10)}`}
-                align="center"
-              >
-                {row.grade10}
-              </TableCell>
-              <TableCell className="primary-tcell" align="center">{formatNumber(row.gpa4)}</TableCell>
-              <TableCell className="primary-tcell" align="center">{formatNumber(row.accumulated_gpa4)}</TableCell>
-              <TableCell className="primary-tcell" align="center">{formatNumber(row.accumulated_gpa10)}</TableCell>
-              <TableCell className="primary-tcell" align="center">{row.accumulated_credits}</TableCell>
-              <TableCell className="primary-tcell" align="center">{row.studied_credits}</TableCell>
-            </TableRow>
+            {!summary ? (
+              <TableRow className="primary-trow">
+                <TableCell className="primary-tcell" colSpan={9} align="center">
+                  Chưa có dữ liệu điểm
+                </TableCell>
+              </TableRow>
+            ) : (
+              <TableRow className="primary-trow">
+                <TableCell className="primary-tcell" align="left">{summary.student_code}</TableCell>
+                <TableCell className="primary-tcell" align="left">{summary.name}</TableCell>
+                <TableCell
+                  className={`primary-tcell ${getGradeColor(summary.grade4)}`}
+                  align="center"
+                >
+                  {summary.grade4}
+                </TableCell>
+                <TableCell
+                  className={`primary-tcell ${getGradeColor(summary.grade10)}`}
+                  align="center"
+                >
+                  {summary.grade10}
+                </TableCell>
+                <TableCell className="primary-tcell" align="center">{formatNumber(summary.gpa4)}</TableCell>
+                <TableCell className="primary-tcell" align="center">{formatNumber(summary.accumulated_gpa4)}</TableCell>
+                <TableCell className="primary-tcell" align="center">{formatNumber(summary.accumulated_gpa10)}</TableCell>
+                <TableCell className="primary-tcell" align="center">{summary.accumulated_credits}</TableCell>
+                <TableCell className="primary-tcell" align="center">{summary.studied_credits}</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

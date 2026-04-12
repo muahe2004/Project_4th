@@ -1,9 +1,12 @@
 import uuid
+from datetime import datetime
+from io import BytesIO
 
 from app.models.schemas.common.query import BaseQueryParams, DateRange
 from app.models.schemas.learning_schedules.learning_schedule_schemas import LearningSchedulePublic
 from app.models.schemas.shared.teaching_schedule_embeds import TeachingScheduleClassInfo, TeachingScheduleInTeacher, TeachingScheduleRoomInfo, TeachingScheduleSubjectInfo
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, UploadFile
+from openpyxl import load_workbook
 from sqlmodel import Session, and_, desc, func, or_, select
 from starlette import status
 from sqlalchemy import String, cast
@@ -20,9 +23,14 @@ from app.models.schemas.teachers.teacher_schemas import (
     TeacherCreateWithUserInfor,
     TeacherDeleteResponse,
     TeacherDropdownResponse,
+    TeacherFileData,
+    TeacherFileDataResponse,
+    TeacherFileInfo,
+    TeacherFileInvalidRow,
     TeacherPublic,
     TeacherResponse,
     TeacherSearchParams,
+    TeacherUploadField,
     TeacherUpdate,
     TeacherWithLearningSchedules,
 )
@@ -31,10 +39,10 @@ from app.models.schemas.user_informations.user_information_schemas import (
     UserInformationUpdate,
 )
 from app.services.departments import DepartmentServices
+from app.services.common import build_date_conditions, parse_excel_datetime, to_clean_text
 from app.services.user_information import User_Information_Services
 from app.services.relatives import RelativeServices
 from app.enums.status import StatusEnum
-from app.services.common import build_date_conditions
 
 
 def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
@@ -45,6 +53,19 @@ def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
 def _sanitize_user_information_payload(payload: dict) -> dict:
     ignored_fields = {"student_id", "teacher_id", "created_at", "updated_at", "id"}
     return {key: value for key, value in payload.items() if key not in ignored_fields}
+
+
+def _normalize_gender(raw_value: object) -> str | None:
+    text_value = to_clean_text(raw_value)
+    if not text_value:
+        return None
+
+    normalized = text_value.strip().lower()
+    if normalized == "nam":
+        return "1"
+    if normalized in {"nữ", "nu"}:
+        return "2"
+    return "3"
 
 
 def get_all_teachers() -> List[dict]:
@@ -443,6 +464,239 @@ class TeacherServices:
             teacher_information=UserInformationPublic.model_validate(user_info),
             teacher_relative=teacher_relatives_response,
         )
+
+    @staticmethod
+    async def upload_file_teacher(
+        *,
+        session: Session,
+        file: UploadFile,
+    ) -> TeacherFileDataResponse:
+        filename = file.filename or ""
+        if not filename.lower().endswith(".xlsx"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only .xlsx files are supported.",
+            )
+
+        content = await file.read()
+        if not content:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Uploaded file is empty.",
+            )
+
+        workbook = load_workbook(BytesIO(content), data_only=True)
+        worksheet = workbook.active
+
+        rows = list(worksheet.iter_rows(values_only=True))
+        if not rows:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Excel sheet is empty.",
+            )
+
+        expected_header_labels = {
+            TeacherUploadField.CODE: "Mã GV",
+            TeacherUploadField.NAME: "Họ và tên",
+            TeacherUploadField.GENDER: "GT",
+            TeacherUploadField.DATE_OF_BIRTH: "Ngày sinh",
+            TeacherUploadField.ADDRESS: "Nơi sinh",
+            TeacherUploadField.PHONE: "Điện thoại",
+            TeacherUploadField.EMAIL: "Email",
+        }
+        header_row_index = 6
+        if len(rows) < header_row_index:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    f"File does not contain header row {header_row_index}. "
+                    "Please use the correct template."
+                ),
+            )
+
+        fixed_column_indexes = {
+            TeacherUploadField.CODE: 1,
+            TeacherUploadField.NAME: 2,
+            TeacherUploadField.GENDER: 3,
+            TeacherUploadField.DATE_OF_BIRTH: 4,
+            TeacherUploadField.ADDRESS: 5,
+            TeacherUploadField.PHONE: 6,
+            TeacherUploadField.EMAIL: 7,
+        }
+
+        parsed_rows: list[TeacherFileData] = []
+        invalid_rows: list[TeacherFileInvalidRow] = []
+
+        for row_index, row_values in enumerate(rows[header_row_index:], start=header_row_index + 1):
+            if row_values is None:
+                continue
+
+            def cell(field_name: TeacherUploadField) -> object | None:
+                col_index = fixed_column_indexes[field_name]
+                if col_index >= len(row_values):
+                    return None
+                return row_values[col_index]
+
+            teacher_code = to_clean_text(cell(TeacherUploadField.CODE))
+            teacher_name = to_clean_text(cell(TeacherUploadField.NAME))
+            gender = _normalize_gender(cell(TeacherUploadField.GENDER))
+            date_of_birth_raw = cell(TeacherUploadField.DATE_OF_BIRTH)
+            address = to_clean_text(cell(TeacherUploadField.ADDRESS))
+            phone = to_clean_text(cell(TeacherUploadField.PHONE))
+            email = to_clean_text(cell(TeacherUploadField.EMAIL))
+
+            if all(
+                value in (None, "")
+                for value in (
+                    teacher_code,
+                    teacher_name,
+                    date_of_birth_raw,
+                    address,
+                    phone,
+                    email,
+                )
+            ):
+                continue
+
+            try:
+                date_of_birth = parse_excel_datetime(date_of_birth_raw)
+            except ValueError as exc:
+                invalid_rows.append(
+                    TeacherFileInvalidRow(
+                        row=row_index,
+                        teacher_code=teacher_code,
+                        name=teacher_name,
+                        gender=gender,
+                        date_of_birth=None,
+                        email=email,
+                        phone=phone,
+                        address=address,
+                        errors=[str(exc)],
+                    )
+                )
+                continue
+
+            row_errors: list[str] = []
+            if not teacher_code:
+                row_errors.append("Teacher Code is required.")
+            if not teacher_name:
+                row_errors.append("Teacher Name is required.")
+            if not gender:
+                row_errors.append("Gender is required.")
+            if not email:
+                row_errors.append("Email is required.")
+
+            if row_errors:
+                invalid_rows.append(
+                    TeacherFileInvalidRow(
+                        row=row_index,
+                        teacher_code=teacher_code,
+                        name=teacher_name,
+                        gender=gender,
+                        date_of_birth=date_of_birth,
+                        email=email,
+                        phone=phone,
+                        address=address,
+                        errors=row_errors,
+                    )
+                )
+                continue
+
+            parsed_rows.append(
+                TeacherFileData(
+                    teacher_code=teacher_code,
+                    name=teacher_name,
+                    gender=gender,
+                    date_of_birth=date_of_birth,
+                    email=email,
+                    phone=phone,
+                    address=address,
+                )
+            )
+
+        return TeacherFileDataResponse(
+            file_information=TeacherFileInfo(
+                file_name=filename,
+                headers=list(expected_header_labels.values()),
+                header_row=header_row_index,
+                total_rows=max(len(rows) - header_row_index, 0),
+                valid_rows_count=len(parsed_rows),
+                invalid_rows_count=len(invalid_rows),
+            ),
+            teachers=parsed_rows,
+            invalid_teachers=invalid_rows,
+        )
+
+    @staticmethod
+    def import_list_teacher(
+        *,
+        session: Session,
+        list_teacher: List[TeacherFileData],
+    ) -> List[TeacherFileData]:
+        imported_teachers: list[TeacherFileData] = []
+
+        for teacher_item in list_teacher:
+            teacher_code = (teacher_item.teacher_code or "").strip()
+            teacher_name = (teacher_item.name or "").strip()
+            email = (teacher_item.email or "").strip()
+            gender = (teacher_item.gender or "").strip()
+
+            if not teacher_code or not teacher_name or not email or not gender:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="teacher_code, name, gender, email are required.",
+                )
+            if gender not in {"1", "2", "3"}:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="gender must be one of: 1, 2, 3.",
+                )
+
+            existed_teacher = session.exec(
+                select(Teachers).where(
+                    or_(
+                        Teachers.teacher_code == teacher_code,
+                        Teachers.email == email,
+                    )
+                )
+            ).first()
+            if existed_teacher:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Teacher already exists: {teacher_code} / {email}",
+                )
+
+            new_teacher = Teachers(
+                teacher_code=teacher_code,
+                name=teacher_name,
+                date_of_birth=teacher_item.date_of_birth,
+                gender=gender,
+                email=email,
+                phone=teacher_item.phone,
+                address=teacher_item.address,
+                academic_rank=None,
+                status=StatusEnum.ACTIVE,
+                department_id=None,
+                password=hash_password(teacher_code),
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+            )
+            session.add(new_teacher)
+
+            imported_teachers.append(
+                TeacherFileData(
+                    teacher_code=new_teacher.teacher_code,
+                    name=new_teacher.name,
+                    gender=new_teacher.gender,
+                    date_of_birth=new_teacher.date_of_birth,
+                    email=new_teacher.email,
+                    phone=new_teacher.phone,
+                    address=new_teacher.address,
+                )
+            )
+
+        session.commit()
+        return imported_teachers
 
     @staticmethod
     def update(
