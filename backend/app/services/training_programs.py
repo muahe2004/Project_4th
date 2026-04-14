@@ -1,20 +1,32 @@
 from io import BytesIO
+from collections import defaultdict
 
 from fastapi import HTTPException
 from fastapi import UploadFile
 from openpyxl import load_workbook
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func, or_, desc
 from starlette import status
 
 from app.models.models import (
+    Departments,
+    Majors,
     Specializations,
     Subjects,
     TrainingProgram,
     TrainingProgramSubject,
 )
 from app.models.schemas.training_program.training_program_create_schemas import (
+    TrainingProgramDepartmentInfo,
     TrainingProgramCreateWithSubjects,
+    TrainingProgramListResponse,
+    TrainingProgramPublic,
+    TrainingProgramMajorInfo,
+    TrainingProgramQueryParams,
+    TrainingProgramSpecializationInfo,
+    TrainingProgramSubjectDetailPublic,
     TrainingProgramSubjectPublic,
+    TrainingProgramUpdateResponse,
+    TrainingProgramUpdateWithSubjects,
     TrainingProgramWithSubjectsPublic,
 )
 from app.models.schemas.training_program.training_program_file_schemas import (
@@ -25,8 +37,123 @@ from app.models.schemas.training_program.training_program_file_schemas import (
     TrainingProgramFileSubjectData,
 )
 
-
 class TrainingProgramServices:
+    @staticmethod
+    def get_training_programs(
+        *, session: Session, query: TrainingProgramQueryParams
+    ) -> TrainingProgramListResponse:
+        statement = (
+            select(
+                TrainingProgram,
+                Specializations.id,
+                Specializations.specialization_code,
+                Specializations.name,
+                Majors.id,
+                Majors.major_code,
+                Majors.name,
+                Departments.id,
+                Departments.department_code,
+                Departments.name,
+            )
+            .join(Specializations, Specializations.id == TrainingProgram.specialization_id)
+            .join(Majors, Majors.id == Specializations.major_id)
+            .join(Departments, Departments.id == Majors.department_id)
+        )
+
+        conditions = []
+        if query.status:
+            conditions.append(TrainingProgram.status == query.status)
+        if query.specialization_id:
+            conditions.append(TrainingProgram.specialization_id == query.specialization_id)
+        if query.search:
+            conditions.append(
+                or_(
+                    TrainingProgram.program_type.ilike(f"%{query.search}%"),
+                    TrainingProgram.training_program_name.ilike(f"%{query.search}%"),
+                    TrainingProgram.academic_year.ilike(f"%{query.search}%"),
+                    Specializations.name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        total = session.exec(
+            select(func.count()).select_from(statement.subquery())
+        ).one()
+
+        statement = statement.order_by(desc(TrainingProgram.created_at))
+        statement = statement.offset(query.skip).limit(query.limit)
+        rows = session.exec(statement).all()
+        training_program_ids = [row[0].id for row in rows]
+        subject_map: dict = defaultdict(list)
+
+        if training_program_ids:
+            subject_rows = session.exec(
+                select(
+                    TrainingProgramSubject,
+                    Subjects.subject_code,
+                    Subjects.name,
+                    Subjects.credit,
+                )
+                .join(Subjects, Subjects.id == TrainingProgramSubject.subject_id)
+                .where(TrainingProgramSubject.training_program_id.in_(training_program_ids))
+                .order_by(
+                    TrainingProgramSubject.training_program_id,
+                    TrainingProgramSubject.term,
+                )
+            ).all()
+
+            for subject_row in subject_rows:
+                training_program_subject = subject_row[0]
+                subject_map[training_program_subject.training_program_id].append(
+                    TrainingProgramSubjectDetailPublic(
+                        id=training_program_subject.id,
+                        training_program_id=training_program_subject.training_program_id,
+                        subject_id=training_program_subject.subject_id,
+                        subject_code=subject_row[1],
+                        subject_name=subject_row[2],
+                        credit=subject_row[3],
+                        term=training_program_subject.term,
+                        status=training_program_subject.status,
+                    )
+                )
+
+        data = []
+        for row in rows:
+            program = row[0]
+            specialization_info = TrainingProgramSpecializationInfo(
+                id=row[1],
+                specialization_code=row[2],
+                specialization_name=row[3],
+            )
+            major_info = TrainingProgramMajorInfo(
+                id=row[4],
+                major_code=row[5],
+                major_name=row[6],
+            )
+            department_info = TrainingProgramDepartmentInfo(
+                id=row[7],
+                department_code=row[8],
+                department_name=row[9],
+            )
+            data.append(
+                TrainingProgramPublic(
+                    id=program.id,
+                    program_type=program.program_type,
+                    training_program_name=program.training_program_name,
+                    academic_year=program.academic_year,
+                    specialization_id=program.specialization_id,
+                    specialization_infor=specialization_info,
+                    major_infor=major_info,
+                    department_info=department_info,
+                    status=program.status,
+                    subjects=subject_map.get(program.id, []),
+                )
+            )
+
+        return TrainingProgramListResponse(total=total, data=data)
+
     @staticmethod
     async def upload_file_training_program(
         *, session: Session, file: UploadFile
@@ -246,6 +373,175 @@ class TrainingProgramServices:
                 specialization_id=new_program.specialization_id,
                 status=new_program.status,
                 subjects=created_subjects,
+            )
+        except HTTPException:
+            session.rollback()
+            raise
+        except Exception:
+            session.rollback()
+            raise
+
+    @staticmethod
+    def update_with_subjects(
+        *, session: Session, training_program_id: str, payload: TrainingProgramUpdateWithSubjects
+    ) -> TrainingProgramUpdateResponse:
+        program = session.get(TrainingProgram, training_program_id)
+        if not program:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Training program not found.",
+            )
+
+        specialization = None
+        if payload.specialization_id:
+            specialization = session.get(Specializations, payload.specialization_id)
+            if not specialization:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Specialization not found.",
+                )
+
+        try:
+            update_data = payload.model_dump(exclude_unset=True, exclude={"subjects", "specialization_id"})
+            for field, value in update_data.items():
+                setattr(program, field, value)
+
+            if specialization:
+                program.specialization_id = specialization.id
+
+            existing_links = session.exec(
+                select(TrainingProgramSubject).where(
+                    TrainingProgramSubject.training_program_id == program.id
+                )
+            ).all()
+            existing_by_subject_id = {link.subject_id: link for link in existing_links}
+
+            desired_subject_ids = set()
+            updated_subjects: list[TrainingProgramSubjectPublic] = []
+
+            for index, subject_item in enumerate(payload.subjects, start=1):
+                subject = session.get(Subjects, subject_item.subject_id)
+                if not subject:
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail=f"Subject with id {subject_item.subject_id} does not exist.",
+                    )
+
+                desired_subject_ids.add(subject.id)
+                existing_link = existing_by_subject_id.get(subject.id)
+                term_value = subject_item.term or index
+
+                if existing_link:
+                    existing_link.term = term_value
+                    existing_link.status = payload.status if payload.status is not None else existing_link.status
+                    session.add(existing_link)
+                    updated_subjects.append(
+                        TrainingProgramSubjectPublic(
+                            id=existing_link.id,
+                            training_program_id=existing_link.training_program_id,
+                            subject_id=existing_link.subject_id,
+                            term=existing_link.term,
+                            status=existing_link.status,
+                        )
+                    )
+                else:
+                    new_link = TrainingProgramSubject(
+                        training_program_id=program.id,
+                        subject_id=subject.id,
+                        term=term_value,
+                        status=payload.status,
+                    )
+                    session.add(new_link)
+                    session.flush()
+                    updated_subjects.append(
+                        TrainingProgramSubjectPublic(
+                            id=new_link.id,
+                            training_program_id=new_link.training_program_id,
+                            subject_id=new_link.subject_id,
+                            term=new_link.term,
+                            status=new_link.status,
+                        )
+                    )
+
+            for existing_link in existing_links:
+                if existing_link.subject_id not in desired_subject_ids:
+                    session.delete(existing_link)
+
+            session.commit()
+            session.refresh(program)
+
+            specialization_row = session.exec(
+                select(
+                    Specializations.id,
+                    Specializations.specialization_code,
+                    Specializations.name,
+                    Majors.id,
+                    Majors.major_code,
+                    Majors.name,
+                    Departments.id,
+                    Departments.department_code,
+                    Departments.name,
+                )
+                .join(Majors, Majors.id == Specializations.major_id)
+                .join(Departments, Departments.id == Majors.department_id)
+                .where(Specializations.id == program.specialization_id)
+            ).first()
+
+            if not specialization_row:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Specialization chain not found.",
+                )
+
+            subject_rows = session.exec(
+                select(
+                    TrainingProgramSubject,
+                    Subjects.subject_code,
+                    Subjects.name,
+                    Subjects.credit,
+                )
+                .join(Subjects, Subjects.id == TrainingProgramSubject.subject_id)
+                .where(TrainingProgramSubject.training_program_id == program.id)
+                .order_by(TrainingProgramSubject.term)
+            ).all()
+
+            subject_details = [
+                TrainingProgramSubjectDetailPublic(
+                    id=row[0].id,
+                    training_program_id=row[0].training_program_id,
+                    subject_id=row[0].subject_id,
+                    subject_code=row[1],
+                    subject_name=row[2],
+                    credit=row[3],
+                    term=row[0].term,
+                    status=row[0].status,
+                )
+                for row in subject_rows
+            ]
+
+            return TrainingProgramUpdateResponse(
+                id=program.id,
+                program_type=program.program_type,
+                training_program_name=program.training_program_name,
+                academic_year=program.academic_year,
+                specialization_id=program.specialization_id,
+                specialization_infor=TrainingProgramSpecializationInfo(
+                    id=specialization_row[0],
+                    specialization_code=specialization_row[1],
+                    specialization_name=specialization_row[2],
+                ),
+                major_infor=TrainingProgramMajorInfo(
+                    id=specialization_row[3],
+                    major_code=specialization_row[4],
+                    major_name=specialization_row[5],
+                ),
+                department_info=TrainingProgramDepartmentInfo(
+                    id=specialization_row[6],
+                    department_code=specialization_row[7],
+                    department_name=specialization_row[8],
+                ),
+                status=program.status,
+                subjects=subject_details,
             )
         except HTTPException:
             session.rollback()

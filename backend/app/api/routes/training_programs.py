@@ -1,9 +1,14 @@
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
+import uuid
 
 from app.api.deps import SessionDep
 from app.models.schemas.training_program.training_program_create_schemas import (
     TrainingProgramCreateWithSubjects,
+    TrainingProgramListResponse,
     TrainingProgramWithSubjectsPublic,
+    TrainingProgramQueryParams,
+    TrainingProgramUpdateResponse,
+    TrainingProgramUpdateWithSubjects,
 )
 from app.models.schemas.training_program.training_program_file_schemas import (
     TrainingProgramFileDataResponse,
@@ -11,6 +16,13 @@ from app.models.schemas.training_program.training_program_file_schemas import (
 from app.services.training_programs import TrainingProgramServices
 
 router = APIRouter()
+
+
+@router.get("", response_model=TrainingProgramListResponse)
+def get_training_programs(
+    session: SessionDep, query: TrainingProgramQueryParams = Depends()
+) -> TrainingProgramListResponse:
+    return TrainingProgramServices.get_training_programs(session=session, query=query)
 
 
 @router.post("/upload-file", response_model=TrainingProgramFileDataResponse)
@@ -30,3 +42,16 @@ def create_training_program_with_subjects(
     data: TrainingProgramCreateWithSubjects,
 ) -> TrainingProgramWithSubjectsPublic:
     return TrainingProgramServices.create_with_subjects(session=session, payload=data)
+
+
+@router.patch("/{id}", response_model=TrainingProgramUpdateResponse)
+def update_training_program_with_subjects(
+    session: SessionDep,
+    id: uuid.UUID,
+    data: TrainingProgramUpdateWithSubjects,
+) -> TrainingProgramUpdateResponse:
+    return TrainingProgramServices.update_with_subjects(
+        session=session,
+        training_program_id=id,
+        payload=data,
+    )
