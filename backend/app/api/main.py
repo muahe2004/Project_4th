@@ -17,6 +17,7 @@ from app.api.routes import (
     relatives,
     teaching_schedules,
     examination_schedules,
+    training_programs,
     auth,
     student_class,
     export_file,
@@ -56,6 +57,9 @@ api_router.include_router(
     examination_schedules.router,
     prefix="/examination_schedules",
     tags=["examination_schedules"],
+)
+api_router.include_router(
+    training_programs.router, prefix="/training_programs", tags=["training_programs"]
 )
 api_router.include_router(
     student_class.router, prefix="/student_class", tags=["student_class"]
