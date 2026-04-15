@@ -1,11 +1,20 @@
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 from sqlmodel import Session, select
 
-from core.database import engine
-from enums.status import StatusEnum
-from middleware.hashing import hash_password
-from models.models import Students, Teachers
+# Ensure backend root is importable when executed as a script path
+# (e.g. python /app/backend/scripts/seed_users.py).
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
+
+from app.core.database import engine
+from app.enums.status import StatusEnum
+from app.middleware.hashing import hash_password
+from app.models.models import Students, Teachers
 
 
 def _upsert_teacher(
