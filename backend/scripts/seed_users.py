@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from sqlmodel import Session, select
 
-from app.core.database import engine
-from app.enums.status import StatusEnum
-from app.middleware.hashing import hash_password
-from app.models.models import Students, Teachers
+from core.database import engine
+from enums.status import StatusEnum
+from middleware.hashing import hash_password
+from models.models import Students, Teachers
 
 
 def _upsert_teacher(

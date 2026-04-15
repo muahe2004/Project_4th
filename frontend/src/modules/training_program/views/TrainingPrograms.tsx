@@ -14,9 +14,11 @@ import { useGetTrainingPrograms } from "../apis/getTrainingPrograms";
 import { useImportTrainingProgram } from "../apis/importTrainingProgram";
 import { useUploadTrainingProgram } from "../apis/uploadTrainingProgram";
 import ImportFormModel from "../components/ImportFormModel";
+import TrainingProgramFormModel from "../components/TrainingProgramFormModel";
 import TrainingProgramTable from "../components/TrainingProgramTable";
 import type {
   ITrainingProgramImportPayload,
+  ITrainingProgram,
   ITrainingProgramUploadResponse,
 } from "../types";
 
@@ -26,6 +28,9 @@ export function TrainingPrograms() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [openImport, setOpenImport] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
+  const [mode, setMode] = useState<"add" | "edit">("add");
+  const [selectedTrainingProgram, setSelectedTrainingProgram] = useState<ITrainingProgram | undefined>(undefined);
   const [importData, setImportData] = useState<ITrainingProgramUploadResponse | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -126,6 +131,17 @@ export function TrainingPrograms() {
           }}
         />
 
+        <Button
+          onClick={() => {
+            setMode("add");
+            setSelectedTrainingProgram(undefined);
+            setOpenForm(true);
+          }}
+          className="btn-spacing-left"
+        >
+          Add Training Program
+        </Button>
+
         <Button onClick={handleImportClick} className="btn-spacing-left">
           Import
         </Button>
@@ -138,7 +154,14 @@ export function TrainingPrograms() {
         />
       </Box>
 
-      <TrainingProgramTable trainingPrograms={trainingPrograms} />
+      <TrainingProgramTable
+        trainingPrograms={trainingPrograms}
+        onEdit={(trainingProgram) => {
+          setMode("edit");
+          setSelectedTrainingProgram(trainingProgram);
+          setOpenForm(true);
+        }}
+      />
 
       <PaginationUniCore
         totalItems={trainingPrograms?.total || 0}
@@ -157,6 +180,16 @@ export function TrainingPrograms() {
         data={importData}
         onImport={handleImportTrainingProgram}
         isImporting={importMutation.isPending}
+      />
+
+      <TrainingProgramFormModel
+        open={openForm}
+        mode={mode}
+        initialValues={selectedTrainingProgram}
+        onClose={() => {
+          setOpenForm(false);
+          setSelectedTrainingProgram(undefined);
+        }}
       />
     </main>
   );
