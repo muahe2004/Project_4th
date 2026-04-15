@@ -40,6 +40,17 @@ export interface ITrainingProgram {
   subjects: ITrainingProgramSubjectDetail[];
 }
 
+export type ITrainingProgramCreate = Pick<
+  ITrainingProgram,
+  "program_type" | "training_program_name" | "academic_year" | "status"
+> & {
+  specialization_id: string;
+};
+
+export type ITrainingProgramUpdate = Partial<ITrainingProgramCreate> & {
+  subjects?: ITrainingProgramFileSubjectData[];
+};
+
 export interface ITrainingProgramListResponse {
   total: number;
   data: ITrainingProgram[];

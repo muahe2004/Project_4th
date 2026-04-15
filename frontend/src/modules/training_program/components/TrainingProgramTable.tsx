@@ -19,10 +19,12 @@ interface TrainingProgramTableProps {
     total: number;
     data: ITrainingProgram[];
   };
+  onEdit?: (trainingProgram: ITrainingProgram) => void;
 }
 
 export function TrainingProgramTable({
   trainingPrograms,
+  onEdit,
 }: TrainingProgramTableProps) {
   return (
     <TableContainer className="sticky-table-container" component={Paper}>
@@ -62,7 +64,7 @@ export function TrainingProgramTable({
                 {getStatusDisplay(row.status || "")}
               </TableCell>
               <TableCell className="sticky-tcell" align="center">
-                <IconButton className="primary-tcell__button--icon">
+                <IconButton className="primary-tcell__button--icon" onClick={() => onEdit?.(row)}>
                   <EditSquareIcon />
                 </IconButton>
               </TableCell>
