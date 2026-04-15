@@ -6,5 +6,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 2004,
+    allowedHosts: ['ums.lyvanminh.site'],
   },
 })
