@@ -1,0 +1,82 @@
+services:
+  db:
+    container_name: ums-db
+    image: postgres:15
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-ums}
+    ports:
+      - "5434:5432"
+    volumes:
+      - app-db-data:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ums}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  be:
+    container_name: ums-be
+    image: python:3.12-slim
+    restart: unless-stopped
+    env_file:
+      - .env
+    working_dir: /app/backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      UNICORE_SECRET_KEY: ${UNICORE_SECRET_KEY:-dev-secret-key}
+      UNICORE_API_URL: ${UNICORE_API_URL:-http://localhost:8386}
+      UNICORE_PREFIX: ${UNICORE_PREFIX:-unicore/api}
+      UNIUSERS_PREFIX: ${UNIUSERS_PREFIX:-uniusers/api}
+      UNILEARN_PREFIX: ${UNILEARN_PREFIX:-unilearn/api}
+      POSTGRES_SERVER: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-ums}
+      UNICORE_HOST: ${UNICORE_HOST:-0.0.0.0}
+      UNICORE_PORT: ${UNICORE_PORT:-8000}
+      FRONTEND_HOST: ${FRONTEND_HOST:-http://localhost:2004}
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:-http://localhost:2004,http://127.0.0.1:2004}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+      - backend-pip-cache:/root/.cache/pip
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt &&
+      alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  fe:
+    container_name: ums-fe
+    image: node:20-alpine
+    restart: unless-stopped
+    env_file:
+      - .env
+    working_dir: /app/frontend
+    depends_on:
+      - be
+    environment:
+      VITE_UNICORE_API_URL: ${VITE_UNICORE_API_URL:-http://localhost:8000}
+      VITE_UNICORE_PREFIX: ${VITE_UNICORE_PREFIX:-unicore/api}
+      VITE_UNILEARN_PREFIX: ${VITE_UNILEARN_PREFIX:-unilearn/api}
+      VITE_UNIUSERS_PREFIX: ${VITE_UNIUSERS_PREFIX:-uniusers/api}
+    ports:
+      - "2004:2004"
+    volumes:
+      - ./:/app
+      - frontend-node-modules:/app/frontend/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 2004"
+
+volumes:
+  app-db-data:
+  backend-pip-cache:
+  frontend-node-modules:
