@@ -13,19 +13,15 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v3
 
-      - name: Upload source code to VPS (skip .env)
+      - name: Upload source code to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASS }}
-          source: "."
+          source: "docker-compose.yml,backend,frontend"
           target: "/root/Project_4th"
           overwrite: true
-          exclude: |
-            .env
-            backend/.env
-            frontend/.env
 
       - name: Deploy on VPS (Docker)
         uses: appleboy/ssh-action@v1.1.0
