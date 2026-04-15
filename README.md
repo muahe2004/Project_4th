@@ -47,6 +47,11 @@ UMS is a full-stack university management platform that keeps student, course, a
 3. `alembic upgrade head`
 4. Repeat when models change to keep the schema in sync
 
+## Seed data
+1. `cd backend`
+2. `python scripts/seed_users.py`
+3. The script seeds 1 admin, 1 teacher, and 1 student with hashed passwords
+
 ## Docker (optional)
 - `docker-compose -f docker-compose.local.yml up --build`
 - Once containers are running, the backend should expose its port, and the frontend can target it via the env-configured base URL
