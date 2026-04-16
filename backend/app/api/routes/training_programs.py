@@ -4,6 +4,7 @@ import uuid
 from app.api.deps import SessionDep
 from app.models.schemas.training_program.training_program_create_schemas import (
     TrainingProgramCreateWithSubjects,
+    TrainingProgramDeleteResponse,
     TrainingProgramListResponse,
     TrainingProgramWithSubjectsPublic,
     TrainingProgramQueryParams,
@@ -55,3 +56,11 @@ def update_training_program_with_subjects(
         training_program_id=id,
         payload=data,
     )
+
+
+@router.delete("/{id}", response_model=TrainingProgramDeleteResponse)
+def delete_training_program(
+    session: SessionDep,
+    id: uuid.UUID,
+) -> TrainingProgramDeleteResponse:
+    return TrainingProgramServices.delete(session=session, training_program_id=id)

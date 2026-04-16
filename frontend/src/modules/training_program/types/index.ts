@@ -47,8 +47,15 @@ export type ITrainingProgramCreate = Pick<
   specialization_id: string;
 };
 
+export type ITrainingProgramCreateWithSubjects = ITrainingProgramCreate & {
+  subjects: ITrainingProgramFileSubjectData[];
+};
+
 export type ITrainingProgramUpdate = Partial<ITrainingProgramCreate> & {
-  subjects?: ITrainingProgramFileSubjectData[];
+  subjects?: {
+    subject_id: string;
+    term?: number | null;
+  }[];
 };
 
 export interface ITrainingProgramListResponse {
@@ -65,6 +72,7 @@ export interface ITrainingProgramQueryParams {
 }
 
 export interface ITrainingProgramFileSubjectData {
+  subject_id?: string | null;
   subject_code?: string | null;
   subject_name?: string | null;
   term?: number | null;

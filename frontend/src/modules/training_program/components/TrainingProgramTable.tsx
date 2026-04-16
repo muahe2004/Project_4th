@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 
@@ -20,11 +21,13 @@ interface TrainingProgramTableProps {
     data: ITrainingProgram[];
   };
   onEdit?: (trainingProgram: ITrainingProgram) => void;
+  onDelete?: (trainingProgram: ITrainingProgram) => void;
 }
 
 export function TrainingProgramTable({
   trainingPrograms,
   onEdit,
+  onDelete,
 }: TrainingProgramTableProps) {
   return (
     <TableContainer className="sticky-table-container" component={Paper}>
@@ -66,6 +69,12 @@ export function TrainingProgramTable({
               <TableCell className="sticky-tcell" align="center">
                 <IconButton className="primary-tcell__button--icon" onClick={() => onEdit?.(row)}>
                   <EditSquareIcon />
+                </IconButton>
+                <IconButton
+                  className="primary-tcell__button--icon primary-tcell__button--delete"
+                  onClick={() => onDelete?.(row)}
+                >
+                  <DeleteIcon />
                 </IconButton>
               </TableCell>
             </TableRow>

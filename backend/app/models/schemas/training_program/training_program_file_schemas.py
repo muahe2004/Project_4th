@@ -14,6 +14,7 @@ class TrainingProgramFileData(SQLModel):
     program_type: str | None = None
     training_program_name: str | None = None
     academic_year: str | None = None
+    specialization_id: str | None = None
     specialization_code: str | None = None
     specialization_name: str | None = None
     subjects: list[TrainingProgramFileSubjectData] = Field(default_factory=list)

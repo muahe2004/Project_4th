@@ -15,7 +15,8 @@ class TrainingProgramCreateWithSubjects(SQLModel):
     program_type: str = Field(sa_column=Column(String(50), nullable=False))
     training_program_name: Optional[str] = Field(default=None, sa_column=Column(String(100), nullable=True))
     academic_year: str = Field(sa_column=Column(String(20), nullable=False))
-    specialization_code: str = Field(sa_column=Column(String(12), nullable=False))
+    specialization_id: Optional[UUID] = Field(default=None)
+    specialization_code: Optional[str] = Field(default=None, sa_column=Column(String(12), nullable=True))
     specialization_name: Optional[str] = Field(default=None, sa_column=Column(String(100), nullable=True))
     status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     subjects: list[TrainingProgramSubjectItem] = Field(default_factory=list)
@@ -104,3 +105,8 @@ class TrainingProgramQueryParams(BaseQueryParams):
 
 class TrainingProgramUpdateResponse(TrainingProgramPublic):
     pass
+
+
+class TrainingProgramDeleteResponse(SQLModel):
+    message: str
+    id: UUID

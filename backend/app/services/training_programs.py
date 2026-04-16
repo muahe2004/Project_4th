@@ -18,6 +18,7 @@ from app.models.models import (
 from app.models.schemas.training_program.training_program_create_schemas import (
     TrainingProgramDepartmentInfo,
     TrainingProgramCreateWithSubjects,
+    TrainingProgramDeleteResponse,
     TrainingProgramListResponse,
     TrainingProgramPublic,
     TrainingProgramMajorInfo,
@@ -38,6 +39,29 @@ from app.models.schemas.training_program.training_program_file_schemas import (
 )
 
 class TrainingProgramServices:
+    @staticmethod
+    def _resolve_specialization(
+        *, session: Session, specialization_id, specialization_code: str | None
+    ) -> Specializations:
+        if specialization_id:
+            specialization = session.get(Specializations, specialization_id)
+            if specialization:
+                return specialization
+
+        if specialization_code:
+            specialization = session.exec(
+                select(Specializations).where(
+                    Specializations.specialization_code == specialization_code
+                )
+            ).first()
+            if specialization:
+                return specialization
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Specialization id or specialization code is required.",
+        )
+
     @staticmethod
     def get_training_programs(
         *, session: Session, query: TrainingProgramQueryParams
@@ -213,6 +237,24 @@ class TrainingProgramServices:
             academic_year=str(cell(meta_row_indexes["academic_year"], 2) or "").strip() or None,
         )
 
+        specialization = None
+        if training_program.specialization_code:
+            specialization = session.exec(
+                select(Specializations).where(
+                    Specializations.specialization_code == training_program.specialization_code
+                )
+            ).first()
+
+        if not specialization:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Specialization code is required in the import file.",
+            )
+
+        training_program.specialization_code = specialization.specialization_code
+        if not training_program.specialization_name:
+            training_program.specialization_name = specialization.name
+
         parsed_subjects: list[TrainingProgramFileSubjectData] = []
         invalid_subjects: list[TrainingProgramFileInvalidSubject] = []
 
@@ -288,16 +330,11 @@ class TrainingProgramServices:
     def create_with_subjects(
         *, session: Session, payload: TrainingProgramCreateWithSubjects
     ) -> TrainingProgramWithSubjectsPublic:
-        specialization = session.exec(
-            select(Specializations).where(
-                Specializations.specialization_code == payload.specialization_code
-            )
-        ).first()
-        if not specialization:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Specialization with code {payload.specialization_code} does not exist.",
-            )
+        specialization = TrainingProgramServices._resolve_specialization(
+            session=session,
+            specialization_id=payload.specialization_id,
+            specialization_code=payload.specialization_code,
+        )
 
         existing_program = session.exec(
             select(TrainingProgram).where(
@@ -314,7 +351,7 @@ class TrainingProgramServices:
 
         try:
             program_data = payload.model_dump(
-                exclude={"subjects", "specialization_code", "specialization_name"}
+                exclude={"subjects", "specialization_code", "specialization_name", "specialization_id"}
             )
             new_program = TrainingProgram(
                 **program_data,
@@ -549,3 +586,24 @@ class TrainingProgramServices:
         except Exception:
             session.rollback()
             raise
+
+    @staticmethod
+    def delete(
+        *, session: Session, training_program_id: str
+    ) -> TrainingProgramDeleteResponse:
+        program = session.get(TrainingProgram, training_program_id)
+        if not program:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Training program not found.",
+            )
+
+        if program.status != "inactive":
+            program.status = "inactive"
+            message = "Training program set to inactive"
+        else:
+            message = "Training program already inactive"
+
+        session.commit()
+
+        return TrainingProgramDeleteResponse(id=program.id, message=message)

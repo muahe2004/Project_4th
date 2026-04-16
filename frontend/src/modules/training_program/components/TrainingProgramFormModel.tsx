@@ -6,6 +6,7 @@ import {
   DialogTitle,
   IconButton,
   Paper,
+  MenuItem,
   Table,
   TableBody,
   TableCell,
@@ -13,6 +14,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Select,
   Typography,
 } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
@@ -33,9 +35,29 @@ import ImportFormModelDialog from "./ImportFormModelDialog";
 import type {
   ITrainingProgram,
   ITrainingProgramCreate,
+  ITrainingProgramCreateWithSubjects,
   ITrainingProgramFileSubjectData,
   ITrainingProgramUpdate,
 } from "../types";
+
+const TRAINING_PROGRAM_TYPE_OPTIONS = [
+  { value: "Dai hoc chinh quy", label: "Đại học chính quy" },
+  { value: "Lien thong", label: "Liên thông" },
+  { value: "Van bang 2", label: "Văn bằng 2" },
+];
+
+const getAcademicYearOptions = () => {
+  const currentYear = new Date().getFullYear();
+  return Array.from({ length: 6 }, (_, index) => {
+    const startYear = currentYear + index;
+    return {
+      value: `${startYear} - ${startYear + 1}`,
+      label: `${startYear} - ${startYear + 1}`,
+    };
+  });
+};
+
+const ACADEMIC_YEAR_OPTIONS = getAcademicYearOptions();
 
 interface TrainingProgramFormModelProps {
   open: boolean;
@@ -90,6 +112,7 @@ const TrainingProgramFormModel = ({
       setSpecializationId(initialValues.specialization_id || "");
       setSubjects(
         (initialValues.subjects ?? []).map((subject) => ({
+          subject_id: subject.subject_id,
           subject_code: subject.subject_code,
           subject_name: subject.subject_name,
           term: subject.term,
@@ -132,15 +155,37 @@ const TrainingProgramFormModel = ({
   const handleConfirmSave = async () => {
     try {
       if (mode === "add") {
-        await addTrainingProgram({
+        const createSubjects = subjects
+          .filter((subject): subject is ITrainingProgramFileSubjectData & { subject_id: string } =>
+            Boolean(subject.subject_id)
+          )
+          .map((subject) => ({
+            subject_id: subject.subject_id,
+            subject_code: subject.subject_code,
+            subject_name: subject.subject_name,
+            term: subject.term,
+          }));
+
+        const payload: ITrainingProgramCreateWithSubjects = {
           ...currentValues,
-          subjects,
-        });
+          subjects: createSubjects,
+        };
+
+        await addTrainingProgram(payload);
         showSnackbar("Thêm chương trình đào tạo thành công!", "success");
       } else if (mode === "edit" && id) {
         const payload: ITrainingProgramUpdate = {
           ...currentValues,
-          subjects,
+          subjects: subjects.map((subject) => {
+            if (!subject.subject_id) {
+              throw new Error("Missing subject_id for training program update.");
+            }
+
+            return {
+              subject_id: subject.subject_id,
+              term: subject.term,
+            };
+          }),
         };
 
         await updateTrainingProgram({ id, data: payload });
@@ -162,13 +207,23 @@ const TrainingProgramFormModel = ({
       </DialogTitle>
       <DialogContent className="primary-dialog-content">
         <LabelPrimary value="Loại CTĐT" required />
-        <TextField
+        <Select
           value={programType}
-          onChange={(e) => setProgramType(e.target.value)}
+          onChange={(e) => setProgramType(String(e.target.value))}
           fullWidth
-          variant="outlined"
+          displayEmpty
           className="main-text__field primary-dialog-input"
-        />
+          renderValue={(value) => {
+            const selected = TRAINING_PROGRAM_TYPE_OPTIONS.find((option) => option.value === value);
+            return selected?.label || "Chọn loại CTĐT";
+          }}
+        >
+          {TRAINING_PROGRAM_TYPE_OPTIONS.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
 
         <LabelPrimary value="Tên CTĐT" />
         <TextField
@@ -180,13 +235,23 @@ const TrainingProgramFormModel = ({
         />
 
         <LabelPrimary value="Niên khoá" required />
-        <TextField
+        <Select
           value={academicYear}
-          onChange={(e) => setAcademicYear(e.target.value)}
+          onChange={(e) => setAcademicYear(String(e.target.value))}
           fullWidth
-          variant="outlined"
+          displayEmpty
           className="main-text__field primary-dialog-input"
-        />
+          renderValue={(value) => {
+            const selected = ACADEMIC_YEAR_OPTIONS.find((option) => option.value === value);
+            return selected?.label || "Chọn niên khoá";
+          }}
+        >
+          {ACADEMIC_YEAR_OPTIONS.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
 
         <LabelPrimary value="Chuyên ngành" required />
         <MainAutocomplete

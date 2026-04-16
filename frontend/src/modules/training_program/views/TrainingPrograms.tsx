@@ -11,11 +11,13 @@ import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import { STATUS_OPTIONS } from "../../../constants/status";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useGetTrainingPrograms } from "../apis/getTrainingPrograms";
+import { useDeleteTrainingProgram } from "../apis/deleteTrainingProgram";
 import { useImportTrainingProgram } from "../apis/importTrainingProgram";
 import { useUploadTrainingProgram } from "../apis/uploadTrainingProgram";
 import ImportFormModel from "../components/ImportFormModel";
 import TrainingProgramFormModel from "../components/TrainingProgramFormModel";
 import TrainingProgramTable from "../components/TrainingProgramTable";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import type {
   ITrainingProgramImportPayload,
   ITrainingProgram,
@@ -36,6 +38,9 @@ export function TrainingPrograms() {
 
   const uploadMutation = useUploadTrainingProgram();
   const importMutation = useImportTrainingProgram();
+  const deleteMutation = useDeleteTrainingProgram();
+  const [deleteTarget, setDeleteTarget] = useState<ITrainingProgram | undefined>(undefined);
+  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
 
   const params = {
     limit: rowsPerPage,
@@ -161,6 +166,10 @@ export function TrainingPrograms() {
           setSelectedTrainingProgram(trainingProgram);
           setOpenForm(true);
         }}
+        onDelete={(trainingProgram) => {
+          setDeleteTarget(trainingProgram);
+          setOpenDeleteConfirm(true);
+        }}
       />
 
       <PaginationUniCore
@@ -189,6 +198,22 @@ export function TrainingPrograms() {
         onClose={() => {
           setOpenForm(false);
           setSelectedTrainingProgram(undefined);
+        }}
+      />
+
+      <ConfirmDialog
+        open={openDeleteConfirm}
+        title="Xác nhận xoá"
+        message="CTĐT sẽ được chuyển sang trạng thái inactive. Bạn có chắc muốn tiếp tục?"
+        onCancel={() => {
+          setOpenDeleteConfirm(false);
+          setDeleteTarget(undefined);
+        }}
+        onConfirm={async () => {
+          if (!deleteTarget?.id) return;
+          await deleteMutation.mutateAsync(deleteTarget.id);
+          setOpenDeleteConfirm(false);
+          setDeleteTarget(undefined);
         }}
       />
     </main>
