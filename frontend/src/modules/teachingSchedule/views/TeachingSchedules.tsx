@@ -20,6 +20,7 @@ import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useDeleteTeachingSchedule } from "../apis/deleteTeachingSchedules";
 import { useImportCalender } from "../apis/importCalender";
 import { useUploadCalender } from "../apis/uploadCalender";
+import { useExportExampleFile } from "../apis/exportExampleFile";
 import ImportFormModel from "../components/ImportFormModel";
 import type { ITeachingScheduleResponse, IUploadTeachingCalenderResponse } from "../types";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
@@ -62,6 +63,7 @@ export function TeachingSchedules() {
   const deleteTeachingScheduleMutation = useDeleteTeachingSchedule();
   const { mutateAsync: uploadCalenderFile, isPending: isUploadingCalenderFile } = useUploadCalender({});
   const { mutateAsync: importCalender, isPending: isImportingCalender } = useImportCalender({});
+  const { mutateAsync: exportExampleFile, isPending: isExportingExampleFile } = useExportExampleFile({});
 
   const handleOpenAddForm = () => {
     setFormMode("add");
@@ -207,6 +209,15 @@ export function TeachingSchedules() {
             disabled={isUploadingCalenderFile}
         >
             {isUploadingCalenderFile ? "Uploading..." : "Import lịch dạy"}
+        </Button>
+        <Button
+            className="btn-spacing-left"
+            onClick={() => {
+              void exportExampleFile();
+            }}
+            disabled={isExportingExampleFile}
+        >
+            {isExportingExampleFile ? "Đang xuất file..." : "Xuất file"}
         </Button>
         <input
           ref={fileInputRef}

@@ -84,3 +84,70 @@ class ExaminationScheduleQueryParams(BaseQueryParams):
     invigilator_id: Optional[UUID] = Field(None)
     class_id: Optional[UUID] = Field(None)
     student_id: Optional[UUID] = Field(None)
+
+
+class UploadExaminationScheduleItem(SQLModel):
+    subject_id: UUID | None = None
+    subject_code: str | None = None
+    subject_name: str | None = None
+    class_id: UUID | None = None
+    class_code: str | None = None
+    class_name: str | None = None
+    invigilator_1_id: UUID | None = None
+    invigilator_1_code: str | None = None
+    invigilator_1_name: str | None = None
+    invigilator_2_id: UUID | None = None
+    invigilator_2_code: str | None = None
+    invigilator_2_name: str | None = None
+    room_id: UUID | None = None
+    room_number: int | None = None
+    date: datetime | None = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
+    schedule_type: str | None = None
+
+
+class UploadExaminationScheduleInvalidRow(UploadExaminationScheduleItem):
+    row: int
+    errors: list[str] = Field(default_factory=list)
+
+
+class UploadExaminationScheduleFileInfo(SQLModel):
+    file_name: str
+    headers: list[str] = Field(default_factory=list)
+    header_row: int
+    total_rows: int
+    valid_rows_count: int
+    invalid_rows_count: int
+
+
+class UploadExaminationScheduleResponse(SQLModel):
+    file_information: UploadExaminationScheduleFileInfo
+    schedules: list[UploadExaminationScheduleItem] = Field(default_factory=list)
+    invalid_schedules: list[UploadExaminationScheduleInvalidRow] = Field(default_factory=list)
+
+
+class ImportExaminationScheduleItem(SQLModel):
+    subject_id: UUID
+    class_id: UUID
+    date: datetime
+    start_time: datetime
+    end_time: datetime
+    room_id: UUID | None = None
+    schedule_type: str | None = None
+    status: str | None = None
+    invigilator_1_id: UUID | None = None
+    invigilator_2_id: UUID | None = None
+
+
+class ImportExaminationScheduleInput(SQLModel):
+    schedules: list[ImportExaminationScheduleItem] = Field(default_factory=list)
+
+
+class ImportExaminationScheduleImportedItem(SQLModel):
+    row: int
+    id: UUID
+
+
+class ImportExaminationScheduleResponse(SQLModel):
+    items: list[ImportExaminationScheduleImportedItem] = Field(default_factory=list)

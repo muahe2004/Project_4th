@@ -45,6 +45,12 @@ type ImportPreviewRow = IUploadTeachingCalenderItem & {
   index: number;
 };
 
+type EditableTeachingSchedule = IUploadTeachingCalenderItem & {
+  subject_name?: string | null;
+  teacher_name?: string | null;
+  room_number?: number | null;
+};
+
 const toInputDateValue = (dateValue?: string | null) => {
   if (!dateValue) {
     return "";
@@ -77,7 +83,7 @@ const ImportFormModel = ({
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [editingSource, setEditingSource] = useState<RowSource>("valid");
   const [editingIndex, setEditingIndex] = useState(-1);
-  const [editingSchedule, setEditingSchedule] = useState<IUploadTeachingCalenderItem | null>(null);
+  const [editingSchedule, setEditingSchedule] = useState<EditableTeachingSchedule | null>(null);
 
   useEffect(() => {
     if (!open) {

@@ -129,6 +129,7 @@ class TeacherDeleteResponse(BaseModel):
 class TeacherDropdownResponse(BaseModel):
     id: UUID_TYPE
     name: str
+    teacher_code: Optional[str] = None
 
 
 class TeacherSearchParams(BaseQueryParams):

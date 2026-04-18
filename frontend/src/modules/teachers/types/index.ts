@@ -128,6 +128,7 @@ export interface TeacherQueryParams {
 export interface TeacherDropDown {
   id: string;
   name: string;
+  teacher_code?: string | null;
 }
 
 export interface ITeacherFileData {

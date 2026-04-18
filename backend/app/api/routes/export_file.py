@@ -77,3 +77,10 @@ def export_teachers_template():
     return ExportFileServices.export_teachers_template_response(
         file_name="teachers_template.xlsx",
     )
+
+
+@router.get("/teaching-schedules-template")
+def export_teaching_schedules_template():
+    return ExportFileServices.export_teaching_schedules_template_response(
+        file_name="teaching_schedules_template.xlsx",
+    )

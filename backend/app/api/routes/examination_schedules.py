@@ -11,8 +11,12 @@ from app.models.schemas.examination_schedules.examination_schedule_schemas impor
     ExaminationScheduleResponse,
     ListExaminationScheduleResponse,
     ExaminationScheduleQueryParams,
+    UploadExaminationScheduleResponse,
+    ImportExaminationScheduleInput,
+    ImportExaminationScheduleResponse,
 )
 from app.services.examination_schedules import ExaminationScheduleServices
+from fastapi import File, UploadFile
 
 router = APIRouter()
 
@@ -78,4 +82,26 @@ def delete_learning_schedule(
 ) -> ExaminationScheduleDeleteResponse:
     return ExaminationScheduleServices.delete(
         session=session, examination_schedule_id=id
+    )
+
+
+@router.post("/upload-file", response_model=UploadExaminationScheduleResponse)
+async def upload_examination_schedule_file(
+    session: SessionDep,
+    file: UploadFile = File(...),
+) -> UploadExaminationScheduleResponse:
+    return await ExaminationScheduleServices.upload_file_examination_schedule(
+        session=session,
+        file=file,
+    )
+
+
+@router.post("/import-file", response_model=ImportExaminationScheduleResponse)
+def import_examination_schedule_file(
+    session: SessionDep,
+    calender: ImportExaminationScheduleInput,
+) -> ImportExaminationScheduleResponse:
+    return ExaminationScheduleServices.import_examination_schedule(
+        session=session,
+        calender=calender,
     )

@@ -9,7 +9,7 @@ import LanguageSwitcher from '../../../components/LanguageSwitcher/LanguageSwitc
 import { isRequired } from "../../../utils/validation/validations";
 import { useSignIn } from '../apis/sign-in';
 import { useNavigate } from "react-router-dom";
-// import SnackBar from '../../../components/SnackBar/SnackBar';
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { homeUrl, layOutAdminUrl } from '../../../routes/urls';
 import { ROLES } from '../../../constants/roles';
@@ -18,6 +18,7 @@ export function SignIn() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const fetchMe = useAuthStore((state) => state.fetchMe); 
+  const { showSnackbar } = useSnackbar();
 
   const [username, setUsername] = React.useState('');
   const [usernameError, setUsernameError] = React.useState('');
@@ -59,39 +60,17 @@ export function SignIn() {
           onError: (error) => {
             const status = error.response?.status;
             if (status === 401) {
-              showError("Incorrect username or password!");
+              showSnackbar("Incorrect username or password!", "error");
             } else if (status === 403) {
-              showError("Incorrect username or password!");
+              showSnackbar("Incorrect username or password!", "error");
             } else {
-              showError(error.response?.data?.detail || "An error occurred");
+              showSnackbar(error.response?.data?.detail || "An error occurred", "error");
             }
           },
         }
       );
     }
   }
-
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error",
-  });
-
-  // const showSuccess = (message: string) => {
-  //   setSnackbar({
-  //     open: true,
-  //     message: message,
-  //     severity: "success",
-  //   });
-  // };
-
-  const showError = (message: string) => {
-    setSnackbar({
-      open: true,
-      message: message,
-      severity: "error",
-    });
-  };
 
   return (
     <div className="sign-in">
@@ -176,12 +155,6 @@ export function SignIn() {
         </Paper>
       </Container>
 
-      {/* <SnackBar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      /> */}
     </div>
   );
 }

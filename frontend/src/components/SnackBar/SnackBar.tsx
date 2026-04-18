@@ -47,7 +47,7 @@ export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({
         autoHideDuration={3000}
         onClose={handleClose}
         className="primary-snackbar"
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Alert
           onClose={handleClose}

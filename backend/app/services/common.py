@@ -56,6 +56,9 @@ def parse_excel_datetime(raw_value: object) -> datetime | None:
     if isinstance(raw_value, date_type):
         return datetime.combine(raw_value, datetime.min.time())
 
+    if isinstance(raw_value, time):
+        return datetime.combine(datetime.today().date(), raw_value)
+
     text_value = str(raw_value).strip()
     if not text_value:
         return None
@@ -65,6 +68,8 @@ def parse_excel_datetime(raw_value: object) -> datetime | None:
         "%Y/%m/%d",
         "%d/%m/%Y",
         "%d-%m-%Y",
+        "%H:%M",
+        "%H:%M:%S",
         "%Y-%m-%d %H:%M:%S",
         "%Y/%m/%d %H:%M:%S",
         "%d/%m/%Y %H:%M:%S",
