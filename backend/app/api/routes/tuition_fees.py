@@ -1,9 +1,11 @@
 import uuid
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.tuition_fees.tuition_fee_schemas import (
     TuitionFeePublic,
+    TuitionFeeListResponse,
+    TuitionFeeQueryParams,
     TuitionFeeCreate,
     TuitionFeeUpdate,
     TuitionFeeDeleteResponse,
@@ -15,9 +17,11 @@ router = APIRouter()
 
 
 # =========================== get all tuition fees ===========================
-@router.get("", response_model=List[TuitionFeePublic])
-def get_tuition_fees(session: SessionDep) -> List[TuitionFeePublic]:
-    return TuitionFeeServices.get_all(session=session)
+@router.get("", response_model=TuitionFeeListResponse)
+def get_tuition_fees(
+    session: SessionDep, query: TuitionFeeQueryParams = Depends()
+) -> TuitionFeeListResponse:
+    return TuitionFeeServices.get_all(session=session, query=query)
 
 
 # =========================== get tuition fee by id ===========================
@@ -33,12 +37,12 @@ def get_tuition_fee_by_id(
 # =========================== add tuition fee ===========================
 @router.post(
     "",
-    response_model=TuitionFeePublic,
+    response_model=List[TuitionFeePublic],
 )
-def create_score(
-    request: Request, session: SessionDep, data: TuitionFeeCreate
-) -> TuitionFeePublic:
-    return TuitionFeeServices.create(session=session, tuition_fee=data)
+def create_tuition_fees(
+    request: Request, session: SessionDep, data: List[TuitionFeeCreate]
+) -> List[TuitionFeePublic]:
+    return TuitionFeeServices.create_many(session=session, tuition_fees=data)
 
 
 # =========================== update tuition fee ===========================

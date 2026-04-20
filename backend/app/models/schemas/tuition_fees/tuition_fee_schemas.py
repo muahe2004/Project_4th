@@ -1,69 +1,87 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from sqlmodel import SQLModel, Field, Column, String, DateTime
 from sqlalchemy import Float
 from uuid import UUID
+from app.models.schemas.common.query import BaseQueryParams
 
 
 class TuitionFeeBase(SQLModel):
     academic_year: str = Field(sa_column=Column(String(20), nullable=False))
     amount: float = Field(sa_column=Column(Float, nullable=False))
-    reduction: float | None = Field(
-        default=None, sa_column=Column(Float, nullable=True)
-    )
-    payable_amount: float = Field(sa_column=Column(Float, nullable=False))
-    paid_amount: float | None = Field(
-        default=None, sa_column=Column(Float, nullable=True)
-    )
-    debt_amount: float | None = Field(
-        default=None, sa_column=Column(Float, nullable=True)
-    )
-    surplus: float | None = Field(default=None, sa_column=Column(Float, nullable=True))
-    student_id: UUID | None = Field(default=None, foreign_key="students.id")
+    price_per_credit: float = Field(sa_column=Column(Float, nullable=False))
+    training_program_id: UUID = Field(foreign_key="training_program.id")
     type: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
-    status: str | None = Field(
-        default=None, sa_column=Column(String(50), nullable=True)
-    )
-    start_date: datetime | None = Field(
-        default=None, sa_column=Column(DateTime, nullable=True)
-    )
-    end_date: datetime | None = Field(
-        default=None, sa_column=Column(DateTime, nullable=True)
-    )
+    status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
+    start_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
+    end_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
     name: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
-    created_at: datetime = Field(
-        default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
-    )
-    updated_at: datetime = Field(
-        default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
-    )
-
+    created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
+    updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
 class TuitionFeePublic(TuitionFeeBase):
     id: UUID
 
 
-class TuitionFeeCreate(TuitionFeeBase):
-    pass
+class TuitionFeeTrainingProgramInfo(SQLModel):
+    id: UUID
+    program_type: str
+    training_program_name: Optional[str] = None
+    academic_year: str
 
+
+class TuitionFeeSpecializationInfo(SQLModel):
+    id: UUID
+    specialization_code: str
+    specialization_name: str
+
+
+class TuitionFeeMajorInfo(SQLModel):
+    id: UUID
+    major_code: str
+    major_name: str
+
+
+class TuitionFeeDepartmentInfo(SQLModel):
+    id: UUID
+    department_code: str
+    department_name: str
+
+
+class TuitionFeePublicDetail(TuitionFeePublic):
+    training_program_info: TuitionFeeTrainingProgramInfo
+    specialization_infor: TuitionFeeSpecializationInfo
+    major_infor: TuitionFeeMajorInfo
+    department_info: TuitionFeeDepartmentInfo
+
+
+class TuitionFeeListResponse(SQLModel):
+    data: list[TuitionFeePublicDetail]
+    total: int
+
+
+class TuitionFeeCreate(SQLModel):
+    academic_year: str = Field(sa_column=Column(String(20), nullable=False))
+    price_per_credit: float = Field(sa_column=Column(Float, nullable=False))
+    training_program_id: UUID = Field(foreign_key="training_program.id")
+    type: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
+    status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
+    start_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
+    end_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
+    name: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
+    created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
+    updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
 class TuitionFeeUpdate(SQLModel):
-    academic_year: Optional[str] = Field(sa_column=Column(String(20), nullable=False))
-    amount: Optional[float] = Field(sa_column=Column(Float, nullable=False))
-    reduction: Optional[float] | None = Field(
-        default=None, sa_column=Column(Float, nullable=True)
+    academic_year: Optional[str] = Field(
+        default=None, sa_column=Column(String(20), nullable=False)
     )
-    payable_amount: Optional[float] = Field(sa_column=Column(Float, nullable=False))
-    paid_amount: Optional[float] | None = Field(
-        default=None, sa_column=Column(Float, nullable=True)
+    price_per_credit: Optional[float] = Field(
+        default=None, sa_column=Column(Float, nullable=False)
     )
-    debt_amount: Optional[float] | None = Field(
-        default=None, sa_column=Column(Float, nullable=True)
+    training_program_id: Optional[UUID] = Field(
+        default=None, foreign_key="training_program.id"
     )
-    surplus: Optional[float] | None = Field(
-        default=None, sa_column=Column(Float, nullable=True)
-    )
-    student_id: UUID | None = Field(default=None, foreign_key="students.id")
     type: Optional[str] | None = Field(
         default=None, sa_column=Column(String(50), nullable=True)
     )
@@ -79,11 +97,15 @@ class TuitionFeeUpdate(SQLModel):
     name: Optional[str] | None = Field(
         default=None, sa_column=Column(String(100), nullable=True)
     )
-    updated_at: datetime = Field(
-        default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
-    )
-
+    updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
 class TuitionFeeDeleteResponse(SQLModel):
     message: str
     id: UUID
+
+
+class TuitionFeeQueryParams(BaseQueryParams):
+    training_program_id: Optional[UUID] = Field(default=None)
+    specialization_id: Optional[UUID] = Field(default=None)
+    major_id: Optional[UUID] = Field(default=None)
+    department_id: Optional[UUID] = Field(default=None)

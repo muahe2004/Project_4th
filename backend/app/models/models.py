@@ -15,6 +15,7 @@ from app.models.schemas.students.student_schemas import StudentBase
 from app.models.schemas.specializations.specialization_schemas import SpecializationBase
 from app.models.schemas.rooms.room_schemas import RoomBase
 from app.models.schemas.tuition_fees.tuition_fee_schemas import TuitionFeeBase
+from app.models.schemas.tuition_fees.student_tuition_fee_schemas import StudentTuitionFeeBase
 from app.models.schemas.user_informations.user_information_schemas import (UserInformationBase)
 from app.models.schemas.score_components.score_component_schemas import (ScoreComponentBase)
 from app.models.schemas.scores.score_schemas import ScoresBase
@@ -86,6 +87,11 @@ class Rooms(RoomBase, table=True):
 
 class TuitionFees(TuitionFeeBase, table=True):
     __tablename__ = "tuition_fees"
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+
+class StudentTuitionFees(StudentTuitionFeeBase, table=True):
+    __tablename__ = "student_tuition_fees"
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
 

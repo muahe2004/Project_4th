@@ -1,5 +1,6 @@
 from io import BytesIO
 from collections import defaultdict
+import uuid
 
 from fastapi import HTTPException
 from fastapi import UploadFile
@@ -19,6 +20,7 @@ from app.models.schemas.training_program.training_program_create_schemas import 
     TrainingProgramDepartmentInfo,
     TrainingProgramCreateWithSubjects,
     TrainingProgramDeleteResponse,
+    TrainingProgramDropDownResponse,
     TrainingProgramListResponse,
     TrainingProgramPublic,
     TrainingProgramMajorInfo,
@@ -39,6 +41,65 @@ from app.models.schemas.training_program.training_program_file_schemas import (
 )
 
 class TrainingProgramServices:
+    @staticmethod
+    def get_dropdown(
+        *, session: Session, query: TrainingProgramQueryParams
+    ) -> list[TrainingProgramDropDownResponse]:
+        statement = select(TrainingProgram)
+
+        conditions = []
+        if query.status:
+            conditions.append(TrainingProgram.status == query.status)
+        if query.specialization_id:
+            conditions.append(TrainingProgram.specialization_id == query.specialization_id)
+        if query.search:
+            search_pattern = f"%{query.search}%"
+            conditions.append(
+                or_(
+                    TrainingProgram.program_type.ilike(search_pattern),
+                    TrainingProgram.training_program_name.ilike(search_pattern),
+                    TrainingProgram.academic_year.ilike(search_pattern),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        statement = statement.order_by(desc(TrainingProgram.created_at))
+        statement = statement.offset(query.skip).limit(query.limit)
+        rows = session.exec(statement).all()
+
+        return [
+            TrainingProgramDropDownResponse(
+                id=row.id,
+                program_type=row.program_type,
+                training_program_name=row.training_program_name,
+                academic_year=row.academic_year,
+            )
+            for row in rows
+        ]
+
+    @staticmethod
+    def get_dropdown_by_ids(
+        *, session: Session, ids: list[uuid.UUID]
+    ) -> list[TrainingProgramDropDownResponse]:
+        if not ids:
+            return []
+
+        rows = session.exec(
+            select(TrainingProgram).where(TrainingProgram.id.in_(ids))
+        ).all()
+
+        return [
+            TrainingProgramDropDownResponse(
+                id=row.id,
+                program_type=row.program_type,
+                training_program_name=row.training_program_name,
+                academic_year=row.academic_year,
+            )
+            for row in rows
+        ]
+
     @staticmethod
     def _resolve_specialization(
         *, session: Session, specialization_id, specialization_code: str | None

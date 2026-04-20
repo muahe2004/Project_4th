@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends, File, UploadFile
 import uuid
 
 from app.api.deps import SessionDep
+from app.models.schemas.common.query import IdsRequest
 from app.models.schemas.training_program.training_program_create_schemas import (
     TrainingProgramCreateWithSubjects,
     TrainingProgramDeleteResponse,
+    TrainingProgramDropDownResponse,
     TrainingProgramListResponse,
     TrainingProgramWithSubjectsPublic,
     TrainingProgramQueryParams,
@@ -24,6 +26,20 @@ def get_training_programs(
     session: SessionDep, query: TrainingProgramQueryParams = Depends()
 ) -> TrainingProgramListResponse:
     return TrainingProgramServices.get_training_programs(session=session, query=query)
+
+
+@router.get("/dropdown", response_model=list[TrainingProgramDropDownResponse])
+def get_training_programs_dropdown(
+    session: SessionDep, query: TrainingProgramQueryParams = Depends()
+) -> list[TrainingProgramDropDownResponse]:
+    return TrainingProgramServices.get_dropdown(session=session, query=query)
+
+
+@router.post("/dropdown-by-ids", response_model=list[TrainingProgramDropDownResponse])
+def get_training_programs_dropdown_by_ids(
+    session: SessionDep, payload: IdsRequest
+) -> list[TrainingProgramDropDownResponse]:
+    return TrainingProgramServices.get_dropdown_by_ids(session=session, ids=payload.ids)
 
 
 @router.post("/upload-file", response_model=TrainingProgramFileDataResponse)

@@ -1,0 +1,9 @@
+@import url("../../../../assets/styles/theme.css");
+
+.subject-name-tcell {
+  width: 35%;
+}
+
+.subjects-breadcrumb {
+  margin-bottom: 12px;
+}

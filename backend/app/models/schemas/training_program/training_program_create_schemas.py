@@ -82,6 +82,13 @@ class TrainingProgramSpecializationInfo(SQLModel):
     specialization_name: str
 
 
+class TrainingProgramDropDownResponse(SQLModel):
+    id: UUID
+    program_type: str
+    training_program_name: Optional[str] = None
+    academic_year: str
+
+
 class TrainingProgramPublic(SQLModel):
     id: UUID
     program_type: str

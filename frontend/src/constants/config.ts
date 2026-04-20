@@ -48,6 +48,9 @@ export const URL_API_EXAMINATION_SCHEDULE = `${BASE_UNICORE_API_URL}/${UNICORE_P
 // Training Program
 export const URL_API_TRAINING_PROGRAM = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/training_programs`;
 
+// Tuition Fee
+export const URL_API_TUITION_FEE = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/tuition_fees`;
+
 // Course
 export const URL_API_COURSE = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/courses`;
 

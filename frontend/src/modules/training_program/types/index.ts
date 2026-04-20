@@ -15,6 +15,13 @@ export interface ITrainingProgramDepartmentInfo {
   department_name: string;
 }
 
+export interface ITrainingProgramDropDown {
+  id: string;
+  program_type: string;
+  training_program_name?: string | null;
+  academic_year: string;
+}
+
 export interface ITrainingProgramMajorInfo {
   id: string;
   major_code: string;
@@ -61,6 +68,17 @@ export type ITrainingProgramUpdate = Partial<ITrainingProgramCreate> & {
 export interface ITrainingProgramListResponse {
   total: number;
   data: ITrainingProgram[];
+}
+
+export interface ITrainingProgramDropDownParams {
+  limit: number;
+  skip: number;
+  status?: string;
+  search?: string;
+}
+
+export interface ITrainingProgramDropDownByIdsParams {
+  ids: string[];
 }
 
 export interface ITrainingProgramQueryParams {

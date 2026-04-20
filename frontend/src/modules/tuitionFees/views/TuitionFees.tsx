@@ -1,0 +1,118 @@
+
+import { useState } from "react";
+import { Box } from "@mui/material";
+
+import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
+import Button from "../../../components/Button/Button";
+import Loading from "../../../components/Loading/Loading";
+import PaginationUniCore from "../../../components/Pagination/Pagination";
+import SearchEngine from "../../../components/SearchEngine/SearchEngine";
+import StatusFilter from "../../../components/StatusFilter/StatusFilter";
+import { STATUS_OPTIONS } from "../../../constants/status";
+import { dashBoardUrl } from "../../../routes/urls";
+import { useGetTuitionFees } from "../apis/getTuitionFees";
+import TuitionFeeFormModel from "../components/TuitionFeeFormModel";
+import TuitionFeeTable from "../components/TuitionFeeTable";
+import type { ITuitionFee } from "../types";
+import "./styles/TuitionFees.css";
+
+export function TuitionFees() {
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [openForm, setOpenForm] = useState(false);
+  const [selectedTuitionFee, setSelectedTuitionFee] = useState<ITuitionFee | undefined>(
+    undefined
+  );
+
+  const params = {
+    limit: rowsPerPage,
+    skip: (page - 1) * rowsPerPage,
+    ...(search && { search }),
+    ...(status && { status }),
+  };
+
+  const { data: tuitionFees, isLoading } = useGetTuitionFees(params);
+
+  if (isLoading) {
+    return (
+      <main className="admin-main-container">
+        <Loading />
+      </main>
+    );
+  }
+
+  return (
+    <main className="admin-main-container">
+      <BreadCrumb
+        className="tuition-fees-breadcrumb"
+        items={[
+          { label: "Dashboard", to: dashBoardUrl },
+          { label: "Tuition Fees" },
+        ]}
+      />
+
+      <Box className="admin-main-box">
+        <StatusFilter
+          value={status}
+          onChange={(value) => {
+            setStatus(value);
+            setPage(1);
+          }}
+          options={STATUS_OPTIONS}
+        />
+
+        <SearchEngine
+          placeholder="Tìm theo tên học phí, niên khoá, CTĐT..."
+          onSearch={(value) => {
+            setSearch(value);
+            setPage(1);
+          }}
+        />
+
+        <Button
+          onClick={() => {
+            setSelectedTuitionFee(undefined);
+            setOpenForm(true);
+          }}
+          className="btn-spacing-left"
+        >
+          Add Tuition Fee
+        </Button>
+      </Box>
+
+      <TuitionFeeTable
+        tuitionFees={tuitionFees}
+        onEdit={(tuitionFee) => {
+          setSelectedTuitionFee(tuitionFee);
+          setOpenForm(true);
+        }}
+        onDelete={(tuitionFee) => {
+          console.log("delete tuition fee", tuitionFee);
+        }}
+      />
+
+      <PaginationUniCore
+        totalItems={tuitionFees?.total || 0}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(currentPage) => setPage(currentPage)}
+        onRowsPerPageChange={(rows) => {
+          setRowsPerPage(rows);
+          setPage(1);
+        }}
+      />
+
+      <TuitionFeeFormModel
+        open={openForm}
+        mode={selectedTuitionFee ? "edit" : "add"}
+        initialValues={selectedTuitionFee}
+        onClose={() => {
+          setOpenForm(false);
+          setSelectedTuitionFee(undefined);
+        }}
+      />
+    </main>
+  );
+}
