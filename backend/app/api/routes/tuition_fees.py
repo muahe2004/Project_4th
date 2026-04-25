@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Request
 from app.api.deps import SessionDep
 from app.models.schemas.tuition_fees.tuition_fee_schemas import (
     TuitionFeePublic,
+    TuitionFeePublicDetail,
     TuitionFeeListResponse,
     TuitionFeeQueryParams,
     TuitionFeeCreate,
@@ -25,10 +26,10 @@ def get_tuition_fees(
 
 
 # =========================== get tuition fee by id ===========================
-@router.get("/{id}", response_model=TuitionFeePublic)
+@router.get("/{id}", response_model=TuitionFeePublicDetail)
 def get_tuition_fee_by_id(
     session: SessionDep, id: uuid.UUID, request: Request
-) -> TuitionFeePublic:
+) -> TuitionFeePublicDetail:
     return TuitionFeeServices.get_by_id(
         session=session, tuition_fee_id=id, request=request
     )

@@ -35,6 +35,9 @@ export function TuitionFeeTable({ tuitionFees, onEdit, onDelete }: TuitionFeeTab
             <TableCell className="primary-thead__cell" align="center">
               Niên khoá
             </TableCell>
+            <TableCell className="primary-thead__cell" align="center">
+              Học kỳ
+            </TableCell>
             <TableCell className="primary-thead__cell" align="left">
               CTĐT
             </TableCell>
@@ -60,6 +63,9 @@ export function TuitionFeeTable({ tuitionFees, onEdit, onDelete }: TuitionFeeTab
               </TableCell>
               <TableCell className="sticky-tcell" align="center">
                 {row.academic_year}
+              </TableCell>
+              <TableCell className="sticky-tcell" align="center">
+                {row.term ?? "-"}
               </TableCell>
               <TableCell className="sticky-tcell" align="left">
                 {row.training_program_info?.training_program_name || row.training_program_info?.program_type || "-"}

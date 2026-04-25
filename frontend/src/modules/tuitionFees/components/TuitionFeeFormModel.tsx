@@ -63,6 +63,7 @@ export function TuitionFeeFormModel({
   const [academicYear, setAcademicYear] = useState("");
   const [pricePerCredit, setPricePerCredit] = useState("");
   const [trainingProgramId, setTrainingProgramId] = useState("");
+  const [term, setTerm] = useState("");
   const [searchTrainingProgram, setSearchTrainingProgram] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -98,6 +99,7 @@ export function TuitionFeeFormModel({
       setAcademicYear(initialValues.academic_year || "");
       setPricePerCredit(String(initialValues.price_per_credit ?? ""));
       setTrainingProgramId(initialValues.training_program_id || "");
+      setTerm(String(initialValues.term ?? ""));
       setStartDate(initialValues.start_date ? new Date(initialValues.start_date) : null);
       setEndDate(initialValues.end_date ? new Date(initialValues.end_date) : null);
       setStatus(initialValues.status || STATUS.ACTIVE);
@@ -106,6 +108,7 @@ export function TuitionFeeFormModel({
       setAcademicYear("");
       setPricePerCredit("");
       setTrainingProgramId("");
+      setTerm("");
       setStartDate(null);
       setEndDate(null);
       setStatus(STATUS.ACTIVE);
@@ -118,6 +121,7 @@ export function TuitionFeeFormModel({
     academic_year: academicYear.trim(),
     price_per_credit: Number(pricePerCredit),
     training_program_id: trainingProgramId.trim(),
+    term: Number(term),
     status,
     type: initialValues?.type ?? null,
     start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : null,
@@ -131,6 +135,7 @@ export function TuitionFeeFormModel({
         academic_year: academicYear.trim(),
         price_per_credit: Number(pricePerCredit),
         training_program_id: trainingProgramId.trim(),
+        term: Number(term),
         status,
         type: initialValues.type ?? null,
         start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : null,
@@ -144,6 +149,7 @@ export function TuitionFeeFormModel({
           academic_year: initialValues.academic_year,
           price_per_credit: initialValues.price_per_credit,
           training_program_id: initialValues.training_program_id,
+          term: initialValues.term ?? null,
           status: initialValues.status || STATUS.ACTIVE,
           type: initialValues.type || null,
           start_date: initialValues.start_date || null,
@@ -161,9 +167,10 @@ export function TuitionFeeFormModel({
       name.trim() !== "" ||
       academicYear.trim() !== "" ||
       pricePerCredit.trim() !== "" ||
-      trainingProgramId.trim() !== "";
+      trainingProgramId.trim() !== "" ||
+      term.trim() !== "";
     setIsChanged(hasInput);
-  }, [mode, initialValues, name, academicYear, pricePerCredit, trainingProgramId, status]);
+  }, [mode, initialValues, name, academicYear, pricePerCredit, trainingProgramId, term, status]);
 
   const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({
     mode,
@@ -182,6 +189,10 @@ export function TuitionFeeFormModel({
     }
     if (!trainingProgramId.trim()) {
       showSnackbar("CTĐT là bắt buộc", "error");
+      return false;
+    }
+    if (!term.trim() || Number.isNaN(Number(term)) || Number(term) < 1) {
+      showSnackbar("Học kỳ là bắt buộc và phải lớn hơn 0", "error");
       return false;
     }
     return true;
@@ -277,6 +288,17 @@ export function TuitionFeeFormModel({
           }
           getOptionId={(option: any) => option.id}
           placeholder="Chọn CTĐT"
+        />
+
+        <LabelPrimary value="Học kỳ" required />
+        <TextField
+          value={term}
+          onChange={(event) => setTerm(event.target.value)}
+          fullWidth
+          variant="outlined"
+          type="number"
+          inputProps={{ min: 1, step: 1 }}
+          className="main-text__field primary-dialog-input"
         />
 
         <LabelPrimary value="Ngày bắt đầu" />

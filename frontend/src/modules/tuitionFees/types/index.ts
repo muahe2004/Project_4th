@@ -23,12 +23,20 @@ export interface ITuitionFeeDepartmentInfo {
   department_name: string;
 }
 
+export interface ITuitionFeeSubjectInfo {
+  subject_id: string;
+  subject_code: string;
+  subject_name: string;
+  subject_credit: number;
+}
+
 export interface ITuitionFee {
   id: string;
   academic_year: string;
   amount: number;
   price_per_credit: number;
   training_program_id: string;
+  term?: number | null;
   type?: string | null;
   status?: string | null;
   start_date?: string | null;
@@ -40,6 +48,7 @@ export interface ITuitionFee {
   specialization_infor: ITuitionFeeSpecializationInfo;
   major_infor: ITuitionFeeMajorInfo;
   department_info: ITuitionFeeDepartmentInfo;
+  subject_info?: ITuitionFeeSubjectInfo[];
 }
 
 export interface TuitionFeeListResponse {
@@ -62,6 +71,7 @@ export type TuitionFeeCreatePayload = {
   academic_year: string;
   price_per_credit: number;
   training_program_id: string;
+  term: number;
   type?: string | null;
   status?: string | null;
   start_date?: string | null;

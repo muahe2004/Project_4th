@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 from sqlmodel import SQLModel, Field, Column, String, DateTime
-from sqlalchemy import Float
+from sqlalchemy import Float, Integer
 from uuid import UUID
 from app.models.schemas.common.query import BaseQueryParams
 
@@ -10,12 +10,13 @@ class TuitionFeeBase(SQLModel):
     academic_year: str = Field(sa_column=Column(String(20), nullable=False))
     amount: float = Field(sa_column=Column(Float, nullable=False))
     price_per_credit: float = Field(sa_column=Column(Float, nullable=False))
-    training_program_id: UUID = Field(foreign_key="training_program.id")
+    training_program_id: UUID | None = Field(default=None, foreign_key="training_program.id")
     type: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     start_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
     end_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
     name: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
+    term: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
@@ -48,11 +49,19 @@ class TuitionFeeDepartmentInfo(SQLModel):
     department_name: str
 
 
+class TuitionFeeSubjectInfo(SQLModel):
+    subject_id: UUID
+    subject_code: str
+    subject_name: str
+    subject_credit: int
+
+
 class TuitionFeePublicDetail(TuitionFeePublic):
     training_program_info: TuitionFeeTrainingProgramInfo
     specialization_infor: TuitionFeeSpecializationInfo
     major_infor: TuitionFeeMajorInfo
     department_info: TuitionFeeDepartmentInfo
+    subject_info: list[TuitionFeeSubjectInfo]
 
 
 class TuitionFeeListResponse(SQLModel):
@@ -63,12 +72,13 @@ class TuitionFeeListResponse(SQLModel):
 class TuitionFeeCreate(SQLModel):
     academic_year: str = Field(sa_column=Column(String(20), nullable=False))
     price_per_credit: float = Field(sa_column=Column(Float, nullable=False))
-    training_program_id: UUID = Field(foreign_key="training_program.id")
+    training_program_id: UUID | None = Field(default=None, foreign_key="training_program.id")
     type: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     start_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
     end_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
     name: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
+    term: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
@@ -97,6 +107,7 @@ class TuitionFeeUpdate(SQLModel):
     name: Optional[str] | None = Field(
         default=None, sa_column=Column(String(100), nullable=True)
     )
+    term: Optional[int] = Field(default=None, sa_column=Column(Integer, nullable=True))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
 class TuitionFeeDeleteResponse(SQLModel):

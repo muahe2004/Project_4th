@@ -22,6 +22,7 @@ from app.models.schemas.tuition_fees.tuition_fee_schemas import (
     TuitionFeeSpecializationInfo,
     TuitionFeeMajorInfo,
     TuitionFeeDepartmentInfo,
+    TuitionFeeSubjectInfo,
     TuitionFeeQueryParams,
     TuitionFeeCreate,
     TuitionFeeUpdate,
@@ -32,8 +33,38 @@ from app.enums.status import StatusEnum
 
 class TuitionFeeServices:
     @staticmethod
+    def _build_subject_info(
+        *, session: Session, training_program_id: uuid.UUID | None, term: int | None
+    ) -> list[TuitionFeeSubjectInfo]:
+        if not training_program_id or term is None:
+            return []
+
+        subject_statement = (
+            select(Subjects.id, Subjects.subject_code, Subjects.name, Subjects.credit)
+            .join(
+                TrainingProgramSubject,
+                TrainingProgramSubject.subject_id == Subjects.id,
+            )
+            .where(TrainingProgramSubject.training_program_id == training_program_id)
+            .where(TrainingProgramSubject.term == term)
+        )
+        subject_rows = session.exec(subject_statement).all()
+        return [
+            TuitionFeeSubjectInfo(
+                subject_id=subject_row[0],
+                subject_code=subject_row[1],
+                subject_name=subject_row[2],
+                subject_credit=subject_row[3],
+            )
+            for subject_row in subject_rows
+        ]
+
+    @staticmethod
     def _get_training_program_credit_total(
-        *, session: Session, training_program_id: uuid.UUID | None
+        *,
+        session: Session,
+        training_program_id: uuid.UUID | None,
+        term: int | None = None,
     ) -> int:
         if not training_program_id:
             return 0
@@ -42,11 +73,15 @@ class TuitionFeeServices:
         if not training_program:
             return 0
 
-        credit_rows = session.exec(
+        statement = (
             select(Subjects.credit)
             .join(TrainingProgramSubject, TrainingProgramSubject.subject_id == Subjects.id)
             .where(TrainingProgramSubject.training_program_id == training_program_id)
-        ).all()
+        )
+        if term is not None:
+            statement = statement.where(TrainingProgramSubject.term == term)
+
+        credit_rows = session.exec(statement).all()
 
         return sum(credit or 0 for credit in credit_rows)
 
@@ -55,16 +90,28 @@ class TuitionFeeServices:
         *,
         session: Session,
         training_program_id: uuid.UUID | None,
+        term: int | None,
         price_per_credit: float | None,
     ) -> tuple[int, float]:
         credit_total = TuitionFeeServices._get_training_program_credit_total(
             session=session,
             training_program_id=training_program_id,
+            term=term,
         )
-        if not training_program_id or price_per_credit is None:
+        if price_per_credit is None:
             return 0, 0
 
+        if training_program_id and term is not None:
+            return credit_total, credit_total * price_per_credit
+
         return credit_total, credit_total * price_per_credit
+
+    @staticmethod
+    def _should_recalculate_amount(update_data: dict) -> bool:
+        return any(
+            field in update_data
+            for field in ("training_program_id", "term", "price_per_credit")
+        )
 
     @staticmethod
     def get_all(
@@ -128,6 +175,11 @@ class TuitionFeeServices:
         data = []
         for row in rows:
             fee = row[0]
+            subject_info = TuitionFeeServices._build_subject_info(
+                session=session,
+                training_program_id=fee.training_program_id,
+                term=fee.term,
+            )
             training_program_info = TuitionFeeTrainingProgramInfo(
                 id=fee.training_program_id,
                 program_type=row[1],
@@ -156,6 +208,7 @@ class TuitionFeeServices:
                     specialization_infor=specialization_info,
                     major_infor=major_info,
                     department_info=department_info,
+                    subject_info=subject_info,
                 )
             )
 
@@ -164,14 +217,70 @@ class TuitionFeeServices:
     @staticmethod
     def get_by_id(
         *, session: Session, request: Request, tuition_fee_id: uuid.UUID
-    ) -> TuitionFeePublic:
+    ) -> TuitionFeePublicDetail:
         tuition_fee = session.get(TuitionFees, tuition_fee_id)
         if not tuition_fee:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Tuition fee does not exist",
             )
-        return TuitionFeePublic.model_validate(tuition_fee)
+        training_program = session.get(TrainingProgram, tuition_fee.training_program_id)
+        if not training_program:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Training program does not exist",
+            )
+
+        specialization = session.get(Specializations, training_program.specialization_id)
+        if not specialization:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Specialization does not exist",
+            )
+
+        major = session.get(Majors, specialization.major_id)
+        if not major:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Major does not exist",
+            )
+
+        department = session.get(Departments, major.department_id)
+        if not department:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Department does not exist",
+            )
+
+        return TuitionFeePublicDetail(
+            **tuition_fee.model_dump(),
+            training_program_info=TuitionFeeTrainingProgramInfo(
+                id=tuition_fee.training_program_id,
+                program_type=training_program.program_type,
+                training_program_name=training_program.training_program_name,
+                academic_year=training_program.academic_year,
+            ),
+            specialization_infor=TuitionFeeSpecializationInfo(
+                id=specialization.id,
+                specialization_code=specialization.specialization_code,
+                specialization_name=specialization.name,
+            ),
+            major_infor=TuitionFeeMajorInfo(
+                id=major.id,
+                major_code=major.major_code,
+                major_name=major.name,
+            ),
+            department_info=TuitionFeeDepartmentInfo(
+                id=department.id,
+                department_code=department.department_code,
+                department_name=department.name,
+            ),
+            subject_info=TuitionFeeServices._build_subject_info(
+                session=session,
+                training_program_id=tuition_fee.training_program_id,
+                term=tuition_fee.term,
+            ),
+        )
 
     @staticmethod
     def create(*, session: Session, tuition_fee: TuitionFeeCreate) -> TuitionFeePublic:
@@ -179,6 +288,7 @@ class TuitionFeeServices:
         credit_total, amount = TuitionFeeServices._calculate_amount(
             session=session,
             training_program_id=tuition_fee.training_program_id,
+            term=tuition_fee.term,
             price_per_credit=tuition_fee.price_per_credit,
         )
         tuition_fee_payload["amount"] = amount
@@ -242,6 +352,7 @@ class TuitionFeeServices:
             credit_total, amount = TuitionFeeServices._calculate_amount(
                 session=session,
                 training_program_id=tuition_fee.training_program_id,
+                term=tuition_fee.term,
                 price_per_credit=tuition_fee.price_per_credit,
             )
             tuition_fee_payload["amount"] = amount
@@ -270,12 +381,14 @@ class TuitionFeeServices:
         for field, value in update_data.items():
             setattr(tuition_fee, field, value)
 
-        credit_total, amount = TuitionFeeServices._calculate_amount(
-            session=session,
-            training_program_id=tuition_fee.training_program_id,
-            price_per_credit=tuition_fee.price_per_credit,
-        )
-        tuition_fee.amount = amount
+        if TuitionFeeServices._should_recalculate_amount(update_data):
+            _, amount = TuitionFeeServices._calculate_amount(
+                session=session,
+                training_program_id=tuition_fee.training_program_id,
+                term=tuition_fee.term,
+                price_per_credit=tuition_fee.price_per_credit,
+            )
+            tuition_fee.amount = amount
         tuition_fee.updated_at = datetime.now()
 
         session.commit()
