@@ -4,8 +4,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  MenuItem,
-  Select,
   TextField,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
@@ -24,6 +22,8 @@ import { useConfirmCloseForm } from "../../../hooks/useConfirm";
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import { useTrainingProgramsDropDown } from "../../training_program/apis/getTrainingProgramsDropDown";
 import { useTrainingProgramsDropDownByIds } from "../../training_program/apis/getTrainingProgramsDropDownByIds";
+import { useDepartmentsDropDown } from "../../department/apis/getDepartmentsDropDown";
+import type { IDepartmentsDropDown } from "../../department/types";
 import { useCreateTuitionFee } from "../apis/addTuitionFee";
 import { useUpdateTuitionFee } from "../apis/updateTuitionFee";
 import type {
@@ -39,15 +39,10 @@ interface TuitionFeeFormModelProps {
   onClose: () => void;
 }
 
-const getAcademicYearOptions = () => {
+const getCurrentAcademicYear = () => {
   const currentYear = new Date().getFullYear();
-  return Array.from({ length: 6 }, (_, index) => {
-    const startYear = currentYear + index;
-    return `${startYear} - ${startYear + 1}`;
-  });
+  return `${currentYear} - ${currentYear + 1}`;
 };
-
-const ACADEMIC_YEAR_OPTIONS = getAcademicYearOptions();
 
 export function TuitionFeeFormModel({
   open,
@@ -60,10 +55,10 @@ export function TuitionFeeFormModel({
   const queryClient = useQueryClient();
 
   const [name, setName] = useState("");
-  const [academicYear, setAcademicYear] = useState("");
   const [pricePerCredit, setPricePerCredit] = useState("");
   const [trainingProgramId, setTrainingProgramId] = useState("");
-  const [term, setTerm] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
+  const [searchDepartment, setSearchDepartment] = useState("");
   const [searchTrainingProgram, setSearchTrainingProgram] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -80,11 +75,18 @@ export function TuitionFeeFormModel({
     status: STATUS.ACTIVE,
     search: searchTrainingProgram || undefined,
   };
+  const departmentParams = {
+    limit: 20,
+    skip: 0,
+    status: STATUS.ACTIVE,
+    search: searchDepartment || undefined,
+  };
 
   const { data: trainingPrograms = [] } = useTrainingProgramsDropDown(trainingProgramParams);
   const { data: selectedTrainingPrograms = [] } = useTrainingProgramsDropDownByIds(
     trainingProgramId ? { ids: [trainingProgramId] } : { ids: [] }
   );
+  const { data: departments = [] } = useDepartmentsDropDown(departmentParams);
   const { mutateAsync: createTuitionFee } = useCreateTuitionFee();
   const { mutateAsync: updateTuitionFee } = useUpdateTuitionFee();
 
@@ -93,22 +95,22 @@ export function TuitionFeeFormModel({
     return Array.from(new Map(merged.map((item) => [item.id, item])).values());
   }, [selectedTrainingPrograms, trainingPrograms]);
 
+  const departmentOptions = departments;
+
   useEffect(() => {
     if (mode === "edit" && initialValues) {
       setName(initialValues.name || "");
-      setAcademicYear(initialValues.academic_year || "");
       setPricePerCredit(String(initialValues.price_per_credit ?? ""));
       setTrainingProgramId(initialValues.training_program_id || "");
-      setTerm(String(initialValues.term ?? ""));
+      setDepartmentId(initialValues.department_info?.id || "");
       setStartDate(initialValues.start_date ? new Date(initialValues.start_date) : null);
       setEndDate(initialValues.end_date ? new Date(initialValues.end_date) : null);
       setStatus(initialValues.status || STATUS.ACTIVE);
     } else {
       setName("");
-      setAcademicYear("");
       setPricePerCredit("");
       setTrainingProgramId("");
-      setTerm("");
+      setDepartmentId("");
       setStartDate(null);
       setEndDate(null);
       setStatus(STATUS.ACTIVE);
@@ -116,26 +118,11 @@ export function TuitionFeeFormModel({
     setIsChanged(false);
   }, [mode, initialValues, open]);
 
-  const currentValues: TuitionFeeCreatePayload = {
-    name: name.trim() || null,
-    academic_year: academicYear.trim(),
-    price_per_credit: Number(pricePerCredit),
-    training_program_id: trainingProgramId.trim(),
-    term: Number(term),
-    status,
-    type: initialValues?.type ?? null,
-    start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : null,
-    end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : null,
-  };
-
   useEffect(() => {
     if (mode === "edit" && initialValues) {
       const payload = {
         name: name.trim() || null,
-        academic_year: academicYear.trim(),
         price_per_credit: Number(pricePerCredit),
-        training_program_id: trainingProgramId.trim(),
-        term: Number(term),
         status,
         type: initialValues.type ?? null,
         start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : null,
@@ -146,10 +133,7 @@ export function TuitionFeeFormModel({
         payload,
         {
           name: initialValues.name || null,
-          academic_year: initialValues.academic_year,
           price_per_credit: initialValues.price_per_credit,
-          training_program_id: initialValues.training_program_id,
-          term: initialValues.term ?? null,
           status: initialValues.status || STATUS.ACTIVE,
           type: initialValues.type || null,
           start_date: initialValues.start_date || null,
@@ -165,12 +149,10 @@ export function TuitionFeeFormModel({
 
     const hasInput =
       name.trim() !== "" ||
-      academicYear.trim() !== "" ||
       pricePerCredit.trim() !== "" ||
-      trainingProgramId.trim() !== "" ||
-      term.trim() !== "";
+      departmentId.trim() !== "";
     setIsChanged(hasInput);
-  }, [mode, initialValues, name, academicYear, pricePerCredit, trainingProgramId, term, status]);
+  }, [mode, initialValues, name, pricePerCredit, departmentId, status]);
 
   const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({
     mode,
@@ -179,20 +161,12 @@ export function TuitionFeeFormModel({
   });
 
   const validateForm = (): boolean => {
-    if (!academicYear.trim()) {
-      showSnackbar("Niên khoá là bắt buộc", "error");
-      return false;
-    }
     if (!pricePerCredit.trim() || Number.isNaN(Number(pricePerCredit)) || Number(pricePerCredit) < 0) {
       showSnackbar("Giá / tín chỉ không hợp lệ", "error");
       return false;
     }
-    if (!trainingProgramId.trim()) {
-      showSnackbar("CTĐT là bắt buộc", "error");
-      return false;
-    }
-    if (!term.trim() || Number.isNaN(Number(term)) || Number(term) < 1) {
-      showSnackbar("Học kỳ là bắt buộc và phải lớn hơn 0", "error");
+    if (mode === "add" && !departmentId.trim()) {
+      showSnackbar("Khoa là bắt buộc", "error");
       return false;
     }
     return true;
@@ -209,16 +183,31 @@ export function TuitionFeeFormModel({
       }
 
       setPendingPayload({
-        ...currentValues,
+        name: name.trim() || null,
+        price_per_credit: Number(pricePerCredit),
+        status,
+        type: initialValues?.type ?? null,
+        start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : null,
+        end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : null,
         updated_at: dayjs().toISOString(),
       });
       setOpenConfirmSave(true);
       return;
     }
 
-    console.log("Tuition fee add payload:", currentValues);
-    setPendingPayload(currentValues);
-    void handleConfirmSave(currentValues);
+    const addPayload: TuitionFeeCreatePayload = {
+      name: name.trim() || null,
+      academic_year: getCurrentAcademicYear(),
+      price_per_credit: Number(pricePerCredit),
+      department_id: departmentId.trim(),
+      status,
+      type: initialValues?.type ?? null,
+      start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : null,
+      end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : null,
+    };
+    console.log("Tuition fee add payload:", addPayload);
+    setPendingPayload(addPayload);
+    void handleConfirmSave(addPayload);
   };
 
   const handleConfirmSave = async (
@@ -277,29 +266,37 @@ export function TuitionFeeFormModel({
           className="main-text__field primary-dialog-input"
         />
 
-        <LabelPrimary value="CTĐT" required />
-        <MainAutocomplete
-          options={trainingProgramOptions}
-          value={trainingProgramId}
-          onChange={setTrainingProgramId}
-          onSearchChange={setSearchTrainingProgram}
-          getOptionLabel={(option: any) =>
-            `${option.training_program_name || option.program_type || "CTĐT"} (${option.academic_year})`
-          }
-          getOptionId={(option: any) => option.id}
-          placeholder="Chọn CTĐT"
-        />
-
-        <LabelPrimary value="Học kỳ" required />
-        <TextField
-          value={term}
-          onChange={(event) => setTerm(event.target.value)}
-          fullWidth
-          variant="outlined"
-          type="number"
-          inputProps={{ min: 1, step: 1 }}
-          className="main-text__field primary-dialog-input"
-        />
+        {mode === "add" ? (
+          <>
+            <LabelPrimary value="Khoa" required />
+            <MainAutocomplete
+              options={departmentOptions}
+              value={departmentId}
+              onChange={setDepartmentId}
+              onSearchChange={setSearchDepartment}
+              getOptionLabel={(option: IDepartmentsDropDown) =>
+                `${option.department_code} - ${option.department_name}`
+              }
+              getOptionId={(option: IDepartmentsDropDown) => option.id}
+              placeholder="Chọn khoa"
+            />
+          </>
+        ) : (
+          <>
+            <LabelPrimary value="CTĐT" />
+            <MainAutocomplete
+              options={trainingProgramOptions}
+              value={trainingProgramId}
+              onChange={setTrainingProgramId}
+              onSearchChange={setSearchTrainingProgram}
+              getOptionLabel={(option: any) =>
+                `${option.training_program_name || option.program_type || "CTĐT"} (${option.academic_year})`
+              }
+              getOptionId={(option: any) => option.id}
+              placeholder="Chọn CTĐT"
+            />
+          </>
+        )}
 
         <LabelPrimary value="Ngày bắt đầu" />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -321,21 +318,6 @@ export function TuitionFeeFormModel({
           />
         </LocalizationProvider>
 
-        <LabelPrimary value="Niên khoá" required />
-        <Select
-          value={academicYear}
-          onChange={(event) => setAcademicYear(String(event.target.value))}
-          fullWidth
-          displayEmpty
-          className="main-text__field primary-dialog-input"
-          renderValue={(value) => value || "Chọn niên khoá"}
-        >
-          {ACADEMIC_YEAR_OPTIONS.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </Select>
       </DialogContent>
 
       <DialogActions className="primary-dialog-actions">

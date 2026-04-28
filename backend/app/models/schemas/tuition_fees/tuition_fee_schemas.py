@@ -72,13 +72,12 @@ class TuitionFeeListResponse(SQLModel):
 class TuitionFeeCreate(SQLModel):
     academic_year: str = Field(sa_column=Column(String(20), nullable=False))
     price_per_credit: float = Field(sa_column=Column(Float, nullable=False))
-    training_program_id: UUID | None = Field(default=None, foreign_key="training_program.id")
+    department_id: UUID = Field(foreign_key="departments.id")
     type: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     start_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
     end_date: datetime | None = Field(default=None, sa_column=Column(DateTime, nullable=True))
     name: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
-    term: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 

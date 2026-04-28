@@ -70,8 +70,7 @@ export interface TuitionFeeQueryParams {
 export type TuitionFeeCreatePayload = {
   academic_year: string;
   price_per_credit: number;
-  training_program_id: string;
-  term: number;
+  department_id: string;
   type?: string | null;
   status?: string | null;
   start_date?: string | null;
@@ -80,5 +79,6 @@ export type TuitionFeeCreatePayload = {
 };
 
 export type TuitionFeeUpdatePayload = Partial<TuitionFeeCreatePayload> & {
+  training_program_id?: string;
   updated_at?: string;
 };

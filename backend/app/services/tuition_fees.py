@@ -33,6 +33,157 @@ from app.enums.status import StatusEnum
 
 class TuitionFeeServices:
     @staticmethod
+    def _parse_academic_year(academic_year: str) -> tuple[int, int]:
+        parts = [part.strip() for part in academic_year.split("-")]
+        if len(parts) != 2:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid academic_year format: {academic_year}",
+            )
+
+        try:
+            start_year = int(parts[0])
+            end_year = int(parts[1])
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid academic_year format: {academic_year}",
+            ) from exc
+
+        if end_year < start_year:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid academic_year range: {academic_year}",
+            )
+
+        return start_year, end_year
+
+    @staticmethod
+    def _is_current_or_future_academic_year(academic_year: str) -> bool:
+        _, end_year = TuitionFeeServices._parse_academic_year(academic_year)
+        current_year = datetime.now().year
+        return end_year >= current_year
+
+    @staticmethod
+    def _get_current_tuition_academic_year(
+        current_date: datetime | None = None,
+    ) -> str:
+        current_date = current_date or datetime.now()
+        next_year = current_date.year + 1
+        return f"{current_date.year} - {next_year}"
+
+    @staticmethod
+    def _get_current_term_for_academic_year(
+        *, academic_year: str, current_date: datetime | None = None
+    ) -> int:
+        current_date = current_date or datetime.now()
+        start_year, end_year = TuitionFeeServices._parse_academic_year(academic_year)
+
+        if not (start_year <= current_date.year <= end_year):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    f"Current date {current_date.date()} is outside academic year {academic_year}"
+                ),
+            )
+
+        term = max(2, (current_date.year - start_year) * 2)
+        if term > 8:
+            term = 8
+        return term
+
+    @staticmethod
+    def _create_for_department(
+        *, session: Session, tuition_fee: TuitionFeeCreate
+    ) -> list[TuitionFees]:
+        department = session.get(Departments, tuition_fee.department_id)
+        if not department:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Department does not exist",
+            )
+
+        major_ids = session.exec(
+            select(Majors.id).where(Majors.department_id == department.id)
+        ).all()
+        if not major_ids:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Department does not have any majors",
+            )
+
+        specialization_ids = session.exec(
+            select(Specializations.id).where(Specializations.major_id.in_(major_ids))
+        ).all()
+        if not specialization_ids:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Department does not have any specializations",
+            )
+
+        training_programs = session.exec(
+            select(TrainingProgram).where(
+                TrainingProgram.specialization_id.in_(specialization_ids)
+            )
+        ).all()
+
+        eligible_programs = [
+            program
+            for program in training_programs
+            if TuitionFeeServices._is_current_or_future_academic_year(program.academic_year)
+        ]
+        if not eligible_programs:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No eligible training programs found for this major",
+            )
+
+        created_fees: list[TuitionFees] = []
+        for program in eligible_programs:
+            term = TuitionFeeServices._get_current_term_for_academic_year(
+                academic_year=program.academic_year
+            )
+            existing_fee = session.exec(
+                select(TuitionFees).where(
+                    TuitionFees.training_program_id == program.id,
+                    TuitionFees.term == term,
+                    TuitionFees.academic_year == tuition_fee.academic_year,
+                    TuitionFees.name == tuition_fee.name,
+                    TuitionFees.type == tuition_fee.type,
+                )
+            ).first()
+            if existing_fee:
+                continue
+
+            tuition_fee_payload = tuition_fee.model_dump(exclude={"department_id", "academic_year"})
+            tuition_fee_payload["training_program_id"] = program.id
+            tuition_fee_payload["term"] = term
+            tuition_fee_payload["academic_year"] = TuitionFeeServices._get_current_tuition_academic_year()
+            _, amount = TuitionFeeServices._calculate_amount(
+                session=session,
+                training_program_id=program.id,
+                term=term,
+                price_per_credit=tuition_fee.price_per_credit,
+            )
+            tuition_fee_payload["amount"] = amount
+
+            new_tuition_fee = TuitionFees(**tuition_fee_payload)
+            session.add(new_tuition_fee)
+            created_fees.append(new_tuition_fee)
+
+        if not created_fees:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No tuition fee was created because matching records already exist",
+            )
+
+        session.commit()
+        for new_tuition_fee in created_fees:
+            session.refresh(new_tuition_fee)
+
+        return created_fees
+
+    @staticmethod
     def _build_subject_info(
         *, session: Session, training_program_id: uuid.UUID | None, term: int | None
     ) -> list[TuitionFeeSubjectInfo]:
@@ -284,21 +435,10 @@ class TuitionFeeServices:
 
     @staticmethod
     def create(*, session: Session, tuition_fee: TuitionFeeCreate) -> TuitionFeePublic:
-        tuition_fee_payload = tuition_fee.model_dump()
-        credit_total, amount = TuitionFeeServices._calculate_amount(
-            session=session,
-            training_program_id=tuition_fee.training_program_id,
-            term=tuition_fee.term,
-            price_per_credit=tuition_fee.price_per_credit,
+        created_fees = TuitionFeeServices._create_for_department(
+            session=session, tuition_fee=tuition_fee
         )
-        tuition_fee_payload["amount"] = amount
-
-        new_tuition_fee = TuitionFees(**tuition_fee_payload)
-        session.add(new_tuition_fee)
-        session.commit()
-        session.refresh(new_tuition_fee)
-
-        return new_tuition_fee
+        return created_fees[0]
 
     @staticmethod
     def create_many(
@@ -310,57 +450,11 @@ class TuitionFeeServices:
                 detail="Tuition fee list is empty",
             )
 
-        normalized_keys = set()
+        new_tuition_fees: list[TuitionFees] = []
         for tuition_fee in tuition_fees:
-            key = (
-                tuition_fee.academic_year,
-                tuition_fee.type or "",
-                tuition_fee.name or "",
+            new_tuition_fees.extend(
+                TuitionFeeServices._create_for_department(session=session, tuition_fee=tuition_fee)
             )
-            if key in normalized_keys:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Duplicate tuition fee data in request body.",
-                )
-            normalized_keys.add(key)
-
-        existing_fees = session.exec(select(TuitionFees)).all()
-        existing_keys = {
-            (
-                tuition_fee.academic_year,
-                tuition_fee.type or "",
-                tuition_fee.name or "",
-            )
-            for tuition_fee in existing_fees
-        }
-
-        for tuition_fee in tuition_fees:
-            key = (
-                tuition_fee.academic_year,
-                tuition_fee.type or "",
-                tuition_fee.name or "",
-            )
-            if key in existing_keys:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Tuition fee {tuition_fee.name} already exists.",
-                )
-
-        new_tuition_fees = []
-        for tuition_fee in tuition_fees:
-            tuition_fee_payload = tuition_fee.model_dump()
-            credit_total, amount = TuitionFeeServices._calculate_amount(
-                session=session,
-                training_program_id=tuition_fee.training_program_id,
-                term=tuition_fee.term,
-                price_per_credit=tuition_fee.price_per_credit,
-            )
-            tuition_fee_payload["amount"] = amount
-            new_tuition_fees.append(TuitionFees(**tuition_fee_payload))
-        session.add_all(new_tuition_fees)
-        session.commit()
-        for tuition_fee in new_tuition_fees:
-            session.refresh(tuition_fee)
 
         return new_tuition_fees
 
