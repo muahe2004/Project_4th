@@ -20,6 +20,7 @@ from app.api.routes import (
     training_programs,
     auth,
     student_class,
+    student_tuition_fees,
     export_file,
 )
 
@@ -63,6 +64,11 @@ api_router.include_router(
 )
 api_router.include_router(
     student_class.router, prefix="/student_class", tags=["student_class"]
+)
+api_router.include_router(
+    student_tuition_fees.router,
+    prefix="/student_tuition_fees",
+    tags=["student_tuition_fees"],
 )
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(export_file.router, prefix="/export-file", tags=["export-file"])

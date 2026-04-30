@@ -51,6 +51,9 @@ export const URL_API_TRAINING_PROGRAM = `${BASE_UNICORE_API_URL}/${UNICORE_PREFI
 // Tuition Fee
 export const URL_API_TUITION_FEE = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/tuition_fees`;
 
+// Student Tuition Fee
+export const URL_API_STUDENT_TUITION_FEE = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/student_tuition_fees`;
+
 // Course
 export const URL_API_COURSE = `${BASE_UNICORE_API_URL}/${UNILEARN_PREFIX}/courses`;
 

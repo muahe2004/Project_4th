@@ -36,3 +36,20 @@ class StudentTuitionFeeUpdate(SQLModel):
 class StudentTuitionFeeDeleteResponse(SQLModel):
     message: str
     id: UUID
+
+
+class StudentTuitionFeeBulkCreateRequest(SQLModel):
+    department_ids: list[UUID] = Field(default_factory=list)
+    reduction: float | None = Field(default=None, sa_column=Column(Float, nullable=True))
+    paid_amount: float | None = Field(default=None, sa_column=Column(Float, nullable=True))
+
+
+class StudentTuitionFeeBulkCreateResponse(SQLModel):
+    department_ids: list[UUID]
+    matched_students: int
+    created_records: int
+    skipped_no_class: int
+    skipped_no_term_match: int
+    skipped_no_specialization_match: int
+    skipped_no_major_match: int
+    skipped_duplicate: int

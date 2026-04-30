@@ -11,6 +11,7 @@ import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import { STATUS_OPTIONS } from "../../../constants/status";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useGetTuitionFees } from "../apis/getTuitionFees";
+import AllocateTuitionFeeFormModel from "../components/AllocateTuitionFeeFormModel";
 import TuitionFeeFormModel from "../components/TuitionFeeFormModel";
 import TuitionFeeTable from "../components/TuitionFeeTable";
 import type { ITuitionFee } from "../types";
@@ -22,6 +23,7 @@ export function TuitionFees() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [openForm, setOpenForm] = useState(false);
+  const [openAllocateForm, setOpenAllocateForm] = useState(false);
   const [selectedTuitionFee, setSelectedTuitionFee] = useState<ITuitionFee | undefined>(
     undefined
   );
@@ -80,6 +82,15 @@ export function TuitionFees() {
         >
           Add Tuition Fee
         </Button>
+
+        <Button
+          onClick={() => {
+            setOpenAllocateForm(true);
+          }}
+          className="btn-spacing-left"
+        >
+          Allocate Tuition Fee
+        </Button>
       </Box>
 
       <TuitionFeeTable
@@ -112,6 +123,11 @@ export function TuitionFees() {
           setOpenForm(false);
           setSelectedTuitionFee(undefined);
         }}
+      />
+
+      <AllocateTuitionFeeFormModel
+        open={openAllocateForm}
+        onClose={() => setOpenAllocateForm(false)}
       />
     </main>
   );

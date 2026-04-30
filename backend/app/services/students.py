@@ -1,6 +1,8 @@
 import uuid
 from io import BytesIO
 from datetime import datetime
+import logging
+import re
 from fastapi import HTTPException, Request, UploadFile
 from sqlmodel import Session, and_, func, or_, select
 from starlette import status
@@ -42,6 +44,8 @@ from app.services.common import parse_excel_datetime, to_clean_text
 from app.enums.status import StatusEnum
 from app.enums.class_type import ClassTypeEnum
 
+logger = logging.getLogger(__name__)
+
 def _has_relative_payload_value(relative: UserRelativeCreate) -> bool:
     # `relatives.name` is required in DB, so only keep records with a non-empty name.
     return bool(relative.name and str(relative.name).strip())
@@ -66,6 +70,39 @@ def _normalize_gender(raw_value: object) -> str | None:
 
 
 class StudentServices:
+    @staticmethod
+    def get_student_term(student_course: str) -> int | None:
+        """Estimate the current term from the student's course start year and current year."""
+        if not student_course:
+            logger.info("Student term debug: student_course is empty -> term=None")
+            return None
+
+        match = re.search(r"(\d{4})\s*-\s*(\d{4})", student_course)
+        if not match:
+            logger.info(
+                "Student term debug: invalid student_course=%s -> term=None",
+                student_course,
+            )
+            return None
+
+        start_year = int(match.group(1))
+        end_year = int(match.group(2))
+        current_year = datetime.now().year
+
+        term = (current_year - start_year) * 2
+        if term < 1:
+            term = 1
+
+        logger.info(
+            "Student term debug: student_course=%s, start_year=%s, end_year=%s, current_year=%s, term=%s",
+            student_course,
+            start_year,
+            end_year,
+            current_year,
+            term,
+        )
+        return term
+
     @staticmethod
     def _deactivate_other_primary_class_links(
         *, session: Session, student_id: uuid.UUID, keep_id: uuid.UUID | None
