@@ -9,7 +9,7 @@ import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { STATUS } from "../../../constants/status";
 import { useDepartmentsDropDown } from "../../department/apis/getDepartmentsDropDown";
 import { useBulkStudentTuitionFeeByDepartment } from "../apis/bulkByTuitionFee";
-import "./AllocateTuitionFeeFormModel.css";
+import "./styles/AllocateTuitionFeeFormModel.css";
 
 interface AllocateTuitionFeeFormModelProps {
   open: boolean;

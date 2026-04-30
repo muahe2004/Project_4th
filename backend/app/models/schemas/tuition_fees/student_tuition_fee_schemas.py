@@ -4,6 +4,7 @@ from uuid import UUID
 
 from sqlalchemy import Float
 from sqlmodel import SQLModel, Field, Column, DateTime
+from app.models.schemas.tuition_fees.tuition_fee_schemas import TuitionFeePublic
 
 
 class StudentTuitionFeeBase(SQLModel):
@@ -36,6 +37,25 @@ class StudentTuitionFeeUpdate(SQLModel):
 class StudentTuitionFeeDeleteResponse(SQLModel):
     message: str
     id: UUID
+
+
+class StudentTuitionFeeWithTuitionInfo(StudentTuitionFeePublic):
+    tuition_fee: TuitionFeePublic
+
+
+class StudentWithTuitionFeesResponse(SQLModel):
+    student_id: UUID
+    student_code: str
+    student_name: str
+    class_id: Optional[UUID] = None
+    class_code: Optional[str] = None
+    class_name: Optional[str] = None
+    tuition_fees: list[StudentTuitionFeeWithTuitionInfo] = Field(default_factory=list)
+
+
+class StudentWithTuitionFeesListResponse(SQLModel):
+    total: int
+    data: list[StudentWithTuitionFeesResponse]
 
 
 class StudentTuitionFeeBulkCreateRequest(SQLModel):

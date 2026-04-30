@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl, studentTuitionFeeUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -27,6 +27,7 @@ import TeacherTeachingScheduleView from "../modules/teachingSchedule/views/Teach
 import CourseRegistration from "../modules/courseRegistration/views/CourseRegistration";
 import { TrainingPrograms } from "../modules/training_program/views/TrainingPrograms";
 import { TuitionFees } from "../modules/tuitionFees/views/TuitionFees";
+import { StudentTuitionFees } from "../modules/tuitionFees/views/StudentTuitionFees";
 
 const ProtectedRoute = ({
   children,
@@ -161,6 +162,10 @@ export const createRouterConfig = () => {
         {
           path: layOutAdminUrl + tuitionFeeUrl,
           element: <TuitionFees></TuitionFees>
+        },
+        {
+          path: layOutAdminUrl + studentTuitionFeeUrl,
+          element: <StudentTuitionFees></StudentTuitionFees>
         },
       ],
     },

@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import Button from "../../../components/Button/Button";
@@ -9,7 +10,7 @@ import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import { STATUS_OPTIONS } from "../../../constants/status";
-import { dashBoardUrl } from "../../../routes/urls";
+import { dashBoardUrl, layOutAdminUrl, studentTuitionFeeUrl } from "../../../routes/urls";
 import { useGetTuitionFees } from "../apis/getTuitionFees";
 import AllocateTuitionFeeFormModel from "../components/AllocateTuitionFeeFormModel";
 import TuitionFeeFormModel from "../components/TuitionFeeFormModel";
@@ -18,6 +19,7 @@ import type { ITuitionFee } from "../types";
 import "./styles/TuitionFees.css";
 
 export function TuitionFees() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState("");
@@ -90,6 +92,15 @@ export function TuitionFees() {
           className="btn-spacing-left"
         >
           Allocate Tuition Fee
+        </Button>
+
+        <Button
+          onClick={() => {
+            navigate(`${layOutAdminUrl}/${studentTuitionFeeUrl}`);
+          }}
+          className="btn-spacing-left"
+        >
+          Student view
         </Button>
       </Box>
 

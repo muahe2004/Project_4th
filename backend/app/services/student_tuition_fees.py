@@ -1,6 +1,6 @@
 import uuid
 from fastapi import HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from sqlalchemy import or_
 from starlette import status
 
@@ -20,7 +20,11 @@ from app.models.schemas.tuition_fees.student_tuition_fee_schemas import (
     StudentTuitionFeeBulkCreateResponse,
     StudentTuitionFeeCreate,
     StudentTuitionFeePublic,
+    StudentTuitionFeeWithTuitionInfo,
+    StudentWithTuitionFeesListResponse,
+    StudentWithTuitionFeesResponse,
 )
+from app.models.schemas.tuition_fees.tuition_fee_schemas import TuitionFeePublic
 from app.enums.status import StatusEnum
 from app.services.students import StudentServices
 
@@ -234,3 +238,84 @@ class StudentTuitionFeeServices:
             skipped_no_major_match=skipped_no_major_match,
             skipped_duplicate=skipped_duplicate,
         )
+
+    @staticmethod
+    def get_students_with_tuition_fees(
+        *,
+        session: Session,
+        skip: int = 0,
+        limit: int = 10,
+        search: str | None = None,
+    ) -> StudentWithTuitionFeesListResponse:
+        conditions = [
+            or_(
+                StudentClass.status == StatusEnum.ACTIVE,
+                StudentClass.status.is_(None),
+            )
+        ]
+        if search:
+            search_pattern = f"%{search}%"
+            conditions.append(
+                or_(
+                    Students.student_code.ilike(search_pattern),
+                    Students.name.ilike(search_pattern),
+                    Students.email.ilike(search_pattern),
+                )
+            )
+
+        base_statement = (
+            select(
+                Students.id,
+                Students.student_code,
+                Students.name,
+                Classes.id,
+                Classes.class_code,
+                Classes.class_name,
+            )
+            .join(StudentClass, StudentClass.student_id == Students.id)
+            .join(Classes, Classes.id == StudentClass.class_id)
+            .where(*conditions)
+        )
+
+        total = session.exec(
+            select(func.count()).select_from(base_statement.subquery())
+        ).one()
+
+        student_rows = session.exec(
+            base_statement.offset(skip).limit(limit)
+        ).all()
+
+        if not student_rows:
+            return StudentWithTuitionFeesListResponse(total=total, data=[])
+
+        student_ids = [row[0] for row in student_rows]
+        tuition_fee_rows = session.exec(
+            select(StudentTuitionFees, TuitionFees)
+            .join(TuitionFees, TuitionFees.id == StudentTuitionFees.tuition_fee_id)
+            .where(StudentTuitionFees.student_id.in_(student_ids))
+        ).all()
+
+        tuition_fee_map: dict[uuid.UUID, list[StudentTuitionFeeWithTuitionInfo]] = {}
+        for student_tuition_fee, tuition_fee in tuition_fee_rows:
+            tuition_fee_map.setdefault(student_tuition_fee.student_id, []).append(
+                StudentTuitionFeeWithTuitionInfo(
+                    **student_tuition_fee.model_dump(),
+                    tuition_fee=TuitionFeePublic.model_validate(tuition_fee),
+                )
+            )
+
+        result: list[StudentWithTuitionFeesResponse] = []
+        for student_id, student_code, student_name, class_id, class_code, class_name in student_rows:
+            result.append(
+                StudentWithTuitionFeesResponse(
+                    student_id=student_id,
+                    student_code=student_code,
+                    student_name=student_name,
+                    class_id=class_id,
+                    class_code=class_code,
+                    class_name=class_name,
+                    tuition_fees=tuition_fee_map.get(student_id, []),
+                )
+            )
+
+        return StudentWithTuitionFeesListResponse(total=total, data=result)

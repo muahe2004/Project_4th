@@ -13,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
+import { formatVndAmount } from "../../../utils/formatCurrency";
 import type { ITuitionFee, TuitionFeeListResponse } from "../types";
 
 interface TuitionFeeTableProps {
@@ -71,10 +72,10 @@ export function TuitionFeeTable({ tuitionFees, onEdit, onDelete }: TuitionFeeTab
                 {row.training_program_info?.training_program_name || row.training_program_info?.program_type || "-"}
               </TableCell>
               <TableCell className="sticky-tcell" align="center">
-                {row.price_per_credit}
+                {formatVndAmount(row.price_per_credit)}
               </TableCell>
               <TableCell className="sticky-tcell" align="center">
-                {row.amount}
+                {formatVndAmount(row.amount)}
               </TableCell>
               <TableCell
                 className="sticky-tcell"

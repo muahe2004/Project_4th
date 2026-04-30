@@ -26,3 +26,4 @@ export const roomUrl = "rooms";
 export const examinationScheduleUrl = "examination-schedules";
 export const trainingProgramUrl = "training-programs";
 export const tuitionFeeUrl = "tuition-fees";
+export const studentTuitionFeeUrl = "student-tuition-fees";
