@@ -1,17 +1,12 @@
-import { useMemo, useState } from "react";
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
-import type { SelectChangeEvent } from "@mui/material/Select";
+import { useMemo } from "react";
+import { Alert, Box, CircularProgress, Typography } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
-import { useAuthStore } from "../../../stores/useAuthStore";
-import { useGetScoreByStudentID } from "../apis/getScoreByStudentID";
-import GradeControls from "../components/GradeControls";
-import StudentTotalScore from "../components/StudentTotalScore";
-import ScoresTable from "../components/ScoresTable";
+import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
+import { dashBoardUrl, layOutAdminUrl, managementScoreUrl } from "../../../routes/urls";
+import { useGetScoreByStudentID } from "../../grades/apis/getScoreByStudentID";
+import ScoresTable from "../../grades/components/ScoresTable";
+import StudentTotalScore from "../../grades/components/StudentTotalScore";
 import {
   COMPONENT_TYPE_FINAL,
   COMPONENT_TYPE_MIDDLE,
@@ -20,7 +15,7 @@ import {
   RANKING,
   SCORE_TYPE_OFFICIAL,
   SCORE_TYPE_RETAKE,
-} from "../types";
+} from "../../grades/types";
 import type {
   RankingThreshold,
   ScorePoint,
@@ -31,10 +26,9 @@ import type {
   StudentScoreItemResponse,
   StudentTotalScoreData,
   SubjectAggregate,
-  SubjectOption,
-} from "../types";
+} from "../../grades/types";
 
-import "./styles/Grades.css";
+import "./styles/ScoreDetails.css";
 
 const MAX_MIDTERM_COMPONENTS = 2;
 const WEIGHT_PERCENT_DIVISOR = 100;
@@ -151,18 +145,25 @@ function getAcademicYearStart(academicYear: string): number {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-export function GradesPage() {
-  const user = useAuthStore((state) => state.user);
-  const [academicYearFilter, setAcademicYearFilter] = useState<string>("");
-  const [semesterFilter, setSemesterFilter] = useState<string>("");
-  const [subjectFilter, setSubjectFilter] = useState<string>("");
+export function ScoreDetails() {
+  const location = useLocation();
+  const state = location.state as
+    | {
+        studentId?: string;
+        studentCode?: string;
+        studentName?: string;
+        classId?: string | null;
+        classCode?: string | null;
+        className?: string | null;
+      }
+    | undefined;
 
   const {
     data: scoreData,
     isLoading,
     isError,
     error,
-  } = useGetScoreByStudentID(user?.id, {}, Boolean(user?.id));
+  } = useGetScoreByStudentID(state?.studentId, {}, Boolean(state?.studentId));
 
   const aggregatedSubjects = useMemo(() => {
     const map = new Map<string, SubjectAggregate>();
@@ -249,41 +250,8 @@ export function GradesPage() {
     });
   }, [scoreData?.scores.items]);
 
-  const academicYearOptions = useMemo(() => {
-    const unique = new Set(aggregatedSubjects.map((item) => item.academic_year));
-    return [...unique].sort((left, right) => getAcademicYearStart(right) - getAcademicYearStart(left));
-  }, [aggregatedSubjects]);
-
-  const semesterOptions = useMemo(() => {
-    const semesters = aggregatedSubjects
-      .filter((item) => !academicYearFilter || item.academic_year === academicYearFilter)
-      .map((item) => item.semester)
-      .filter((semester): semester is number => semester !== null);
-
-    return [...new Set(semesters)].sort((left, right) => left - right);
-  }, [aggregatedSubjects, academicYearFilter]);
-
-  const subjectOptions = useMemo(() => {
-    const map = new Map<string, SubjectOption>();
-    aggregatedSubjects
-      .filter((item) => !academicYearFilter || item.academic_year === academicYearFilter)
-      .filter((item) => !semesterFilter || String(item.semester ?? "") === semesterFilter)
-      .forEach((item) => {
-        map.set(item.subject_id, { id: item.subject_id, name: item.subject_name });
-      });
-
-    return [...map.values()].sort((left, right) => left.name.localeCompare(right.name, "vi"));
-  }, [aggregatedSubjects, academicYearFilter, semesterFilter]);
-
-  const filteredSubjects = useMemo(() => {
-    return aggregatedSubjects
-      .filter((item) => !academicYearFilter || item.academic_year === academicYearFilter)
-      .filter((item) => !semesterFilter || String(item.semester ?? "") === semesterFilter)
-      .filter((item) => !subjectFilter || item.subject_id === subjectFilter);
-  }, [aggregatedSubjects, academicYearFilter, semesterFilter, subjectFilter]);
-
   const scoreRows = useMemo<ScoreTableRow[]>(() => {
-    return filteredSubjects.map((subject, index) => {
+    return aggregatedSubjects.map((subject, index) => {
       const officialMid = sortScorePoints(subject.official_mid).slice(0, MAX_MIDTERM_COMPONENTS);
       const retakeMid = sortScorePoints(subject.retake_mid).slice(0, MAX_MIDTERM_COMPONENTS);
       const officialFinal = pickLatestScorePoint(subject.official_final);
@@ -346,7 +314,7 @@ export function GradesPage() {
         note: hasFinalScore ? "" : "Chưa có điểm thi",
       };
     });
-  }, [filteredSubjects]);
+  }, [aggregatedSubjects]);
 
   const summaryData = useMemo<StudentTotalScoreData | undefined>(() => {
     if (!scoreData?.student_info) {
@@ -397,63 +365,49 @@ export function GradesPage() {
     };
   }, [scoreData?.student_info, scoreRows]);
 
-  const handleAcademicYearChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    setAcademicYearFilter(value);
-    setSemesterFilter("");
-    setSubjectFilter("");
-  };
-
-  const handleSemesterChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    setSemesterFilter(value);
-    setSubjectFilter("");
-  };
-
-  const handleSubjectChange = (event: SelectChangeEvent<string>) => {
-    setSubjectFilter(event.target.value);
-  };
-
-  if (!user?.id) {
+  if (!state?.studentId) {
     return (
-      <main className="grades">
-        <Typography className="primary-title">KẾT QUẢ HỌC TẬP</Typography>
-        <Alert severity="warning">Không tìm thấy thông tin sinh viên đăng nhập.</Alert>
+      <main className="admin-main-container">
+        <Alert severity="warning">Không tìm thấy sinh viên để xem chi tiết điểm.</Alert>
       </main>
     );
   }
 
   return (
-    <main className="grades">
-      <Typography className="primary-title">KẾT QUẢ HỌC TẬP</Typography>
+    <main className="admin-main-container">
+      <BreadCrumb
+        className="score-details__breadcrumb"
+        items={[
+          { label: "Dashboard", to: dashBoardUrl },
+          { label: "Quản lý điểm", to: `${layOutAdminUrl}/${managementScoreUrl}` },
+          { label: "Chi tiết điểm" },
+        ]}
+      />
+
+      <Typography className="primary-title">
+        {state.studentCode ?? "-"} - {state.studentName ?? "SCORE DETAILS"}
+      </Typography>
 
       {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={LOADING_SPINNER_SIZE} />
         </Box>
       ) : isError ? (
-        <Alert severity="error">{error?.response?.data?.detail ?? "Lấy dữ liệu điểm thất bại"}</Alert>
+        <Alert severity="error">
+          {(error as any)?.response?.data?.detail ?? "Lấy dữ liệu điểm thất bại"}
+        </Alert>
       ) : (
         <>
-          <StudentTotalScore summary={summaryData} />
-
-          <GradeControls
-            semesterFilter={semesterFilter}
-            academicYearFilter={academicYearFilter}
-            subjectFilter={subjectFilter}
-            semesterOptions={semesterOptions}
-            academicYearOptions={academicYearOptions}
-            subjectOptions={subjectOptions}
-            onSemesterChange={handleSemesterChange}
-            onAcademicYearChange={handleAcademicYearChange}
-            onSubjectChange={handleSubjectChange}
-          />
-
-          <ScoresTable rows={scoreRows} />
+          <Box className="score-details__summary">
+            <StudentTotalScore summary={summaryData} />
+          </Box>
+          <Box className="score-details__table">
+            <ScoresTable rows={scoreRows} />
+          </Box>
         </>
       )}
     </main>
   );
 }
 
-export default GradesPage;
+export default ScoreDetails;

@@ -4,6 +4,8 @@ from app.api.deps import SessionDep
 from app.models.schemas.scores.score_schemas import (
     ScoreByClassSubjectParams,
     ScoreByClassSubjectResponse,
+    StudentAndGpaListResponse,
+    StudentAndGpaResponse,
     ScoresPublic,
     ScoresCreate,
     ScoresUpdate,
@@ -12,6 +14,7 @@ from app.models.schemas.scores.score_schemas import (
     StudentScoreFilterParams,
 )
 from app.services.scores import ScoresServices
+from app.models.schemas.students.student_schemas import StudentQueryParams
 from typing import List
 
 router = APIRouter()
@@ -44,6 +47,24 @@ def get_scores_by_student(
         student_id=student_id,
         query=query,
     )
+
+
+# =========================== get student with class and GPA ===========================
+@router.get("/student/{student_id}/gpa", response_model=StudentAndGpaResponse)
+def get_student_and_gpa(
+    session: SessionDep,
+    student_id: uuid.UUID,
+) -> StudentAndGpaResponse:
+    return ScoresServices.get_student_and_gpa(session=session, student_id=student_id)
+
+
+# =========================== get students with class and GPA ===========================
+@router.get("/students/gpa", response_model=StudentAndGpaListResponse)
+def get_students_and_gpa(
+    session: SessionDep,
+    query: StudentQueryParams = Depends(),
+) -> StudentAndGpaListResponse:
+    return ScoresServices.get_students_and_gpa(session=session, query=query)
 
 
 # =========================== get score by id ===========================

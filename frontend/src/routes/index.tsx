@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl, studentTuitionFeeUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl, studentTuitionFeeUrl, managementScoreUrl, scoreDetailsUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -28,6 +28,8 @@ import CourseRegistration from "../modules/courseRegistration/views/CourseRegist
 import { TrainingPrograms } from "../modules/training_program/views/TrainingPrograms";
 import { TuitionFees } from "../modules/tuitionFees/views/TuitionFees";
 import { StudentTuitionFees } from "../modules/tuitionFees/views/StudentTuitionFees";
+import ManagementScore from "../modules/managementScore/views/ManagementScore";
+import ScoreDetails from "../modules/managementScore/views/ScoreDetails";
 
 const ProtectedRoute = ({
   children,
@@ -166,6 +168,14 @@ export const createRouterConfig = () => {
         {
           path: layOutAdminUrl + studentTuitionFeeUrl,
           element: <StudentTuitionFees></StudentTuitionFees>
+        },
+        {
+          path: layOutAdminUrl + managementScoreUrl,
+          element: <ManagementScore></ManagementScore>
+        },
+        {
+          path: layOutAdminUrl + scoreDetailsUrl,
+          element: <ScoreDetails></ScoreDetails>
         },
       ],
     },

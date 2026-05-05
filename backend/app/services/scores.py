@@ -1,6 +1,6 @@
 import uuid
 from fastapi import HTTPException, Request
-from sqlmodel import Session, or_, select
+from sqlmodel import Session, func, or_, select
 from starlette import status
 from typing import List
 
@@ -16,6 +16,10 @@ from app.models.models import (
 from app.models.schemas.scores.score_schemas import (
     ScoreByClassSubjectParams,
     ScoreByClassSubjectResponse,
+    ScoreAggregationBucket,
+    ScorePointItem,
+    StudentAndGpaListItem,
+    StudentAndGpaListResponse,
     ScoresPublic,
     ScoresCreate,
     ScoresUpdate,
@@ -23,15 +27,327 @@ from app.models.schemas.scores.score_schemas import (
     StudentScoreByClassSubjectItem,
     StudentScoreByStudentResponse,
     StudentScoreFilterParams,
+    StudentAndGpaResponse,
+    StudentGpaClassInfo,
+    StudentGpaSummary,
     StudentScoreItemResponse,
     StudentScoreComponentResponse,
     StudentInfoScoreResponse,
     StudentScoresPayload,
 )
 from app.enums.status import StatusEnum
+from app.enums.grade import (
+    GRADE_SCALE_THRESHOLDS,
+    GradeRankEnum,
+    ScoreComponentTypeEnum,
+    ScoreTypeEnum,
+    GradeScaleEnum
+)
 
 
 class ScoresServices:
+    @staticmethod
+    def _build_student_gpa_payload(
+        *, session: Session, student: Students
+    ) -> StudentAndGpaListItem:
+        from app.services.students import StudentServices
+
+        class_id = StudentServices._get_primary_class_id(
+            session=session,
+            student_id=student.id,
+        )
+
+        class_code = None
+        class_name = None
+        if class_id is not None:
+            class_ = session.get(Classes, class_id)
+            if class_ is not None:
+                class_code = class_.class_code
+                class_name = class_.class_name
+
+        # reuse the same GPA logic as the single-student endpoint
+        single = ScoresServices.get_student_and_gpa(session=session, student_id=student.id)
+        return StudentAndGpaListItem(
+            student_info=single.student_info,
+            class_info=StudentGpaClassInfo(
+                class_id=class_id,
+                class_code=class_code,
+                class_name=class_name,
+            ),
+            gpa=single.gpa,
+        )
+
+    @staticmethod
+    def get_student_and_gpa(
+        *, session: Session, student_id: uuid.UUID
+    ) -> StudentAndGpaResponse:
+        student = session.get(Students, student_id)
+        if not student:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Student not found"
+            )
+
+        from app.services.students import StudentServices
+
+        class_id = StudentServices._get_primary_class_id(
+            session=session,
+            student_id=student.id,
+        )
+
+        class_code = None
+        class_name = None
+        if class_id is not None:
+            class_ = session.get(Classes, class_id)
+            if class_ is not None:
+                class_code = class_.class_code
+                class_name = class_.class_name
+
+        def normalize_score_text(value: str) -> str:
+            return value.upper().strip()
+
+        def is_retake_score(score_type: str, attempt: int) -> bool:
+            score_type_normalized = normalize_score_text(score_type or "")
+            if score_type_normalized == ScoreTypeEnum.RETAKE.value.upper():
+                return True
+            if score_type_normalized == ScoreTypeEnum.OFFICIAL.value.upper():
+                return False
+            return attempt > 1
+
+        def is_midterm_component(component_type: str) -> bool:
+            return normalize_score_text(component_type) == ScoreComponentTypeEnum.MIDDLE.value.upper()
+
+        def is_final_component(component_type: str) -> bool:
+            return normalize_score_text(component_type) == ScoreComponentTypeEnum.FINAL.value.upper()
+
+        def is_other_component(component_type: str) -> bool:
+            return normalize_score_text(component_type) == ScoreComponentTypeEnum.OTHER.value.upper()
+
+        def to_normalized_weight(weight: float) -> float:
+            if weight > 1:
+                return weight / 100
+            if weight < 0:
+                return 0
+            return weight
+
+        def score10_to_scale(value: float) -> tuple[float, str]:
+            for min_score, avg4_value, letter in GRADE_SCALE_THRESHOLDS:
+                if value >= min_score:
+                    return avg4_value, letter.value
+            return 0.0, GradeScaleEnum.F
+
+        score_rows = session.exec(
+            select(
+                Scores,
+                ScoreComponents.component_type.label("component_type"),
+                ScoreComponents.weight.label("component_weight"),
+                AcademicTerms.academic_year.label("academic_year"),
+                AcademicTerms.semester.label("semester"),
+            )
+            .join(ScoreComponents, ScoreComponents.id == Scores.score_component_id)
+            .join(AcademicTerms, AcademicTerms.id == Scores.academic_term_id)
+            .where(Scores.student_id == student.id)
+            .order_by(Scores.created_at.desc())
+        ).all()
+
+        aggregated: dict[str, ScoreAggregationBucket] = {}
+        for score, component_type, component_weight, academic_year, semester in score_rows:
+            if score.status is not None and normalize_score_text(str(score.status)) != "ACTIVE":
+                continue
+
+            key = f"{score.subject_id}-{score.academic_term_id}"
+            bucket = aggregated.setdefault(
+                key,
+                ScoreAggregationBucket(
+                    subject_id=score.subject_id,
+                    academic_term_id=score.academic_term_id,
+                    academic_year=academic_year,
+                    semester=semester,
+                ),
+            )
+            bucket.points.append(
+                ScorePointItem(
+                    score=score.score,
+                    weight=component_weight,
+                    attempt=score.attempt,
+                    score_type=score.score_type,
+                    component_type=component_type,
+                )
+            )
+
+        has_any_score = False
+        studied_credits = 0
+        accumulated_credits = 0
+        gpa_weighted_10 = 0.0
+        gpa_weighted_4 = 0.0
+        gpa_weight_sum = 0.0
+
+        for bucket in aggregated.values():
+            subject = session.get(Subjects, bucket.subject_id)
+            if subject is None:
+                continue
+
+            studied_credits += subject.credit or 0
+
+            points = bucket.points
+            official_mid: list[ScorePointItem] = []
+            official_final: ScorePointItem | None = None
+            retake_mid: list[ScorePointItem] = []
+            retake_final: ScorePointItem | None = None
+
+            for point in points:
+                is_retake = is_retake_score(point.score_type, point.attempt)
+                component_type = point.component_type
+                if is_retake:
+                    if is_final_component(component_type):
+                        retake_final = point
+                    elif is_midterm_component(component_type):
+                        retake_mid.append(point)
+                    elif is_other_component(component_type) and len(retake_mid) < 2:
+                        retake_mid.append(point)
+                    else:
+                        retake_final = point
+                else:
+                    if is_final_component(component_type):
+                        official_final = point
+                    elif is_midterm_component(component_type):
+                        official_mid.append(point)
+                    elif is_other_component(component_type) and len(official_mid) < 2:
+                        official_mid.append(point)
+                    else:
+                        official_final = point
+
+            selected_mid1 = retake_mid[0] if len(retake_mid) > 0 else (official_mid[0] if len(official_mid) > 0 else None)
+            selected_mid2 = retake_mid[1] if len(retake_mid) > 1 else (official_mid[1] if len(official_mid) > 1 else None)
+            selected_final = retake_final or official_final
+            selected_points = [p for p in [selected_mid1, selected_mid2, selected_final] if p is not None]
+            if not selected_points:
+                continue
+            has_any_score = True
+
+            normalized_weight_sum = sum(to_normalized_weight(p.weight) for p in selected_points)
+            if normalized_weight_sum > 0:
+                avg10 = sum(
+                    p.score * to_normalized_weight(p.weight)
+                    for p in selected_points
+                ) / normalized_weight_sum
+            else:
+                avg10 = sum(p.score for p in selected_points) / len(selected_points)
+
+            avg10 = round(avg10, 2)
+            avg4, letter = score10_to_scale(avg10)
+
+            gpa_weighted_10 += avg10 * (subject.credit or 0)
+            gpa_weighted_4 += avg4 * (subject.credit or 0)
+            gpa_weight_sum += subject.credit or 0
+
+            if avg10 >= 4.0:
+                accumulated_credits += subject.credit or 0
+
+        gpa10 = round(gpa_weighted_10 / gpa_weight_sum, 2) if gpa_weight_sum > 0 else 0.0
+        gpa4 = round(gpa_weighted_4 / gpa_weight_sum, 2) if gpa_weight_sum > 0 else 0.0
+
+        def classify_gpa4(value: float) -> str:
+            if not has_any_score:
+                return GradeRankEnum.NOT_RANKED
+            if value >= 3.6:
+                return GradeRankEnum.EXCELLENT
+            if value >= 3.2:
+                return GradeRankEnum.GOOD
+            if value >= 2.5:
+                return GradeRankEnum.FAIR
+            if value >= 2.0:
+                return GradeRankEnum.AVERAGE
+            return GradeRankEnum.POOR
+
+        def classify_gpa10(value: float) -> str:
+            if not has_any_score:
+                return GradeRankEnum.NOT_RANKED
+            if value >= 9.0:
+                return GradeRankEnum.EXCELLENT
+            if value >= 8.0:
+                return GradeRankEnum.GOOD
+            if value >= 6.5:
+                return GradeRankEnum.FAIR
+            if value >= 5.0:
+                return GradeRankEnum.AVERAGE
+            return GradeRankEnum.POOR
+
+        return StudentAndGpaResponse(
+            student_info=StudentInfoScoreResponse(
+                id=student.id,
+                student_code=student.student_code,
+                name=student.name,
+                email=student.email,
+                phone=student.phone,
+            ),
+            class_info=StudentGpaClassInfo(
+                class_id=class_id,
+                class_code=class_code,
+                class_name=class_name,
+            ),
+            gpa=StudentGpaSummary(
+                grade4=classify_gpa4(gpa4),
+                grade10=classify_gpa10(gpa10),
+                gpa4=gpa4,
+                accumulated_gpa4=gpa4,
+                accumulated_gpa10=gpa10,
+                accumulated_credits=accumulated_credits,
+                studied_credits=studied_credits,
+            ),
+        )
+
+    @staticmethod
+    def get_students_and_gpa(
+        *, session: Session, query
+    ) -> StudentAndGpaListResponse:
+        statement = select(Students)
+        conditions = []
+        if query.status:
+            conditions.append(Students.status == query.status)
+
+        if query.class_id:
+            student_ids_by_class = session.exec(
+                select(StudentClass.student_id).where(
+                    StudentClass.class_id == query.class_id,
+                    or_(
+                        StudentClass.status == StatusEnum.ACTIVE,
+                        StudentClass.status.is_(None),
+                    ),
+                )
+            ).all()
+            filtered_student_ids = [
+                student_id for student_id in student_ids_by_class if student_id is not None
+            ]
+            if not filtered_student_ids:
+                return StudentAndGpaListResponse(data=[], total=0)
+            conditions.append(Students.id.in_(filtered_student_ids))
+
+        if query.search:
+            conditions.append(
+                or_(
+                    Students.student_code.ilike(f"%{query.search}%"),
+                    Students.name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(*conditions)
+
+        count_stmt = select(func.count()).select_from(Students)
+        if conditions:
+            count_stmt = count_stmt.where(*conditions)
+        total = session.exec(count_stmt).one()
+
+        student_rows = session.exec(
+            statement.order_by(Students.created_at.desc()).offset(query.skip).limit(query.limit)
+        ).all()
+
+        data = [
+            ScoresServices._build_student_gpa_payload(session=session, student=student)
+            for student in student_rows
+        ]
+        return StudentAndGpaListResponse(data=data, total=total)
+
     @staticmethod
     def get_all(
         *,

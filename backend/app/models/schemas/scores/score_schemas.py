@@ -77,7 +77,7 @@ class StudentScoreItemResponse(SQLModel):
     semester: Optional[int] = None
     score: float
     attempt: int
-    score_type: str
+    score_type: Optional[str] = None
     status: Optional[str] = None
     created_at: datetime
     updated_at: datetime
@@ -111,3 +111,52 @@ class ScoreByClassSubjectResponse(SQLModel):
     subject_name: str
     students: list[StudentScoreByClassSubjectItem]
     total_students: int
+
+
+class StudentGpaClassInfo(SQLModel):
+    class_id: Optional[UUID] = None
+    class_code: Optional[str] = None
+    class_name: Optional[str] = None
+
+
+class StudentGpaSummary(SQLModel):
+    grade4: str
+    grade10: str
+    gpa4: float
+    accumulated_gpa4: float
+    accumulated_gpa10: float
+    accumulated_credits: int
+    studied_credits: int
+
+
+class StudentAndGpaResponse(SQLModel):
+    student_info: StudentInfoScoreResponse
+    class_info: StudentGpaClassInfo
+    gpa: StudentGpaSummary
+
+
+class StudentAndGpaListItem(SQLModel):
+    student_info: StudentInfoScoreResponse
+    class_info: StudentGpaClassInfo
+    gpa: StudentGpaSummary
+
+
+class StudentAndGpaListResponse(SQLModel):
+    data: list[StudentAndGpaListItem]
+    total: int
+
+
+class ScorePointItem(SQLModel):
+    score: float
+    weight: float
+    attempt: int
+    score_type: Optional[str] = None
+    component_type: str
+
+
+class ScoreAggregationBucket(SQLModel):
+    subject_id: UUID
+    academic_term_id: UUID
+    academic_year: str
+    semester: Optional[int] = None
+    points: list[ScorePointItem] = Field(default_factory=list)
