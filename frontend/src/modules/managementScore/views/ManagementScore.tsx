@@ -56,16 +56,18 @@ export function ManagementScore() {
       ) : (
         <>
           <ManagementScoreTable rows={data?.data} />
-          <PaginationUniCore
-            totalItems={data?.total || 0}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={(currentPage) => setPage(currentPage)}
-            onRowsPerPageChange={(rows) => {
-              setRowsPerPage(rows);
-              setPage(1);
-            }}
-          />
+          <Box className="management-score__pagination">
+            <PaginationUniCore
+              totalItems={data?.total || 0}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(currentPage) => setPage(currentPage)}
+              onRowsPerPageChange={(rows) => {
+                setRowsPerPage(rows);
+                setPage(1);
+              }}
+            />
+          </Box>
         </>
       )}
     </main>

@@ -45,6 +45,8 @@ export interface StudentScoreByStudentResponse {
 }
 
 export interface ScorePoint {
+  id: string;
+  score_component_id: string;
   score: number;
   weight: number;
   attempt: number;
@@ -75,8 +77,24 @@ export interface SubjectOption {
 export interface ScoreTableRow {
   key: string;
   index: number;
+  student_id?: string;
+  subject_id?: string;
+  academic_term_id?: string;
   subject_code: string;
   subject_name: string;
+  score_mode?: "official" | "retake";
+  exam1Id?: string | null;
+  exam1ScoreComponentId?: string | null;
+  exam2Id?: string | null;
+  exam2ScoreComponentId?: string | null;
+  exam3Id?: string | null;
+  exam3ScoreComponentId?: string | null;
+  recheck1Id?: string | null;
+  recheck1ScoreComponentId?: string | null;
+  recheck2Id?: string | null;
+  recheck2ScoreComponentId?: string | null;
+  recheck3Id?: string | null;
+  recheck3ScoreComponentId?: string | null;
   credits: number;
   weight: number;
   exam1: number | null;
@@ -98,6 +116,8 @@ export type ScoreTableRowWithAverages = ScoreTableRow & {
 
 export interface ScoresTableProps {
   rows: ScoreTableRow[];
+  editable?: boolean;
+  onEditRow?: (row: ScoreTableRow) => void;
 }
 
 export interface ScoreScaleResult {

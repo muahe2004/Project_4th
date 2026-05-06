@@ -1,3 +1,7 @@
 .management-score-breadcrumb {
   margin-bottom: 12px;
 }
+
+.management-score__pagination {
+  margin-top: 14px;
+}

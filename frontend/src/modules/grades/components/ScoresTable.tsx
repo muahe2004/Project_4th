@@ -1,5 +1,15 @@
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import Paper from "@mui/material/Paper";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
 import getGradeColor from "../utils/gradesColor";
 import type { ScoresTableProps } from "../types";
@@ -13,7 +23,10 @@ function formatScore(value: number | null, digits = 2): string {
   return value.toFixed(digits);
 }
 
-export function ScoresTable({ rows }: ScoresTableProps) {
+export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTableProps) {
+  const showActions = editable && typeof onEditRow === "function";
+  const lastColumnLabel = showActions ? "Actions" : "Ghi chú";
+
   return (
     <Box className="grades-student__information">
       <TableContainer className="primary-table-container" component={Paper}>
@@ -30,7 +43,9 @@ export function ScoresTable({ rows }: ScoresTableProps) {
               <TableCell className="primary-thead__cell" colSpan={3} align="center">Điểm học lại</TableCell>
               <TableCell className="primary-thead__cell" colSpan={3} align="center">Trung bình môn</TableCell>
 
-              <TableCell className="primary-thead__cell" rowSpan={2} align="center">Ghi chú</TableCell>
+              <TableCell className="primary-thead__cell" rowSpan={2} align="center">
+                {lastColumnLabel}
+              </TableCell>
             </TableRow>
 
             <TableRow className="primary-trow">
@@ -78,7 +93,21 @@ export function ScoresTable({ rows }: ScoresTableProps) {
                   >
                     {row.grade}
                   </TableCell>
-                  <TableCell className="primary-tcell tcell-note" align="center">{row.note}</TableCell>
+                  {showActions ? (
+                    <TableCell className="primary-tcell" align="center">
+                      <IconButton
+                        className="primary-tcell__button--icon"
+                        onClick={() => onEditRow(row)}
+                        aria-label="Edit score"
+                      >
+                        <EditOutlinedIcon />
+                      </IconButton>
+                    </TableCell>
+                  ) : (
+                    <TableCell className="primary-tcell tcell-note" align="center">
+                      {row.note}
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             )}

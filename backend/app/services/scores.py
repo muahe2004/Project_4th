@@ -636,6 +636,9 @@ class ScoresServices:
             setattr(score, field, value)
 
         session.commit()
+        session.refresh(score)
+        if score.score_type is None:
+            score.score_type = ScoreTypeEnum.OFFICIAL.value.capitalize()
 
         return ScoresPublic.model_validate(score)
 

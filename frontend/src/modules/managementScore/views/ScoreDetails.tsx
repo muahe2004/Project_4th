@@ -1,11 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl, layOutAdminUrl, managementScoreUrl } from "../../../routes/urls";
+import { ROLES } from "../../../constants/roles";
+import { useAuthStore } from "../../../stores/useAuthStore";
 import { useGetScoreByStudentID } from "../../grades/apis/getScoreByStudentID";
 import ScoresTable from "../../grades/components/ScoresTable";
+import EditScoreDialog from "../components/EditScoreDialog";
 import StudentTotalScore from "../../grades/components/StudentTotalScore";
 import {
   COMPONENT_TYPE_FINAL,
@@ -145,8 +148,20 @@ function getAcademicYearStart(academicYear: string): number {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
+function getScoreMode(subject: SubjectAggregate): "official" | "retake" {
+  const hasRetakeScore =
+    subject.retake_mid.length > 0 ||
+    subject.retake_final.length > 0 ||
+    subject.retake_mid.some((point) => point.attempt > 1) ||
+    subject.retake_final.some((point) => point.attempt > 1);
+
+  return hasRetakeScore ? "retake" : "official";
+}
+
 export function ScoreDetails() {
+  const user = useAuthStore((state) => state.user);
   const location = useLocation();
+  const [editingRow, setEditingRow] = useState<ScoreTableRow | null>(null);
   const state = location.state as
     | {
         studentId?: string;
@@ -164,6 +179,7 @@ export function ScoreDetails() {
     isError,
     error,
   } = useGetScoreByStudentID(state?.studentId, {}, Boolean(state?.studentId));
+  const isEditable = user?.role === ROLES.ADMIN;
 
   const aggregatedSubjects = useMemo(() => {
     const map = new Map<string, SubjectAggregate>();
@@ -178,6 +194,8 @@ export function ScoreDetails() {
       const existing = map.get(key);
 
       const scorePoint: ScorePoint = {
+        id: item.id,
+        score_component_id: item.score_component.id,
         score: item.score,
         weight: item.score_component.weight,
         attempt: item.attempt,
@@ -298,8 +316,24 @@ export function ScoreDetails() {
       return {
         key: subject.key,
         index: index + 1,
+        student_id: scoreData.student_info.id,
+        subject_id: subject.subject_id,
+        academic_term_id: subject.academic_term_id,
         subject_code: subject.subject_code,
         subject_name: subject.subject_name,
+        score_mode: getScoreMode(subject),
+        exam1Id: officialMid[0]?.id ?? null,
+        exam1ScoreComponentId: officialMid[0]?.score_component_id ?? null,
+        exam2Id: officialMid[1]?.id ?? null,
+        exam2ScoreComponentId: officialMid[1]?.score_component_id ?? null,
+        exam3Id: officialFinal?.id ?? null,
+        exam3ScoreComponentId: officialFinal?.score_component_id ?? null,
+        recheck1Id: retakeMid[0]?.id ?? null,
+        recheck1ScoreComponentId: retakeMid[0]?.score_component_id ?? null,
+        recheck2Id: retakeMid[1]?.id ?? null,
+        recheck2ScoreComponentId: retakeMid[1]?.score_component_id ?? null,
+        recheck3Id: retakeFinal?.id ?? null,
+        recheck3ScoreComponentId: retakeFinal?.score_component_id ?? null,
         credits: subject.subject_credit,
         weight: Number(normalizedWeightSum.toFixed(ROUNDING_DECIMALS)),
         exam1: officialMid[0]?.score ?? null,
@@ -402,8 +436,17 @@ export function ScoreDetails() {
             <StudentTotalScore summary={summaryData} />
           </Box>
           <Box className="score-details__table">
-            <ScoresTable rows={scoreRows} />
+            <ScoresTable
+              rows={scoreRows}
+              editable={isEditable}
+              onEditRow={(row) => setEditingRow(row)}
+            />
           </Box>
+          <EditScoreDialog
+            open={editingRow !== null}
+            row={editingRow}
+            onClose={() => setEditingRow(null)}
+          />
         </>
       )}
     </main>

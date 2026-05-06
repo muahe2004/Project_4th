@@ -12,7 +12,7 @@ class ScoresBase(SQLModel):
     academic_term_id: UUID = Field(foreign_key="academic_terms.id", nullable=False)
     score: float = Field(sa_column=Column(Float, nullable=False))
     attempt: int = Field(default=1, sa_column=Column(Integer, default=1)) # lần thi ( có sinh viên học lại >= 2 lần)
-    score_type: str = Field(default="Official", sa_column=Column(String(20), default="Official")) # điểm lần 1, thi lại, cải thiện 
+    score_type: Optional[str] = Field(default="Official", sa_column=Column(String(20), default="Official")) # điểm lần 1, thi lại, cải thiện 
     status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
