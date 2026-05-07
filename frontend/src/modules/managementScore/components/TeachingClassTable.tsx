@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   IconButton,
   Paper,
@@ -11,14 +12,38 @@ import {
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
 import type { ITeachingClassItem } from "../apis/getTeachingClasses";
+import { teacherManagementListStudentScoreUrl } from "../../../routes/urls";
 
 import "../../grades/components/styles/studentTableScore.css";
 
 interface TeachingClassTableProps {
   rows?: ITeachingClassItem[];
+  onViewClass?: (row: ITeachingClassItem) => void;
 }
 
-export function TeachingClassTable({ rows }: TeachingClassTableProps) {
+export function TeachingClassTable({ rows, onViewClass }: TeachingClassTableProps) {
+  const navigate = useNavigate();
+
+  const handleViewClass = (row: ITeachingClassItem) => {
+    console.log("teacher-management-score click", {
+      class_id: row.id,
+      subject_id: row.subject_id,
+    });
+
+    onViewClass?.(row);
+
+    navigate(`/${teacherManagementListStudentScoreUrl}`, {
+      state: {
+        classId: row.id,
+        subjectId: row.subject_id,
+        classCode: row.class_code,
+        className: row.class_name,
+        subjectCode: row.subject_code,
+        subjectName: row.subject_name,
+      },
+    });
+  };
+
   return (
     <TableContainer className="primary-table-container" component={Paper}>
       <Table className="primary-table" aria-label="teaching class table">
@@ -52,8 +77,12 @@ export function TeachingClassTable({ rows }: TeachingClassTableProps) {
                 <TableCell className="primary-tcell" align="left">
                   {row.subject_name} ({row.subject_code})
                 </TableCell>
-                <TableCell className="primary-tcell" align="center" sx={{ width: "5%", whiteSpace: "nowrap" }}>
-                  <IconButton className="primary-tcell__button--icon" aria-label="view class details">
+              <TableCell className="primary-tcell" align="center" sx={{ width: "5%", whiteSpace: "nowrap" }}>
+                  <IconButton
+                    className="primary-tcell__button--icon"
+                    aria-label="view class details"
+                    onClick={() => handleViewClass(row)}
+                  >
                     <VisibilityOutlinedIcon />
                   </IconButton>
                 </TableCell>

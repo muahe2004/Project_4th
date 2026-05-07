@@ -41,3 +41,50 @@ export interface IStudentGpaListResponse {
 
 export interface IManagementScoreTableRow extends IStudentGpaItem {
 }
+
+export interface IStudentScoreComponentResponse {
+  id: string;
+  component_type: string;
+  weight: number;
+  description?: string | null;
+}
+
+export interface IStudentScoreItemResponse {
+  id: string;
+  subject_id: string;
+  subject_code: string;
+  subject_name: string;
+  subject_credit: number;
+  academic_term_id: string;
+  academic_year: string;
+  semester?: number | null;
+  score: number;
+  attempt: number;
+  score_type?: string | null;
+  status?: string | null;
+  created_at: string;
+  updated_at: string;
+  score_component: IStudentScoreComponentResponse;
+}
+
+export interface IStudentScoreInfoResponse {
+  id: string;
+  student_code: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+}
+
+export interface IStudentScoreByClassSubjectItem {
+  student_info: IStudentScoreInfoResponse;
+  scores: IStudentScoreItemResponse[];
+}
+
+export interface IScoreByClassSubjectResponse {
+  class_id: string;
+  class_name: string;
+  subject_id: string;
+  subject_name: string;
+  students: IStudentScoreByClassSubjectItem[];
+  total_students: number;
+}

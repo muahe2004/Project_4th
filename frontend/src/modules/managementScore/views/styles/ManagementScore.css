@@ -2,16 +2,43 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
   gap: 12px;
 }
 
-.management-score__advisor-section {
-  margin-bottom: 18px;
+.management-score__section {
+  margin-bottom: 20px;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 255, 0.92) 100%);
+  border: 1px solid rgba(61, 79, 124, 0.12);
+  box-shadow: 0 10px 28px rgba(32, 44, 76, 0.06);
 }
 
-.management-score__table-section {
-  margin-bottom: 10px;
+.management-score__section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.management-score__section-eyebrow {
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  color: #6b7280 !important;
+}
+
+.management-score__section-title {
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+  color: #1f2937 !important;
+  line-height: 1.2;
+}
+
+.management-score__section :is(.primary-table-container, .advisor-class__card) {
+  margin-top: 0;
 }
 
 .management-score__pagination {

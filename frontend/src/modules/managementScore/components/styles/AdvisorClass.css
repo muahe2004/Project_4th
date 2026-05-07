@@ -6,9 +6,9 @@
 
 .advisor-class__card {
   height: 100%;
-  border-radius: 12px !important;
-  border: 1px solid rgba(62, 71, 116, 0.18);
-  box-shadow: 0 10px 24px rgba(25, 35, 70, 0.08) !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(62, 71, 116, 0.14);
+  box-shadow: 0 8px 20px rgba(25, 35, 70, 0.06) !important;
 }
 
 .advisor-class__action {
@@ -19,12 +19,13 @@
 .advisor-class__content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .advisor-class__title {
   font-weight: 700 !important;
   color: #222 !important;
+  line-height: 1.25 !important;
 }
 
 .advisor-class__subtitle {

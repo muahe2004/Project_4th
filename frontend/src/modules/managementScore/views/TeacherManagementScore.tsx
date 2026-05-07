@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Box, CircularProgress } from "@mui/material";
+import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
@@ -8,6 +8,8 @@ import { useGetTeachingClasses } from "../apis/getTeachingClasses";
 import { useGetAdvisorClasses } from "../apis/getAdvisorClass";
 import AdvisorClass from "../components/AdvisorClass";
 import TeachingClassTable from "../components/TeachingClassTable";
+
+import "./styles/ManagementScore.css";
 
 const DEFAULT_ROWS_PER_PAGE = 10;
 
@@ -67,11 +69,21 @@ export function TeacherManagementScore() {
         </Alert>
       ) : (
         <>
-          <Box className="management-score__advisor-section">
+          <Box className="management-score__section">
+            <Box className="management-score__section-header">
+              <Typography className="management-score__section-title">
+                Danh sách lớp chủ nhiệm
+              </Typography>
+            </Box>
             <AdvisorClass rows={advisorData?.data} />
           </Box>
 
-          <Box className="management-score__table-section">
+          <Box className="management-score__section">
+            <Box className="management-score__section-header">
+              <Typography className="management-score__section-title">
+                Danh sách lớp giảng dạy
+              </Typography>
+            </Box>
             <TeachingClassTable rows={teachingData?.data} />
           </Box>
 

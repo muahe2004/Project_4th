@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   IconButton,
   Paper,
@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
-import { layOutAdminUrl, scoreDetailsUrl } from "../../../routes/urls";
+import { layOutAdminUrl, scoreDetailsUrl, teacherScoreDetailsUrl } from "../../../routes/urls";
 import getGradeColor from "../../grades/utils/gradesColor";
 import type { IManagementScoreTableRow } from "../types";
 
@@ -23,9 +23,15 @@ interface ManagementScoreTableProps {
 
 export function ManagementScoreTable({ rows }: ManagementScoreTableProps) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleViewDetails = (row: IManagementScoreTableRow) => {
-    navigate(`${layOutAdminUrl}/${scoreDetailsUrl}`, {
+    const isTeacherFlow = location.pathname.includes("advisor-class-score");
+    const nextPath = isTeacherFlow
+      ? `/${teacherScoreDetailsUrl}`
+      : `${layOutAdminUrl}/${scoreDetailsUrl}`;
+
+    navigate(nextPath, {
       state: {
         studentId: row.student_info.id,
         studentCode: row.student_info.student_code,
