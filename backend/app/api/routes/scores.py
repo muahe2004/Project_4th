@@ -4,6 +4,9 @@ from app.api.deps import SessionDep
 from app.models.schemas.scores.score_schemas import (
     ScoreByClassSubjectParams,
     ScoreByClassSubjectResponse,
+    ScoreFileDataResponse,
+    ScoreImportListPayload,
+    ScoreImportListResponse,
     StudentAndGpaListResponse,
     StudentAndGpaResponse,
     ScoresPublic,
@@ -16,6 +19,7 @@ from app.models.schemas.scores.score_schemas import (
 from app.services.scores import ScoresServices
 from app.models.schemas.students.student_schemas import StudentQueryParams
 from typing import List
+from fastapi import File, UploadFile
 
 router = APIRouter()
 
@@ -84,6 +88,24 @@ def create_score(
     request: Request, session: SessionDep, data: ScoresCreate
 ) -> ScoresPublic:
     return ScoresServices.create(session=session, score=data)
+
+
+# =========================== upload score file (preview) ===========================
+@router.post("/upload-file", response_model=ScoreFileDataResponse)
+async def upload_score_file(
+    session: SessionDep,
+    file: UploadFile = File(...),
+) -> ScoreFileDataResponse:
+    return await ScoresServices.upload_file_score(session=session, file=file)
+
+
+# =========================== import score list ===========================
+@router.post("/import-list", response_model=ScoreImportListResponse)
+def import_score_list(
+    session: SessionDep,
+    payload: ScoreImportListPayload,
+) -> ScoreImportListResponse:
+    return ScoresServices.import_score_list(session=session, payload=payload)
 
 
 # =========================== update score ===========================

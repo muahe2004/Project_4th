@@ -160,3 +160,74 @@ class ScoreAggregationBucket(SQLModel):
     academic_year: str
     semester: Optional[int] = None
     points: list[ScorePointItem] = Field(default_factory=list)
+
+
+class ScoreFileData(SQLModel):
+    row: int
+    stt: int | None = None
+    class_code: str | None = None
+    student_code: str | None = None
+    student_id: UUID | None = None
+    student_name: str | None = None
+    family_name: str | None = None
+    given_name: str | None = None
+    d1: float | None = None
+    d2: float | None = None
+    thi: float | None = None
+    tbm: float | None = None
+    note: str | None = None
+
+
+class ScoreFileInvalidRow(ScoreFileData):
+    errors: list[str] = Field(default_factory=list)
+
+
+class ScoreFileInfo(SQLModel):
+    file_name: str
+    headers: list[str] = Field(default_factory=list)
+    header_row: int
+    total_rows: int
+    valid_rows_count: int
+    invalid_rows_count: int
+    class_code: str | None = None
+    academic_year: str | None = None
+    semester: int | None = None
+    academic_term_id: UUID | None = None
+    subject_name: str | None = None
+    subject_code: str | None = None
+    subject_id: UUID | None = None
+    attempt: int | None = None
+
+
+class ScoreFileDataResponse(SQLModel):
+    file_information: ScoreFileInfo
+    scores: list[ScoreFileData] = Field(default_factory=list)
+    invalid_scores: list[ScoreFileInvalidRow] = Field(default_factory=list)
+
+
+class ScoreImportItem(SQLModel):
+    score_1: float | None = None
+    score_2: float | None = None
+    score_exam: float | None = None
+    student_id: UUID | None = None
+    student_code: str | None = None
+    class_code: str | None = None
+
+
+class ScoreImportListPayload(SQLModel):
+    academic_term_id: UUID
+    subject_id: UUID
+    attempt: int
+    scores: list[ScoreImportItem] = Field(default_factory=list)
+
+
+class ScoreImportCreatedItem(SQLModel):
+    student_id: UUID
+    subject_id: UUID
+    academic_term_id: UUID
+    score_ids: list[UUID] = Field(default_factory=list)
+
+
+class ScoreImportListResponse(SQLModel):
+    items: list[ScoreImportCreatedItem] = Field(default_factory=list)
+    total: int

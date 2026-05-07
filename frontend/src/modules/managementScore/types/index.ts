@@ -88,3 +88,46 @@ export interface IScoreByClassSubjectResponse {
   students: IStudentScoreByClassSubjectItem[];
   total_students: number;
 }
+
+export interface IScoreUploadRow {
+  row: number;
+  stt?: number | null;
+  class_code?: string | null;
+  student_code?: string | null;
+  student_id?: string | null;
+  student_name?: string | null;
+  family_name?: string | null;
+  given_name?: string | null;
+  d1?: number | null;
+  d2?: number | null;
+  thi?: number | null;
+  tbm?: number | null;
+  note?: string | null;
+}
+
+export interface IScoreUploadInvalidRow extends IScoreUploadRow {
+  errors: string[];
+}
+
+export interface IScoreUploadFileInfo {
+  file_name: string;
+  headers: string[];
+  header_row: number;
+  total_rows: number;
+  valid_rows_count: number;
+  invalid_rows_count: number;
+  class_code?: string | null;
+  academic_year?: string | null;
+  semester?: number | null;
+  academic_term_id?: string | null;
+  subject_name?: string | null;
+  subject_code?: string | null;
+  subject_id?: string | null;
+  attempt?: number | null;
+}
+
+export interface IScoreUploadResponse {
+  file_information: IScoreUploadFileInfo;
+  scores: IScoreUploadRow[];
+  invalid_scores: IScoreUploadInvalidRow[];
+}

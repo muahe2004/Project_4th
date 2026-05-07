@@ -1,8 +1,12 @@
 import uuid
+from io import BytesIO
+import re
 from fastapi import HTTPException, Request
+from fastapi import UploadFile
 from sqlmodel import Session, func, or_, select
 from starlette import status
 from typing import List
+from openpyxl import load_workbook
 
 from app.models.models import (
     AcademicTerms,
@@ -34,6 +38,14 @@ from app.models.schemas.scores.score_schemas import (
     StudentScoreComponentResponse,
     StudentInfoScoreResponse,
     StudentScoresPayload,
+    ScoreFileData,
+    ScoreFileDataResponse,
+    ScoreFileInfo,
+    ScoreFileInvalidRow,
+    ScoreImportItem,
+    ScoreImportListPayload,
+    ScoreImportListResponse,
+    ScoreImportCreatedItem,
 )
 from app.enums.status import StatusEnum
 from app.enums.grade import (
@@ -43,9 +55,444 @@ from app.enums.grade import (
     ScoreTypeEnum,
     GradeScaleEnum
 )
+from app.services.common import to_clean_text
 
 
 class ScoresServices:
+    @staticmethod
+    def _resolve_score_component_id(
+        *,
+        session: Session,
+        component_type: str,
+    ) -> uuid.UUID:
+        component = session.exec(
+            select(ScoreComponents).where(func.upper(ScoreComponents.component_type) == component_type.upper())
+        ).first()
+        if component is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Score component not found for component_type={component_type}",
+            )
+        return component.id
+
+    @staticmethod
+    def _resolve_student_id(
+        *,
+        session: Session,
+        student_id: uuid.UUID | None,
+        student_code: str | None,
+    ) -> uuid.UUID:
+        if student_id is not None:
+            return student_id
+        if not student_code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="student_id or student_code is required.",
+            )
+        student = session.exec(
+            select(Students).where(Students.student_code == student_code)
+        ).first()
+        if student is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Student not found with student_code={student_code}",
+            )
+        return student.id
+
+    @staticmethod
+    def _cell_text(cell: object, number_format: str | None = None) -> str | None:
+        if cell is None or cell == "":
+            return None
+        if isinstance(cell, float) and cell.is_integer():
+            cell = int(cell)
+        if isinstance(cell, int) and number_format:
+            zero_match = re.fullmatch(r"0+", number_format.strip())
+            if zero_match:
+                return str(cell).zfill(len(zero_match.group(0)))
+        return to_clean_text(cell)
+
+    @staticmethod
+    def _metadata_value(cell: object, number_format: str | None = None) -> str | None:
+        text = ScoresServices._cell_text(cell, number_format)
+        if not text:
+            return None
+        if ":" in text:
+            return to_clean_text(text.split(":", maxsplit=1)[1])
+        return text
+
+    @staticmethod
+    def _parse_score_value(raw_value: object) -> float | None:
+        if raw_value is None or raw_value == "":
+            return None
+        if isinstance(raw_value, (int, float)):
+            return float(raw_value)
+        text_value = to_clean_text(raw_value)
+        if text_value is None:
+            return None
+        return float(text_value.replace(",", "."))
+
+    @staticmethod
+    def _extract_metadata(worksheet) -> dict[str, str | int | None]:
+        metadata: dict[str, str | int | None] = {
+            "class_code": None,
+            "academic_year": None,
+            "semester": None,
+            "subject_name": None,
+            "subject_code": None,
+            "attempt": None,
+        }
+
+        # The template places metadata in fixed cells.
+        metadata["class_code"] = ScoresServices._metadata_value(
+            worksheet["A5"].value,
+            worksheet["A5"].number_format,
+        )
+        metadata["academic_year"] = ScoresServices._metadata_value(
+            worksheet["A6"].value,
+            worksheet["A6"].number_format,
+        )
+        semester_text = ScoresServices._metadata_value(
+            worksheet["A7"].value,
+            worksheet["A7"].number_format,
+        )
+        if semester_text and semester_text.isdigit():
+            metadata["semester"] = int(semester_text)
+        metadata["subject_name"] = ScoresServices._metadata_value(
+            worksheet["A8"].value,
+            worksheet["A8"].number_format,
+        )
+        metadata["subject_code"] = ScoresServices._metadata_value(
+            worksheet["A9"].value,
+            worksheet["A9"].number_format,
+        )
+        attempt_text = ScoresServices._metadata_value(
+            worksheet["A10"].value,
+            worksheet["A10"].number_format,
+        )
+        if attempt_text and attempt_text.isdigit():
+            metadata["attempt"] = int(attempt_text)
+
+        return metadata
+
+    @staticmethod
+    async def upload_file_score(
+        *,
+        session: Session,
+        file: UploadFile,
+    ) -> ScoreFileDataResponse:
+        filename = file.filename or ""
+        if not filename.lower().endswith(".xlsx"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only .xlsx files are supported.",
+            )
+
+        content = await file.read()
+        if not content:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Uploaded file is empty.",
+            )
+
+        workbook = load_workbook(BytesIO(content), data_only=True)
+        worksheet = workbook.active
+        rows = list(worksheet.iter_rows())
+        if len(rows) < 12:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File does not contain the expected score header row.",
+            )
+
+        metadata = ScoresServices._extract_metadata(worksheet)
+        academic_term_id = None
+        if metadata["academic_year"] and metadata["semester"] is not None:
+            academic_term = session.exec(
+                select(AcademicTerms).where(
+                    AcademicTerms.academic_year == metadata["academic_year"],
+                    AcademicTerms.semester == metadata["semester"],
+                )
+            ).first()
+            if academic_term is not None:
+                academic_term_id = academic_term.id
+
+        subject_id = None
+        if metadata["subject_code"]:
+            subject = session.exec(
+                select(Subjects).where(Subjects.subject_code == metadata["subject_code"])
+            ).first()
+            if subject is not None:
+                subject_id = subject.id
+
+        header_row_index = 11
+        data_start_row_index = header_row_index + 1
+        expected_headers = [
+            "STT",
+            "Lớp",
+            "MSV",
+            "Họ và đệm",
+            "Tên",
+            "D1",
+            "D2",
+            "THI",
+            "TBM",
+            "Ghi chú",
+        ]
+
+        parsed_rows: list[ScoreFileData] = []
+        invalid_rows: list[ScoreFileInvalidRow] = []
+        data_started = False
+        empty_row_count = 0
+
+        for row_index, row_values in enumerate(rows[data_start_row_index:], start=data_start_row_index + 1):
+            if row_values is None:
+                if data_started:
+                    empty_row_count += 1
+                    if empty_row_count >= 1:
+                        break
+                continue
+
+            def cell(col_index: int) -> object | None:
+                if col_index >= len(row_values):
+                    return None
+                return row_values[col_index].value
+
+            def cell_text(col_index: int) -> str | None:
+                if col_index >= len(row_values):
+                    return None
+                current_cell = row_values[col_index]
+                return ScoresServices._cell_text(current_cell.value, current_cell.number_format)
+
+            stt_raw = cell(0)
+            class_code = cell_text(1)
+            student_code = cell_text(2)
+            family_name = cell_text(3)
+            given_name = cell_text(4)
+            d1_raw = cell(5)
+            d2_raw = cell(6)
+            thi_raw = cell(7)
+            tbm_raw = cell(8)
+            note = cell_text(9)
+
+            if all(
+                value in (None, "")
+                for value in (
+                    stt_raw,
+                    class_code,
+                    student_code,
+                    family_name,
+                    given_name,
+                    d1_raw,
+                    d2_raw,
+                    thi_raw,
+                    tbm_raw,
+                    note,
+                )
+            ):
+                if data_started:
+                    empty_row_count += 1
+                    if empty_row_count >= 1:
+                        break
+                continue
+
+            data_started = True
+            empty_row_count = 0
+
+            row_errors: list[str] = []
+            student_id = None
+
+            stt: int | None = None
+            if stt_raw not in (None, ""):
+                try:
+                    stt = int(float(stt_raw))
+                except (TypeError, ValueError):
+                    row_errors.append("STT must be a number.")
+
+            d1 = None
+            d2 = None
+            thi = None
+            tbm = None
+            try:
+                d1 = ScoresServices._parse_score_value(d1_raw)
+                d2 = ScoresServices._parse_score_value(d2_raw)
+                thi = ScoresServices._parse_score_value(thi_raw)
+                tbm = ScoresServices._parse_score_value(tbm_raw)
+            except ValueError:
+                row_errors.append("Score values must be numeric.")
+
+            if not class_code:
+                row_errors.append("Class Code is required.")
+            if not student_code:
+                row_errors.append("Student Code is required.")
+            if not family_name and not given_name:
+                row_errors.append("Student name is required.")
+            if d1 is None:
+                row_errors.append("D1 is required.")
+            if d2 is None:
+                row_errors.append("D2 is required.")
+            if thi is None:
+                row_errors.append("THI is required.")
+
+            if class_code:
+                class_record = session.exec(
+                    select(Classes).where(Classes.class_code == class_code)
+                ).first()
+                if class_record is None:
+                    row_errors.append(f"Class not found with class_code={class_code}")
+
+            if student_code:
+                student_record = session.exec(
+                    select(Students).where(Students.student_code == student_code)
+                ).first()
+                if student_record is None:
+                    row_errors.append(f"Student not found with student_code={student_code}")
+                else:
+                    student_id = student_record.id
+
+            if tbm is not None and (tbm < 0 or tbm > 10):
+                row_errors.append("TBM must be between 0 and 10.")
+
+            if row_errors:
+                invalid_rows.append(
+                    ScoreFileInvalidRow(
+                        row=row_index,
+                        stt=stt,
+                        class_code=class_code,
+                        student_code=student_code,
+                        student_id=student_id,
+                        student_name=" ".join(part for part in [family_name, given_name] if part) or None,
+                        family_name=family_name,
+                        given_name=given_name,
+                        d1=d1,
+                        d2=d2,
+                        thi=thi,
+                        tbm=tbm,
+                        note=note,
+                        errors=row_errors,
+                    )
+                )
+                continue
+
+            parsed_rows.append(
+                ScoreFileData(
+                    row=row_index,
+                    stt=stt,
+                    class_code=class_code,
+                    student_code=student_code,
+                    student_id=student_id,
+                    student_name=" ".join(part for part in [family_name, given_name] if part) or None,
+                    family_name=family_name,
+                    given_name=given_name,
+                    d1=d1,
+                    d2=d2,
+                    thi=thi,
+                    tbm=tbm,
+                    note=note,
+                )
+            )
+
+        return ScoreFileDataResponse(
+            file_information=ScoreFileInfo(
+                file_name=filename,
+                headers=expected_headers,
+                header_row=header_row_index + 1,
+                total_rows=max(len(rows) - (header_row_index + 1), 0),
+                valid_rows_count=len(parsed_rows),
+                invalid_rows_count=len(invalid_rows),
+                class_code=metadata["class_code"] if isinstance(metadata["class_code"], str) else None,
+                academic_year=metadata["academic_year"] if isinstance(metadata["academic_year"], str) else None,
+                semester=metadata["semester"] if isinstance(metadata["semester"], int) else None,
+                academic_term_id=academic_term_id,
+                subject_name=metadata["subject_name"] if isinstance(metadata["subject_name"], str) else None,
+                subject_code=metadata["subject_code"] if isinstance(metadata["subject_code"], str) else None,
+                subject_id=subject_id,
+                attempt=metadata["attempt"] if isinstance(metadata["attempt"], int) else None,
+            ),
+            scores=parsed_rows,
+            invalid_scores=invalid_rows,
+        )
+
+    @staticmethod
+    def import_score_list(
+        *,
+        session: Session,
+        payload: ScoreImportListPayload,
+    ) -> ScoreImportListResponse:
+        if payload.attempt < 1:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="attempt must be greater than or equal to 1.",
+            )
+
+        if not session.get(AcademicTerms, payload.academic_term_id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Academic term not found with id={payload.academic_term_id}",
+            )
+        if not session.get(Subjects, payload.subject_id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Subject not found with id={payload.subject_id}",
+            )
+
+        middle_component_id = ScoresServices._resolve_score_component_id(
+            session=session,
+            component_type=ScoreComponentTypeEnum.MIDDLE.value.capitalize(),
+        )
+        final_component_id = ScoresServices._resolve_score_component_id(
+            session=session,
+            component_type=ScoreComponentTypeEnum.FINAL.value.capitalize(),
+        )
+
+        imported_items: list[ScoreImportCreatedItem] = []
+        for item in payload.scores:
+            resolved_student_id = ScoresServices._resolve_student_id(
+                session=session,
+                student_id=item.student_id,
+                student_code=item.student_code,
+            )
+
+            resolved_scores: list[Scores] = []
+            point_values = [
+                (item.score_1, middle_component_id),
+                (item.score_2, middle_component_id),
+                (item.score_exam, final_component_id),
+            ]
+
+            for score_value, component_id in point_values:
+                if score_value is None:
+                    continue
+                new_score = Scores(
+                    student_id=resolved_student_id,
+                    subject_id=payload.subject_id,
+                    score_component_id=component_id,
+                    academic_term_id=payload.academic_term_id,
+                    score=score_value,
+                    attempt=payload.attempt,
+                    score_type=ScoreTypeEnum.OFFICIAL.value.capitalize()
+                    if payload.attempt == 1
+                    else ScoreTypeEnum.RETAKE.value.capitalize(),
+                    status=StatusEnum.ACTIVE,
+                )
+                session.add(new_score)
+                session.flush()
+                resolved_scores.append(new_score)
+
+            imported_items.append(
+                ScoreImportCreatedItem(
+                    student_id=resolved_student_id,
+                    subject_id=payload.subject_id,
+                    academic_term_id=payload.academic_term_id,
+                    score_ids=[score.id for score in resolved_scores if score.id is not None],
+                )
+            )
+
+        session.commit()
+
+        return ScoreImportListResponse(
+            items=imported_items,
+            total=len(imported_items),
+        )
+
     @staticmethod
     def _build_student_gpa_payload(
         *, session: Session, student: Students

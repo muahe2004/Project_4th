@@ -1,32 +1,31 @@
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 
 import { useGetScoreByClassSubject } from "../apis/getScoreByClassSubject";
 import ListStudentScoreTable from "../components/ListStudentScoreTable";
 import Button from "../../../components/Button/Button";
+import ImportScoreModel from "../components/ImportScoreModel";
+import { useUploadScore } from "../apis/uploadScore";
+import { useImportScoreList } from "../apis/importScoreList";
+import type {
+  IScoreByClassSubjectResponse,
+  IScoreUploadResponse,
+  IScoreUploadRow,
+} from "../types";
 
 function ListStudentScoreSubjectContent({
-  classId,
-  subjectId,
-  classCode,
-  className,
-  subjectCode,
-  subjectName,
+  data,
+  isLoading,
+  isError,
+  error,
 }: {
-  classId: string;
-  subjectId: string;
-  classCode?: string;
-  className?: string;
-  subjectCode?: string;
-  subjectName?: string;
+  data?: IScoreByClassSubjectResponse;
+  isLoading: boolean;
+  isError: boolean;
+  error: unknown;
 }) {
-  const { data, isLoading, isError, error } = useGetScoreByClassSubject({
-    class_id: classId,
-    subject_id: subjectId,
-  });
-
   return (
     <>
       {isLoading ? (
@@ -47,6 +46,10 @@ function ListStudentScoreSubjectContent({
 export function ListStudentScoreSubject() {
   const location = useLocation();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [openImportScoreModel, setOpenImportScoreModel] = useState(false);
+  const [importPreview, setImportPreview] = useState<IScoreUploadResponse | null>(null);
+  const [importScoreError, setImportScoreError] = useState<string | null>(null);
+  const [isUploadingScorePreview, setIsUploadingScorePreview] = useState(false);
   const state = location.state as
     | {
         classId?: string;
@@ -60,20 +63,45 @@ export function ListStudentScoreSubject() {
 
   const classId = state?.classId;
   const subjectId = state?.subjectId;
+  const scoreQuery = useGetScoreByClassSubject(
+    classId && subjectId
+      ? {
+          class_id: classId,
+          subject_id: subjectId,
+        }
+      : undefined,
+    {
+      enabled: Boolean(classId && subjectId),
+    }
+  );
+
+  const { mutateAsync: uploadScoreFile, isPending: isUploadingScoreFile } = useUploadScore({});
+  const { mutateAsync: importScoreList, isPending: isImportingScoreList } = useImportScoreList({});
 
   const handleImportClick = () => {
-    console.log("import click", { classId, subjectId });
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    console.log("selected file", {
-      classId,
-      subjectId,
-      fileName: file?.name,
-      file,
-    });
+    if (!file) {
+      return;
+    }
+
+    setIsUploadingScorePreview(true);
+
+    try {
+      const uploadedResult = await uploadScoreFile(file);
+      setImportPreview(uploadedResult);
+      setOpenImportScoreModel(true);
+    } catch (uploadError) {
+      console.error("Upload score file failed:", uploadError);
+      setImportScoreError((uploadError as any)?.response?.data?.detail ?? "Upload score file failed");
+      setOpenImportScoreModel(false);
+    } finally {
+      setIsUploadingScorePreview(false);
+      event.target.value = "";
+    }
   };
 
   return (
@@ -93,8 +121,8 @@ export function ListStudentScoreSubject() {
         </Typography>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Button onClick={handleImportClick} className="btn-spacing-left">
-            Import
+          <Button onClick={handleImportClick} className="btn-spacing-left" disabled={isUploadingScoreFile}>
+            {isUploadingScoreFile ? "Uploading..." : "Import"}
           </Button>
           <input
             ref={fileInputRef}
@@ -109,15 +137,56 @@ export function ListStudentScoreSubject() {
       {!classId || !subjectId ? (
         <Alert severity="warning">Thiếu classId hoặc subjectId để tải dữ liệu.</Alert>
       ) : (
-        <ListStudentScoreSubjectContent
-          classId={classId}
-          subjectId={subjectId}
-          classCode={state?.classCode}
-          className={state?.className}
-          subjectCode={state?.subjectCode}
-          subjectName={state?.subjectName}
-        />
+        <ListStudentScoreSubjectContent {...scoreQuery} />
       )}
+
+      <ImportScoreModel
+        open={openImportScoreModel}
+        onClose={() => {
+          setOpenImportScoreModel(false);
+          setImportPreview(null);
+          setImportScoreError(null);
+          setIsUploadingScorePreview(false);
+        }}
+        data={importPreview}
+        isImporting={isUploadingScorePreview || isImportingScoreList}
+        errorMessage={importScoreError}
+        onImport={async (scoresPayload: IScoreUploadRow[]) => {
+          const cleanScoresPayload = scoresPayload.map(({ row, ...score }) => score);
+          const academicTermId = importPreview?.file_information.academic_term_id;
+          const subjectId = importPreview?.file_information.subject_id;
+          if (!academicTermId || !subjectId) {
+            setImportScoreError("Thiếu academic_term_id hoặc subject_id từ file upload.");
+            return;
+          }
+          const importPayload = {
+            academic_term_id: academicTermId,
+            subject_id: subjectId,
+            class_code: importPreview?.file_information.class_code,
+            attempt: importPreview?.file_information.attempt,
+            scores: cleanScoresPayload.map((score) => ({
+              score_1: score.d1 ?? null,
+              score_2: score.d2 ?? null,
+              score_exam: score.thi ?? null,
+              student_id: score.student_id ?? null,
+              student_code: score.student_code ?? null,
+              class_code: score.class_code ?? null,
+            })),
+          };
+          try {
+            const result = await importScoreList(importPayload as any);
+            console.log("Import score payload", importPayload);
+            console.log("Import score result", result);
+            await scoreQuery.refetch();
+            setOpenImportScoreModel(false);
+            setImportPreview(null);
+            setImportScoreError(null);
+          } catch (error) {
+            console.error("Import score list failed:", error);
+            setImportScoreError((error as any)?.response?.data?.detail ?? "Import score list failed");
+          }
+        }}
+      />
     </main>
   );
 }
