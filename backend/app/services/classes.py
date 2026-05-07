@@ -14,6 +14,7 @@ from app.models.models import Classes, LearningSchedules, Rooms, StudentClass, S
 from app.models.models import Specializations
 from app.models.schemas.classes.class_schemas import (
     ClassDropDownResponse,
+    ClassTeachingResponse,
     ClassPublic,
     ClassCreate,
     ClassQueryParams,
@@ -128,6 +129,67 @@ class ClassServices:
             classes.append(ClassesResponse(**data))
 
         return classes, total
+
+    @staticmethod
+    def get_teaching_classes(
+        *, session: Session, query: ClassQueryParams
+    ) -> Tuple[List[ClassTeachingResponse], int]:
+        statement = (
+            select(
+                Classes.id,
+                Classes.class_code,
+                Classes.class_name,
+                LearningSchedules.subject_id.label("subject_id"),
+                Subjects.subject_code,
+                Subjects.name.label("subject_name"),
+            )
+            .select_from(TeachingSchedules)
+            .join(LearningSchedules, LearningSchedules.id == TeachingSchedules.learning_schedule_id)
+            .join(Classes, Classes.id == LearningSchedules.class_id)
+            .join(Subjects, Subjects.id == LearningSchedules.subject_id)
+        )
+
+        conditions = []
+        if query.teacher_id:
+            conditions.append(TeachingSchedules.teacher_id == query.teacher_id)
+        if query.status:
+            conditions.append(TeachingSchedules.status == query.status)
+        if query.class_type:
+            conditions.append(Classes.class_type == query.class_type)
+        if query.registration_status:
+            conditions.append(Classes.registration_status == query.registration_status)
+        if query.search:
+            conditions.append(
+                or_(
+                    Classes.class_code.ilike(f"%{query.search}%"),
+                    Classes.class_name.ilike(f"%{query.search}%"),
+                )
+            )
+
+        if conditions:
+            statement = statement.where(and_(*conditions))
+
+        statement = statement.distinct()
+        total = session.exec(select(func.count()).select_from(statement.subquery())).one()
+        rows = session.exec(
+            statement.order_by(Classes.class_code.asc())
+            .offset(query.skip)
+            .limit(query.limit)
+        ).all()
+
+        data = [
+            ClassTeachingResponse(
+                id=row.id,
+                class_code=row.class_code,
+                class_name=row.class_name,
+                subject_id=row.subject_id,
+                subject_code=row.subject_code,
+                subject_name=row.subject_name,
+            )
+            for row in rows
+        ]
+
+        return data, total
 
     @staticmethod
     def get_classes_register(

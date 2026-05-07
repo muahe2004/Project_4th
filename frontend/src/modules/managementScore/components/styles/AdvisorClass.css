@@ -1,0 +1,32 @@
+.advisor-class__empty {
+  padding: 32px 0;
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+
+.advisor-class__card {
+  height: 100%;
+  border-radius: 12px !important;
+  border: 1px solid rgba(62, 71, 116, 0.18);
+  box-shadow: 0 10px 24px rgba(25, 35, 70, 0.08) !important;
+}
+
+.advisor-class__action {
+  height: 100%;
+  align-items: stretch;
+}
+
+.advisor-class__content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.advisor-class__title {
+  font-weight: 700 !important;
+  color: #222 !important;
+}
+
+.advisor-class__subtitle {
+  color: var(--text-secondary, #666) !important;
+}

@@ -20,6 +20,7 @@ import {
   profileUrl,
   signinUrl,
   gradesUrl,
+  teacherManagementScoreUrl,
   studentLearningSchedules,
   teacherTeachingSchedules,
   courseRegistrationUrl,
@@ -51,6 +52,10 @@ const Header: React.FC = () => {
   const handleNavigate = (url: string) => {
     navigate(url);
     handleCloseUserMenu();
+  };
+
+  const handleAcademicResultNavigate = () => {
+    handleNavigate(isTeacher ? teacherManagementScoreUrl : gradesUrl);
   };
 
   const handleCloseUserMenu = () => {
@@ -102,7 +107,7 @@ const Header: React.FC = () => {
             <MenuItem 
               onClick={() => handleNavigate(profileUrl)}
             >{t('header_menu.profile')}</MenuItem>
-            <MenuItem onClick={() => handleNavigate(gradesUrl)}>{t('header_menu.academicResults')}</MenuItem>
+            <MenuItem onClick={handleAcademicResultNavigate}>{t('header_menu.academicResults')}</MenuItem>
             <MenuItem onClick={() => handleNavigate(scheduleUrl)}>
               {learningScheduleLabel}
             </MenuItem>

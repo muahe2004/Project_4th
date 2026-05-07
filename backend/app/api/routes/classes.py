@@ -6,6 +6,7 @@ from app.api.deps import SessionDep
 from app.models.schemas.classes.class_schemas import (
     ClassDropDownResponse,
     ClassListResponse,
+    ClassTeachingListResponse,
     ClassPublic,
     ClassCreate,
     ClassQueryParams,
@@ -30,6 +31,13 @@ router = APIRouter()
 def get_classes(session: SessionDep, query: ClassQueryParams = Depends()):
     classes, total = ClassServices.get_all(session=session, query=query)
     return ClassListResponse(total=total, data=classes)
+
+
+# =========================== get teaching classes ===========================
+@router.get("/teaching", response_model=ClassTeachingListResponse)
+def get_teaching_classes(session: SessionDep, query: ClassQueryParams = Depends()):
+    classes, total = ClassServices.get_teaching_classes(session=session, query=query)
+    return ClassTeachingListResponse(total=total, data=classes)
 
 
 # =========================== get classes for register ===========================

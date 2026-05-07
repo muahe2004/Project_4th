@@ -1,7 +1,21 @@
-.management-score-breadcrumb {
+.management-score__controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   margin-bottom: 12px;
+  gap: 12px;
+}
+
+.management-score__advisor-section {
+  margin-bottom: 18px;
+}
+
+.management-score__table-section {
+  margin-bottom: 10px;
 }
 
 .management-score__pagination {
   margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
 }

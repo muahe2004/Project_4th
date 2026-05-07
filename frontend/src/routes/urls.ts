@@ -29,3 +29,4 @@ export const tuitionFeeUrl = "tuition-fees";
 export const studentTuitionFeeUrl = "student-tuition-fees";
 export const managementScoreUrl = "management-score";
 export const scoreDetailsUrl = "score-details";
+export const teacherManagementScoreUrl = "teacher-management-score";

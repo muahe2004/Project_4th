@@ -120,6 +120,20 @@ class ClassListResponse(SQLModel):
     total: int
     data: List[ClassesResponse]
 
+
+class ClassTeachingResponse(SQLModel):
+    id: UUID
+    class_code: str
+    class_name: str
+    subject_id: UUID
+    subject_code: str
+    subject_name: str
+
+
+class ClassTeachingListResponse(SQLModel):
+    total: int
+    data: List[ClassTeachingResponse]
+
 class ClassWithLearningSchedules(SQLModel):
     class_information: ClassPublic
     teaching_schedules: list[TeachingScheduleInClass]
