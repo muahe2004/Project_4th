@@ -77,7 +77,14 @@ const Header: React.FC = () => {
         </Box>
 
         <Stack className="header-navbar" direction="row">
-          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.home')}</Button>
+          <Button
+            className="header-navbar__item"
+            disableRipple
+            color="inherit"
+            onClick={() => handleNavigate(homeUrl)}
+          >
+            {t('header_navbar.home')}
+          </Button>
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.trainingProgram')}</Button>
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.admission')}</Button>
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.scholarship')}</Button>

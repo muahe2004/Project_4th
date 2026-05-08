@@ -103,7 +103,7 @@ export function Classes() {
                     getOptionLabel={(option) => option.name}
                     getOptionId={(option) => option.id?.toString() || ""} 
                     placeholder="Lọc theo chuyên ngành"
-                    className="filter-text__field"
+                    className="classes-filter__specialization"
                 />
 
                 <SearchEngine 

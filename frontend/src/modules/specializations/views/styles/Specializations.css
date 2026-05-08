@@ -3,3 +3,7 @@
 .department-name-tcell {
     width: 30%;
 }
+
+.specialization-filter__major {
+    margin-left: 10px !important;
+}

@@ -13,6 +13,7 @@ import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import { Home, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 
@@ -47,7 +48,7 @@ export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
     { label: "Phòng học", icon: <MeetingRoomIcon />, path: `${dashBoardUrl}/${roomUrl}` },
     { label: "Chương trình", icon: <WorkspacePremiumIcon />, path: `${dashBoardUrl}/${trainingProgramUrl}` },
     { label: "Học phí", icon: <RequestQuoteIcon />, path: `${dashBoardUrl}/${tuitionFeeUrl}` },
-    { label: "Điểm sinh viên", icon: <RequestQuoteIcon />, path: `${dashBoardUrl}/${managementScoreUrl}` },
+    { label: "Điểm sinh viên", icon: <LeaderboardIcon />, path: `${dashBoardUrl}/${managementScoreUrl}` },
 
   ];
 

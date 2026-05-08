@@ -3,3 +3,7 @@
 .department-name-tcell {
     width: 30%;
 }
+
+.major-filter__department {
+    margin-left: 10px !important;
+}

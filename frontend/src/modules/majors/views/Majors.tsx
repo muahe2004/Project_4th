@@ -117,6 +117,7 @@ export function Majors() {
                     getOptionLabel={(option) => option.name}
                     getOptionId={(option) => (option.id?.toString() || "")}
                     placeholder="Lọc theo khoa"
+                    className="major-filter__department"
                 />
 
                 <SearchEngine 

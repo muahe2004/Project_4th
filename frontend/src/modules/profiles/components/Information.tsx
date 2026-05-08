@@ -24,8 +24,7 @@ export default function Information() {
   const isTeacher = user?.role === ROLES.TEACHER;
   const isStudent = user?.role === ROLES.STUDENT;
 
-  const { data: currentUserInformation, isLoading: isLoadingCurrentUserInformation } =
-    useGetCurrentUserInformation(Boolean(user?.id));
+  const { data: currentUserInformation } = useGetCurrentUserInformation(Boolean(user?.id));
   const { data: profile, isLoading: isLoadingProfile } = useGetTeacherProfile(
     user?.id,
     isTeacher
@@ -37,8 +36,7 @@ export default function Information() {
   const updateTeacherProfile = useUpdateTeacherProfile();
   const updateStudentProfile = useUpdateStudentProfile();
 
-  const isLoading =
-    isLoadingProfile || isLoadingStudentProfile || isLoadingCurrentUserInformation;
+  const isLoading = isTeacher ? isLoadingProfile : isLoadingStudentProfile;
   const isSaving = updateTeacherProfile.isPending || updateStudentProfile.isPending;
 
   const [teacherCode, setTeacherCode] = useState("");

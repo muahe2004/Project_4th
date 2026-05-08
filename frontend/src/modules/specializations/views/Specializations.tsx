@@ -117,6 +117,7 @@ export function Specializations() {
                     getOptionLabel={(option) => option.name}
                     getOptionId={(option) => (option.id?.toString() || "")}
                     placeholder="Lọc theo ngành"
+                    className="specialization-filter__major"
                 />
 
                 <SearchEngine 
