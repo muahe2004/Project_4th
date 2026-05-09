@@ -6,36 +6,6 @@ import { useAuthStore } from "../../../stores/useAuthStore";
 import LearningBox from "./LearningBox";
 import "./styles/LearningScheduleCalender.css";
 
-const PERIOD_STARTS: Record<number, number> = {
-  1: 6 * 60 + 45,
-  2: 7 * 60 + 35,
-  3: 8 * 60 + 30,
-  4: 9 * 60 + 20,
-  5: 10 * 60 + 15,
-  6: 11 * 60 + 5,
-  7: 12 * 60 + 30,
-  8: 13 * 60 + 20,
-  9: 14 * 60 + 10,
-  10: 15 * 60,
-  11: 15 * 60 + 55,
-  12: 16 * 60 + 45,
-};
-
-const PERIOD_ENDS: Record<number, number> = {
-  1: 7 * 60 + 30,
-  2: 8 * 60 + 20,
-  3: 9 * 60 + 15,
-  4: 10 * 60 + 5,
-  5: 11 * 60,
-  6: 11 * 60 + 50,
-  7: 13 * 60 + 15,
-  8: 14 * 60 + 5,
-  9: 14 * 60 + 55,
-  10: 15 * 60 + 45,
-  11: 16 * 60 + 40,
-  12: 17 * 60 + 30,
-};
-
 const PERIODS = Array.from({ length: 11 }, (_, index) => index + 1);
 const PERIOD_HEIGHT = 42;
 
@@ -68,18 +38,6 @@ function getIsoWeek(date: Date): number {
       ((current.getTime() - firstThursday.getTime()) / 86400000 - 3) / 7
     )
   );
-}
-
-function toDisplayMinute(totalMinutes: number): string {
-  const hour = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
-  const minute = String(totalMinutes % 60).padStart(2, "0");
-  return `${hour}:${minute}`;
-}
-
-function toMinuteRange(startPeriod: number, endPeriod: number): [number, number] {
-  const start = PERIOD_STARTS[startPeriod] ?? PERIOD_STARTS[1];
-  const end = PERIOD_ENDS[endPeriod] ?? start + 45;
-  return [start, Math.max(end, start + 45)];
 }
 
 function clampPeriod(period: number): number {
@@ -202,10 +160,6 @@ export function LearningScheduleCalender({
                 <div className="learning-calender__hour-line" style={{ top: bodyHeight }} />
 
                 {events.map((item) => {
-                  const [startMinute, endMinute] = toMinuteRange(
-                    item.learning_schedule.start_period,
-                    item.learning_schedule.end_period
-                  );
                   const top = getPeriodTop(item.learning_schedule.start_period) + 2;
                   const height = Math.max(
                     34,
@@ -221,13 +175,12 @@ export function LearningScheduleCalender({
                       style={{ top, height }}
                       key={item.id}
                     >
-                      <LearningBox
-                        title={item.subject?.subject_name ?? "Môn học"}
-                        periodText={`Tiết ${item.learning_schedule.start_period} - ${item.learning_schedule.end_period}`}
-                        timeText={`(${toDisplayMinute(startMinute)} - ${toDisplayMinute(endMinute)})`}
-                        roomText={
-                          item.room?.room_number
-                            ? `Phòng ${item.room.room_number}`
+                        <LearningBox
+                          title={item.subject?.subject_name ?? "Môn học"}
+                          periodText={`Tiết ${item.learning_schedule.start_period} - ${item.learning_schedule.end_period}`}
+                          roomText={
+                            item.room?.room_number
+                              ? `Phòng ${item.room.room_number}`
                             : undefined
                         }
                         teacherText={item.teacher?.teacher_name ?? undefined}

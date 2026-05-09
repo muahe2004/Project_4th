@@ -28,6 +28,10 @@
 
 .course-registration__calendar-section {
     flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    padding-top: 2px;
+    width: 20%;
 }
 
 @media (max-width: 1200px) {

@@ -7,17 +7,17 @@ import "./styles/LearningBox.css";
 interface LearningBoxProps {
   title: string;
   periodText: string;
-  timeText: string;
   roomText?: string;
   teacherText?: string;
+  classText?: string;
 }
 
 export function LearningBox({
   title,
   periodText,
-  timeText,
   roomText,
   teacherText,
+  classText,
 }: LearningBoxProps) {
   return (
     <article className="learning-box">
@@ -25,7 +25,6 @@ export function LearningBox({
       <div className="learning-box__row">
         <EventNoteOutlinedIcon className="learning-box__icon" />
         <span>{periodText}</span>
-        <span className="learning-box__time">{timeText}</span>
       </div>
       {roomText && (
         <div className="learning-box__row">
@@ -37,6 +36,11 @@ export function LearningBox({
         <div className="learning-box__row">
           <PersonOutlineOutlinedIcon className="learning-box__icon" />
           <span>{teacherText}</span>
+        </div>
+      )}
+      {classText && (
+        <div className="learning-box__row">
+          <span>{classText}</span>
         </div>
       )}
     </article>

@@ -10,7 +10,9 @@ export function TeacherTeachingScheduleView() {
 
   return (
     <main className="learningSchedule">
-      <WeekPicker selectedDate={selectedDate} onChangeDate={setSelectedDate} />
+      <div style={{ marginBottom: "10px" }}>
+        <WeekPicker selectedDate={selectedDate} onChangeDate={setSelectedDate} />
+      </div>
       <TeachingScheduleCalender selectedDate={selectedDate} />
     </main>
   );

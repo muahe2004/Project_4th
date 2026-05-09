@@ -1,0 +1,59 @@
+.teaching-schedules-card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.teaching-schedules-card-list__empty {
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7a8190;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+}
+
+.teaching-schedule-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.teaching-schedule-card:hover .learning-box {
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.14);
+}
+
+.teaching-schedule-card:focus-visible .learning-box {
+  box-shadow: 0 0 0 3px rgba(52, 61, 96, 0.18), 0 4px 10px rgba(15, 23, 42, 0.14);
+}
+
+.teaching-schedule-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.teaching-schedule-card__status {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.teaching-schedule-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #475569;
+}

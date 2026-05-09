@@ -1,11 +1,12 @@
 .learning-calender {
-  margin-top: 10px;
+  height: 100%;
 }
 
 .learning-calender__wrapper {
   border: 1px solid #d9d9d9;
   border-radius: 12px;
   overflow: hidden;
+  height: 100%;
 }
 
 .learning-calender__grid {
@@ -13,6 +14,7 @@
   display: grid;
   grid-template-columns: 90px repeat(7, minmax(0, 1fr));
   background: #fff;
+  height: 100%;
 }
 
 .learning-calender__grid > * {
