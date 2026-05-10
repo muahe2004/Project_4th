@@ -19,9 +19,10 @@ import "../../grades/components/styles/studentTableScore.css";
 interface TeachingClassTableProps {
   rows?: ITeachingClassItem[];
   onViewClass?: (row: ITeachingClassItem) => void;
+  academicTermId?: string;
 }
 
-export function TeachingClassTable({ rows, onViewClass }: TeachingClassTableProps) {
+export function TeachingClassTable({ rows, onViewClass, academicTermId }: TeachingClassTableProps) {
   const navigate = useNavigate();
 
   const handleViewClass = (row: ITeachingClassItem) => {
@@ -36,6 +37,7 @@ export function TeachingClassTable({ rows, onViewClass }: TeachingClassTableProp
       state: {
         classId: row.id,
         subjectId: row.subject_id,
+        academicTermId,
         classCode: row.class_code,
         className: row.class_name,
         subjectCode: row.subject_code,
@@ -67,7 +69,7 @@ export function TeachingClassTable({ rows, onViewClass }: TeachingClassTableProp
             </TableRow>
           ) : (
             (rows ?? []).map((row) => (
-              <TableRow key={row.id} className="primary-trow">
+              <TableRow key={`${row.id}-${row.subject_id}`} className="primary-trow">
                 <TableCell className="primary-tcell" align="left">
                   {row.class_code}
                 </TableCell>

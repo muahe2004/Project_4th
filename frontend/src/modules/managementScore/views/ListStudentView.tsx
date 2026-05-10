@@ -51,9 +51,10 @@ export function ListStudentScoreSubject() {
   const [importScoreError, setImportScoreError] = useState<string | null>(null);
   const [isUploadingScorePreview, setIsUploadingScorePreview] = useState(false);
   const state = location.state as
-    | {
+      | {
         classId?: string;
         subjectId?: string;
+        academicTermId?: string;
         classCode?: string;
         className?: string;
         subjectCode?: string;
@@ -63,6 +64,7 @@ export function ListStudentScoreSubject() {
 
   const classId = state?.classId;
   const subjectId = state?.subjectId;
+  const academicTermId = state?.academicTermId ?? "";
   const scoreQuery = useGetScoreByClassSubject(
     classId && subjectId
       ? {
@@ -74,6 +76,16 @@ export function ListStudentScoreSubject() {
       enabled: Boolean(classId && subjectId),
     }
   );
+
+  const handleComponentClick = () => {
+    const students = scoreQuery.data?.students ?? [];
+
+    console.log("component payload", {
+      academic_term_id: academicTermId,
+      subject_id: subjectId ?? "",
+      students: students.map((student) => student.student_info),
+    });
+  };
 
   const { mutateAsync: uploadScoreFile, isPending: isUploadingScoreFile } = useUploadScore({});
   const { mutateAsync: importScoreList, isPending: isImportingScoreList } = useImportScoreList({});
@@ -131,6 +143,26 @@ export function ListStudentScoreSubject() {
             hidden
             onChange={(event) => void handleFileChange(event)}
           />
+
+          <Button onClick={handleImportClick} className="" disabled={isUploadingScoreFile}>
+            Khoá điểm
+          </Button>
+
+          <Button onClick={handleComponentClick} className="" disabled={!classId || !subjectId || scoreQuery.isLoading}>
+            Thành phần
+          </Button>
+
+          <Button onClick={handleImportClick} className="" disabled={isUploadingScoreFile}>
+            Nhập điểm TP
+          </Button>
+
+          <Button onClick={handleImportClick} className="" disabled={isUploadingScoreFile}>
+            Nhập điểm Thi
+          </Button>
+
+          <Button onClick={handleImportClick} className="" disabled={isUploadingScoreFile}>
+            Lưu lại
+          </Button>
         </Box>
       </Box>
 
@@ -175,14 +207,11 @@ export function ListStudentScoreSubject() {
           };
           try {
             const result = await importScoreList(importPayload as any);
-            console.log("Import score payload", importPayload);
-            console.log("Import score result", result);
             await scoreQuery.refetch();
             setOpenImportScoreModel(false);
             setImportPreview(null);
             setImportScoreError(null);
           } catch (error) {
-            console.error("Import score list failed:", error);
             setImportScoreError((error as any)?.response?.data?.detail ?? "Import score list failed");
           }
         }}

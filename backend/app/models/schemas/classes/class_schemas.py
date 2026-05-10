@@ -113,6 +113,7 @@ class ClassQueryParams(BaseQueryParams):
     specialization_id: Optional[UUID] = Field(None)
     teacher_id: Optional[UUID] = Field(None)
     student_id: Optional[UUID] = Field(None)
+    academic_term_id: Optional[UUID] = Field(None)
     class_type: Optional[str] = Field(None)
     registration_status: Optional[str] = Field(None)
 

@@ -177,3 +177,25 @@ export const SCORE_TYPE_RETAKE = "RETAKE";
 export const COMPONENT_TYPE_MIDDLE = "MIDDLE";
 export const COMPONENT_TYPE_FINAL = "FINAL";
 export const COMPONENT_TYPE_OTHER = "OTHER";
+
+export const COMPONENT_TYPE_MIDDLE_ALIASES = [
+  COMPONENT_TYPE_MIDDLE,
+  "D1",
+  "D2",
+  "BT",
+  "TT",
+  "THL",
+  "CC",
+  "BTL",
+  "BTC",
+  "GPH",
+  "TH/TN",
+];
+
+export const COMPONENT_TYPE_FINAL_ALIASES = [
+  COMPONENT_TYPE_FINAL,
+];
+
+export const COMPONENT_TYPE_OTHER_ALIASES = [
+  COMPONENT_TYPE_OTHER,
+];

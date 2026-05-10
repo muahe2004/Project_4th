@@ -10,7 +10,7 @@ class ScoresBase(SQLModel):
     subject_id: UUID | None = Field(foreign_key="subjects.id", nullable=False)
     score_component_id: UUID = Field(foreign_key="score_components.id", nullable=False)
     academic_term_id: UUID = Field(foreign_key="academic_terms.id", nullable=False)
-    score: float = Field(sa_column=Column(Float, nullable=False))
+    score: float | None = Field(sa_column=Column(Float, nullable=True))
     attempt: int = Field(default=1, sa_column=Column(Integer, default=1)) # lần thi ( có sinh viên học lại >= 2 lần)
     score_type: Optional[str] = Field(default="Official", sa_column=Column(String(20), default="Official")) # điểm lần 1, thi lại, cải thiện 
     status: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
@@ -28,7 +28,7 @@ class ScoresCreate(ScoresBase):
 class ScoresUpdate(SQLModel):
     student_id: UUID | None = Field(default=None, foreign_key="students.id")
     score_component_id: Optional[UUID] = Field(foreign_key="score_components.id")
-    score: float = Field(sa_column=Column(Float, nullable=False))
+    score: float | None = Field(sa_column=Column(Float, nullable=True))
     attempt: Optional[int] = Field(default=1, sa_column=Column(Integer, default=1))
     score_type: Optional[str] = Field(
         default="Official", sa_column=Column(String(20), default="Official")
@@ -44,6 +44,15 @@ class ScoresUpdate(SQLModel):
 class ScoresDeleteResponse(SQLModel):
     message: str
     id: UUID
+
+
+class ScoreBulkCreatePayload(SQLModel):
+    scores: list[ScoresCreate] = Field(default_factory=list)
+
+
+class ScoreBulkCreateResponse(SQLModel):
+    items: list[ScoresPublic] = Field(default_factory=list)
+    total: int
 
 
 class StudentScoreFilterParams(SQLModel):
@@ -75,7 +84,7 @@ class StudentScoreItemResponse(SQLModel):
     academic_term_id: UUID
     academic_year: str
     semester: Optional[int] = None
-    score: float
+    score: float | None
     attempt: int
     score_type: Optional[str] = None
     status: Optional[str] = None
@@ -147,7 +156,7 @@ class StudentAndGpaListResponse(SQLModel):
 
 
 class ScorePointItem(SQLModel):
-    score: float
+    score: float | None
     weight: float
     attempt: int
     score_type: Optional[str] = None

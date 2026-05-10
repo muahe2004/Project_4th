@@ -13,9 +13,9 @@ import GradeControls from "../components/GradeControls";
 import StudentTotalScore from "../components/StudentTotalScore";
 import ScoresTable from "../components/ScoresTable";
 import {
-  COMPONENT_TYPE_FINAL,
-  COMPONENT_TYPE_MIDDLE,
-  COMPONENT_TYPE_OTHER,
+  COMPONENT_TYPE_FINAL_ALIASES,
+  COMPONENT_TYPE_MIDDLE_ALIASES,
+  COMPONENT_TYPE_OTHER_ALIASES,
   LETTER_GRADE,
   RANKING,
   SCORE_TYPE_OFFICIAL,
@@ -83,15 +83,15 @@ function isRetakeScore(item: StudentScoreItemResponse): boolean {
 }
 
 function isMidtermComponent(componentType: string): boolean {
-  return normalizeText(componentType) === COMPONENT_TYPE_MIDDLE;
+  return COMPONENT_TYPE_MIDDLE_ALIASES.includes(normalizeText(componentType));
 }
 
 function isFinalComponent(componentType: string): boolean {
-  return normalizeText(componentType) === COMPONENT_TYPE_FINAL;
+  return COMPONENT_TYPE_FINAL_ALIASES.includes(normalizeText(componentType));
 }
 
 function isOtherComponent(componentType: string): boolean {
-  return normalizeText(componentType) === COMPONENT_TYPE_OTHER;
+  return COMPONENT_TYPE_OTHER_ALIASES.includes(normalizeText(componentType));
 }
 
 function toNormalizedWeight(weight: number): number {
@@ -301,7 +301,7 @@ export function GradesPage() {
 
       if (hasFinalScore) {
         const selectedForAverage = [selectedMid1, selectedMid2, selectedFinal].filter(
-          (point): point is ScorePoint => point !== null
+          (point): point is ScorePoint => point !== null && point.score !== null
         );
 
         normalizedWeightSum = selectedForAverage.reduce(

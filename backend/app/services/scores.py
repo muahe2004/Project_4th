@@ -28,6 +28,8 @@ from app.models.schemas.scores.score_schemas import (
     ScoresCreate,
     ScoresUpdate,
     ScoresDeleteResponse,
+    ScoreBulkCreatePayload,
+    ScoreBulkCreateResponse,
     StudentScoreByClassSubjectItem,
     StudentScoreByStudentResponse,
     StudentScoreFilterParams,
@@ -54,6 +56,7 @@ from app.enums.grade import (
     ScoreComponentTypeEnum,
     ScoreTypeEnum,
     GradeScaleEnum
+    , MIDDLE_COMPONENT_TYPE_ALIASES, FINAL_COMPONENT_TYPE_ALIASES, OTHER_COMPONENT_TYPE_ALIASES
 )
 from app.services.common import to_clean_text
 
@@ -561,13 +564,13 @@ class ScoresServices:
             return attempt > 1
 
         def is_midterm_component(component_type: str) -> bool:
-            return normalize_score_text(component_type) == ScoreComponentTypeEnum.MIDDLE.value.upper()
+            return normalize_score_text(component_type) in MIDDLE_COMPONENT_TYPE_ALIASES
 
         def is_final_component(component_type: str) -> bool:
-            return normalize_score_text(component_type) == ScoreComponentTypeEnum.FINAL.value.upper()
+            return normalize_score_text(component_type) in FINAL_COMPONENT_TYPE_ALIASES
 
         def is_other_component(component_type: str) -> bool:
-            return normalize_score_text(component_type) == ScoreComponentTypeEnum.OTHER.value.upper()
+            return normalize_score_text(component_type) in OTHER_COMPONENT_TYPE_ALIASES
 
         def to_normalized_weight(weight: float) -> float:
             if weight > 1:
@@ -666,7 +669,11 @@ class ScoresServices:
             selected_mid1 = retake_mid[0] if len(retake_mid) > 0 else (official_mid[0] if len(official_mid) > 0 else None)
             selected_mid2 = retake_mid[1] if len(retake_mid) > 1 else (official_mid[1] if len(official_mid) > 1 else None)
             selected_final = retake_final or official_final
-            selected_points = [p for p in [selected_mid1, selected_mid2, selected_final] if p is not None]
+            selected_points = [
+                p
+                for p in [selected_mid1, selected_mid2, selected_final]
+                if p is not None and p.score is not None
+            ]
             if not selected_points:
                 continue
             has_any_score = True
@@ -1067,6 +1074,54 @@ class ScoresServices:
         session.refresh(new_score)
 
         return new_score
+
+    @staticmethod
+    def bulk_create(
+        *,
+        session: Session,
+        payload: ScoreBulkCreatePayload,
+    ) -> ScoreBulkCreateResponse:
+        if not payload.scores:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="scores must not be empty.",
+            )
+
+        seen_keys: set[tuple[uuid.UUID, uuid.UUID, int]] = set()
+        for item in payload.scores:
+            key = (item.student_id, item.score_component_id, item.attempt)
+            if key in seen_keys:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Duplicate score item in request payload.",
+                )
+            seen_keys.add(key)
+
+            existing = session.exec(
+                select(Scores).where(
+                    Scores.student_id == item.student_id,
+                    Scores.score_component_id == item.score_component_id,
+                    Scores.attempt == item.attempt,
+                )
+            ).first()
+            if existing:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Score already exists.",
+                )
+
+        created_items: list[Scores] = []
+        for item in payload.scores:
+            new_score = Scores(**item.model_dump())
+            session.add(new_score)
+            session.flush()
+            created_items.append(new_score)
+
+        session.commit()
+        for item in created_items:
+            session.refresh(item)
+
+        return ScoreBulkCreateResponse(items=created_items, total=len(created_items))
 
     @staticmethod
     def update(

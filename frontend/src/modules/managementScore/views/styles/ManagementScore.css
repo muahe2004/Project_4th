@@ -6,6 +6,34 @@
   gap: 12px;
 }
 
+.management-score__controls .grades-flex {
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.management-score__controls .search-engine__input {
+  width: min(520px, 100%);
+  flex: 1 1 520px;
+}
+
+.management-score__controls .grades-controller {
+  width: min(260px, 100%);
+}
+
+.management-score__controls .select-primary {
+  width: 100%;
+}
+
+.management-score__controls .select-primary__label,
+.management-score__controls .MuiSelect-select {
+  font-size: 14px !important;
+}
+
 .management-score__import-button {
   margin-left: 10px !important;
 }

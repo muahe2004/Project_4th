@@ -22,6 +22,7 @@ from app.api.routes import (
     student_class,
     student_tuition_fees,
     export_file,
+    academic_terms,
 )
 
 api_router = APIRouter()
@@ -72,3 +73,4 @@ api_router.include_router(
 )
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(export_file.router, prefix="/export-file", tags=["export-file"])
+api_router.include_router(academic_terms.router, prefix="/academic_terms", tags=["academic_terms"])

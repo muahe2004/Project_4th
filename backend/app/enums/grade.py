@@ -32,6 +32,29 @@ class ScoreComponentTypeEnum(str, Enum):
     OTHER = "Other"
 
 
+MIDDLE_COMPONENT_TYPE_ALIASES = {
+    "MIDDLE",
+    "D1",
+    "D2",
+    "BT",
+    "TT",
+    "THL",
+    "CC",
+    "BTL",
+    "BTC",
+    "GPH",
+    "TH/TN",
+}
+
+FINAL_COMPONENT_TYPE_ALIASES = {
+    "FINAL",
+}
+
+OTHER_COMPONENT_TYPE_ALIASES = {
+    "OTHER",
+}
+
+
 GRADE_SCALE_THRESHOLDS = (
     (8.5, 4.0, GradeScaleEnum.A),
     (8.0, 3.5, GradeScaleEnum.B_PLUS),

@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 
 import {
-  COMPONENT_TYPE_FINAL,
-  COMPONENT_TYPE_MIDDLE,
-  COMPONENT_TYPE_OTHER,
+  COMPONENT_TYPE_FINAL_ALIASES,
+  COMPONENT_TYPE_MIDDLE_ALIASES,
+  COMPONENT_TYPE_OTHER_ALIASES,
   LETTER_GRADE,
   SCORE_TYPE_OFFICIAL,
   SCORE_TYPE_RETAKE,
@@ -28,6 +28,7 @@ type ScorePoint = {
   id: string;
   score: number;
   score_component_id: string;
+  component_type: string;
   weight: number;
   attempt: number;
   created_at: string;
@@ -71,15 +72,15 @@ function isRetakeScore(item: IStudentScoreItemResponse): boolean {
 }
 
 function isMidtermComponent(componentType: string): boolean {
-  return normalizeText(componentType) === COMPONENT_TYPE_MIDDLE;
+  return COMPONENT_TYPE_MIDDLE_ALIASES.includes(normalizeText(componentType));
 }
 
 function isFinalComponent(componentType: string): boolean {
-  return normalizeText(componentType) === COMPONENT_TYPE_FINAL;
+  return COMPONENT_TYPE_FINAL_ALIASES.includes(normalizeText(componentType));
 }
 
 function isOtherComponent(componentType: string): boolean {
-  return normalizeText(componentType) === COMPONENT_TYPE_OTHER;
+  return COMPONENT_TYPE_OTHER_ALIASES.includes(normalizeText(componentType));
 }
 
 function toNormalizedWeight(weight: number): number {
@@ -144,6 +145,7 @@ function buildStudentScoreRow(scores: IStudentScoreItemResponse[]): StudentScore
       id: item.id,
       score: item.score,
       score_component_id: item.score_component.id,
+      component_type: item.score_component.component_type,
       weight: item.score_component.weight,
       attempt: item.attempt,
       created_at: item.created_at,
@@ -185,7 +187,9 @@ function calculateAverage(points: Array<ScorePoint | null>): {
   grade: string;
   weight: number;
 } {
-  const selected = points.filter((point): point is ScorePoint => point !== null);
+  const selected = points.filter(
+    (point): point is ScorePoint => point !== null && point.score !== null
+  );
   if (selected.length === 0) {
     return { avg10: null, avg4: null, grade: "-", weight: 0 };
   }
@@ -214,6 +218,10 @@ function calculateAverage(points: Array<ScorePoint | null>): {
   };
 }
 
+function getComponentLabel(componentType: string | undefined, fallback: string): string {
+  return componentType ? componentType : fallback;
+}
+
 export function ListStudentScoreTable({ rows }: ListStudentScoreTableProps) {
   return (
     <TableContainer className="primary-table-container" component={Paper}>
@@ -228,12 +236,24 @@ export function ListStudentScoreTable({ rows }: ListStudentScoreTableProps) {
             <TableCell className="primary-thead__cell" colSpan={3} align="center">Trung bình môn</TableCell>
           </TableRow>
           <TableRow className="primary-trow">
-            <TableCell className="primary-thead__cell" align="center">Đ1</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Đ2</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Thi</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Đ1</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Đ2</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Thi</TableCell>
+            <TableCell className="primary-thead__cell" align="center">
+              {getComponentLabel(rows?.[0]?.scores?.find((item) => !isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))?.score_component.component_type, "Đ1")}
+            </TableCell>
+            <TableCell className="primary-thead__cell" align="center">
+              {getComponentLabel(rows?.[0]?.scores?.filter((item) => !isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))[1]?.score_component.component_type, "Đ2")}
+            </TableCell>
+            <TableCell className="primary-thead__cell" align="center">
+              {getComponentLabel(rows?.[0]?.scores?.find((item) => !isRetakeScore(item) && isFinalComponent(item.score_component.component_type))?.score_component.component_type, "Thi")}
+            </TableCell>
+            <TableCell className="primary-thead__cell" align="center">
+              {getComponentLabel(rows?.[0]?.scores?.find((item) => isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))?.score_component.component_type, "Đ1")}
+            </TableCell>
+            <TableCell className="primary-thead__cell" align="center">
+              {getComponentLabel(rows?.[0]?.scores?.filter((item) => isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))[1]?.score_component.component_type, "Đ2")}
+            </TableCell>
+            <TableCell className="primary-thead__cell" align="center">
+              {getComponentLabel(rows?.[0]?.scores?.find((item) => isRetakeScore(item) && isFinalComponent(item.score_component.component_type))?.score_component.component_type, "Thi")}
+            </TableCell>
             <TableCell className="primary-thead__cell" align="center">Hệ 10</TableCell>
             <TableCell className="primary-thead__cell" align="center">Hệ 4</TableCell>
             <TableCell className="primary-thead__cell" align="center">Điểm chữ</TableCell>

@@ -6,9 +6,9 @@ import { useGetScoreByStudentID } from "../../grades/apis/getScoreByStudentID";
 import ScoresTable from "../../grades/components/ScoresTable";
 import StudentTotalScore from "../../grades/components/StudentTotalScore";
 import {
-  COMPONENT_TYPE_FINAL,
-  COMPONENT_TYPE_MIDDLE,
-  COMPONENT_TYPE_OTHER,
+  COMPONENT_TYPE_FINAL_ALIASES,
+  COMPONENT_TYPE_MIDDLE_ALIASES,
+  COMPONENT_TYPE_OTHER_ALIASES,
   LETTER_GRADE,
   RANKING,
   SCORE_TYPE_OFFICIAL,
@@ -71,13 +71,13 @@ function isRetakeScore(item: StudentScoreItemResponse): boolean {
 }
 
 function isMidtermComponent(componentType: string): boolean {
-  return normalizeText(componentType) === COMPONENT_TYPE_MIDDLE;
+  return COMPONENT_TYPE_MIDDLE_ALIASES.includes(normalizeText(componentType));
 }
 function isFinalComponent(componentType: string): boolean {
-  return normalizeText(componentType) === COMPONENT_TYPE_FINAL;
+  return COMPONENT_TYPE_FINAL_ALIASES.includes(normalizeText(componentType));
 }
 function isOtherComponent(componentType: string): boolean {
-  return normalizeText(componentType) === COMPONENT_TYPE_OTHER;
+  return COMPONENT_TYPE_OTHER_ALIASES.includes(normalizeText(componentType));
 }
 function toNormalizedWeight(weight: number): number {
   if (weight > 1) return weight / WEIGHT_PERCENT_DIVISOR;
@@ -205,7 +205,9 @@ export function TeacherScoreDetails() {
       let letter = "-";
 
       if (hasFinalScore) {
-        const selectedForAverage = [selectedMid1, selectedMid2, selectedFinal].filter((point): point is ScorePoint => point !== null);
+        const selectedForAverage = [selectedMid1, selectedMid2, selectedFinal].filter(
+          (point): point is ScorePoint => point !== null && point.score !== null
+        );
         normalizedWeightSum = selectedForAverage.reduce((sum, point) => sum + toNormalizedWeight(point.weight), 0);
         let avg10 = 0;
         if (selectedForAverage.length > 0 && normalizedWeightSum > 0) {

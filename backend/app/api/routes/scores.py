@@ -4,6 +4,8 @@ from app.api.deps import SessionDep
 from app.models.schemas.scores.score_schemas import (
     ScoreByClassSubjectParams,
     ScoreByClassSubjectResponse,
+    ScoreBulkCreatePayload,
+    ScoreBulkCreateResponse,
     ScoreFileDataResponse,
     ScoreImportListPayload,
     ScoreImportListResponse,
@@ -88,6 +90,18 @@ def create_score(
     request: Request, session: SessionDep, data: ScoresCreate
 ) -> ScoresPublic:
     return ScoresServices.create(session=session, score=data)
+
+
+# =========================== create scores in bulk ===========================
+@router.post(
+    "/bulk",
+    response_model=ScoreBulkCreateResponse,
+)
+def create_scores_bulk(
+    session: SessionDep,
+    payload: ScoreBulkCreatePayload,
+) -> ScoreBulkCreateResponse:
+    return ScoresServices.bulk_create(session=session, payload=payload)
 
 
 # =========================== upload score file (preview) ===========================

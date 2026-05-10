@@ -6,9 +6,8 @@ import LabelPrimary from "../../../components/Label/Label";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import {
-  COMPONENT_TYPE_FINAL,
-  COMPONENT_TYPE_MIDDLE,
-  COMPONENT_TYPE_OTHER,
+  COMPONENT_TYPE_FINAL_ALIASES,
+  COMPONENT_TYPE_MIDDLE_ALIASES,
 } from "../../grades/types";
 import type { ScoreTableRow } from "../../grades/types";
 import { useAddScore } from "../apis/addScore";
@@ -61,19 +60,19 @@ const parseScore = (value: string) => Number(value);
 
 const normalizeText = (value: string | null | undefined): string => (value ?? "").toUpperCase().trim();
 
-const getComponentTypeForField = (row: ScoreTableRow, key: keyof ScoreFormValues) => {
+const getComponentAliasesForField = (row: ScoreTableRow, key: keyof ScoreFormValues) => {
   if (row.score_mode === "retake") {
     if (key === "recheck3") {
-      return COMPONENT_TYPE_FINAL;
+      return COMPONENT_TYPE_FINAL_ALIASES;
     }
-    return COMPONENT_TYPE_OTHER;
+    return COMPONENT_TYPE_MIDDLE_ALIASES;
   }
 
   if (key === "exam3") {
-    return COMPONENT_TYPE_FINAL;
+    return COMPONENT_TYPE_FINAL_ALIASES;
   }
 
-  return COMPONENT_TYPE_MIDDLE;
+  return COMPONENT_TYPE_MIDDLE_ALIASES;
 };
 
 const getChangedFields = (current: ScoreFormValues, initial: ScoreFormValues) => {
@@ -139,15 +138,14 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
             exam3: { id: row.exam3Id, scoreComponentId: row.exam3ScoreComponentId },
           };
 
-    const componentIdByType = new Map(
-      scoreComponents.map((component) => [normalizeText(component.component_type), component.id])
-    );
-
     const requests = changedFields.map((field) => {
       const targetMeta = targetMap[field.key as keyof typeof targetMap];
-      const scoreComponentType = getComponentTypeForField(row, field.key);
+      const candidateAliases = getComponentAliasesForField(row, field.key);
       const scoreComponentId =
-        targetMeta?.scoreComponentId ?? componentIdByType.get(normalizeText(scoreComponentType));
+        targetMeta?.scoreComponentId ??
+        scoreComponents.find((component) =>
+          candidateAliases.includes(normalizeText(component.component_type))
+        )?.id;
 
       if (!scoreComponentId) {
         throw new Error(`Không tìm thấy loại điểm để xử lý: ${field.key}`);

@@ -39,6 +39,7 @@ export const URL_API_SUBJECT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/subjec
 // Score
 export const URL_API_SCORE = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/scores`;
 export const URL_API_SCORE_COMPONENT = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/score_components`;
+export const URL_API_ACADEMIC_TERMS = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/academic_terms`;
 
 // Teaching Schedule
 export const URL_API_TEACHING_SCHEDULE = `${BASE_UNICORE_API_URL}/${UNICORE_PREFIX}/teaching_schedules`;

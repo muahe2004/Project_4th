@@ -10,7 +10,7 @@ from starlette import status
 from typing import List, Tuple
 from sqlalchemy import String, cast
 
-from app.models.models import Classes, LearningSchedules, Rooms, StudentClass, Subjects, Teachers, TeachingSchedules
+from app.models.models import Classes, LearningSchedules, Rooms, StudentClass, Subjects, Teachers, TeachingSchedules, AcademicTerms
 from app.models.models import Specializations
 from app.models.schemas.classes.class_schemas import (
     ClassDropDownResponse,
@@ -152,6 +152,12 @@ class ClassServices:
         conditions = []
         if query.teacher_id:
             conditions.append(TeachingSchedules.teacher_id == query.teacher_id)
+        if query.academic_term_id:
+            academic_term = session.get(AcademicTerms, query.academic_term_id)
+            if academic_term is None:
+                return [], 0
+            conditions.append(LearningSchedules.date >= academic_term.start_date)
+            conditions.append(LearningSchedules.date <= academic_term.end_date)
         if query.status:
             conditions.append(TeachingSchedules.status == query.status)
         if query.class_type:

@@ -22,6 +22,7 @@ export interface ITeachingClassQueryParams {
   limit?: number;
   search?: string;
   teacher_id?: string;
+  academic_term_id?: string;
 }
 
 const getTeachingClasses = async (
