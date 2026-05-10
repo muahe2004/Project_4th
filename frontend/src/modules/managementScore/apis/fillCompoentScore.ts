@@ -8,39 +8,37 @@ import { URL_API_SCORE } from "../../../constants/config";
 import { apiClient } from "../../../lib/api";
 import type { StudentScoreItemResponse } from "../../grades/types";
 
-export type ScoreCreatePayload = {
-  student_id: string;
-  subject_id: string;
-  academic_term_id: string;
+export type FillComponentScoreItem = {
+  id: string;
   score_component_id?: string;
-  component_type?: string;
-  score: number | null;
-  attempt?: number;
-  score_type?: string;
+  score?: number | null;
+  score_type?: string | null;
   status?: string | null;
 };
 
-export type ScoreBulkCreatePayload = {
-  scores: ScoreCreatePayload[];
+export type FillComponentScorePayload = {
+  scores: FillComponentScoreItem[];
 };
 
-export type ScoreBulkCreateResponse = {
+export type FillComponentScoreResponse = {
   items: StudentScoreItemResponse[];
   total: number;
 };
 
-const addScoreList = async (payload: ScoreBulkCreatePayload): Promise<ScoreBulkCreateResponse> => {
-  const response = await apiClient.post<ScoreBulkCreateResponse>(`${URL_API_SCORE}/bulk`, payload);
+const fillComponentScore = async (
+  payload: FillComponentScorePayload
+): Promise<FillComponentScoreResponse> => {
+  const response = await apiClient.patch<FillComponentScoreResponse>(`${URL_API_SCORE}/bulk`, payload);
   return response.data;
 };
 
-export const useAddScoreList = (
-  config?: UseMutationOptions<ScoreBulkCreateResponse, Error, ScoreBulkCreatePayload>
+export const useFillComponentScore = (
+  config?: UseMutationOptions<FillComponentScoreResponse, Error, FillComponentScorePayload>
 ) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: addScoreList,
+    mutationFn: fillComponentScore,
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ["scores"] });
       config?.onSuccess?.(data, variables, context);

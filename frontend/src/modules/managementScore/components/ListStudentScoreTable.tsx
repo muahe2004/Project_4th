@@ -6,7 +6,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@mui/material";
+import type { ChangeEvent } from "react";
 
 import {
   COMPONENT_TYPE_FINAL_ALIASES,
@@ -22,6 +24,12 @@ import "../../grades/components/styles/studentTableScore.css";
 
 interface ListStudentScoreTableProps {
   rows?: IStudentScoreByClassSubjectItem[];
+  editableMidterm?: boolean;
+  editableFinal?: boolean;
+  midtermDrafts?: Record<string, string>;
+  finalDrafts?: Record<string, string>;
+  onMidtermChange?: (scoreId: string, value: string) => void;
+  onFinalChange?: (scoreId: string, value: string) => void;
 }
 
 type ScorePoint = {
@@ -222,7 +230,15 @@ function getComponentLabel(componentType: string | undefined, fallback: string):
   return componentType ? componentType : fallback;
 }
 
-export function ListStudentScoreTable({ rows }: ListStudentScoreTableProps) {
+export function ListStudentScoreTable({
+  rows,
+  editableMidterm = false,
+  editableFinal = false,
+  midtermDrafts = {},
+  finalDrafts = {},
+  onMidtermChange,
+  onFinalChange,
+}: ListStudentScoreTableProps) {
   return (
     <TableContainer className="primary-table-container" component={Paper}>
       <Table className="primary-table" aria-label="class subject student score table">
@@ -279,8 +295,12 @@ export function ListStudentScoreTable({ rows }: ListStudentScoreTableProps) {
               const selectedMid1 = retakeMid[0] ?? officialMid[0] ?? null;
               const selectedMid2 = retakeMid[1] ?? officialMid[1] ?? null;
               const selectedFinal = retakeFinal ?? officialFinal ?? null;
+              const finalDraftKey = `${row.student_info.id}:final`;
 
-              const avg = calculateAverage([selectedMid1, selectedMid2, selectedFinal]);
+              const avg =
+                selectedFinal === null || selectedFinal.score === null
+                  ? { avg10: null, avg4: null, grade: "-", weight: 0 }
+                  : calculateAverage([selectedMid1, selectedMid2, selectedFinal]);
 
               return (
                 <TableRow key={row.student_info.id} className="primary-trow">
@@ -292,14 +312,62 @@ export function ListStudentScoreTable({ rows }: ListStudentScoreTableProps) {
                     {row.student_info.name}
                   </TableCell>
 
-                  <TableCell className="primary-tcell" align="center">
-                    {formatScore(officialMid[0]?.score)}
+                  <TableCell className="primary-tcell primary-tcell--edit-score" align="center">
+                    {editableMidterm ? (
+                      <div className="primary-tcell__input-wrap">
+                        <TextField
+                          value={midtermDrafts[officialMid[0]?.id ?? ""] ?? officialMid[0]?.score ?? ""}
+                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                            officialMid[0]?.id ? onMidtermChange?.(officialMid[0].id, event.target.value) : undefined
+                          }
+                          fullWidth
+                          variant="standard"
+                          InputProps={{ disableUnderline: true }}
+                          inputProps={{ style: { textAlign: "center", fontSize: "14px" } }}
+                          className="primary-tcell__input"
+                        />
+                      </div>
+                    ) : (
+                      formatScore(officialMid[0]?.score)
+                    )}
                   </TableCell>
-                  <TableCell className="primary-tcell" align="center">
-                    {formatScore(officialMid[1]?.score)}
+                  <TableCell className="primary-tcell primary-tcell--edit-score" align="center">
+                    {editableMidterm ? (
+                      <div className="primary-tcell__input-wrap">
+                        <TextField
+                          value={midtermDrafts[officialMid[1]?.id ?? ""] ?? officialMid[1]?.score ?? ""}
+                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                            officialMid[1]?.id ? onMidtermChange?.(officialMid[1].id, event.target.value) : undefined
+                          }
+                          fullWidth
+                          variant="standard"
+                          InputProps={{ disableUnderline: true }}
+                          inputProps={{ style: { textAlign: "center", fontSize: "14px" } }}
+                          className="primary-tcell__input"
+                        />
+                      </div>
+                    ) : (
+                      formatScore(officialMid[1]?.score)
+                    )}
                   </TableCell>
-                  <TableCell className="primary-tcell" align="center">
-                    {formatScore(officialFinal?.score)}
+                  <TableCell className="primary-tcell primary-tcell--edit-score" align="center">
+                    {editableFinal ? (
+                      <div className="primary-tcell__input-wrap">
+                        <TextField
+                          value={finalDrafts[finalDraftKey] ?? officialFinal?.score ?? ""}
+                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                            onFinalChange?.(finalDraftKey, event.target.value)
+                          }
+                          fullWidth
+                          variant="standard"
+                          InputProps={{ disableUnderline: true }}
+                          inputProps={{ style: { textAlign: "center", fontSize: "14px" } }}
+                          className="primary-tcell__input"
+                        />
+                      </div>
+                    ) : (
+                      formatScore(officialFinal?.score)
+                    )}
                   </TableCell>
 
                   <TableCell className="primary-tcell" align="center">

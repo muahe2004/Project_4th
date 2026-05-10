@@ -28,3 +28,72 @@
     color: #d32f2f !important;
     font-weight: var(--font-weight-bold);
 }
+
+.primary-tcell__input--fixed {
+    width: 72px;
+    min-width: 72px;
+    max-width: 72px;
+}
+
+.primary-tcell__input {
+    width: 100%;
+    min-width: 72px;
+    border: 1px solid #ccc !important;
+    border-radius: 4px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.primary-tcell__input--fixed .MuiInputBase-root {
+    width: 72px;
+}
+
+.primary-tcell__input .MuiInputBase-root {
+    width: 100%;
+    height: 28px;
+    padding: 0 6px;
+}
+
+.primary-tcell__input .MuiInputBase-input {
+    padding: 0;
+    height: 28px;
+    line-height: 28px;
+    width: 100%;
+    text-align: center;
+}
+
+.primary-tcell--edit-score {
+    width: 84px;
+    min-width: 84px;
+    max-width: 84px;
+    padding: 0 !important;
+    overflow: hidden;
+    position: relative;
+    height: 44px;
+    vertical-align: middle;
+}
+
+.primary-tcell__input-wrap {
+    position: absolute;
+    inset: 4px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.primary-tcell__input:hover {
+    border-color: rgba(52, 64, 106, 0.45);
+}
+
+.primary-tcell__input:focus-within {
+    border-color: #34406a;
+    background: #ffffff;
+    box-shadow: 0 0 0 2px rgba(52, 64, 106, 0.12);
+}
+
+.primary-tcell__input {
+    width: 100%;
+    min-width: 100%;
+    display: block;
+}

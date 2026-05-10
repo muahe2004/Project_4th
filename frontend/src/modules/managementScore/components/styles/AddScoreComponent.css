@@ -1,0 +1,59 @@
+.add-score-component__dialog .MuiDialog-paper {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.add-score-component__title {
+  font-weight: 800 !important;
+  color: #34406a !important;
+}
+
+.add-score-component__content {
+  padding-top: 8px !important;
+}
+
+.add-score-component__search {
+  margin-bottom: 16px;
+}
+
+.add-score-component__input .MuiInputBase-root {
+  border-radius: 4px;
+}
+
+.add-score-component__list {
+  max-height: 420px;
+  overflow-y: auto;
+  display: grid;
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.add-score-component__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+  border-radius: 14px;
+  background: rgba(241, 244, 250, 0.55);
+}
+
+.add-score-component__item-name {
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  color: #34406a !important;
+}
+
+.add-score-component__item-desc {
+  font-size: 0.9rem !important;
+  color: #8f98ae !important;
+}
+
+.add-score-component__item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.add-score-component__empty {
+  color: #8f98ae !important;
+}

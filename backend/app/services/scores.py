@@ -1,6 +1,7 @@
 import uuid
 from io import BytesIO
 import re
+from datetime import datetime
 from fastapi import HTTPException, Request
 from fastapi import UploadFile
 from sqlmodel import Session, func, or_, select
@@ -30,6 +31,11 @@ from app.models.schemas.scores.score_schemas import (
     ScoresDeleteResponse,
     ScoreBulkCreatePayload,
     ScoreBulkCreateResponse,
+    ScoreBulkUpdateItem,
+    ScoreBulkUpdatePayload,
+    ScoreBulkUpdateResponse,
+    ScoreBulkStatusUpdatePayload,
+    ScoreBulkStatusUpdateResponse,
     StudentScoreByClassSubjectItem,
     StudentScoreByStudentResponse,
     StudentScoreFilterParams,
@@ -66,8 +72,24 @@ class ScoresServices:
     def _resolve_score_component_id(
         *,
         session: Session,
-        component_type: str,
+        component_type: str | None = None,
+        score_component_id: uuid.UUID | None = None,
     ) -> uuid.UUID:
+        if score_component_id is not None:
+            component = session.get(ScoreComponents, score_component_id)
+            if component is None:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Score component not found with id={score_component_id}",
+                )
+            return component.id
+
+        if not component_type:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="score_component_id or component_type is required.",
+            )
+
         component = session.exec(
             select(ScoreComponents).where(func.upper(ScoreComponents.component_type) == component_type.upper())
         ).first()
@@ -474,7 +496,7 @@ class ScoresServices:
                     score_type=ScoreTypeEnum.OFFICIAL.value.capitalize()
                     if payload.attempt == 1
                     else ScoreTypeEnum.RETAKE.value.capitalize(),
-                    status=StatusEnum.ACTIVE,
+                    status="pending",
                 )
                 session.add(new_score)
                 session.flush()
@@ -601,7 +623,7 @@ class ScoresServices:
 
         aggregated: dict[str, ScoreAggregationBucket] = {}
         for score, component_type, component_weight, academic_year, semester in score_rows:
-            if score.status is not None and normalize_score_text(str(score.status)) != "ACTIVE":
+            if score.status is not None and normalize_score_text(str(score.status)) == "INACTIVE":
                 continue
 
             key = f"{score.subject_id}-{score.academic_term_id}"
@@ -764,7 +786,7 @@ class ScoresServices:
                 select(StudentClass.student_id).where(
                     StudentClass.class_id == query.class_id,
                     or_(
-                        StudentClass.status == StatusEnum.ACTIVE,
+                        StudentClass.status != StatusEnum.INACTIVE,
                         StudentClass.status.is_(None),
                     ),
                 )
@@ -935,7 +957,7 @@ class ScoresServices:
             select(StudentClass.student_id).where(
                 StudentClass.class_id == query.class_id,
                 or_(
-                    StudentClass.status == StatusEnum.ACTIVE,
+                    StudentClass.status != StatusEnum.INACTIVE,
                     StudentClass.status.is_(None),
                 ),
             )
@@ -980,7 +1002,7 @@ class ScoresServices:
                 Scores.student_id.in_(student_ids),
                 Scores.subject_id == query.subject_id,
                 or_(
-                    Scores.status == StatusEnum.ACTIVE,
+                    Scores.status != StatusEnum.INACTIVE,
                     Scores.status.is_(None),
                 ),
             )
@@ -1054,10 +1076,17 @@ class ScoresServices:
         session: Session,
         score: ScoresCreate,
     ) -> ScoresPublic:
+        resolved_score_component_id = score.score_component_id
+        if resolved_score_component_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="score_component_id is required.",
+            )
+
         existing = session.exec(
             select(Scores).where(
                 Scores.student_id == score.student_id,
-                Scores.score_component_id == score.score_component_id,
+                Scores.score_component_id == resolved_score_component_id,
                 Scores.attempt == score.attempt,
             )
         ).first()
@@ -1068,7 +1097,7 @@ class ScoresServices:
                 detail="Score already exists.",
             )
 
-        new_score = Scores(**score.dict())
+        new_score = Scores(**score.dict(exclude={"score_component_id"}), score_component_id=resolved_score_component_id)
         session.add(new_score)
         session.commit()
         session.refresh(new_score)
@@ -1089,7 +1118,14 @@ class ScoresServices:
 
         seen_keys: set[tuple[uuid.UUID, uuid.UUID, int]] = set()
         for item in payload.scores:
-            key = (item.student_id, item.score_component_id, item.attempt)
+            resolved_score_component_id = item.score_component_id
+            if resolved_score_component_id is None:
+                resolved_score_component_id = ScoresServices._resolve_score_component_id(
+                    session=session,
+                    component_type=getattr(item, "component_type", None),
+                )
+
+            key = (item.student_id, resolved_score_component_id, item.attempt)
             if key in seen_keys:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -1100,7 +1136,7 @@ class ScoresServices:
             existing = session.exec(
                 select(Scores).where(
                     Scores.student_id == item.student_id,
-                    Scores.score_component_id == item.score_component_id,
+                    Scores.score_component_id == resolved_score_component_id,
                     Scores.attempt == item.attempt,
                 )
             ).first()
@@ -1112,7 +1148,17 @@ class ScoresServices:
 
         created_items: list[Scores] = []
         for item in payload.scores:
-            new_score = Scores(**item.model_dump())
+            resolved_score_component_id = item.score_component_id
+            if resolved_score_component_id is None:
+                resolved_score_component_id = ScoresServices._resolve_score_component_id(
+                    session=session,
+                    component_type=getattr(item, "component_type", None),
+                )
+
+            new_score = Scores(
+                **item.model_dump(exclude={"component_type", "score_component_id"}),
+                score_component_id=resolved_score_component_id,
+            )
             session.add(new_score)
             session.flush()
             created_items.append(new_score)
@@ -1122,6 +1168,100 @@ class ScoresServices:
             session.refresh(item)
 
         return ScoreBulkCreateResponse(items=created_items, total=len(created_items))
+
+    @staticmethod
+    def bulk_update(
+        *,
+        session: Session,
+        payload: ScoreBulkUpdatePayload,
+    ) -> ScoreBulkUpdateResponse:
+        if not payload.scores:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="scores must not be empty.",
+            )
+
+        seen_ids: set[uuid.UUID] = set()
+        for item in payload.scores:
+            if item.id in seen_ids:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Duplicate score id in request payload.",
+                )
+            seen_ids.add(item.id)
+
+        updated_items: list[Scores] = []
+        for item in payload.scores:
+            score = session.get(Scores, item.id)
+            if not score:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Score not found with id={item.id}",
+                )
+
+            update_data = item.model_dump(exclude_unset=True)
+            component_type = update_data.pop("component_type", None)
+            score_component_id = update_data.get("score_component_id")
+            if score_component_id is None and component_type is not None:
+                update_data["score_component_id"] = ScoresServices._resolve_score_component_id(
+                    session=session,
+                    component_type=component_type,
+                )
+            for field, value in update_data.items():
+                if field == "id":
+                    continue
+                setattr(score, field, value)
+
+            if score.score_type is None:
+                score.score_type = ScoreTypeEnum.OFFICIAL.value.capitalize()
+
+            updated_items.append(score)
+
+        session.commit()
+        for item in updated_items:
+            session.refresh(item)
+
+        return ScoreBulkUpdateResponse(items=updated_items, total=len(updated_items))
+
+    @staticmethod
+    def bulk_update_status(
+        *,
+        session: Session,
+        payload: ScoreBulkStatusUpdatePayload,
+    ) -> ScoreBulkStatusUpdateResponse:
+        if not payload.scores:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="scores must not be empty.",
+            )
+
+        seen_ids: set[uuid.UUID] = set()
+        for item in payload.scores:
+            if item.id in seen_ids:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Duplicate score id in request payload.",
+                )
+            seen_ids.add(item.id)
+
+        updated_items: list[Scores] = []
+        for item in payload.scores:
+            score = session.get(Scores, item.id)
+            if not score:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Score not found with id={item.id}",
+                )
+
+            score.status = StatusEnum.ACTIVE
+            score.updated_at = datetime.now()
+            updated_items.append(score)
+
+        session.commit()
+        for item in updated_items:
+            session.refresh(item)
+
+        return ScoreBulkStatusUpdateResponse(items=updated_items, total=len(updated_items))
 
     @staticmethod
     def update(

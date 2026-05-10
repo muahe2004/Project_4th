@@ -6,6 +6,10 @@ from app.models.schemas.scores.score_schemas import (
     ScoreByClassSubjectResponse,
     ScoreBulkCreatePayload,
     ScoreBulkCreateResponse,
+    ScoreBulkStatusUpdatePayload,
+    ScoreBulkStatusUpdateResponse,
+    ScoreBulkUpdatePayload,
+    ScoreBulkUpdateResponse,
     ScoreFileDataResponse,
     ScoreImportListPayload,
     ScoreImportListResponse,
@@ -102,6 +106,30 @@ def create_scores_bulk(
     payload: ScoreBulkCreatePayload,
 ) -> ScoreBulkCreateResponse:
     return ScoresServices.bulk_create(session=session, payload=payload)
+
+
+# =========================== update scores in bulk ===========================
+@router.patch(
+    "/bulk",
+    response_model=ScoreBulkUpdateResponse,
+)
+def update_scores_bulk(
+    session: SessionDep,
+    payload: ScoreBulkUpdatePayload,
+) -> ScoreBulkUpdateResponse:
+    return ScoresServices.bulk_update(session=session, payload=payload)
+
+
+# =========================== activate scores in bulk ===========================
+@router.patch(
+    "/bulk/status",
+    response_model=ScoreBulkStatusUpdateResponse,
+)
+def activate_scores_bulk(
+    session: SessionDep,
+    payload: ScoreBulkStatusUpdatePayload,
+) -> ScoreBulkStatusUpdateResponse:
+    return ScoresServices.bulk_update_status(session=session, payload=payload)
 
 
 # =========================== upload score file (preview) ===========================

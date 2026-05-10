@@ -8,7 +8,7 @@ from uuid import UUID
 class ScoresBase(SQLModel):
     student_id: UUID | None = Field(foreign_key="students.id", nullable=False)
     subject_id: UUID | None = Field(foreign_key="subjects.id", nullable=False)
-    score_component_id: UUID = Field(foreign_key="score_components.id", nullable=False)
+    score_component_id: UUID | None = Field(default=None, foreign_key="score_components.id")
     academic_term_id: UUID = Field(foreign_key="academic_terms.id", nullable=False)
     score: float | None = Field(sa_column=Column(Float, nullable=True))
     attempt: int = Field(default=1, sa_column=Column(Integer, default=1)) # lần thi ( có sinh viên học lại >= 2 lần)
@@ -22,12 +22,13 @@ class ScoresPublic(ScoresBase):
 
 
 class ScoresCreate(ScoresBase):
-    pass
+    component_type: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
 
 
 class ScoresUpdate(SQLModel):
     student_id: UUID | None = Field(default=None, foreign_key="students.id")
-    score_component_id: Optional[UUID] = Field(foreign_key="score_components.id")
+    score_component_id: Optional[UUID] = Field(default=None, foreign_key="score_components.id")
+    component_type: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
     score: float | None = Field(sa_column=Column(Float, nullable=True))
     attempt: Optional[int] = Field(default=1, sa_column=Column(Integer, default=1))
     score_type: Optional[str] = Field(
@@ -51,6 +52,40 @@ class ScoreBulkCreatePayload(SQLModel):
 
 
 class ScoreBulkCreateResponse(SQLModel):
+    items: list[ScoresPublic] = Field(default_factory=list)
+    total: int
+
+
+class ScoreBulkUpdateItem(SQLModel):
+    id: UUID
+    score_component_id: Optional[UUID] = Field(default=None, foreign_key="score_components.id")
+    score: float | None = Field(default=None, sa_column=Column(Float, nullable=True))
+    component_type: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
+    score_type: Optional[str] = Field(default=None, sa_column=Column(String(20), nullable=True))
+    status: Optional[str] = Field(default=None, sa_column=Column(String(50), nullable=True))
+    updated_at: datetime = Field(
+        default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
+    )
+
+
+class ScoreBulkUpdatePayload(SQLModel):
+    scores: list[ScoreBulkUpdateItem] = Field(default_factory=list)
+
+
+class ScoreBulkUpdateResponse(SQLModel):
+    items: list[ScoresPublic] = Field(default_factory=list)
+    total: int
+
+
+class ScoreBulkStatusUpdateItem(SQLModel):
+    id: UUID
+
+
+class ScoreBulkStatusUpdatePayload(SQLModel):
+    scores: list[ScoreBulkStatusUpdateItem] = Field(default_factory=list)
+
+
+class ScoreBulkStatusUpdateResponse(SQLModel):
     items: list[ScoresPublic] = Field(default_factory=list)
     total: int
 
