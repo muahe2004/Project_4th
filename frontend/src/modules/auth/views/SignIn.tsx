@@ -128,7 +128,7 @@ export function SignIn() {
                     </IconButton>
                   </InputAdornment>
                 }
-                label="Password"
+                label={t('signIn.password')}
               />
             </FormControl>
 

@@ -6,6 +6,7 @@ import {
     DialogActions,
     Typography
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import Button from "../Button/Button"; 
 
 interface ConfirmDialogProps {
@@ -18,7 +19,12 @@ interface ConfirmDialogProps {
     cancelLabel?: string;
 }
 
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, title = "Xác nhận", message, onConfirm, onCancel, confirmLabel = "Đồng ý", cancelLabel = "Hủy", }) => {
+const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, title, message, onConfirm, onCancel, confirmLabel, cancelLabel, }) => {
+    const { t } = useTranslation();
+    const resolvedTitle = title ?? t("common.confirm", "Xác nhận");
+    const resolvedConfirmLabel = confirmLabel ?? t("common.agree", "Đồng ý");
+    const resolvedCancelLabel = cancelLabel ?? t("common.cancel", "Hủy");
+
     return (
         <Dialog
             sx={{
@@ -31,13 +37,13 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, title = "Xác nhậ
                 },
             }}
             open={open} onClose={onCancel} maxWidth="xs" fullWidth>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{resolvedTitle}</DialogTitle>
         <DialogContent>
             <Typography>{message}</Typography>
         </DialogContent>
         <DialogActions>
-            <Button onClick={onCancel} className="button-cancel">{cancelLabel}</Button>
-            <Button onClick={onConfirm} variant="contained">{confirmLabel}</Button>
+            <Button onClick={onCancel} className="button-cancel">{resolvedCancelLabel}</Button>
+            <Button onClick={onConfirm} variant="contained">{resolvedConfirmLabel}</Button>
         </DialogActions>
         </Dialog>
     );

@@ -65,7 +65,7 @@ const AdminHeader: React.FC = () => {
             onClose={handleCloseUserMenu}
             disableScrollLock={true} 
           >
-            <MenuItem>Setting</MenuItem>
+            <MenuItem>{t("common.setting")}</MenuItem>
             <MenuItem onClick={handleLogout}>{t('header_menu.logout')}</MenuItem>
           </Menu>
         </Box>

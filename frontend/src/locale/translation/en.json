@@ -24,7 +24,7 @@
     "specialization": "Specialization",
     "subject": "Subject",
     "teachingSchedule": "Teaching Schedule",
-    "examinationSchedule": "Examination Schedule",
+    "examinationSchedule": "Exam Schedule",
     "student": "Student",
     "teacher": "Teacher",
     "class": "Class",
@@ -43,8 +43,11 @@
     "dashboard": "Dashboard",
     "actions": "Actions",
     "cancel": "Cancel",
+    "agree": "OK",
+    "confirm": "Confirm",
     "save": "Save",
     "add": "Add",
+    "setting": "Setting",
     "selectStatus": "Select status",
     "none": "None",
     "male": "Male",
@@ -79,12 +82,13 @@
     "copyright": "© 2025 Hung Yen University Of Technology And Education"
   },
   "home": {
-    "homeMain": {
-      "title1": "\"NHAN DUC, NHAN TAI, NHAN TRI THUC",
-      "title2": "SANG TAO TUONG LAI, PHUC VU NHAN DAN\""
-    },
     "homeNews": {
+      "tag": "NEWS",
       "buttonMore": "VIEW MORE"
+    },
+    "homeMain": {
+      "title1": "Hung Yen University of Technology and Education",
+      "title2": ""
     }
   },
   "myprofile": {

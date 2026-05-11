@@ -43,8 +43,11 @@
     "dashboard": "Trang chủ",
     "actions": "Thao tác",
     "cancel": "Hủy",
+    "agree": "Đồng ý",
+    "confirm": "Xác nhận",
     "save": "Lưu",
     "add": "Thêm",
+    "setting": "Cài đặt",
     "selectStatus": "Chọn trạng thái",
     "none": "Không chọn",
     "male": "Nam",
@@ -79,12 +82,13 @@
     "copyright": "© 2025 Trường Đại học Sư phạm Kỹ thuật Hưng Yên"
   },
   "home": {
-    "homeMain": {
-      "title1": "\"NHÂN ĐỨC, NHÂN TÀI, NHÂN TRÍ THỨC",
-      "title2": "SÁNG TẠO TƯƠNG LAI, PHỤC VỤ NHÂN DÂN\""
-    },
     "homeNews": {
+      "tag": "TIN TỨC",
       "buttonMore": "XEM THÊM"
+    },
+    "homeMain": {
+      "title1": "Trường Đại học Sư phạm Kỹ thuật Hưng Yên",
+      "title2": ""
     }
   },
   "myprofile": {
