@@ -31,7 +31,6 @@ export const CoursePanel: React.FC = () => {
     };
 
     const handleDelete = (course: ICourses) => {
-        console.log("Xoá khoá học:", course);
     };
 
     return (

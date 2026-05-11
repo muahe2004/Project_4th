@@ -146,15 +146,11 @@ export function AddScoreComponent({
 
     const run = async () => {
       if (updatePayload.scores.length > 0) {
-        const updateResponse = await fillComponentScore(updatePayload);
-        console.log("bulk update score payload", updatePayload);
-        console.log("bulk update score response", updateResponse);
+        await fillComponentScore(updatePayload);
       }
 
       if (createPayload.scores.length > 0) {
-        const createResponse = await addScoreList(createPayload);
-        console.log("bulk create score payload", createPayload);
-        console.log("bulk create score response", createResponse);
+        await addScoreList(createPayload);
       }
 
       onClose();

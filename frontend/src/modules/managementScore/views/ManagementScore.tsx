@@ -136,7 +136,6 @@ export function ManagementScore() {
         isImporting={isUploadingScorePreview}
         errorMessage={importScoreError}
         onImport={async (scoresPayload: IScoreUploadRow[]) => {
-          console.log("Import score payload", scoresPayload);
           setOpenImportScoreModel(false);
           setImportPreview(null);
           setImportScoreError(null);

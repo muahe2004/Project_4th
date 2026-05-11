@@ -205,7 +205,6 @@ export function TuitionFeeFormModel({
       start_date: startDate ? dayjs(startDate).format("YYYY-MM-DD") : null,
       end_date: endDate ? dayjs(endDate).format("YYYY-MM-DD") : null,
     };
-    console.log("Tuition fee add payload:", addPayload);
     setPendingPayload(addPayload);
     void handleConfirmSave(addPayload);
   };

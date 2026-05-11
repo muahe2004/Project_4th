@@ -74,8 +74,6 @@ const LessonFormModal: React.FC<LessonFormProps> = ({ open, mode, initialValues,
                 trangThai: STATUS.ACTIVE,
             };
 
-            console.log(payload);
-
             if (mode === "add") await createLesson(payload);
             else if (mode === "edit") await editLesson({ id: ID as string, data: payload });
 

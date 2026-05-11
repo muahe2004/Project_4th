@@ -147,33 +147,10 @@ export function TeacherManagementScore() {
 
     const term = findAcademicTerm(academicTermGroups, selectedAcademicYear, nextSemester);
     setAcademicTermId(term?.id ?? "");
-    console.log("selected academic term", term);
   };
 
   return (
     <main className="admin-main-container">
-      <Box className="admin-main-box management-score__controls">
-        <ManagementControls
-          searchValue={search}
-          academicYearFilter={selectedAcademicYear}
-          semesterFilter={semesterFilter}
-          academicYearOptions={academicYearOptions}
-          semesterOptions={semesterOptions}
-          onSearchChange={(value) => setSearch(value)}
-          onSearchSubmit={() => setPage(1)}
-          onSearchClear={() => {
-            setSearch("");
-            setPage(1);
-          }}
-          onAcademicYearChange={(event: SelectChangeEvent<string>) => {
-            setAcademicYearFilter(event.target.value);
-            setSemesterFilter("");
-            setAcademicTermId("");
-          }}
-          onSemesterChange={handleSemesterChange}
-        />
-      </Box>
-
       {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={28} />
@@ -184,36 +161,65 @@ export function TeacherManagementScore() {
         </Alert>
       ) : (
         <>
-          <Box className="management-score__section">
-            <Box className="management-score__section-header">
-              <Typography className="management-score__section-title">
-                Danh sách lớp chủ nhiệm
-              </Typography>
+          <Box className="management-score__layout">
+            <Box className="management-score__section management-score__section--wide">
+              <Box className="management-score__section-header">
+                <Typography className="management-score__section-title">
+                  Quản lý điểm lớp giảng dạy
+                </Typography>
+                <Typography className="management-score__section-note">
+                  Quản lý điểm của các sinh viên lớp bạn giảng dạy.
+                </Typography>
+              </Box>
+              <Box className="management-score__section-controls">
+                <ManagementControls
+                  searchValue={search}
+                  academicYearFilter={selectedAcademicYear}
+                  semesterFilter={semesterFilter}
+                  academicYearOptions={academicYearOptions}
+                  semesterOptions={semesterOptions}
+                  onSearchChange={(value) => setSearch(value)}
+                  onSearchSubmit={() => setPage(1)}
+                  onSearchClear={() => {
+                    setSearch("");
+                    setPage(1);
+                  }}
+                  onAcademicYearChange={(event: SelectChangeEvent<string>) => {
+                    setAcademicYearFilter(event.target.value);
+                    setSemesterFilter("");
+                    setAcademicTermId("");
+                  }}
+                  onSemesterChange={handleSemesterChange}
+                />
+              </Box>
+              <TeachingClassTable rows={teachingData?.data} academicTermId={academicTermId} />
+              <Box className="management-score__pagination">
+                <PaginationUniCore
+                  totalItems={teachingData?.total || 0}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  onPageChange={(currentPage) => setPage(currentPage)}
+                  onRowsPerPageChange={(rows) => {
+                    setRowsPerPage(rows);
+                    setPage(1);
+                  }}
+                />
+              </Box>
             </Box>
-            <AdvisorClass rows={advisorData?.data} />
+
+            <Box className="management-score__section management-score__section--narrow">
+              <Box className="management-score__section-header">
+                <Typography className="management-score__section-title">
+                  Xem điểm lớp chủ nhiệm
+                </Typography>
+                <Typography className="management-score__section-note">
+                  Xem điểm của các sinh viên lớp bạn chủ nhiệm.
+                </Typography>
+              </Box>
+              <AdvisorClass rows={advisorData?.data} />
+            </Box>
           </Box>
 
-          <Box className="management-score__section">
-            <Box className="management-score__section-header">
-              <Typography className="management-score__section-title">
-                Danh sách lớp giảng dạy
-              </Typography>
-            </Box>
-            <TeachingClassTable rows={teachingData?.data} academicTermId={academicTermId} />
-          </Box>
-
-          <Box className="management-score__pagination">
-            <PaginationUniCore
-              totalItems={teachingData?.total || 0}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onPageChange={(currentPage) => setPage(currentPage)}
-              onRowsPerPageChange={(rows) => {
-                setRowsPerPage(rows);
-                setPage(1);
-              }}
-            />
-          </Box>
         </>
       )}
     </main>

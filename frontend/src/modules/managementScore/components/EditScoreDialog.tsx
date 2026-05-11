@@ -154,7 +154,6 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
       const score = parseScore(field.value);
 
       if (targetMeta?.id) {
-        console.log("update score", { id: targetMeta.id, score: field.value });
         return updateScore({
           id: targetMeta.id,
           data: { score, score_component_id: scoreComponentId },
@@ -164,13 +163,6 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
       if (!row.student_id || !row.subject_id || !row.academic_term_id) {
         throw new Error("Thiếu payload nền để tạo mới điểm.");
       }
-
-      console.log("add score", {
-        student_id: row.student_id,
-        subject_id: row.subject_id,
-        academic_term_id: row.academic_term_id,
-        score: field.value,
-      });
 
       return addScore({
         student_id: row.student_id,

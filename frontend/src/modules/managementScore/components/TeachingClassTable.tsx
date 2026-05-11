@@ -26,11 +26,6 @@ export function TeachingClassTable({ rows, onViewClass, academicTermId }: Teachi
   const navigate = useNavigate();
 
   const handleViewClass = (row: ITeachingClassItem) => {
-    console.log("teacher-management-score click", {
-      class_id: row.id,
-      subject_id: row.subject_id,
-    });
-
     onViewClass?.(row);
 
     navigate(`/${teacherManagementListStudentScoreUrl}`, {

@@ -191,14 +191,6 @@ export function ListStudentScoreSubject() {
   }, [scoreQuery.data?.students]);
 
   const handleComponentClick = () => {
-    const students = scoreQuery.data?.students ?? [];
-
-    console.log("component payload", {
-      academic_term_id: academicTermId,
-      subject_id: subjectId ?? "",
-      students: students.map((student) => student.student_info),
-    });
-
     setOpenAddScoreComponent(true);
   };
 
@@ -225,9 +217,7 @@ export function ListStudentScoreSubject() {
     }
 
     try {
-      const result = await updateScoreStatusBulk({ scores });
-      console.log("lock scores payload", { scores });
-      console.log("lock scores result", result);
+      await updateScoreStatusBulk({ scores });
       showSnackbar("Khoá điểm thành công.", "success");
       await scoreQuery.refetch();
     } catch (error) {
@@ -295,20 +285,12 @@ export function ListStudentScoreSubject() {
     };
 
     if (payload.scores.length === 0) {
-      console.log("midterm drafts", {
-        academic_term_id: academicTermId,
-        subject_id: subjectId ?? "",
-        class_id: classId ?? "",
-        students: students.map((student) => student.student_info),
-        drafts: midtermDrafts,
-      });
       showSnackbar("Chưa có điểm nào để lưu.", "info");
       return;
     }
 
     try {
-      const result = await fillComponentScore(payload);
-      console.log("save midterm result", result);
+      await fillComponentScore(payload);
       showSnackbar("Lưu điểm thành phần thành công.", "success");
       setEditableMidterm(false);
       setMidtermDrafts({});
@@ -399,28 +381,17 @@ export function ListStudentScoreSubject() {
     };
 
     if (updatePayload.scores.length === 0 && createPayload.scores.length === 0) {
-      console.log("final drafts", {
-        academic_term_id: academicTermId,
-        subject_id: subjectId ?? "",
-        class_id: classId ?? "",
-        students: students.map((student) => student.student_info),
-        drafts: finalDrafts,
-      });
       showSnackbar("Chưa có điểm thi nào để lưu.", "info");
       return;
     }
 
     try {
-      console.log("save final update payload", updatePayload);
-      console.log("save final create payload", createPayload);
       if (updatePayload.scores.length > 0) {
-        const updateResult = await fillComponentScore(updatePayload);
-        console.log("save final update result", updateResult);
+        await fillComponentScore(updatePayload);
       }
 
       if (createPayload.scores.length > 0) {
-        const createResult = await addScoreList(createPayload);
-        console.log("save final create result", createResult);
+        await addScoreList(createPayload);
       }
 
       showSnackbar("Lưu điểm thi thành công.", "success");
@@ -444,7 +415,7 @@ export function ListStudentScoreSubject() {
           flexWrap: "wrap",
         }}
       >
-        <Typography className="primary-title" sx={{ mb: 0 }}>
+        <Typography className="primary-title" sx={{ mb: 0, textAlign: "center", width: "100%" }}>
           Lớp: {state?.className ?? "-"} ({state?.classCode ?? "-"}) - Môn: {state?.subjectName ?? "-"} ({state?.subjectCode ?? "-"})
         </Typography>
 

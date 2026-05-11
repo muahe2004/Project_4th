@@ -22,13 +22,13 @@ export function AdvisorClassScore() {
   return (
     <main className="admin-main-container">
       <Box className="admin-main-box" sx={{ mb: 2 }}>
-        <Typography className="primary-title" sx={{ mb: 0 }}>
-          Lớp chủ nhiệm: {state?.className ?? "-"} ({state?.classCode ?? "-"})
+        <Typography className="primary-title" sx={{ mb: 0, width: "100%", textAlign: "center" }}>
+          Bảng điểm lớp: {state?.className ?? "-"} ({state?.classCode ?? "-"})
         </Typography>
       </Box>
 
       {!classId ? (
-        <Alert severity="warning">Thiếu classId để tải danh sách sinh viên.</Alert>
+        <Alert severity="warning">Thiếu thông tin lớp để tải danh sách sinh viên.</Alert>
       ) : isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={28} />

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { Box, Card, CardActionArea, CardContent, Grid, Typography } from "@mui/material";
+import { Box, Card, CardActionArea, CardContent, Typography } from "@mui/material";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
 import type { IAdvisorClassItem } from "../apis/getAdvisorClass";
 import { advisorClassScoreUrl } from "../../../routes/urls";
@@ -15,7 +16,6 @@ export function AdvisorClass({ rows, onViewClass }: AdvisorClassProps) {
   const navigate = useNavigate();
 
   const handleViewClass = (row: IAdvisorClassItem) => {
-    console.log("advisor class click", { class_id: row.id });
     onViewClass?.(row);
     navigate(`/${advisorClassScoreUrl}`, {
       state: {
@@ -27,36 +27,42 @@ export function AdvisorClass({ rows, onViewClass }: AdvisorClassProps) {
   };
 
   return (
-    <Grid container spacing={2}>
+    <Box className="advisor-class__grid">
       {(rows ?? []).length === 0 ? (
-        <Grid size={12}>
-          <Box className="advisor-class__empty">
-            Không có lớp chủ nhiệm
-          </Box>
-        </Grid>
+        <Box className="advisor-class__empty">
+          Không có lớp chủ nhiệm
+        </Box>
       ) : (
         (rows ?? []).map((row) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={row.id}>
-            <Card className="advisor-class__card">
-              <CardActionArea
-                onClick={() => handleViewClass(row)}
-                className="advisor-class__action"
-              >
-                <CardContent className="advisor-class__content">
-                  <Typography variant="h6" className="advisor-class__title">
-                    {row.class_name} ({row.class_code})
-                  </Typography>
+          <Card key={row.id} className="advisor-class__card">
+            <CardActionArea onClick={() => handleViewClass(row)} className="advisor-class__action">
+              <CardContent className="advisor-class__content">
+                <Typography variant="caption" className="advisor-class__label">
+                  CHỦ NHIỆM
+                </Typography>
 
-                  <Typography variant="body2" className="advisor-class__subtitle">
-                    Sĩ số: {row.size}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
+                <Typography variant="h6" className="advisor-class__title">
+                  {row.class_name} ({row.class_code})
+                </Typography>
+
+                <Typography variant="body2" className="advisor-class__desc">
+                  Sĩ số: {row.size}
+                </Typography>
+
+                <Box className="advisor-class__footer">
+                  <Box className="advisor-class__footer-left">
+                    <VisibilityOutlinedIcon className="advisor-class__footer-icon" fontSize="small" />
+                    <Typography variant="body2" className="advisor-class__footer-text">
+                      VIEW
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
         ))
       )}
-    </Grid>
+    </Box>
   );
 }
 
