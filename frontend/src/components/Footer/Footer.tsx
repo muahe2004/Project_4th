@@ -46,9 +46,9 @@ const Footer: React.FC = () => {
 
                     <Grid>
                         <Typography className="footer-item__title" gutterBottom>{t('footer.address')}</Typography>
-                        <Typography className="footer-item__text" display="block" gutterBottom>{t('footer.addresses.branch1Adress')}</Typography>
-                        <Typography className="footer-item__text" display="block" gutterBottom>{t('footer.addresses.branch2Adress')}</Typography>
-                        <Typography className="footer-item__text" display="block" gutterBottom>{t('footer.addresses.branch3Adress')}</Typography>
+                        <Typography className="footer-item__text" display="block" gutterBottom>{t('footer.addresses.branch1Address')}</Typography>
+                        <Typography className="footer-item__text" display="block" gutterBottom>{t('footer.addresses.branch2Address')}</Typography>
+                        <Typography className="footer-item__text" display="block" gutterBottom>{t('footer.addresses.branch3Address')}</Typography>
                     </Grid>
                 </Grid>
             </Toolbar>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import { useTranslation } from "react-i18next";
 
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import { useAuthStore } from "../../../stores/useAuthStore";
@@ -59,6 +60,7 @@ function isCurrentTerm(term: {
 }
 
 export function TeacherManagementScore() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const teacherId = user?.id;
   const [page, setPage] = useState(1);
@@ -157,7 +159,7 @@ export function TeacherManagementScore() {
         </Box>
       ) : isError ? (
         <Alert severity="error">
-          {(error as any)?.response?.data?.detail ?? "Lấy danh sách lớp thất bại"}
+          {(error as any)?.response?.data?.detail ?? t("teacherManagementScore.errors.loadClasses")}
         </Alert>
       ) : (
         <>
@@ -165,10 +167,10 @@ export function TeacherManagementScore() {
             <Box className="management-score__section management-score__section--wide">
               <Box className="management-score__section-header">
                 <Typography className="management-score__section-title">
-                  Quản lý điểm lớp giảng dạy
+                  {t("teacherManagementScore.titleTeachingClasses")}
                 </Typography>
                 <Typography className="management-score__section-note">
-                  Quản lý điểm của các sinh viên lớp bạn giảng dạy.
+                  {t("teacherManagementScore.noteTeachingClasses")}
                 </Typography>
               </Box>
               <Box className="management-score__section-controls">
@@ -210,10 +212,10 @@ export function TeacherManagementScore() {
             <Box className="management-score__section management-score__section--narrow">
               <Box className="management-score__section-header">
                 <Typography className="management-score__section-title">
-                  Xem điểm lớp chủ nhiệm
+                  {t("teacherManagementScore.titleAdvisorClasses")}
                 </Typography>
                 <Typography className="management-score__section-note">
-                  Xem điểm của các sinh viên lớp bạn chủ nhiệm.
+                  {t("teacherManagementScore.noteAdvisorClasses")}
                 </Typography>
               </Box>
               <AdvisorClass rows={advisorData?.data} />

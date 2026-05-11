@@ -92,7 +92,7 @@ export function SignIn() {
             {/* username */}
             <TextField
               fullWidth
-              label={t('sign-in.username')}
+              label={t('signIn.username')}
               variant="outlined"
               className="sign-in__text-field"
               value={username}
@@ -107,7 +107,7 @@ export function SignIn() {
 
             {/* password */}
             <FormControl variant="outlined" fullWidth className="sign-in__form-control">
-              <InputLabel htmlFor="outlined-adornment-password">{t('sign-in.password')}</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-password">{t('signIn.password')}</InputLabel>
               <OutlinedInput
                 value={password}
                 onChange={(e) => {
@@ -137,7 +137,7 @@ export function SignIn() {
               fullWidth variant="contained" 
               className="button-primary"
             >
-              {t('sign-in.signIn')}
+              {t('signIn.signIn')}
             </Button>
           </Box>
 
@@ -149,7 +149,7 @@ export function SignIn() {
               disableRipple
               className="button-variant__text sign-button__forget"
             >
-              {t('sign-in.forgetPassword')}
+              {t('signIn.forgetPassword')}
             </Button>
           </Box>
         </Paper>

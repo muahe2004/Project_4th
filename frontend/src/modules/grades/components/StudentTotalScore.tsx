@@ -1,5 +1,6 @@
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import Paper from "@mui/material/Paper";
+import { useTranslation } from "react-i18next";
 
 import getGradeColor from "../utils/gradesColor";
 import type { StudentTotalScoreProps } from "../types";
@@ -14,28 +15,29 @@ function formatNumber(value: number): string {
 }
 
 export function StudentTotalScore({ summary }: StudentTotalScoreProps) {
+  const { t } = useTranslation();
   return (
     <Box className="student-tableScore">
       <TableContainer className="primary-table-container" component={Paper}>
         <Table className="primary-table" aria-label="student total score table">
           <TableHead className="primary-thead">
             <TableRow className="primary-trow">
-              <TableCell className="primary-thead__cell" align="left">MSV</TableCell>
-              <TableCell className="primary-thead__cell" align="left">Họ và tên</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Xếp loại H4</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Xếp loại H10</TableCell>
-              <TableCell className="primary-thead__cell" align="center">TBC H4</TableCell>
-              <TableCell className="primary-thead__cell" align="center">TBC TL H4</TableCell>
-              <TableCell className="primary-thead__cell" align="center">TBC TL H10</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Số tín chỉ tích lũy</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Số tín chỉ học tập</TableCell>
+              <TableCell className="primary-thead__cell" align="left">{t("grades.summary.studentCode")}</TableCell>
+              <TableCell className="primary-thead__cell" align="left">{t("grades.summary.studentName")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.summary.rank4")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.summary.rank10")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.summary.gpa4")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.summary.accumulatedGpa4")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.summary.accumulatedGpa10")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.summary.accumulatedCredits")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.summary.studiedCredits")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody className="primary-tbody">
             {!summary ? (
               <TableRow className="primary-trow">
                 <TableCell className="primary-tcell" colSpan={9} align="center">
-                  Chưa có dữ liệu điểm
+                  {t("grades.messages.noData")}
                 </TableCell>
               </TableRow>
             ) : (

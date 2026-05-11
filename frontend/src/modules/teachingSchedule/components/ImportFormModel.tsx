@@ -18,6 +18,7 @@ import {
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   IImportTeachingCalenderPayload,
   IUploadTeachingCalenderInvalidRow,
@@ -74,6 +75,7 @@ const ImportFormModel = ({
   onImport,
   isImporting = false,
 }: ImportFormModelProps) => {
+  const { t } = useTranslation();
   const [openConfirmClose, setOpenConfirmClose] = useState(false);
   const [validSchedules, setValidSchedules] = useState<IUploadTeachingCalenderItem[]>([]);
   const [invalidSchedules, setInvalidSchedules] = useState<IUploadTeachingCalenderInvalidRow[]>([]);
@@ -169,35 +171,35 @@ const ImportFormModel = ({
 
   return (
     <Dialog open={open} onClose={() => setOpenConfirmClose(true)} fullWidth maxWidth="xl">
-      <DialogTitle className="primary-dialog-title">Import Teaching Schedule Preview</DialogTitle>
+      <DialogTitle className="primary-dialog-title">{t("teachingSchedules.import.title")}</DialogTitle>
       <DialogContent dividers>
         {!data ? (
-          <Typography>Không có dữ liệu import.</Typography>
+          <Typography>{t("teachingSchedules.import.noData")}</Typography>
         ) : (
           <Box sx={{ display: "grid", gap: 2 }}>
             <Typography sx={{ fontWeight: 600 }}>
-              File name: {data.file_information.file_name}
+              {t("teachingSchedules.import.fileName")}: {data.file_information.file_name}
             </Typography>
             {hasNoValidRows && !hasInvalidRows && (
               <Typography sx={{ color: "#d32f2f", fontWeight: 600 }}>
-                Không có dòng hợp lệ để import.
+                {t("teachingSchedules.import.noValidRows")}
               </Typography>
             )}
             {hasInvalidRows && (
               <Typography sx={{ color: "#d32f2f", fontWeight: 600 }}>
-                Còn {invalidSchedules.length} dòng lỗi, vui lòng sửa trước khi import.
+                {t("teachingSchedules.import.invalidRows", { count: invalidSchedules.length })}
               </Typography>
             )}
 
             <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
               <TextField
-                label="Mã lớp"
+                label={t("teachingSchedules.import.classCode")}
                 value={classCode}
                 fullWidth
                 InputProps={{ readOnly: true }}
               />
               <TextField
-                label="Ngày bắt đầu"
+                label={t("teachingSchedules.import.startDate")}
                 type="date"
                 value={startDate}
                 InputLabelProps={{ shrink: true }}
@@ -205,7 +207,7 @@ const ImportFormModel = ({
                 fullWidth
               />
               <TextField
-                label="Ngày kết thúc"
+                label={t("teachingSchedules.import.endDate")}
                 type="date"
                 value={endDate}
                 InputLabelProps={{ shrink: true }}
@@ -218,16 +220,16 @@ const ImportFormModel = ({
               <Table stickyHeader className="sticky-table" aria-label="import preview teaching schedules table">
                 <TableHead className="primary-thead">
                   <TableRow className="primary-trow">
-                    <TableCell className="primary-thead__cell" align="center">Mã MH</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Tên MH</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Mã GV</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Tên GV</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Thứ</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Tiết học</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Tuần học</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Phòng</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Lý do lỗi</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Actions</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachingSchedules.import.table.subjectCode")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("teachingSchedules.import.table.subjectName")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachingSchedules.import.table.teacherCode")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("teachingSchedules.import.table.teacherName")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachingSchedules.import.table.weekday")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachingSchedules.import.table.lessonPeriods")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachingSchedules.import.table.studyWeeks")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachingSchedules.import.table.room")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("teachingSchedules.import.table.errorReason")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachingSchedules.import.table.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -274,7 +276,7 @@ const ImportFormModel = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">Huỷ</Button>
+        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">{t("teachingSchedules.common.cancel")}</Button>
         <Button
           onClick={handleImport}
           disabled={
@@ -286,14 +288,14 @@ const ImportFormModel = ({
             !endDate
           }
         >
-          {isImporting ? "Importing..." : "Import"}
+          {isImporting ? t("teachingSchedules.import.importing") : t("teachingSchedules.import.importButton")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirmClose}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát form import?"
+        title={t("teachingSchedules.confirm.exitTitle")}
+        message={t("teachingSchedules.confirm.importExitMessage")}
         onCancel={() => setOpenConfirmClose(false)}
         onConfirm={() => {
           setOpenConfirmClose(false);

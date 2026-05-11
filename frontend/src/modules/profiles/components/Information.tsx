@@ -1,5 +1,6 @@
 import { MenuItem, Select, TextField, Typography, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -19,6 +20,7 @@ import {
 import { ROLES } from "../../../constants/roles";
 
 export default function Information() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const { showSnackbar } = useSnackbar();
   const isTeacher = user?.role === ROLES.TEACHER;
@@ -182,13 +184,13 @@ export default function Information() {
 
     try {
       await Promise.all(tasks);
-      showSnackbar("Cập nhật thông tin thành công!", "success");
+      showSnackbar(t("myprofile.messages.updateSuccess"), "success");
     } catch (error: any) {
       const detail =
         error?.response?.data?.detail ||
         error?.response?.data?.message ||
         error?.message ||
-        "Có lỗi xảy ra, vui lòng thử lại!";
+        t("myprofile.messages.genericError");
       showSnackbar(detail, "error");
     }
   };
@@ -214,7 +216,7 @@ export default function Information() {
 
       <Grid container spacing={2} className="myprofile-form">
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Quốc tịch" />
+          <LabelPrimary value={t("myprofile.fields.nationality")} />
           <TextField
             value={nationality}
             onChange={(e) => setNationality(e.target.value)}
@@ -225,7 +227,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Dân tộc" />
+          <LabelPrimary value={t("myprofile.fields.ethnicity")} />
           <TextField
             value={ethnicity}
             onChange={(e) => setEthnicity(e.target.value)}
@@ -236,7 +238,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Tôn giáo" required />
+          <LabelPrimary value={t("myprofile.fields.religion")} required />
           <TextField
             value={religion}
             onChange={(e) => setReligion(e.target.value)}
@@ -247,7 +249,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Sinh nhật" />
+          <LabelPrimary value={t("myprofile.fields.dateOfBirth")} />
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               disabled
@@ -259,7 +261,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Giới tính" />
+          <LabelPrimary value={t("myprofile.fields.gender")} />
           <Select
             disabled
             value={gender}
@@ -269,14 +271,14 @@ export default function Information() {
             className="main-text__field"
             MenuProps={{ disableScrollLock: true }}
           >
-            <MenuItem value="1">Male</MenuItem>
-            <MenuItem value="2">Famale</MenuItem>
-            <MenuItem value="3">Other</MenuItem>
+            <MenuItem value="1">{t("myprofile.gender.male")}</MenuItem>
+            <MenuItem value="2">{t("myprofile.gender.female")}</MenuItem>
+            <MenuItem value="3">{t("myprofile.gender.other")}</MenuItem>
           </Select>
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Email" />
+          <LabelPrimary value={t("myprofile.fields.email")} />
           <TextField
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -287,7 +289,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={6} className="myprofile-form__group myprofile-form__group--fullwidth">
-          <LabelPrimary value="Địa chỉ" />
+          <LabelPrimary value={t("myprofile.fields.address")} />
           <TextField
             value={address}
             onChange={(e) => setAddress(e.target.value)}
@@ -298,7 +300,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={6} className="myprofile-form__group">
-          <LabelPrimary value="Quê quán" />
+          <LabelPrimary value={t("myprofile.fields.placeOfOrigin")} />
           <TextField
             value={placeOfOrigin}
             onChange={(e) => setPlaceOfOrigin(e.target.value)}
@@ -309,7 +311,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Số điện thoại" required />
+          <LabelPrimary value={t("myprofile.fields.phone")} required />
           <TextField
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -321,7 +323,7 @@ export default function Information() {
 
         {isStudent && (
           <Grid size={4} className="myprofile-form__group">
-            <LabelPrimary value="Chương trình đào tạo" required />
+            <LabelPrimary value={t("myprofile.fields.trainingProgram")} required />
             <TextField
               value={trainingProgram}
               onChange={(e) => setTrainingProgram(e.target.value)}
@@ -334,7 +336,7 @@ export default function Information() {
 
         {isStudent && (
           <Grid size={4} className="myprofile-form__group">
-            <LabelPrimary value="Niên khoá" required />
+            <LabelPrimary value={t("myprofile.fields.course")} required />
             <TextField
               value={course}
               onChange={(e) => setCourse(e.target.value)}
@@ -347,7 +349,7 @@ export default function Information() {
 
         {isTeacher && (
           <Grid size={4} className="myprofile-form__group">
-            <LabelPrimary value="Học vị" />
+            <LabelPrimary value={t("myprofile.fields.academicRank")} />
             <Select
               fullWidth
               value={academicRank}
@@ -356,15 +358,15 @@ export default function Information() {
             className="main-text__field"
             MenuProps={{ disableScrollLock: true }}
           >
-              <MenuItem value="option1">Cử nhân</MenuItem>
-              <MenuItem value="option2">Thạc sĩ</MenuItem>
-              <MenuItem value="option3">Tiến sĩ</MenuItem>
+              <MenuItem value="option1">{t("myprofile.academicRank.bachelor")}</MenuItem>
+              <MenuItem value="option2">{t("myprofile.academicRank.master")}</MenuItem>
+              <MenuItem value="option3">{t("myprofile.academicRank.doctor")}</MenuItem>
             </Select>
           </Grid>
         )}
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Khoa" />
+          <LabelPrimary value={t("myprofile.fields.department")} />
           <Select
             fullWidth
             value={departmentId}
@@ -373,12 +375,12 @@ export default function Information() {
             className="main-text__field"
             MenuProps={{ disableScrollLock: true }}
           >
-            <MenuItem value="">Chưa có dữ liệu</MenuItem>
+            <MenuItem value="">{t("myprofile.common.noData")}</MenuItem>
           </Select>
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Lớp" />
+          <LabelPrimary value={t("myprofile.fields.class")} />
           <Select
             fullWidth
             value={classID}
@@ -388,12 +390,12 @@ export default function Information() {
             MenuProps={{ disableScrollLock: true }}
             disabled
           >
-            <MenuItem value="">Chưa có dữ liệu</MenuItem>
+            <MenuItem value="">{t("myprofile.common.noData")}</MenuItem>
           </Select>
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Số CCCD" required />
+          <LabelPrimary value={t("myprofile.fields.citizenId")} required />
           <TextField
             value={citizenId}
             onChange={(e) => setCitizenId(e.target.value)}
@@ -404,7 +406,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Ngày cấp" />
+          <LabelPrimary value={t("myprofile.fields.issueDate")} />
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               value={issueDate ? new Date(issueDate) : null}
@@ -416,7 +418,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Nơi cấp" required />
+          <LabelPrimary value={t("myprofile.fields.issuePlace")} required />
           <TextField
             value={issuePlace}
             onChange={(e) => setIssuePlace(e.target.value)}
@@ -427,7 +429,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Số BHXH" required />
+          <LabelPrimary value={t("myprofile.fields.insuranceNumber")} required />
           <TextField
             value={insuranceNumber}
             onChange={(e) => setInsuranceNumber(e.target.value)}
@@ -438,7 +440,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Tên ngân hàng" required />
+          <LabelPrimary value={t("myprofile.fields.bankName")} required />
           <TextField
             value={bankName}
             onChange={(e) => setBankName(e.target.value)}
@@ -449,7 +451,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Số tài khoản" required />
+          <LabelPrimary value={t("myprofile.fields.bankAccountNumber")} required />
           <TextField
             value={bankAccountNumber}
             onChange={(e) => setBankAccountNumber(e.target.value)}
@@ -460,7 +462,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Đối tượng miễn giảm" required />
+          <LabelPrimary value={t("myprofile.fields.exemptedGroup")} required />
           <TextField
             value={exemptedGroup}
             onChange={(e) => setExemptedGroup(e.target.value)}
@@ -471,7 +473,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value="Đối tượng ưu tiên" required />
+          <LabelPrimary value={t("myprofile.fields.priorityGroup")} required />
           <TextField
             value={priorityGroup}
             onChange={(e) => setPriorityGroup(e.target.value)}
@@ -483,7 +485,7 @@ export default function Information() {
 
         <Grid size={12} className="myprofile-form__actions">
           <Button className="home-flex__button" onClick={handleSaveInformation} disabled={isSaving}>
-            {isSaving ? "Đang lưu..." : "Lưu thông tin"}
+            {isSaving ? t("myprofile.common.saving") : t("myprofile.common.saveInformation")}
           </Button>
         </Grid>
       </Grid>

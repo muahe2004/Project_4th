@@ -5,6 +5,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import { useTranslation } from "react-i18next";
 
 import "./Pagination.css";
 
@@ -23,6 +24,7 @@ export default function PaginationUniCore({
   onPageChange,
   onRowsPerPageChange,
 }: PaginationUniCoreProps) {
+  const { t } = useTranslation();
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
   const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -44,7 +46,7 @@ export default function PaginationUniCore({
           variant="outlined"
         />
 
-        <span id="rows-per-page-label">Items / trang</span>
+        <span id="rows-per-page-label">{t("pagination.itemsPerPage")}</span>
 
         <FormControl className="pagination-unicore__select">
           <Select<number>

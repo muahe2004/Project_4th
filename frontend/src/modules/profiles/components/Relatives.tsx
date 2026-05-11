@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { Grid, TextField, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -66,6 +67,7 @@ function RelativeSection({
   state: RelativeFormState;
   setState: Dispatch<SetStateAction<RelativeFormState>>;
 }) {
+  const { t } = useTranslation();
   return (
     <>
       <Grid size={12}>
@@ -73,7 +75,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value="Họ và tên" required />
+        <LabelPrimary value={t("myprofile.relative.name")} required />
         <TextField
           fullWidth
           variant="outlined"
@@ -84,7 +86,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value="Năm sinh" />
+        <LabelPrimary value={t("myprofile.relative.birthYear")} />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
             value={state.date_of_birth ? new Date(state.date_of_birth) : null}
@@ -101,7 +103,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value="Quốc tịch" required />
+        <LabelPrimary value={t("myprofile.relative.nationality")} required />
         <TextField
           fullWidth
           variant="outlined"
@@ -112,7 +114,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value="Dân tộc" required />
+        <LabelPrimary value={t("myprofile.relative.ethnicity")} required />
         <TextField
           fullWidth
           variant="outlined"
@@ -123,7 +125,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value="Tôn giáo" required />
+        <LabelPrimary value={t("myprofile.relative.religion")} required />
         <TextField
           fullWidth
           variant="outlined"
@@ -134,7 +136,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value="Số điện thoại" required />
+        <LabelPrimary value={t("myprofile.relative.phone")} required />
         <TextField
           fullWidth
           variant="outlined"
@@ -145,7 +147,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={6} className="myprofile-form__group">
-        <LabelPrimary value="Địa chỉ" required />
+        <LabelPrimary value={t("myprofile.relative.address")} required />
         <TextField
           fullWidth
           variant="outlined"
@@ -156,7 +158,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={6} className="myprofile-form__group">
-        <LabelPrimary value="Nghề nghiệp" required />
+        <LabelPrimary value={t("myprofile.relative.occupation")} required />
         <TextField
           fullWidth
           variant="outlined"
@@ -170,6 +172,7 @@ function RelativeSection({
 }
 
 export default function Relatives() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const { showSnackbar } = useSnackbar();
   const isTeacher = user?.role === ROLES.TEACHER;
@@ -275,13 +278,13 @@ export default function Relatives() {
 
     try {
       await Promise.all(tasks);
-      showSnackbar("Cập nhật người thân thành công!", "success");
+      showSnackbar(t("myprofile.messages.updateRelativesSuccess"), "success");
     } catch (error: any) {
       const detail =
         error?.response?.data?.detail ||
         error?.response?.data?.message ||
         error?.message ||
-        "Có lỗi xảy ra, vui lòng thử lại!";
+        t("myprofile.messages.genericError");
       showSnackbar(detail, "error");
     }
   };
@@ -292,10 +295,10 @@ export default function Relatives() {
 
   return (
     <Grid container spacing={2} className="myprofile-form">
-      <RelativeSection title="THÔNG TIN CỦA BỐ" state={father} setState={setFather} />
-      <RelativeSection title="THÔNG TIN CỦA MẸ" state={mother} setState={setMother} />
+      <RelativeSection title={t("myprofile.relativeSections.father")} state={father} setState={setFather} />
+      <RelativeSection title={t("myprofile.relativeSections.mother")} state={mother} setState={setMother} />
       <RelativeSection
-        title="THÔNG TIN CỦA VỢ/CHỒNG"
+        title={t("myprofile.relativeSections.spouse")}
         state={spouse}
         setState={setSpouse}
       />
@@ -307,8 +310,8 @@ export default function Relatives() {
           disabled={updateTeacherProfile.isPending || updateStudentProfile.isPending}
         >
           {updateTeacherProfile.isPending || updateStudentProfile.isPending
-            ? "Đang lưu..."
-            : "Lưu thông tin"}
+            ? t("myprofile.common.saving")
+            : t("myprofile.common.saveInformation")}
         </Button>
       </Grid>
     </Grid>

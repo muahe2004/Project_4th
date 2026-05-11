@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useGetTeachingSchedules } from "../apis/getTeachingSchedules";
 import type { ITeachingScheduleResponse } from "../types";
 import LearningBox from "../../learningSchedule/components/LearningBox";
@@ -7,16 +8,6 @@ import "../../learningSchedule/components/styles/LearningScheduleCalender.css";
 
 const PERIODS = Array.from({ length: 16 }, (_, index) => index + 1);
 const PERIOD_HEIGHT = 42;
-
-const DAYS = [
-  { label: "Thứ Hai", value: 1 },
-  { label: "Thứ Ba", value: 2 },
-  { label: "Thứ Tư", value: 3 },
-  { label: "Thứ Năm", value: 4 },
-  { label: "Thứ Sáu", value: 5 },
-  { label: "Thứ Bảy", value: 6 },
-  { label: "Chủ Nhật", value: 0 },
-];
 
 function addDays(date: Date, days: number): Date {
   const nextDate = new Date(date);
@@ -91,6 +82,7 @@ export function TeachingSchedulesTable({
   roomId,
   onEdit,
 }: TeachingSchedulesTableProps) {
+  const { t } = useTranslation();
   const monday = useMemo(() => getMonday(selectedDate), [selectedDate]);
   const weekDays = useMemo(
     () => Array.from({ length: 7 }, (_, index) => addDays(monday, index)),
@@ -124,7 +116,7 @@ export function TeachingSchedulesTable({
   }, [data?.data, roomId, weekDays]);
 
   if (isLoading) {
-    return <div className="teaching-schedule-by-room teaching-schedule-by-room--empty">Loading...</div>;
+    return <div className="teaching-schedule-by-room teaching-schedule-by-room--empty">{t("teachingSchedules.table.loading")}</div>;
   }
 
   return (
@@ -138,7 +130,7 @@ export function TeachingSchedulesTable({
           {weekDays.map((day, index) => (
             <div className="learning-calender__head" key={`${day.toISOString()}-${index}`}>
               <strong>
-                {DAYS[index].label}
+                {t(`teachingSchedules.weekdays.${index}`)}
               </strong>
             </div>
           ))}
@@ -150,7 +142,7 @@ export function TeachingSchedulesTable({
                 className="learning-calender__time-label"
                 style={{ top: getPeriodCenterTop(period) }}
               >
-                Tiết {period}
+                {t("teachingSchedules.periodLabel", { period })}
               </span>
             ))}
             <div className="learning-calender__hour-line" style={{ top: bodyHeight }} />
@@ -208,10 +200,15 @@ export function TeachingSchedulesTable({
                         }}
                       >
                         <LearningBox
-                          title={item.subject?.subject_name ?? "Môn học"}
-                          periodText={`Tiết ${item.learning_schedule.start_period} - ${item.learning_schedule.end_period}`}
+                          title={item.subject?.subject_name ?? t("teachingSchedules.table.subjectFallback")}
+                          periodText={t("teachingSchedules.periodRange", {
+                            start: item.learning_schedule.start_period,
+                            end: item.learning_schedule.end_period,
+                          })}
                           roomText={
-                            item.room?.room_number ? `Phòng ${item.room.room_number}` : undefined
+                            item.room?.room_number
+                              ? t("teachingSchedules.roomLabel", { room: item.room.room_number })
+                              : undefined
                           }
                           teacherText={item.teacher?.teacher_name ?? undefined}
                           classText={item.class?.class_name ?? undefined}

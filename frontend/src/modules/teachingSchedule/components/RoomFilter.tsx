@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Box, InputBase } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useTranslation } from "react-i18next";
 import { useRoomDropDown } from "../apis/getRoomDropDown";
 import type { IRoomDropDown } from "../types";
 import "./styles/RoomFilter.css";
@@ -15,6 +16,7 @@ function getRoomLabel(room: IRoomDropDown): string {
 }
 
 export function RoomFilter({ selectedRoomId, onChangeRoomId }: RoomFilterProps) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const { data: rooms } = useRoomDropDown({
     limit: 100,
@@ -43,7 +45,7 @@ export function RoomFilter({ selectedRoomId, onChangeRoomId }: RoomFilterProps) 
         </Box>
         <InputBase
           className="room-filter__search"
-          placeholder="Tìm phòng..."
+          placeholder={t("teachingSchedules.roomFilter.searchPlaceholder")}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />

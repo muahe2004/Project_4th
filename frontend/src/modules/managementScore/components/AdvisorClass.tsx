@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Box, Card, CardActionArea, CardContent, Typography } from "@mui/material";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { useTranslation } from "react-i18next";
 
 import type { IAdvisorClassItem } from "../apis/getAdvisorClass";
 import { advisorClassScoreUrl } from "../../../routes/urls";
@@ -13,6 +14,7 @@ interface AdvisorClassProps {
 }
 
 export function AdvisorClass({ rows, onViewClass }: AdvisorClassProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleViewClass = (row: IAdvisorClassItem) => {
@@ -30,7 +32,7 @@ export function AdvisorClass({ rows, onViewClass }: AdvisorClassProps) {
     <Box className="advisor-class__grid">
       {(rows ?? []).length === 0 ? (
         <Box className="advisor-class__empty">
-          Không có lớp chủ nhiệm
+          {t("teacherManagementScore.advisor.empty")}
         </Box>
       ) : (
         (rows ?? []).map((row) => (
@@ -38,7 +40,7 @@ export function AdvisorClass({ rows, onViewClass }: AdvisorClassProps) {
             <CardActionArea onClick={() => handleViewClass(row)} className="advisor-class__action">
               <CardContent className="advisor-class__content">
                 <Typography variant="caption" className="advisor-class__label">
-                  CHỦ NHIỆM
+                  {t("teacherManagementScore.advisor.label")}
                 </Typography>
 
                 <Typography variant="h6" className="advisor-class__title">
@@ -46,14 +48,14 @@ export function AdvisorClass({ rows, onViewClass }: AdvisorClassProps) {
                 </Typography>
 
                 <Typography variant="body2" className="advisor-class__desc">
-                  Sĩ số: {row.size}
+                  {t("teacherManagementScore.advisor.size", { size: row.size })}
                 </Typography>
 
                 <Box className="advisor-class__footer">
                   <Box className="advisor-class__footer-left">
                     <VisibilityOutlinedIcon className="advisor-class__footer-icon" fontSize="small" />
                     <Typography variant="body2" className="advisor-class__footer-text">
-                      VIEW
+                      {t("teacherManagementScore.advisor.view")}
                     </Typography>
                   </Box>
                 </Box>

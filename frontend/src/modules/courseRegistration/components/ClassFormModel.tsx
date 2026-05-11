@@ -9,6 +9,7 @@ import {
     TextField,
 } from "@mui/material";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
@@ -46,7 +47,9 @@ const ClassForm: React.FC<ClassFormProps> = ({
     initialValues,
     onClose,
 }) => {
+    const { t } = useTranslation();
     const { showSnackbar } = useSnackbar();
+    const { t } = useTranslation();
     const ID = initialValues?.id;
 
     const [formValues, setFormValues] = useState({
@@ -122,9 +125,9 @@ const ClassForm: React.FC<ClassFormProps> = ({
     const { mutateAsync: editClass } = useEditClass({});
 
     const validationRules: Record<keyof typeof formValues, (value: any) => string> = {
-        classCode: (value) => (!isRequired(value) ? "Mã lớp là bắt buộc!" : ""),
-        teacherId: (value) => (!isRequired(value) ? "Giáo viên chủ nhiệm là bắt buộc!" : ""),
-        specializationId: (value) => (!isRequired(value) ? "Chuyên ngành là bắt buộc!" : ""),
+        classCode: (value) => (!isRequired(value) ? t("courseRegistration.form.errors.classCodeRequired") : ""),
+        teacherId: (value) => (!isRequired(value) ? t("courseRegistration.form.errors.teacherRequired") : ""),
+        specializationId: (value) => (!isRequired(value) ? t("courseRegistration.form.errors.specializationRequired") : ""),
         className: () => "",
         size: () => "",
         classType: () => "",
@@ -265,7 +268,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 await editClass({ id: ID, data: payload });
 
             showSnackbar(
-                mode === "add" ? "Thêm lớp thành công!" : "Cập nhật lớp thành công!",
+                mode === "add" ? t("courseRegistration.form.messages.addSuccess") : t("courseRegistration.form.messages.updateSuccess"),
                 "success"
             );
 
@@ -273,7 +276,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
             onClose();
         } catch (error) {
             console.error(error);
-            showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+            showSnackbar(t("courseRegistration.form.messages.genericError"), "error");
         }
     };
 
@@ -286,13 +289,13 @@ const ClassForm: React.FC<ClassFormProps> = ({
             fullWidth
         >
             <DialogTitle className="primary-dialog-title">
-                {mode === "add" ? "ADD CLASS" : "EDIT CLASS"}
+                {mode === "add" ? t("courseRegistration.form.titleAdd") : t("courseRegistration.form.titleEdit")}
             </DialogTitle>
 
             <DialogContent className="primary-dialog-content">
                 <Grid container spacing={2}>
                     <Grid size={6}>
-                        <LabelPrimary value="Mã lớp" required />
+                        <LabelPrimary value={t("courseRegistration.form.labels.classCode")} required />
                         <TextField
                             value={formValues.classCode}
                             onChange={(e) =>
@@ -308,7 +311,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Tên lớp" />
+                        <LabelPrimary value={t("courseRegistration.form.labels.className")} />
                         <TextField
                             value={formValues.className}
                             onChange={(e) =>
@@ -321,7 +324,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Sĩ số" />
+                        <LabelPrimary value={t("courseRegistration.form.labels.size")} />
                         <TextField
                             type="number"
                             value={formValues.size}
@@ -335,7 +338,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Loại lớp" />
+                        <LabelPrimary value={t("courseRegistration.form.labels.classType")} />
                         <TextField
                             select
                             value={formValues.classType}
@@ -355,7 +358,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Trạng thái đăng ký" />
+                        <LabelPrimary value={t("courseRegistration.form.labels.registrationStatus")} />
                         <TextField
                             select
                             value={formValues.registrationStatus}
@@ -378,7 +381,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Môn học" />
+                        <LabelPrimary value={t("courseRegistration.form.labels.subject")} />
                         <MainAutocomplete
                             options={subjectOptions}
                             value={
@@ -400,12 +403,12 @@ const ClassForm: React.FC<ClassFormProps> = ({
                             }
                             getOptionId={(option) => option.id?.toString() || ""}
                             className="primary-dialog-input"
-                            placeholder="Chọn môn học"
+                            placeholder={t("courseRegistration.form.placeholders.selectSubject")}
                         />
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Chuyên Ngành" required />
+                        <LabelPrimary value={t("courseRegistration.form.labels.specialization")} required />
                         <MainAutocomplete
                             options={specializationOptions}
                             value={
@@ -438,7 +441,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Giáo viên chủ nhiệm" required />
+                        <LabelPrimary value={t("courseRegistration.form.labels.teacher")} required />
                         <MainAutocomplete
                             options={teacherOptions}
                             value={
@@ -470,17 +473,19 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
             <DialogActions className="primary-dialog-actions">
                 <Button onClick={handleCloseClick} className="button-cancel">
-                    Hủy
+                    {t("courseRegistration.common.cancel")}
                 </Button>
                 <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
-                    {mode === "add" ? "Thêm" : "Lưu"}
+                    {mode === "add" ? t("courseRegistration.common.add") : t("courseRegistration.common.save")}
                 </Button>
             </DialogActions>
 
             <ConfirmDialog
                 open={openConfirm}
-                title="Xác nhận thoát"
-                message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+                title={t("courseRegistration.confirm.exitTitle")}
+                message={t("courseRegistration.confirm.exitMessage")}
+                confirmLabel={t("courseRegistration.common.confirm")}
+                cancelLabel={t("courseRegistration.common.cancel")}
                 onConfirm={() => {
                     setOpenConfirm(false);
                     onClose();
@@ -490,8 +495,10 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
             <ConfirmDialog
                 open={confirm.save}
-                title="Xác nhận lưu"
-                message="Bạn có chắc muốn lưu các thay đổi?"
+                title={t("courseRegistration.confirm.saveTitle")}
+                message={t("courseRegistration.confirm.saveMessage")}
+                confirmLabel={t("courseRegistration.common.confirm")}
+                cancelLabel={t("courseRegistration.common.cancel")}
                 onConfirm={() => confirm.pendingPayload && handleConfirmSave(confirm.pendingPayload)}
                 onCancel={() => setConfirm({ ...confirm, save: false })}
             />

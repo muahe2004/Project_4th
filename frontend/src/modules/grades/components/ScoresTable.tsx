@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { useTranslation } from "react-i18next";
 
 import getGradeColor from "../utils/gradesColor";
 import type { ScoresTableProps } from "../types";
@@ -24,8 +25,9 @@ function formatScore(value: number | null, digits = 2): string {
 }
 
 export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTableProps) {
+  const { t } = useTranslation();
   const showActions = editable && typeof onEditRow === "function";
-  const lastColumnLabel = showActions ? "Actions" : "Ghi chú";
+  const lastColumnLabel = showActions ? t("grades.table.actions") : t("grades.table.note");
 
   return (
     <Box className="grades-student__information">
@@ -33,15 +35,15 @@ export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTablePr
         <Table className="primary-table" aria-label="scores table">
           <TableHead className="primary-thead">
             <TableRow className="primary-trow">
-              <TableCell className="primary-thead__cell" rowSpan={2} align="center">STT</TableCell>
-              <TableCell className="primary-thead__cell" rowSpan={2} align="center">Mã học phần</TableCell>
-              <TableCell className="primary-thead__cell" rowSpan={2} align="center">Tên học phần</TableCell>
-              <TableCell className="primary-thead__cell" rowSpan={2} align="center">Số tín chỉ</TableCell>
-              <TableCell className="primary-thead__cell" rowSpan={2} align="center">Hệ số</TableCell>
+              <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.index")}</TableCell>
+              <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.subjectCode")}</TableCell>
+              <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.subjectName")}</TableCell>
+              <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.credits")}</TableCell>
+              <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.weight")}</TableCell>
 
-              <TableCell className="primary-thead__cell" colSpan={3} align="center">Điểm thành phần</TableCell>
-              <TableCell className="primary-thead__cell" colSpan={3} align="center">Điểm học lại</TableCell>
-              <TableCell className="primary-thead__cell" colSpan={3} align="center">Trung bình môn</TableCell>
+              <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("grades.table.componentScores")}</TableCell>
+              <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("grades.table.retakeScores")}</TableCell>
+              <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("grades.table.average")}</TableCell>
 
               <TableCell className="primary-thead__cell" rowSpan={2} align="center">
                 {lastColumnLabel}
@@ -49,15 +51,15 @@ export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTablePr
             </TableRow>
 
             <TableRow className="primary-trow">
-              <TableCell className="primary-thead__cell" align="center">Đ1</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Đ2</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Thi</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Đ1</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Đ2</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Thi</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Hệ 10</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Hệ 4</TableCell>
-              <TableCell className="primary-thead__cell thead-cell__border--right" align="center">Điểm chữ</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.table.d1")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.table.d2")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.table.final")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.table.d1")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.table.d2")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.table.final")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.table.scale10")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("grades.table.scale4")}</TableCell>
+              <TableCell className="primary-thead__cell thead-cell__border--right" align="center">{t("grades.table.letterGrade")}</TableCell>
             </TableRow>
           </TableHead>
 
@@ -65,7 +67,7 @@ export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTablePr
             {rows.length === 0 ? (
               <TableRow className="primary-trow">
                 <TableCell className="primary-tcell" colSpan={15} align="center">
-                  Không có dữ liệu điểm
+                  {t("grades.messages.noData")}
                 </TableCell>
               </TableRow>
             ) : (

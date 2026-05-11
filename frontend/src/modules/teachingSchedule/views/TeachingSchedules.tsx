@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { ChangeEvent } from "react";
+import { useTranslation } from "react-i18next";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import { Box } from "@mui/material";
@@ -18,6 +19,7 @@ import RoomFilter from "../components/RoomFilter";
 import "./styles/TeachingSchedules.css";
 
 export function TeachingSchedules() {
+  const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedRoomId, setSelectedRoomId] = useState<string | undefined>(undefined);
@@ -61,7 +63,7 @@ export function TeachingSchedules() {
       setImportPreview(uploadedResult);
       setOpenImportFormModel(true);
     } catch (error: any) {
-      const detail = error?.response?.data?.detail ?? "Upload file lịch dạy thất bại";
+      const detail = error?.response?.data?.detail ?? t("teachingSchedules.errors.uploadFailed");
       showSnackbar(detail, "error");
       setImportPreview(null);
       setOpenImportFormModel(false);
@@ -76,14 +78,14 @@ export function TeachingSchedules() {
       <BreadCrumb
         className="students-breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
-          { label: "Teaching Schedules" },
+          { label: t("teachingSchedules.breadcrumb.dashboard"), to: dashBoardUrl },
+          { label: t("teachingSchedules.breadcrumb.title") },
         ]}
       />
 
       <Box className="admin-main-box">
         <SearchEngine
-          placeholder="Tìm theo lớp, giảng viên, môn học, email, phòng..."
+          placeholder={t("teachingSchedules.searchPlaceholder")}
           onSearch={(value) => {
             setSearch(value);
           }}
@@ -93,7 +95,7 @@ export function TeachingSchedules() {
             onClick={handleOpenAddForm}
             className="btn-spacing-left"
         >
-            Add Schedule
+            {t("teachingSchedules.addSchedule")}
         </Button>
 
         <Button
@@ -101,7 +103,7 @@ export function TeachingSchedules() {
             onClick={handleOpenImportFilePicker}
             disabled={isUploadingCalenderFile}
         >
-            {isUploadingCalenderFile ? "Uploading..." : "Import lịch dạy"}
+            {isUploadingCalenderFile ? t("teachingSchedules.uploading") : t("teachingSchedules.importSchedule")}
         </Button>
         <Button
             className="btn-spacing-left"
@@ -110,7 +112,7 @@ export function TeachingSchedules() {
             }}
             disabled={isExportingExampleFile}
         >
-            {isExportingExampleFile ? "Đang xuất file..." : "Xuất file"}
+            {isExportingExampleFile ? t("teachingSchedules.exporting") : t("teachingSchedules.exportFile")}
         </Button>
         <input
           ref={fileInputRef}
@@ -166,11 +168,11 @@ export function TeachingSchedules() {
         onImport={async (payload) => {
           try {
             await importCalender(payload);
-            showSnackbar("Import lịch dạy thành công", "success");
+            showSnackbar(t("teachingSchedules.messages.importSuccess"), "success");
             setOpenImportFormModel(false);
             setImportPreview(null);
           } catch (error: any) {
-            const detail = error?.response?.data?.detail ?? error?.data?.detail ?? "Import lịch dạy thất bại";
+            const detail = error?.response?.data?.detail ?? error?.data?.detail ?? t("teachingSchedules.errors.importFailed");
             showSnackbar(detail, "error");
           }
         }}

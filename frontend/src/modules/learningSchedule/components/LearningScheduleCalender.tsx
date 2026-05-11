@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useGetTeachingSchedules } from "../../teachingSchedule/apis/getTeachingSchedules";
 import type { ITeachingScheduleResponse } from "../../teachingSchedule/types";
@@ -77,6 +78,7 @@ interface LearningScheduleCalenderProps {
 export function LearningScheduleCalender({
   selectedDate,
 }: LearningScheduleCalenderProps) {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const monday = useMemo(() => getMonday(selectedDate), [selectedDate]);
   const weekDays = useMemo(
@@ -115,22 +117,21 @@ export function LearningScheduleCalender({
 
           {weekDays.map((day) => (
             <div className="learning-calender__head" key={day.toISOString()}>
-              <strong>
-                {day.toLocaleDateString("vi-VN", {
-                  weekday: "long",
-                })}
-              </strong>
+              <strong>{t(`learningSchedule.weekdays.${day.getDay()}`)}</strong>
             </div>
           ))}
 
-          <div className="learning-calender__time-column" style={{ height: bodyHeight }}>
+          <div
+            className="learning-calender__time-column"
+            style={{ height: bodyHeight }}
+          >
             {PERIODS.map((period) => (
               <span
                 key={period}
                 className="learning-calender__time-label"
                 style={{ top: getPeriodCenterTop(period) }}
               >
-                Tiết {period}
+                {t("learningSchedule.periodLabel", { period })}
               </span>
             ))}
             <div className="learning-calender__hour-line" style={{ top: bodyHeight }} />
@@ -175,12 +176,17 @@ export function LearningScheduleCalender({
                       style={{ top, height }}
                       key={item.id}
                     >
-                        <LearningBox
-                          title={item.subject?.subject_name ?? "Môn học"}
-                          periodText={`Tiết ${item.learning_schedule.start_period} - ${item.learning_schedule.end_period}`}
-                          roomText={
-                            item.room?.room_number
-                              ? `Phòng ${item.room.room_number}`
+                      <LearningBox
+                        title={
+                          item.subject?.subject_name ?? t("learningSchedule.subjectFallback")
+                        }
+                        periodText={t("learningSchedule.periodRange", {
+                          start: item.learning_schedule.start_period,
+                          end: item.learning_schedule.end_period,
+                        })}
+                        roomText={
+                          item.room?.room_number
+                            ? t("learningSchedule.roomLabel", { room: item.room.room_number })
                             : undefined
                         }
                         teacherText={item.teacher?.teacher_name ?? undefined}

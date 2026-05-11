@@ -20,9 +20,9 @@ export function MyProfile() {
       <h1 className="primary-title">{t("myprofile.title")}</h1>
 
       <Tabs className="myprofile-tabs" value={value} onChange={handleChange}>
-        <Tab classes={{ selected: "active-tab" }} label="Thông tin cá nhân" />
-        <Tab classes={{ selected: "active-tab" }} label="Thông tin người thân" />
-        <Tab classes={{ selected: "active-tab" }} label="Đổi mật khẩu" />
+        <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.information")} />
+        <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.relatives")} />
+        <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.password")} />
       </Tabs>
 
       <Box sx={{ mt: 3 }}>

@@ -94,11 +94,6 @@ export function MiniCalender({
             <Box className={`mini-calender${className ? ` ${className}` : ""}`}>
                 <Stack spacing={1.5}>
                     <Box>
-                        <Typography
-                            className="mini-calender__eyebrow"
-                        >
-                            Mini Calendar
-                        </Typography>
                         <Typography className="mini-calender__range">
                             {selectedDate
                                 ? `Tuan ${format(

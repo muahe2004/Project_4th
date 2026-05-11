@@ -11,6 +11,7 @@ import {
 import type { SelectChangeEvent } from "@mui/material/Select";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
+import { useTranslation } from "react-i18next";
 
 interface ManagementControlsProps {
   searchValue: string;
@@ -37,11 +38,13 @@ function ManagementControls({
   onSemesterChange,
   onAcademicYearChange,
 }: ManagementControlsProps) {
+  const { t } = useTranslation();
+
   return (
     <Box className="grades-flex">
       <TextField
         variant="outlined"
-        placeholder="Tìm theo mã lớp, tên lớp, môn giảng dạy..."
+        placeholder={t("teacherManagementScore.controls.searchPlaceholder")}
         value={searchValue}
         onChange={(event) => onSearchChange(event.target.value)}
         onKeyDown={(event) => {
@@ -69,18 +72,18 @@ function ManagementControls({
 
       <FormControl className="grades-controller">
         <InputLabel className="select-primary__label" id="grades-academic-year-label">
-          Năm học
+          {t("teacherManagementScore.controls.academicYear")}
         </InputLabel>
         <Select
           className="select-primary"
           labelId="grades-academic-year-label"
-          label="Năm học"
+          label={t("teacherManagementScore.controls.academicYear")}
           value={academicYearFilter}
           onChange={onAcademicYearChange}
           MenuProps={{ disableScrollLock: true }}
         >
           <MenuItem value="">
-            <em>Tất cả</em>
+            <em>{t("teacherManagementScore.controls.all")}</em>
           </MenuItem>
           {academicYearOptions.map((academicYear) => (
             <MenuItem key={academicYear} value={academicYear}>
@@ -92,22 +95,22 @@ function ManagementControls({
 
       <FormControl className="grades-controller">
         <InputLabel className="select-primary__label" id="grades-semester-label">
-          Học kỳ
+          {t("teacherManagementScore.controls.semester")}
         </InputLabel>
         <Select
           className="select-primary"
           labelId="grades-semester-label"
-          label="Học kỳ"
+          label={t("teacherManagementScore.controls.semester")}
           value={semesterFilter}
           onChange={onSemesterChange}
           MenuProps={{ disableScrollLock: true }}
         >
           <MenuItem value="">
-            <em>Tất cả</em>
+            <em>{t("teacherManagementScore.controls.all")}</em>
           </MenuItem>
           {semesterOptions.map((semester) => (
             <MenuItem key={semester} value={String(semester)}>
-              {`Kỳ ${semester}`}
+              {t("teacherManagementScore.controls.semesterLabel", { semester })}
             </MenuItem>
           ))}
         </Select>

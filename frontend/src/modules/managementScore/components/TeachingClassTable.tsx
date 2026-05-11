@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@mui/material";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { useTranslation } from "react-i18next";
 
 import type { ITeachingClassItem } from "../apis/getTeachingClasses";
 import { teacherManagementListStudentScoreUrl } from "../../../routes/urls";
@@ -23,6 +24,7 @@ interface TeachingClassTableProps {
 }
 
 export function TeachingClassTable({ rows, onViewClass, academicTermId }: TeachingClassTableProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleViewClass = (row: ITeachingClassItem) => {
@@ -46,11 +48,11 @@ export function TeachingClassTable({ rows, onViewClass, academicTermId }: Teachi
       <Table className="primary-table" aria-label="teaching class table">
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
-            <TableCell className="primary-thead__cell" align="left">Mã lớp</TableCell>
-            <TableCell className="primary-thead__cell" align="left">Tên lớp giảng dạy</TableCell>
-            <TableCell className="primary-thead__cell" align="left">Môn giảng dạy</TableCell>
+            <TableCell className="primary-thead__cell" align="left">{t("teacherManagementScore.table.classCode")}</TableCell>
+            <TableCell className="primary-thead__cell" align="left">{t("teacherManagementScore.table.className")}</TableCell>
+            <TableCell className="primary-thead__cell" align="left">{t("teacherManagementScore.table.subject")}</TableCell>
             <TableCell className="primary-thead__cell" align="center" sx={{ width: "5%", whiteSpace: "nowrap" }}>
-              Actions
+              {t("teacherManagementScore.table.actions")}
             </TableCell>
           </TableRow>
         </TableHead>
@@ -59,7 +61,7 @@ export function TeachingClassTable({ rows, onViewClass, academicTermId }: Teachi
           {(rows ?? []).length === 0 ? (
             <TableRow className="primary-trow">
               <TableCell className="primary-tcell" colSpan={4} align="center">
-                Không có lớp giảng dạy
+                {t("teacherManagementScore.table.empty")}
               </TableCell>
             </TableRow>
           ) : (

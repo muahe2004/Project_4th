@@ -14,9 +14,11 @@ interface ConfirmDialogProps {
     message: string;
     onConfirm: () => void;
     onCancel: () => void;
+    confirmLabel?: string;
+    cancelLabel?: string;
 }
 
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, title = "Xác nhận", message, onConfirm, onCancel, }) => {
+const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, title = "Xác nhận", message, onConfirm, onCancel, confirmLabel = "Đồng ý", cancelLabel = "Hủy", }) => {
     return (
         <Dialog
             sx={{
@@ -34,8 +36,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, title = "Xác nhậ
             <Typography>{message}</Typography>
         </DialogContent>
         <DialogActions>
-            <Button onClick={onCancel} className="button-cancel">Hủy</Button>
-            <Button onClick={onConfirm} variant="contained">Đồng ý</Button>
+            <Button onClick={onCancel} className="button-cancel">{cancelLabel}</Button>
+            <Button onClick={onConfirm} variant="contained">{confirmLabel}</Button>
         </DialogActions>
         </Dialog>
     );

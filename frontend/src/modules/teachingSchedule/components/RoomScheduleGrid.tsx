@@ -1,14 +1,15 @@
+import { useTranslation } from "react-i18next";
 import TeachingPeriodCell from "./TeachingPeriodCell";
 import type { ITeachingScheduleWithRelations } from "../types";
 
 const DAYS = [
-  { label: "Thứ 2", value: 1 },
-  { label: "Thứ 3", value: 2 },
-  { label: "Thứ 4", value: 3 },
-  { label: "Thứ 5", value: 4 },
-  { label: "Thứ 6", value: 5 },
-  { label: "Thứ 7", value: 6 },
-  { label: "Chủ nhật", value: 0 },
+  { value: 1 },
+  { value: 2 },
+  { value: 3 },
+  { value: 4 },
+  { value: 5 },
+  { value: 6 },
+  { value: 0 },
 ];
 
 const PERIODS = Array.from({ length: 12 }, (_, index) => index + 1);
@@ -35,22 +36,15 @@ export function RoomScheduleGrid({
   firstColumnTitle = "Phòng",
   variant = "room",
 }: TeachingRoomContainerProps) {
+  const { t } = useTranslation();
   const displayLabel = rowLabel ?? roomLabel ?? "";
   const isTeacherVariant = variant === "teacher";
   const isClassVariant = variant === "class";
   const rowClassName = `teaching-room-row ${
-    isTeacherVariant
-      ? "teaching-room-row--teacher"
-      : isClassVariant
-        ? "teaching-room-row--class"
-        : ""
+    isTeacherVariant ? "teaching-room-row--teacher" : isClassVariant ? "teaching-room-row--class" : ""
   }`;
   const labelClassName = `teaching-room-label ${
-    isTeacherVariant
-      ? "teaching-room-label--teacher"
-      : isClassVariant
-        ? "teaching-room-label--class"
-        : ""
+    isTeacherVariant ? "teaching-room-label--teacher" : isClassVariant ? "teaching-room-label--class" : ""
   }`;
 
   return (
@@ -65,7 +59,7 @@ export function RoomScheduleGrid({
               className="teaching-room-day-title teaching-room-day-title--header"
               key={day.value}
             >
-              {day.label}
+              {t(`teachingSchedules.roomGrid.days.${day.value}`)}
             </div>
           ))}
         </div>

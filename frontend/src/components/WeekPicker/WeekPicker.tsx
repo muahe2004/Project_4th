@@ -2,6 +2,7 @@ import { Box, Tooltip } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import { useTranslation } from "react-i18next";
 
 import "./WeekPicker.css";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -21,6 +22,7 @@ function addDays(date: Date, days: number): Date {
 }
 
 export default function WeekPicker({ selectedDate, onChangeDate }: WeekPickerProps) {
+    const { t } = useTranslation();
 
     const prevWeek = () => {
         onChangeDate(addDays(selectedDate, -7));
@@ -32,12 +34,12 @@ export default function WeekPicker({ selectedDate, onChangeDate }: WeekPickerPro
 
     return (
         <Box className="week-picker">
-            <Tooltip classes={{ popper: "primary-tooltip" }} placement="top" title="Tuần hiện tại">
+            <Tooltip classes={{ popper: "primary-tooltip" }} placement="top" title={t("weekPicker.currentWeek")}>
                 <Button className="week-picker__button" onClick={() => onChangeDate(new Date())}>
                     <CalendarTodayIcon />
                 </Button>
             </Tooltip>
-            <Tooltip classes={{ popper: "primary-tooltip" }} placement="top" title="Tuần trước">
+            <Tooltip classes={{ popper: "primary-tooltip" }} placement="top" title={t("weekPicker.previousWeek")}>
                 <Button className="week-picker__button" onClick={prevWeek}>
                     <ChevronLeftIcon />
                 </Button>
@@ -56,7 +58,7 @@ export default function WeekPicker({ selectedDate, onChangeDate }: WeekPickerPro
                     }}
                 />
             </LocalizationProvider>
-            <Tooltip classes={{ popper: "primary-tooltip" }} placement="top" title="Tuần sau">
+            <Tooltip classes={{ popper: "primary-tooltip" }} placement="top" title={t("weekPicker.nextWeek")}>
                 <Button className="week-picker__button" onClick={nextWeek}>
                     <ChevronRightIcon />
                 </Button>

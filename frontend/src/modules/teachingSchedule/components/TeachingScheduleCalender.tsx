@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useGetTeachingSchedules } from "../apis/getTeachingSchedules";
 import type { ITeachingScheduleResponse } from "../types";
@@ -120,6 +121,7 @@ interface TeachingScheduleCalenderProps {
 export function TeachingScheduleCalender({
   selectedDate,
 }: TeachingScheduleCalenderProps) {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const monday = useMemo(() => getMonday(selectedDate), [selectedDate]);
   const weekDays = useMemo(
@@ -156,12 +158,10 @@ export function TeachingScheduleCalender({
             <span>{weekLabel}</span>
           </div>
 
-          {weekDays.map((day) => (
+          {weekDays.map((day, index) => (
             <div className="learning-calender__head" key={day.toISOString()}>
               <strong>
-                {day.toLocaleDateString("vi-VN", {
-                  weekday: "long",
-                })}
+                {t(`teachingSchedules.weekdays.${index}`)}
               </strong>
             </div>
           ))}
@@ -173,7 +173,7 @@ export function TeachingScheduleCalender({
                 className="learning-calender__time-label"
                 style={{ top: getPeriodCenterTop(period) }}
               >
-                Tiết {period}
+                {t("teachingSchedules.periodLabel", { period })}
               </span>
             ))}
             <div className="learning-calender__hour-line" style={{ top: bodyHeight }} />
@@ -223,12 +223,15 @@ export function TeachingScheduleCalender({
                       key={item.id}
                     >
                       <TeachingBox
-                        title={item.subject?.subject_name ?? "Môn học"}
-                        periodText={`Tiết ${item.learning_schedule.start_period} - ${item.learning_schedule.end_period}`}
+                        title={item.subject?.subject_name ?? t("teachingSchedules.table.subjectFallback")}
+                        periodText={t("teachingSchedules.periodRange", {
+                          start: item.learning_schedule.start_period,
+                          end: item.learning_schedule.end_period,
+                        })}
                         timeText={`(${toDisplayMinute(startMinute)} - ${toDisplayMinute(endMinute)})`}
                         roomText={
                           item.room?.room_number
-                            ? `Phòng ${item.room.room_number}`
+                            ? t("teachingSchedules.roomLabel", { room: item.room.room_number })
                             : undefined
                         }
                         classText={item.class?.class_name ?? undefined}

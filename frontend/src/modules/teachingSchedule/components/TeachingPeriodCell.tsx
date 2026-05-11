@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ITeachingScheduleWithRelations } from "../types";
 
 interface TeachingPeriodCellProps {
@@ -38,6 +39,7 @@ function buildTooltip(schedules?: ITeachingScheduleWithRelations[]): string {
 }
 
 export function TeachingPeriodCell({ period, schedules }: TeachingPeriodCellProps) {
+  const { t } = useTranslation();
   const itemCount = schedules?.length ?? 0;
   const hasSchedule = itemCount > 0;
 
@@ -48,7 +50,7 @@ export function TeachingPeriodCell({ period, schedules }: TeachingPeriodCellProp
       }`}
       title={buildTooltip(schedules)}
     >
-      <span>{String(period).padStart(2, "0")}</span>
+      <span>{t("teachingSchedules.periodNumber", { period })}</span>
       {itemCount > 1 && (
         <span className="teaching-room-cell__count">{itemCount}</span>
       )}

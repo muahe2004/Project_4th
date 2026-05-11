@@ -17,7 +17,7 @@
     "tuition": "Tuition",
     "logout": "Logout"
   },
-  "sign-in": {
+  "signIn": {
     "username": "Username",
     "password": "Password",
     "signIn": "Sign In",
@@ -42,9 +42,9 @@
     
     "address": "ADDRESS",
     "addresses": {
-      "branch1Adress": "BR1: Khoai Chau - Hung Yen",
-      "branch2Adress": "BR2: My Hao - Hung Yen",
-      "branch3Adress": "BR3: Hai Duong City - Hai Duong"
+      "branch1Address": "BR1: Khoai Chau - Hung Yen",
+      "branch2Address": "BR2: My Hao - Hung Yen",
+      "branch3Address": "BR3: Hai Duong City - Hai Duong"
     },
 
     "copyright": "© 2025 Hung Yen University Of Technology And Education"
@@ -59,6 +59,361 @@
     }
   },
   "myprofile": {
-    "title": "MY PROFILE"
+    "title": "MY PROFILE",
+    "tabs": {
+      "information": "Personal Information",
+      "relatives": "Relatives Information",
+      "password": "Change Password"
+    },
+    "common": {
+      "noData": "No data",
+      "saving": "Saving...",
+      "saveInformation": "Save Information"
+    },
+    "messages": {
+      "updateSuccess": "Information updated successfully!",
+      "updateRelativesSuccess": "Relatives information updated successfully!",
+      "genericError": "An error occurred, please try again!"
+    },
+    "fields": {
+      "nationality": "Nationality",
+      "ethnicity": "Ethnicity",
+      "religion": "Religion",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "email": "Email",
+      "address": "Address",
+      "placeOfOrigin": "Place of Origin",
+      "phone": "Phone Number",
+      "trainingProgram": "Training Program",
+      "course": "Course",
+      "academicRank": "Academic Rank",
+      "department": "Department",
+      "class": "Class",
+      "citizenId": "Citizen ID",
+      "issueDate": "Issue Date",
+      "issuePlace": "Issue Place",
+      "insuranceNumber": "Social Insurance Number",
+      "bankName": "Bank Name",
+      "bankAccountNumber": "Bank Account Number",
+      "exemptedGroup": "Exempted Group",
+      "priorityGroup": "Priority Group"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "academicRank": {
+      "bachelor": "Bachelor",
+      "master": "Master",
+      "doctor": "Doctor"
+    },
+    "relative": {
+      "name": "Full Name",
+      "birthYear": "Birth Year",
+      "nationality": "Nationality",
+      "ethnicity": "Ethnicity",
+      "religion": "Religion",
+      "phone": "Phone Number",
+      "address": "Address",
+      "occupation": "Occupation"
+    },
+    "relativeSections": {
+      "father": "FATHER INFORMATION",
+      "mother": "MOTHER INFORMATION",
+      "spouse": "SPOUSE INFORMATION"
+    },
+    "password": {
+      "oldPassword": "Old Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "verificationCode": "Verification Code",
+      "changeButton": "Change Password"
+    }
+  },
+  "teacherManagementScore": {
+    "titleTeachingClasses": "Manage Teaching Class Scores",
+    "noteTeachingClasses": "Manage scores for students in the classes you teach.",
+    "titleAdvisorClasses": "View Advisor Class Scores",
+    "noteAdvisorClasses": "View scores for students in the classes you advise.",
+    "errors": {
+      "loadClasses": "Failed to load class list"
+    },
+    "controls": {
+      "searchPlaceholder": "Search by class code, class name, subject...",
+      "academicYear": "Academic Year",
+      "semester": "Semester",
+      "all": "All",
+      "semesterLabel": "Term {{semester}}"
+    },
+    "table": {
+      "classCode": "Class Code",
+      "className": "Teaching Class",
+      "subject": "Subject",
+      "actions": "Actions",
+      "empty": "No teaching classes"
+    },
+    "advisor": {
+      "empty": "No advisor classes",
+      "label": "ADVISOR",
+      "size": "Size: {{size}}",
+      "view": "VIEW"
+    }
+  },
+  "pagination": {
+    "itemsPerPage": "Items / page"
+  },
+  "teachingSchedules": {
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "title": "Teaching Schedules"
+    },
+    "searchPlaceholder": "Search by class, teacher, subject, email, room...",
+    "addSchedule": "Add Schedule",
+    "uploading": "Uploading...",
+    "importSchedule": "Import Teaching Schedule",
+    "exporting": "Exporting...",
+    "exportFile": "Export File",
+    "errors": {
+      "uploadFailed": "Failed to upload teaching schedule file",
+      "importFailed": "Failed to import teaching schedule"
+    },
+    "messages": {
+      "importSuccess": "Teaching schedule imported successfully"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "add": "Add"
+    },
+    "confirm": {
+      "exitTitle": "Confirm Exit",
+      "exitMessage": "Are you sure you want to exit? Entered data will not be saved.",
+      "saveTitle": "Confirm Save",
+      "saveMessage": "Are you sure you want to save the changes?",
+      "importExitMessage": "Are you sure you want to exit the import form?"
+    },
+    "form": {
+      "titleEdit": "EDIT TEACHING SCHEDULE",
+      "titleAdd": "ADD TEACHING SCHEDULE",
+      "labels": {
+        "class": "Class",
+        "teacher": "Teacher",
+        "subject": "Subject",
+        "room": "Room",
+        "date": "Teaching Date",
+        "scheduleType": "Schedule Type",
+        "startPeriod": "Start Period",
+        "endPeriod": "End Period"
+      },
+      "errors": {
+        "classRequired": "Class is required!",
+        "subjectRequired": "Subject is required!",
+        "dateRequired": "Teaching date is required!",
+        "startPeriodPositive": "Start period must be greater than 0!",
+        "endPeriodPositive": "End period must be greater than 0!",
+        "endPeriodAfterStart": "End period must be >= start period!"
+      },
+      "messages": {
+        "updateSuccess": "Teaching schedule updated successfully!",
+        "addSuccess": "Teaching schedule added successfully!",
+        "genericError": "An error occurred, please try again!"
+      }
+    },
+    "import": {
+      "title": "Import Teaching Schedule Preview",
+      "noData": "No import data.",
+      "fileName": "File name",
+      "noValidRows": "No valid rows to import.",
+      "invalidRows": "{{count}} rows have errors, please fix them before importing.",
+      "classCode": "Class Code",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "importing": "Importing...",
+      "importButton": "Import",
+      "table": {
+        "subjectCode": "Subject Code",
+        "subjectName": "Subject Name",
+        "teacherCode": "Teacher Code",
+        "teacherName": "Teacher Name",
+        "weekday": "Weekday",
+        "lessonPeriods": "Lesson Periods",
+        "studyWeeks": "Study Weeks",
+        "room": "Room",
+        "errorReason": "Error Reason",
+        "actions": "Actions"
+      }
+    },
+    "importEdit": {
+      "title": "Edit Imported Teaching Schedule",
+      "subjectCode": "Subject Code",
+      "teacherCode": "Teacher Code",
+      "room": "Room",
+      "weekday": "Weekday",
+      "lessonPeriods": "Lesson Periods",
+      "studyWeeks": "Study Weeks",
+      "selectSubject": "Select subject",
+      "selectTeacher": "Select teacher",
+      "selectRoom": "Select room"
+    },
+    "weekdays": {
+      "0": "Monday",
+      "1": "Tuesday",
+      "2": "Wednesday",
+      "3": "Thursday",
+      "4": "Friday",
+      "5": "Saturday",
+      "6": "Sunday"
+    },
+    "periodLabel": "Period {{period}}",
+    "periodNumber": "{{period}}",
+    "periodRange": "Period {{start}} - {{end}}",
+    "roomLabel": "Room {{room}}",
+    "roomFilter": {
+      "searchPlaceholder": "Search rooms..."
+    },
+    "roomGrid": {
+      "days": {
+        "0": "Monday",
+        "1": "Tuesday",
+        "2": "Wednesday",
+        "3": "Thursday",
+        "4": "Friday",
+        "5": "Saturday",
+        "6": "Sunday"
+      }
+    },
+    "table": {
+      "loading": "Loading...",
+      "subjectFallback": "Subject"
+    }
+  },
+  "courseRegistration": {
+    "searchPlaceholder": "Search by class code, class name, subject, teacher, specialization...",
+    "registerButton": "Register Course Sections",
+    "messages": {
+      "noSelection": "No course section selected",
+      "noStudent": "Unable to identify the registering student",
+      "success": "Course registration completed successfully",
+      "failure": "Course registration failed"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "add": "Add",
+      "save": "Save"
+    },
+    "confirm": {
+      "exitTitle": "Confirm Exit",
+      "exitMessage": "Are you sure you want to exit? Entered data will not be saved.",
+      "saveTitle": "Confirm Save",
+      "saveMessage": "Are you sure you want to save the changes?"
+    },
+    "table": {
+      "classCode": "Class Code",
+      "className": "Class Name",
+      "size": "Size",
+      "subjectCode": "Subject Code",
+      "subjectName": "Subject",
+      "credits": "Credits"
+    },
+    "form": {
+      "titleAdd": "ADD CLASS",
+      "titleEdit": "EDIT CLASS",
+      "labels": {
+        "classCode": "Class Code",
+        "className": "Class Name",
+        "size": "Size",
+        "classType": "Class Type",
+        "registrationStatus": "Registration Status",
+        "subject": "Subject",
+        "specialization": "Specialization",
+        "teacher": "Homeroom Teacher"
+      },
+      "placeholders": {
+        "selectSubject": "Select subject"
+      },
+      "messages": {
+        "addSuccess": "Class added successfully!",
+        "updateSuccess": "Class updated successfully!",
+        "genericError": "An error occurred, please try again!"
+      },
+      "errors": {
+        "classCodeRequired": "Class code is required!",
+        "teacherRequired": "Homeroom teacher is required!",
+        "specializationRequired": "Specialization is required!"
+      }
+    }
+  },
+  "grades": {
+    "title": "ACADEMIC RESULTS",
+    "messages": {
+      "noStudent": "No logged-in student information found.",
+      "loadFailed": "Failed to load grade data",
+      "noData": "No score data",
+      "noFinalScore": "No final score"
+    },
+    "common": {
+      "all": "All",
+      "notSupported": "Not supported"
+    },
+    "filters": {
+      "semester": "Semester",
+      "academicYear": "Academic Year",
+      "major": "Major",
+      "subject": "Subject",
+      "semesterLabel": "Term {{semester}}"
+    },
+    "table": {
+      "actions": "Actions",
+      "note": "Note",
+      "index": "No.",
+      "subjectCode": "Subject Code",
+      "subjectName": "Subject Name",
+      "credits": "Credits",
+      "weight": "Weight",
+      "componentScores": "Component Scores",
+      "retakeScores": "Retake Scores",
+      "average": "Average",
+      "d1": "D1",
+      "d2": "D2",
+      "final": "Final",
+      "scale10": "10-point",
+      "scale4": "4-point",
+      "letterGrade": "Letter Grade"
+    },
+    "summary": {
+      "studentCode": "Student Code",
+      "studentName": "Full Name",
+      "rank4": "Rank 4",
+      "rank10": "Rank 10",
+      "gpa4": "GPA 4",
+      "accumulatedGpa4": "Accumulated GPA 4",
+      "accumulatedGpa10": "Accumulated GPA 10",
+      "accumulatedCredits": "Accumulated Credits",
+      "studiedCredits": "Studied Credits"
+    }
+  },
+  "learningSchedule": {
+    "title": "Learning Schedule",
+    "weekdays": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    },
+    "periodLabel": "Period {{period}}",
+    "periodRange": "Period {{start}} - {{end}}",
+    "roomLabel": "Room {{room}}",
+    "subjectFallback": "Subject"
+  },
+  "weekPicker": {
+    "currentWeek": "Current week",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week"
   }
 }

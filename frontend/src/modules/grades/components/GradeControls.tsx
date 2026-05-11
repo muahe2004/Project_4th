@@ -6,6 +6,7 @@ import {
   Select,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import { useTranslation } from "react-i18next";
 
 import type { SubjectOption } from "../types";
 
@@ -32,26 +33,27 @@ function GradeControls({
   onAcademicYearChange,
   onSubjectChange,
 }: GradeControlsProps) {
+  const { t } = useTranslation();
   return (
     <Box className="grades-flex">
       <FormControl className="grades-controller">
         <InputLabel className="select-primary__label" id="grades-semester-label">
-          Học kỳ
+          {t("grades.filters.semester")}
         </InputLabel>
         <Select
           className="select-primary"
           labelId="grades-semester-label"
-          label="Học kỳ"
+          label={t("grades.filters.semester")}
           value={semesterFilter}
           onChange={onSemesterChange}
           MenuProps={{ disableScrollLock: true }}
         >
           <MenuItem value="">
-            <em>Tất cả</em>
+            <em>{t("grades.common.all")}</em>
           </MenuItem>
           {semesterOptions.map((semester) => (
             <MenuItem key={semester} value={String(semester)}>
-              {`Kỳ ${semester}`}
+              {t("grades.filters.semesterLabel", { semester })}
             </MenuItem>
           ))}
         </Select>
@@ -59,18 +61,18 @@ function GradeControls({
 
       <FormControl className="grades-controller">
         <InputLabel className="select-primary__label" id="grades-academic-year-label">
-          Năm học
+          {t("grades.filters.academicYear")}
         </InputLabel>
         <Select
           className="select-primary"
           labelId="grades-academic-year-label"
-          label="Năm học"
+          label={t("grades.filters.academicYear")}
           value={academicYearFilter}
           onChange={onAcademicYearChange}
           MenuProps={{ disableScrollLock: true }}
         >
           <MenuItem value="">
-            <em>Tất cả</em>
+            <em>{t("grades.common.all")}</em>
           </MenuItem>
           {academicYearOptions.map((academicYear) => (
             <MenuItem key={academicYear} value={academicYear}>
@@ -82,35 +84,35 @@ function GradeControls({
 
       <FormControl className="grades-controller" disabled>
         <InputLabel className="select-primary__label" id="grades-major-label">
-          Ngành học
+          {t("grades.filters.major")}
         </InputLabel>
         <Select
           className="select-primary"
           labelId="grades-major-label"
-          label="Ngành học"
+          label={t("grades.filters.major")}
           value=""
           MenuProps={{ disableScrollLock: true }}
         >
           <MenuItem value="">
-            <em>Chưa hỗ trợ</em>
+            <em>{t("grades.common.notSupported")}</em>
           </MenuItem>
         </Select>
       </FormControl>
 
       <FormControl className="grades-controller">
         <InputLabel className="select-primary__label" id="grades-subject-label">
-          Học phần
+          {t("grades.filters.subject")}
         </InputLabel>
         <Select
           className="select-primary"
           labelId="grades-subject-label"
-          label="Học phần"
+          label={t("grades.filters.subject")}
           value={subjectFilter}
           onChange={onSubjectChange}
           MenuProps={{ disableScrollLock: true }}
         >
           <MenuItem value="">
-            <em>Tất cả</em>
+            <em>{t("grades.common.all")}</em>
           </MenuItem>
           {subjectOptions.map((subject) => (
             <MenuItem key={subject.id} value={subject.id}>

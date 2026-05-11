@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
@@ -152,6 +153,7 @@ function getAcademicYearStart(academicYear: string): number {
 }
 
 export function GradesPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const [academicYearFilter, setAcademicYearFilter] = useState<string>("");
   const [semesterFilter, setSemesterFilter] = useState<string>("");
@@ -343,10 +345,10 @@ export function GradesPage() {
         avg10: roundedAvg10,
         avg4,
         grade: letter,
-        note: hasFinalScore ? "" : "Chưa có điểm thi",
+        note: hasFinalScore ? "" : t("grades.messages.noFinalScore"),
       };
     });
-  }, [filteredSubjects]);
+  }, [filteredSubjects, t]);
 
   const summaryData = useMemo<StudentTotalScoreData | undefined>(() => {
     if (!scoreData?.student_info) {
@@ -417,22 +419,22 @@ export function GradesPage() {
   if (!user?.id) {
     return (
       <main className="grades">
-        <Typography className="primary-title">KẾT QUẢ HỌC TẬP</Typography>
-        <Alert severity="warning">Không tìm thấy thông tin sinh viên đăng nhập.</Alert>
+        <Typography className="primary-title">{t("grades.title")}</Typography>
+        <Alert severity="warning">{t("grades.messages.noStudent")}</Alert>
       </main>
     );
   }
 
   return (
     <main className="grades">
-      <Typography className="primary-title">KẾT QUẢ HỌC TẬP</Typography>
+      <Typography className="primary-title">{t("grades.title")}</Typography>
 
       {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={LOADING_SPINNER_SIZE} />
         </Box>
       ) : isError ? (
-        <Alert severity="error">{error?.response?.data?.detail ?? "Lấy dữ liệu điểm thất bại"}</Alert>
+        <Alert severity="error">{error?.response?.data?.detail ?? t("grades.messages.loadFailed")}</Alert>
       ) : (
         <>
           <StudentTotalScore summary={summaryData} />

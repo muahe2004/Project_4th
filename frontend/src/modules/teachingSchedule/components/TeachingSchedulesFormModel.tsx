@@ -11,6 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
@@ -54,6 +55,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
   initialValues,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const id = initialValues?.id;
   const isEdit = mode === "edit";
@@ -285,30 +287,30 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
     let isValid = true;
 
     if (!isRequired(formValues.classId)) {
-      nextErrors.classId = "Lớp là bắt buộc!";
+      nextErrors.classId = t("teachingSchedules.form.errors.classRequired");
       isValid = false;
     }
 
     if (!isRequired(formValues.subjectId)) {
-      nextErrors.subjectId = "Môn học là bắt buộc!";
+      nextErrors.subjectId = t("teachingSchedules.form.errors.subjectRequired");
       isValid = false;
     }
 
     if (!formValues.date) {
-      nextErrors.date = "Ngày học là bắt buộc!";
+      nextErrors.date = t("teachingSchedules.form.errors.dateRequired");
       isValid = false;
     }
 
     if (!Number.isFinite(formValues.startPeriod) || formValues.startPeriod <= 0) {
-      nextErrors.startPeriod = "Tiết bắt đầu phải lớn hơn 0!";
+      nextErrors.startPeriod = t("teachingSchedules.form.errors.startPeriodPositive");
       isValid = false;
     }
 
     if (!Number.isFinite(formValues.endPeriod) || formValues.endPeriod <= 0) {
-      nextErrors.endPeriod = "Tiết kết thúc phải lớn hơn 0!";
+      nextErrors.endPeriod = t("teachingSchedules.form.errors.endPeriodPositive");
       isValid = false;
     } else if (formValues.endPeriod < formValues.startPeriod) {
-      nextErrors.endPeriod = "Tiết kết thúc phải >= tiết bắt đầu!";
+      nextErrors.endPeriod = t("teachingSchedules.form.errors.endPeriodAfterStart");
       isValid = false;
     }
 
@@ -382,8 +384,8 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
 
       showSnackbar(
         isEdit
-          ? "Cập nhật lịch dạy thành công!"
-          : "Thêm lịch dạy thành công!",
+          ? t("teachingSchedules.form.messages.updateSuccess")
+          : t("teachingSchedules.form.messages.addSuccess"),
         "success"
       );
 
@@ -395,7 +397,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
       onClose();
     } catch (error) {
       console.error(error);
-      showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+      showSnackbar(t("teachingSchedules.form.messages.genericError"), "error");
     }
   };
 
@@ -408,13 +410,13 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
       fullWidth
     >
       <DialogTitle className="primary-dialog-title">
-        {isEdit ? "EDIT TEACHING SCHEDULE" : "ADD TEACHING SCHEDULE"}
+        {isEdit ? t("teachingSchedules.form.titleEdit") : t("teachingSchedules.form.titleAdd")}
       </DialogTitle>
 
       <DialogContent className="primary-dialog-content">
         <Grid container spacing={2}>
           <Grid size={6}>
-            <LabelPrimary value="Lớp" required />
+            <LabelPrimary value={t("teachingSchedules.form.labels.class")} required />
             <MainAutocomplete
               options={classOptions}
               value={
@@ -451,7 +453,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           </Grid>
 
           <Grid size={6}>
-            <LabelPrimary value="Giảng viên" />
+            <LabelPrimary value={t("teachingSchedules.form.labels.teacher")} />
             <MainAutocomplete
               options={teacherOptions}
               value={
@@ -481,7 +483,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           </Grid>
 
           <Grid size={6}>
-            <LabelPrimary value="Môn học" required />
+            <LabelPrimary value={t("teachingSchedules.form.labels.subject")} required />
             <MainAutocomplete
               options={subjectOptions}
               value={
@@ -516,7 +518,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           </Grid>
 
           <Grid size={6}>
-            <LabelPrimary value="Phòng học" />
+            <LabelPrimary value={t("teachingSchedules.form.labels.room")} />
             <MainAutocomplete
               options={roomOptions}
               value={
@@ -546,7 +548,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
               onSearchChange={setSearchRoom}
               onResetPage={() => setRoomPage(1)}
               getOptionLabel={(option) =>
-                `Phòng ${option.room_number} - ${option.type} (${option.seats} chỗ)`
+                `${t("teachingSchedules.roomLabel", { room: option.room_number })} - ${option.type} (${option.seats} chỗ)`
               }
               getOptionId={(option) => option.id?.toString() || ""}
               className="primary-dialog-input"
@@ -554,7 +556,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           </Grid>
 
           <Grid size={6}>
-            <LabelPrimary value="Ngày học" required />
+            <LabelPrimary value={t("teachingSchedules.form.labels.date")} required />
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
                 value={formValues.date}
@@ -578,7 +580,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           </Grid>
 
           <Grid size={6}>
-            <LabelPrimary value="Loại lịch học" />
+            <LabelPrimary value={t("teachingSchedules.form.labels.scheduleType")} />
             <TextField
               value={formValues.scheduleType}
               onChange={(e) =>
@@ -594,7 +596,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           </Grid>
 
           <Grid size={6}>
-            <LabelPrimary value="Tiết bắt đầu" required />
+            <LabelPrimary value={t("teachingSchedules.form.labels.startPeriod")} required />
             <TextField
               type="number"
               value={formValues.startPeriod}
@@ -610,7 +612,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
                   startPeriod:
                     formValues.startPeriod > 0
                       ? ""
-                      : "Tiết bắt đầu phải lớn hơn 0!",
+                      : t("teachingSchedules.form.errors.startPeriodPositive"),
                 }))
               }
               fullWidth
@@ -623,7 +625,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
           </Grid>
 
           <Grid size={6}>
-            <LabelPrimary value="Tiết kết thúc" required />
+            <LabelPrimary value={t("teachingSchedules.form.labels.endPeriod")} required />
             <TextField
               type="number"
               value={formValues.endPeriod}
@@ -639,7 +641,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
                   endPeriod:
                     formValues.endPeriod >= formValues.startPeriod
                       ? ""
-                      : "Tiết kết thúc phải >= tiết bắt đầu!",
+                      : t("teachingSchedules.form.errors.endPeriodAfterStart"),
                 }))
               }
               fullWidth
@@ -655,17 +657,17 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
 
       <DialogActions className="primary-dialog-actions">
         <Button onClick={handleCloseClick} className="button-cancel">
-          Hủy
+          {t("teachingSchedules.common.cancel")}
         </Button>
         <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
-          {isEdit ? "Lưu" : "Thêm"}
+          {isEdit ? t("teachingSchedules.common.save") : t("teachingSchedules.common.add")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirm}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+        title={t("teachingSchedules.confirm.exitTitle")}
+        message={t("teachingSchedules.confirm.exitMessage")}
         onConfirm={() => {
           setOpenConfirm(false);
           onClose();
@@ -675,8 +677,8 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
 
       <ConfirmDialog
         open={confirm.save}
-        title="Xác nhận lưu"
-        message="Bạn có chắc muốn lưu các thay đổi?"
+        title={t("teachingSchedules.confirm.saveTitle")}
+        message={t("teachingSchedules.confirm.saveMessage")}
         onConfirm={handleConfirmSave}
         onCancel={() =>
           setConfirm({

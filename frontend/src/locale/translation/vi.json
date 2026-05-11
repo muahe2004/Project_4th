@@ -17,7 +17,7 @@
     "tuition": "Học phí",
     "logout": "Đăng xuất"
   },
-  "sign-in": {
+  "signIn": {
     "username": "Tên đăng nhập",
     "password": "Mật khẩu",
     "signIn": "Đăng nhập",
@@ -42,9 +42,9 @@
     
     "address": "ĐỊA CHỈ",
     "addresses": {
-      "branch1Adress": "CS1: Khoái Châu - Hưng Yên",
-      "branch2Adress": "CS2: Mỹ Hào - Hưng Yên",
-      "branch3Adress": "CS3: TP Hải Dương - Hải Dương"
+      "branch1Address": "CS1: Khoái Châu - Hưng Yên",
+      "branch2Address": "CS2: Mỹ Hào - Hưng Yên",
+      "branch3Address": "CS3: TP Hải Dương - Hải Dương"
     },
 
     "copyright": "© 2025 Trường Đại học Sư phạm Kỹ thuật Hưng Yên"
@@ -59,6 +59,366 @@
     }
   },
   "myprofile": {
-    "title": "HỒ SƠ CÁ NHÂN"
+    "title": "HỒ SƠ CÁ NHÂN",
+    "tabs": {
+      "information": "Thông tin cá nhân",
+      "relatives": "Thông tin người thân",
+      "password": "Đổi mật khẩu"
+    },
+    "common": {
+      "noData": "Chưa có dữ liệu",
+      "saving": "Đang lưu...",
+      "saveInformation": "Lưu thông tin"
+    },
+    "messages": {
+      "updateSuccess": "Cập nhật thông tin thành công!",
+      "updateRelativesSuccess": "Cập nhật người thân thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+    },
+    "fields": {
+      "nationality": "Quốc tịch",
+      "ethnicity": "Dân tộc",
+      "religion": "Tôn giáo",
+      "dateOfBirth": "Sinh nhật",
+      "gender": "Giới tính",
+      "email": "Email",
+      "address": "Địa chỉ",
+      "placeOfOrigin": "Quê quán",
+      "phone": "Số điện thoại",
+      "trainingProgram": "Chương trình đào tạo",
+      "course": "Niên khoá",
+      "academicRank": "Học vị",
+      "department": "Khoa",
+      "class": "Lớp",
+      "citizenId": "Số CCCD",
+      "issueDate": "Ngày cấp",
+      "issuePlace": "Nơi cấp",
+      "insuranceNumber": "Số BHXH",
+      "bankName": "Tên ngân hàng",
+      "bankAccountNumber": "Số tài khoản",
+      "exemptedGroup": "Đối tượng miễn giảm",
+      "priorityGroup": "Đối tượng ưu tiên"
+    },
+    "gender": {
+      "male": "Nam",
+      "female": "Nữ",
+      "other": "Khác"
+    },
+    "academicRank": {
+      "bachelor": "Cử nhân",
+      "master": "Thạc sĩ",
+      "doctor": "Tiến sĩ"
+    },
+    "relative": {
+      "name": "Họ và tên",
+      "birthYear": "Năm sinh",
+      "nationality": "Quốc tịch",
+      "ethnicity": "Dân tộc",
+      "religion": "Tôn giáo",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "occupation": "Nghề nghiệp"
+    },
+    "relativeSections": {
+      "father": "THÔNG TIN CỦA BỐ",
+      "mother": "THÔNG TIN CỦA MẸ",
+      "spouse": "THÔNG TIN CỦA VỢ/CHỒNG"
+    },
+    "password": {
+      "oldPassword": "Mật khẩu cũ",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu mới",
+      "verificationCode": "Mã xác nhận",
+      "changeButton": "Đổi mật khẩu"
+    }
+  },
+  "teacherManagementScore": {
+    "titleTeachingClasses": "Quản lý điểm lớp giảng dạy",
+    "noteTeachingClasses": "Quản lý điểm của các sinh viên lớp bạn giảng dạy.",
+    "titleAdvisorClasses": "Xem điểm lớp chủ nhiệm",
+    "noteAdvisorClasses": "Xem điểm của các sinh viên lớp bạn chủ nhiệm.",
+    "errors": {
+      "loadClasses": "Lấy danh sách lớp thất bại"
+    },
+    "controls": {
+      "searchPlaceholder": "Tìm theo mã lớp, tên lớp, môn giảng dạy...",
+      "academicYear": "Năm học",
+      "semester": "Học kỳ",
+      "all": "Tất cả",
+      "semesterLabel": "Kỳ {{semester}}"
+    },
+    "table": {
+      "classCode": "Mã lớp",
+      "className": "Tên lớp giảng dạy",
+      "subject": "Môn giảng dạy",
+      "actions": "Actions",
+      "empty": "Không có lớp giảng dạy"
+    },
+    "advisor": {
+      "empty": "Không có lớp chủ nhiệm",
+      "label": "CHỦ NHIỆM",
+      "size": "Sĩ số: {{size}}",
+      "view": "VIEW"
+    }
+  },
+  "pagination": {
+    "itemsPerPage": "Mục/trang"
+  },
+  "teachingSchedules": {
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "title": "Lịch dạy"
+    },
+    "searchPlaceholder": "Tìm theo lớp, giảng viên, môn học, email, phòng...",
+    "addSchedule": "Thêm lịch",
+    "uploading": "Đang tải lên...",
+    "importSchedule": "Import lịch dạy",
+    "exporting": "Đang xuất file...",
+    "exportFile": "Xuất file",
+    "errors": {
+      "uploadFailed": "Upload file lịch dạy thất bại",
+      "importFailed": "Import lịch dạy thất bại"
+    },
+    "messages": {
+      "importSuccess": "Import lịch dạy thành công"
+    },
+    "common": {
+      "cancel": "Huỷ",
+      "save": "Lưu",
+      "add": "Thêm"
+    },
+    "confirm": {
+      "exitTitle": "Xác nhận thoát",
+      "exitMessage": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "saveTitle": "Xác nhận lưu",
+      "saveMessage": "Bạn có chắc muốn lưu các thay đổi?",
+      "importExitMessage": "Bạn có chắc muốn thoát form import?"
+    },
+    "form": {
+      "titleEdit": "EDIT TEACHING SCHEDULE",
+      "titleAdd": "ADD TEACHING SCHEDULE",
+      "labels": {
+        "class": "Lớp",
+        "teacher": "Giảng viên",
+        "subject": "Môn học",
+        "room": "Phòng học",
+        "date": "Ngày học",
+        "scheduleType": "Loại lịch học",
+        "startPeriod": "Tiết bắt đầu",
+        "endPeriod": "Tiết kết thúc"
+      },
+      "errors": {
+        "classRequired": "Lớp là bắt buộc!",
+        "subjectRequired": "Môn học là bắt buộc!",
+        "dateRequired": "Ngày học là bắt buộc!",
+        "startPeriodPositive": "Tiết bắt đầu phải lớn hơn 0!",
+        "endPeriodPositive": "Tiết kết thúc phải lớn hơn 0!",
+        "endPeriodAfterStart": "Tiết kết thúc phải >= tiết bắt đầu!"
+      },
+      "messages": {
+        "updateSuccess": "Cập nhật lịch dạy thành công!",
+        "addSuccess": "Thêm lịch dạy thành công!",
+        "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+      }
+    },
+    "import": {
+      "title": "Import Teaching Schedule Preview",
+      "noData": "Không có dữ liệu import.",
+      "fileName": "File name",
+      "noValidRows": "Không có dòng hợp lệ để import.",
+      "invalidRows": "{{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "classCode": "Mã lớp",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "importing": "Importing...",
+      "importButton": "Import",
+      "table": {
+        "subjectCode": "Mã MH",
+        "subjectName": "Tên MH",
+        "teacherCode": "Mã GV",
+        "teacherName": "Tên GV",
+        "weekday": "Thứ",
+        "lessonPeriods": "Tiết học",
+        "studyWeeks": "Tuần học",
+        "room": "Phòng",
+        "errorReason": "Lý do lỗi",
+        "actions": "Actions"
+      }
+    },
+    "importEdit": {
+      "title": "Chỉnh sửa lịch dạy import",
+      "subjectCode": "Mã môn học",
+      "teacherCode": "Mã giảng viên",
+      "room": "Phòng",
+      "weekday": "Thứ",
+      "lessonPeriods": "Tiết học",
+      "studyWeeks": "Tuần học",
+      "selectSubject": "Chọn môn học",
+      "selectTeacher": "Chọn giảng viên",
+      "selectRoom": "Chọn phòng"
+    },
+    "table": {
+      "loading": "Đang tải...",
+      "subjectFallback": "Môn học"
+    },
+    "weekdays": {
+      "0": "Thứ Hai",
+      "1": "Thứ Ba",
+      "2": "Thứ Tư",
+      "3": "Thứ Năm",
+      "4": "Thứ Sáu",
+      "5": "Thứ Bảy",
+      "6": "Chủ Nhật"
+    },
+    "periodLabel": "Tiết {{period}}",
+    "periodNumber": "{{period}}",
+    "periodRange": "Tiết {{start}} - {{end}}",
+    "roomLabel": "Phòng {{room}}"
+    ,
+    "roomFilter": {
+      "searchPlaceholder": "Tìm phòng..."
+    },
+    "roomGrid": {
+      "days": {
+        "0": "Thứ 2",
+        "1": "Thứ 3",
+        "2": "Thứ 4",
+        "3": "Thứ 5",
+        "4": "Thứ 6",
+        "5": "Thứ 7",
+        "6": "Chủ nhật"
+      }
+    },
+    "table": {
+      "loading": "Đang tải...",
+      "subjectFallback": "Môn học"
+    }
+  },
+  "courseRegistration": {
+    "searchPlaceholder": "Tìm theo mã lớp, tên lớp, môn học, giảng viên, chuyên ngành...",
+    "registerButton": "Đăng ký học phần",
+    "messages": {
+      "noSelection": "Chưa chọn lớp học phần",
+      "noStudent": "Không xác định được sinh viên đăng ký",
+      "success": "Đăng ký học phần thành công",
+      "failure": "Đăng ký học phần thất bại"
+    },
+    "common": {
+      "cancel": "Huỷ",
+      "confirm": "Đồng ý",
+      "add": "Thêm",
+      "save": "Lưu"
+    },
+    "confirm": {
+      "exitTitle": "Xác nhận thoát",
+      "exitMessage": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "saveTitle": "Xác nhận lưu",
+      "saveMessage": "Bạn có chắc muốn lưu các thay đổi?"
+    },
+    "table": {
+      "classCode": "Mã lớp",
+      "className": "Tên lớp",
+      "size": "Sĩ số",
+      "subjectCode": "Mã môn",
+      "subjectName": "Môn học",
+      "credits": "Số tín chỉ"
+    },
+    "form": {
+      "titleAdd": "ADD CLASS",
+      "titleEdit": "EDIT CLASS",
+      "labels": {
+        "classCode": "Mã lớp",
+        "className": "Tên lớp",
+        "size": "Sĩ số",
+        "classType": "Loại lớp",
+        "registrationStatus": "Trạng thái đăng ký",
+        "subject": "Môn học",
+        "specialization": "Chuyên Ngành",
+        "teacher": "Giáo viên chủ nhiệm"
+      },
+      "placeholders": {
+        "selectSubject": "Chọn môn học"
+      },
+      "messages": {
+        "addSuccess": "Thêm lớp thành công!",
+        "updateSuccess": "Cập nhật lớp thành công!",
+        "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+      },
+      "errors": {
+        "classCodeRequired": "Mã lớp là bắt buộc!",
+        "teacherRequired": "Giáo viên chủ nhiệm là bắt buộc!",
+        "specializationRequired": "Chuyên ngành là bắt buộc!"
+      }
+    }
+  },
+  "grades": {
+    "title": "KẾT QUẢ HỌC TẬP",
+    "messages": {
+      "noStudent": "Không tìm thấy thông tin sinh viên đăng nhập.",
+      "loadFailed": "Lấy dữ liệu điểm thất bại",
+      "noData": "Không có dữ liệu điểm",
+      "noFinalScore": "Chưa có điểm thi"
+    },
+    "common": {
+      "all": "Tất cả",
+      "notSupported": "Chưa hỗ trợ"
+    },
+    "filters": {
+      "semester": "Học kỳ",
+      "academicYear": "Năm học",
+      "major": "Ngành học",
+      "subject": "Học phần",
+      "semesterLabel": "Kỳ {{semester}}"
+    },
+    "table": {
+      "actions": "Actions",
+      "note": "Ghi chú",
+      "index": "STT",
+      "subjectCode": "Mã học phần",
+      "subjectName": "Tên học phần",
+      "credits": "Số tín chỉ",
+      "weight": "Hệ số",
+      "componentScores": "Điểm thành phần",
+      "retakeScores": "Điểm học lại",
+      "average": "Trung bình môn",
+      "d1": "Đ1",
+      "d2": "Đ2",
+      "final": "Thi",
+      "scale10": "Hệ 10",
+      "scale4": "Hệ 4",
+      "letterGrade": "Điểm chữ"
+    },
+    "summary": {
+      "studentCode": "MSV",
+      "studentName": "Họ và tên",
+      "rank4": "Xếp loại H4",
+      "rank10": "Xếp loại H10",
+      "gpa4": "TBC H4",
+      "accumulatedGpa4": "TBC TL H4",
+      "accumulatedGpa10": "TBC TL H10",
+      "accumulatedCredits": "Số tín chỉ tích lũy",
+      "studiedCredits": "Số tín chỉ học tập"
+    }
+  },
+  "learningSchedule": {
+    "title": "Lịch học",
+    "weekdays": {
+      "0": "Chủ Nhật",
+      "1": "Thứ Hai",
+      "2": "Thứ Ba",
+      "3": "Thứ Tư",
+      "4": "Thứ Năm",
+      "5": "Thứ Sáu",
+      "6": "Thứ Bảy"
+    },
+    "periodLabel": "Tiết {{period}}",
+    "periodRange": "Tiết {{start}} - {{end}}",
+    "roomLabel": "Phòng {{room}}",
+    "subjectFallback": "Môn học"
+  },
+  "weekPicker": {
+    "currentWeek": "Tuần hiện tại",
+    "previousWeek": "Tuần trước",
+    "nextWeek": "Tuần sau"
   }
 }

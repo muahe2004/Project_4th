@@ -1,5 +1,6 @@
 import { useState } from "react";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 import {
     Box,
@@ -28,6 +29,7 @@ import MiniCalender from "../components/MiniCalender";
 import "./styles/CourseRegistration.css";
 
 export function CourseRegistration() {
+    const { t } = useTranslation();
     const { showSnackbar } = useSnackbar();
     const user = useAuthStore((state) => state.user);
     const [page, setPage] = useState(1);
@@ -68,12 +70,12 @@ export function CourseRegistration() {
     const handleRegisterCourses = () => {
         const selectedRows = rows.filter((row) => selectedClassIds.includes(row.class_info.id));
         if (selectedRows.length === 0) {
-            showSnackbar("Chưa chọn lớp học phần", "error");
+            showSnackbar(t("courseRegistration.messages.noSelection"), "error");
             return;
         }
 
         if (!user?.id) {
-            showSnackbar("Không xác định được sinh viên đăng ký", "error");
+            showSnackbar(t("courseRegistration.messages.noStudent"), "error");
             return;
         }
 
@@ -88,10 +90,10 @@ export function CourseRegistration() {
             })),
         })
             .then(() => {
-                showSnackbar("Đăng ký học phần thành công", "success");
+                showSnackbar(t("courseRegistration.messages.success"), "success");
             })
             .catch((error: any) => {
-                const detail = error?.response?.data?.detail ?? error?.data?.detail ?? "Đăng ký học phần thất bại";
+                const detail = error?.response?.data?.detail ?? error?.data?.detail ?? t("courseRegistration.messages.failure");
                 showSnackbar(detail, "error");
             });
     };
@@ -100,7 +102,7 @@ export function CourseRegistration() {
         <main className="admin-main-container">
             <Box className="admin-main-box course-registration__toolbar">
                 <SearchEngine
-                    placeholder="Tìm theo mã lớp, tên lớp, môn học, giảng viên, chuyên ngành..."
+                    placeholder={t("courseRegistration.searchPlaceholder")}
                     onSearch={(val) => {
                         setSearch(val);
                         setPage(1);
@@ -111,7 +113,7 @@ export function CourseRegistration() {
                     onClick={handleRegisterCourses}
                     disabled={isRegisteringCourse}
                 >
-                    Đăng ký học phần
+                    {t("courseRegistration.registerButton")}
                 </Button>
             </Box>
 
@@ -141,22 +143,22 @@ export function CourseRegistration() {
                                         />
                                     </TableCell>
                                     <TableCell className="primary-thead__cell" align="center">
-                                        Mã lớp
+                                        {t("courseRegistration.table.classCode")}
                                     </TableCell>
                                     <TableCell className="primary-thead__cell department-name-tcell" align="center">
-                                        Tên lớp
+                                        {t("courseRegistration.table.className")}
                                     </TableCell>
                                     <TableCell className="primary-thead__cell" align="center">
-                                        Sĩ số
+                                        {t("courseRegistration.table.size")}
                                     </TableCell>
                                     <TableCell className="primary-thead__cell" align="center">
-                                        Mã môn
+                                        {t("courseRegistration.table.subjectCode")}
                                     </TableCell>
                                     <TableCell className="primary-thead__cell" align="center">
-                                        Môn học
+                                        {t("courseRegistration.table.subjectName")}
                                     </TableCell>
                                     <TableCell className="primary-thead__cell" align="center">
-                                        Số tín chỉ
+                                        {t("courseRegistration.table.credits")}
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
