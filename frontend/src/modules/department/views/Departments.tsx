@@ -30,8 +30,10 @@ import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useDeleteDepartment } from "../apis/deleteDepartment";
+import { useTranslation } from "react-i18next";
 
 export function Departments() {
+    const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("");
@@ -58,20 +60,20 @@ export function Departments() {
 
     const handleDeleteDepartment = (departmentId?: string) => {
         if (!departmentId) {
-            showSnackbar("Không tìm thấy mã khoa để xoá", "error");
+            showSnackbar(t("departments.messages.missingId"), "error");
             return;
         }
 
-        if (!window.confirm("Bạn có chắc muốn xoá khoa này không?")) {
+        if (!window.confirm(t("departments.confirmDelete"))) {
             return;
         }
 
         deleteDepartmentMutation.mutate(departmentId, {
             onSuccess: () => {
-                showSnackbar("Xoá khoa thành công", "success");
+                showSnackbar(t("departments.messages.deleteSuccess"), "success");
             },
             onError: (error: any) => {
-                const detail = error?.response?.data?.detail ?? "Xoá khoa thất bại";
+                const detail = error?.response?.data?.detail ?? t("departments.messages.deleteFailed");
                 showSnackbar(detail, "error");
             }
         });
@@ -90,8 +92,8 @@ export function Departments() {
             <BreadCrumb
                 className="department-breadcrumb"
                 items={[
-                    { label: "Dashboard", to: dashBoardUrl },
-                    { label: "Departments" },
+                    { label: t("departments.breadcrumb.dashboard"), to: dashBoardUrl },
+                    { label: t("departments.breadcrumb.title") },
                 ]}
             />
             <Box className="admin-main-box">
@@ -102,7 +104,7 @@ export function Departments() {
                 />
                 
                 <SearchEngine 
-                    placeholder="Tìm theo tên khoa, mã " 
+                    placeholder={t("departments.searchPlaceholder")}
                     onSearch={(val) => {
                         setSearch(val);
                         setPage(1);
@@ -114,7 +116,7 @@ export function Departments() {
                         setOpen(true);
                     }}
                     className="btn-spacing-left">
-                    Add Department
+                    {t("departments.addDepartment")}
                 </Button>
             </Box>
 
@@ -126,19 +128,19 @@ export function Departments() {
                     <TableHead className="primary-thead">
                         <TableRow className="primary-trow">
                             <TableCell className="primary-thead__cell" align="center">
-                                Mã khoa
+                                {t("departments.table.departmentCode")}
                             </TableCell>
                             <TableCell className="primary-thead__cell department-name-tcell" align="center">
-                                Tên khoa
+                                {t("departments.table.departmentName")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Ngày thành lập
+                                {t("departments.table.establishedDate")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Trạng thái
+                                {t("departments.table.status")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Actions
+                                {t("departments.table.actions")}
                             </TableCell>
                         </TableRow>
                     </TableHead>

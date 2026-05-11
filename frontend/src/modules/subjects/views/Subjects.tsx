@@ -15,10 +15,12 @@ import { useGetSubjects } from "../apis/getSubjects";
 import SubjectFormModel from "../components/SubjectFormModel";
 import SubjectsTable from "../components/SubjectsTable";
 import type { ISubject } from "../types";
+import { useTranslation } from "react-i18next";
 
 import "./styles/Subjects.css";
 
 export function Subjects() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState("");
@@ -48,22 +50,22 @@ export function Subjects() {
 
   const handleDeleteSubject = (subject?: ISubject) => {
     if (!subject?.id) {
-      showSnackbar("Không tìm thấy mã học phần để xoá", "error");
+      showSnackbar(t("subjects.messages.missingId"), "error");
       return;
     }
 
-    if (!window.confirm("Bạn có chắc muốn xoá học phần này không?")) {
+    if (!window.confirm(t("subjects.confirmDelete"))) {
       return;
     }
 
     deleteSubjectMutation.mutate([subject.id], {
       onSuccess: (responses) => {
-        const message = responses?.[0]?.message ?? "Xoá học phần thành công";
+        const message = responses?.[0]?.message ?? t("subjects.messages.deleteSuccess");
         showSnackbar(message, "success");
         void refetch();
       },
       onError: (error: any) => {
-        const detail = error?.response?.data?.detail ?? "Xoá học phần thất bại";
+        const detail = error?.response?.data?.detail ?? t("subjects.messages.deleteFailed");
         showSnackbar(detail, "error");
       },
     });
@@ -82,8 +84,8 @@ export function Subjects() {
       <BreadCrumb
         className="subjects-breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
-          { label: "Subjects" },
+          { label: t("subjects.breadcrumb.dashboard"), to: dashBoardUrl },
+          { label: t("subjects.breadcrumb.title") },
         ]}
       />
 
@@ -98,7 +100,7 @@ export function Subjects() {
         />
 
         <SearchEngine
-          placeholder="Tìm theo tên học phần, mã học phần..."
+          placeholder={t("subjects.searchPlaceholder")}
           onSearch={(value) => {
             setSearch(value);
             setPage(1);
@@ -113,7 +115,7 @@ export function Subjects() {
           }}
           className="btn-spacing-left"
         >
-          Add Subject
+          {t("subjects.addSubject")}
         </Button>
       </Box>
 

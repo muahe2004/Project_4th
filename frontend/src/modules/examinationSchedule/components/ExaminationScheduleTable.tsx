@@ -15,6 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 import type { IExaminationScheduleResponse } from "../types";
+import { useTranslation } from "react-i18next";
 
 interface ExaminationScheduleTableProps {
   examinationSchedules?: {
@@ -30,6 +31,7 @@ export function ExaminationScheduleTable({
   onEdit,
   onDelete,
 }: ExaminationScheduleTableProps) {
+  const { t } = useTranslation();
   const rows = examinationSchedules?.data ?? [];
 
   return (
@@ -38,31 +40,31 @@ export function ExaminationScheduleTable({
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
             <TableCell className="primary-thead__cell" align="center">
-              Lớp
+              {t("examinationSchedules.table.class")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Môn thi
+              {t("examinationSchedules.table.subject")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Ngày thi
+              {t("examinationSchedules.table.date")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Giờ thi
+              {t("examinationSchedules.table.time")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Phòng
+              {t("examinationSchedules.table.room")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Giám thị 1
+              {t("examinationSchedules.table.invigilator1")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Giám thị 2
+              {t("examinationSchedules.table.invigilator2")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Trạng thái
+              {t("examinationSchedules.table.status")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Actions
+              {t("examinationSchedules.table.actions")}
             </TableCell>
           </TableRow>
         </TableHead>
@@ -70,7 +72,7 @@ export function ExaminationScheduleTable({
           {rows.length === 0 && (
             <TableRow className="sticky-trow">
               <TableCell className="sticky-tcell" align="center" colSpan={9}>
-                Không có dữ liệu
+                {t("examinationSchedules.table.empty")}
               </TableCell>
             </TableRow>
           )}

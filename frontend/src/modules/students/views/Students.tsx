@@ -17,8 +17,10 @@ import { useExportExampleFile } from "../apis/exportExampleFile";
 import { useImportStudents } from "../apis/importStudents";
 import { useUploadStudent } from "../apis/uploadStudent";
 import type { IStudentUploadResponse, IStudentsResponse } from "../types";
+import { useTranslation } from "react-i18next";
 
 export function Students() {
+    const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("");
@@ -80,8 +82,8 @@ export function Students() {
             <BreadCrumb
                 className="students-breadcrumb"
                 items={[
-                    { label: "Dashboard", to: dashBoardUrl },
-                    { label: "Students" },
+                    { label: t("students.breadcrumb.dashboard"), to: dashBoardUrl },
+                    { label: t("students.breadcrumb.title") },
                 ]}
             />
 
@@ -92,8 +94,8 @@ export function Students() {
                     options={STATUS_OPTIONS}
                 />
                 
-                <SearchEngine 
-                    placeholder="Tìm theo tên khoa, mã " 
+                <SearchEngine
+                    placeholder={t("students.searchPlaceholder")}
                     onSearch={(val) => {
                         setSearch(val);
                         setPage(1);
@@ -106,7 +108,7 @@ export function Students() {
                         setOpen(true);
                     }}
                     className="btn-spacing-left">
-                    Add Student
+                    {t("students.addStudent")}
                 </Button>
 
                 <Button
@@ -115,14 +117,14 @@ export function Students() {
                     }}
                     disabled={isExportingExampleFile}
                     className="btn-spacing-left">
-                    {isExportingExampleFile ? "Đang xuất file..." : "Xuất file mẫu"}
+                    {isExportingExampleFile ? t("students.exporting") : t("students.exportTemplate")}
                 </Button>
 
                 <Button
                     onClick={handleOpenImportFilePicker}
                     disabled={isUploadingStudentFile}
                     className="btn-spacing-left">
-                    {isUploadingStudentFile ? "Importing..." : "Import Student"}
+                    {isUploadingStudentFile ? t("students.uploading") : t("students.importStudent")}
                 </Button>
                 <input
                     ref={fileInputRef}

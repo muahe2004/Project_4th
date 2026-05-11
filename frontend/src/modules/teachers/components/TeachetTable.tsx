@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useTranslation } from "react-i18next";
 
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
@@ -22,31 +23,33 @@ interface TeacherTableProps {
 }
 
 export function TeacherTable({ teachers, onEdit, onDelete }: TeacherTableProps) {
+  const { t } = useTranslation();
+
   return (
     <TableContainer className="sticky-table-container" component={Paper}>
       <Table stickyHeader className="sticky-table" aria-label="teachers table">
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
-            <TableCell className="primary-thead__cell" align="center">
-              Mã giảng viên
+              <TableCell className="primary-thead__cell" align="center">
+              {t("teachers.table.teacherCode")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="left">
-              Tên giảng viên
+              {t("teachers.table.teacherName")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="left">
-              Email
+              {t("teachers.table.email")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Số điện thoại
+              {t("teachers.table.phone")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="left">
-              Khoa
+              {t("teachers.table.department")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Trạng thái
+              {t("teachers.table.status")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Actions
+              {t("common.actions")}
             </TableCell>
           </TableRow>
         </TableHead>

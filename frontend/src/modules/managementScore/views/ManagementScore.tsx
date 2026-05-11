@@ -1,5 +1,6 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { Alert, Box, CircularProgress } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
@@ -17,6 +18,7 @@ import "./styles/ManagementScore.css";
 const DEFAULT_ROWS_PER_PAGE = 10;
 
 export function ManagementScore() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [search, setSearch] = useState("");
@@ -57,7 +59,7 @@ export function ManagementScore() {
       setImportPreview(uploadedResult);
     } catch (uploadError) {
       console.error("Upload score file failed:", uploadError);
-      setImportScoreError((uploadError as any)?.response?.data?.detail ?? "Upload score file failed");
+      setImportScoreError((uploadError as any)?.response?.data?.detail ?? t("managementScore.actions.uploadFailed"));
     } finally {
       setIsUploadingScorePreview(false);
       event.target.value = "";
@@ -69,14 +71,14 @@ export function ManagementScore() {
       <BreadCrumb
         className="management-score-breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
-          { label: "Quản lý điểm" },
+          { label: t("common.dashboard"), to: dashBoardUrl },
+          { label: t("managementScore.title") },
         ]}
       />
 
       <Box className="admin-main-box">
         <SearchEngine
-          placeholder="Tìm theo mã sinh viên, tên sinh viên..."
+          placeholder={t("managementScore.searchPlaceholder")}
           onSearch={(value) => {
             setSearch(value);
             setPage(1);
@@ -87,7 +89,7 @@ export function ManagementScore() {
           disabled={isUploadingScoreFile}
           className="management-score__import-button"
         >
-          {isUploadingScoreFile ? "Uploading..." : "Import Score"}
+          {isUploadingScoreFile ? t("managementScore.actions.uploading") : t("managementScore.actions.import")}
         </Button>
         <input
           ref={fileInputRef}
@@ -104,7 +106,7 @@ export function ManagementScore() {
         </Box>
       ) : isError ? (
         <Alert severity="error">
-          {(error as any)?.response?.data?.detail ?? "Lấy dữ liệu điểm thất bại"}
+          {(error as any)?.response?.data?.detail ?? t("managementScore.errors.loadData")}
         </Alert>
       ) : (
         <>

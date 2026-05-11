@@ -14,6 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 import type { ISubject } from "../types";
+import { useTranslation } from "react-i18next";
 
 interface SubjectsTableProps {
   subjects?: {
@@ -25,25 +26,26 @@ interface SubjectsTableProps {
 }
 
 export function SubjectsTable({ subjects, onEdit, onDelete }: SubjectsTableProps) {
+  const { t } = useTranslation();
   return (
     <TableContainer className="sticky-table-container" component={Paper}>
       <Table stickyHeader className="sticky-table" aria-label="subjects table">
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
             <TableCell className="primary-thead__cell" align="center">
-              Mã học phần
+              {t("subjects.table.subjectCode")}
             </TableCell>
             <TableCell className="primary-thead__cell subject-name-tcell" align="center">
-              Tên học phần
+              {t("subjects.table.subjectName")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Số tín chỉ
+              {t("subjects.table.credit")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Trạng thái
+              {t("subjects.table.status")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Actions
+              {t("subjects.table.actions")}
             </TableCell>
           </TableRow>
         </TableHead>

@@ -8,6 +8,7 @@ import {
     FormControl,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
+import { useTranslation } from "react-i18next";
 
 interface ClearableSelectProps {
     label?: string;
@@ -22,8 +23,12 @@ const StatusFilter: React.FC<ClearableSelectProps> = ({
     value,
     onChange,
     options,
+    placeholder,
     className = "",
 }) => {
+    const { t } = useTranslation();
+    const resolvedPlaceholder = placeholder ?? t("common.selectStatus", "Chọn trạng thái");
+
     return (
         <FormControl variant="outlined" className={`main-text__field filter-text__field ${className}`}>
             <Select
@@ -34,9 +39,7 @@ const StatusFilter: React.FC<ClearableSelectProps> = ({
                     selected ? (
                         options.find(o => o.value === selected)?.label
                     ) : (
-                        <span style={{ color: "#9e9e9e" }}>
-                            Chọn trạng thái
-                        </span>
+                        <span style={{ color: "#9e9e9e" }}>{resolvedPlaceholder}</span>
                     )
                 }
                 input={

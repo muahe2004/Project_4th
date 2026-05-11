@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
@@ -72,6 +73,7 @@ const TrainingProgramFormModel = ({
   initialValues,
   onClose,
 }: TrainingProgramFormModelProps) => {
+  const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const id = initialValues?.id;
 
@@ -172,13 +174,13 @@ const TrainingProgramFormModel = ({
         };
 
         await addTrainingProgram(payload);
-        showSnackbar("Thêm chương trình đào tạo thành công!", "success");
+        showSnackbar(t("trainingProgram.messages.addSuccess"), "success");
       } else if (mode === "edit" && id) {
         const payload: ITrainingProgramUpdate = {
           ...currentValues,
           subjects: subjects.map((subject) => {
             if (!subject.subject_id) {
-              throw new Error("Missing subject_id for training program update.");
+              throw new Error(t("trainingProgram.messages.missingSubjectId"));
             }
 
             return {
@@ -189,24 +191,24 @@ const TrainingProgramFormModel = ({
         };
 
         await updateTrainingProgram({ id, data: payload });
-        showSnackbar("Cập nhật chương trình đào tạo thành công!", "success");
+        showSnackbar(t("trainingProgram.messages.updateSuccess"), "success");
       }
 
       setOpenConfirmSave(false);
       onClose();
     } catch (error) {
       console.error(error);
-      showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+      showSnackbar(t("trainingProgram.messages.genericError"), "error");
     }
   };
 
   return (
     <Dialog open={open} onClose={handleCloseClick} className="primary-dialog department-form" maxWidth="sm" fullWidth>
       <DialogTitle className="primary-dialog-title">
-        {mode === "add" ? "ADD TRAINING PROGRAM" : "EDIT TRAINING PROGRAM"}
+        {mode === "add" ? t("trainingProgram.form.titleAdd") : t("trainingProgram.form.titleEdit")}
       </DialogTitle>
       <DialogContent className="primary-dialog-content">
-        <LabelPrimary value="Loại CTĐT" required />
+        <LabelPrimary value={t("trainingProgram.form.programType")} required />
         <Select
           value={programType}
           onChange={(e) => setProgramType(String(e.target.value))}
@@ -215,7 +217,7 @@ const TrainingProgramFormModel = ({
           className="main-text__field primary-dialog-input"
           renderValue={(value) => {
             const selected = TRAINING_PROGRAM_TYPE_OPTIONS.find((option) => option.value === value);
-            return selected?.label || "Chọn loại CTĐT";
+            return selected?.label || t("trainingProgram.form.selectProgramType");
           }}
         >
           {TRAINING_PROGRAM_TYPE_OPTIONS.map((option) => (
@@ -225,7 +227,7 @@ const TrainingProgramFormModel = ({
           ))}
         </Select>
 
-        <LabelPrimary value="Tên CTĐT" />
+        <LabelPrimary value={t("trainingProgram.form.programName")} />
         <TextField
           value={trainingProgramName}
           onChange={(e) => setTrainingProgramName(e.target.value)}
@@ -234,7 +236,7 @@ const TrainingProgramFormModel = ({
           className="main-text__field primary-dialog-input"
         />
 
-        <LabelPrimary value="Niên khoá" required />
+        <LabelPrimary value={t("trainingProgram.form.academicYear")} required />
         <Select
           value={academicYear}
           onChange={(e) => setAcademicYear(String(e.target.value))}
@@ -243,7 +245,7 @@ const TrainingProgramFormModel = ({
           className="main-text__field primary-dialog-input"
           renderValue={(value) => {
             const selected = ACADEMIC_YEAR_OPTIONS.find((option) => option.value === value);
-            return selected?.label || "Chọn niên khoá";
+            return selected?.label || t("trainingProgram.form.selectAcademicYear");
           }}
         >
           {ACADEMIC_YEAR_OPTIONS.map((option) => (
@@ -253,7 +255,7 @@ const TrainingProgramFormModel = ({
           ))}
         </Select>
 
-        <LabelPrimary value="Chuyên ngành" required />
+        <LabelPrimary value={t("trainingProgram.form.specialization")} required />
         <MainAutocomplete
           options={autocompleteOptions}
           value={specializationId}
@@ -261,17 +263,17 @@ const TrainingProgramFormModel = ({
           onSearchChange={setSearchSpecialization}
           getOptionLabel={(option) => option.name}
           getOptionId={(option) => option.id}
-          placeholder="Chọn chuyên ngành"
+          placeholder={t("trainingProgram.form.selectSpecialization")}
         />
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 12 }}>
-          <LabelPrimary value="Môn học" required />
+          <LabelPrimary value={t("trainingProgram.form.subjects")} required />
           <Button onClick={() => {
             setEditingSubjectIndex(-1);
             setEditingSubject({ subject_code: null, subject_name: null, term: null });
             setOpenSubjectDialog(true);
           }} className="btn-spacing-left">
-            Thêm môn
+            {t("trainingProgram.form.addSubject")}
           </Button>
         </div>
 
@@ -279,10 +281,10 @@ const TrainingProgramFormModel = ({
           <Table stickyHeader className="sticky-table" aria-label="training program subjects table">
             <TableHead className="primary-thead">
               <TableRow className="primary-trow">
-                <TableCell className="primary-thead__cell" align="center">Mã môn</TableCell>
-                <TableCell className="primary-thead__cell" align="left">Tên môn</TableCell>
-                <TableCell className="primary-thead__cell" align="center">Học kỳ</TableCell>
-                <TableCell className="primary-thead__cell" align="center">Actions</TableCell>
+                <TableCell className="primary-thead__cell" align="center">{t("trainingProgram.form.table.subjectCode")}</TableCell>
+                <TableCell className="primary-thead__cell" align="left">{t("trainingProgram.form.table.subjectName")}</TableCell>
+                <TableCell className="primary-thead__cell" align="center">{t("trainingProgram.form.table.term")}</TableCell>
+                <TableCell className="primary-thead__cell" align="center">{t("common.actions")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -314,7 +316,7 @@ const TrainingProgramFormModel = ({
               {subjects.length === 0 && (
                 <TableRow className="sticky-trow">
                   <TableCell className="sticky-tcell" colSpan={4} align="center">
-                    <Typography sx={{ py: 1, color: "#64748b" }}>Chưa có môn học nào</Typography>
+                    <Typography sx={{ py: 1, color: "#64748b" }}>{t("trainingProgram.form.noSubjects")}</Typography>
                   </TableCell>
                 </TableRow>
               )}
@@ -323,16 +325,16 @@ const TrainingProgramFormModel = ({
         </TableContainer>
       </DialogContent>
       <DialogActions className="primary-dialog-actions">
-        <Button onClick={handleCloseClick} className="button-cancel">Hủy</Button>
+        <Button onClick={handleCloseClick} className="button-cancel">{t("common.cancel")}</Button>
         <Button onClick={handleSubmitClick} variant="contained">
-          {mode === "add" ? "Thêm" : "Lưu"}
+          {mode === "add" ? t("common.add") : t("common.save")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirm}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+        title={t("common.confirmExitTitle")}
+        message={t("trainingProgram.form.confirmExit")}
         onConfirm={() => {
           setOpenConfirm(false);
           onClose();
@@ -343,8 +345,8 @@ const TrainingProgramFormModel = ({
       {mode === "edit" && (
         <ConfirmDialog
           open={openConfirmSave}
-          title="Xác nhận lưu"
-          message="Bạn có chắc muốn lưu các thay đổi?"
+          title={t("trainingProgram.form.confirmSaveTitle")}
+          message={t("trainingProgram.form.confirmSave")}
           onConfirm={handleConfirmSave}
           onCancel={() => setOpenConfirmSave(false)}
         />

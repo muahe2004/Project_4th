@@ -14,7 +14,10 @@ function formatDate(dateValue: string): string {
   return `${day}/${month}/${year}`;
 }
 
-function buildTooltip(schedules?: ITeachingScheduleWithRelations[]): string {
+function buildTooltip(
+  schedules: ITeachingScheduleWithRelations[] | undefined,
+  t: (key: string, options?: Record<string, unknown>) => string
+): string {
   if (!schedules || schedules.length === 0) {
     return "";
   }
@@ -28,11 +31,11 @@ function buildTooltip(schedules?: ITeachingScheduleWithRelations[]): string {
       const roomNumber = schedule.room?.room_number ?? "-";
       return [
         `${index + 1}. ${formatDate(schedule.learning_schedule.date)}`,
-        `Lớp: ${className}`,
-        `Môn: ${subjectName}`,
-        `Giảng viên: ${teacherName}`,
-        `Phòng: ${roomNumber}`,
-        `Tiết: ${schedule.learning_schedule.start_period}-${schedule.learning_schedule.end_period}`,
+        `${t("teachingSchedules.tooltip.class")}: ${className}`,
+        `${t("teachingSchedules.tooltip.subject")}: ${subjectName}`,
+        `${t("teachingSchedules.tooltip.teacher")}: ${teacherName}`,
+        `${t("teachingSchedules.tooltip.room")}: ${roomNumber}`,
+        `${t("teachingSchedules.tooltip.period")}: ${schedule.learning_schedule.start_period}-${schedule.learning_schedule.end_period}`,
       ].join("\n");
     })
     .join("\n\n");
@@ -48,7 +51,7 @@ export function TeachingPeriodCell({ period, schedules }: TeachingPeriodCellProp
       className={`teaching-room-cell ${
         hasSchedule ? "teaching-room-cell--busy" : "teaching-room-cell--empty"
       }`}
-      title={buildTooltip(schedules)}
+      title={buildTooltip(schedules, t)}
     >
       <span>{t("teachingSchedules.periodNumber", { period })}</span>
       {itemCount > 1 && (

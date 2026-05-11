@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
@@ -51,6 +52,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
     initialValues,
     onClose,
 }) => {
+    const { t } = useTranslation();
     const { showSnackbar } = useSnackbar();
     const ID = initialValues?.id;
 
@@ -144,9 +146,9 @@ const ClassForm: React.FC<ClassFormProps> = ({
     const { mutateAsync: editClass } = useEditClass({});
 
     const validationRules: Record<keyof typeof formValues, (value: any) => string> = {
-        classCode: (value) => (!isRequired(value) ? "Mã lớp là bắt buộc!" : ""),
-        teacherId: (value) => (!isRequired(value) ? "Giáo viên chủ nhiệm là bắt buộc!" : ""),
-        specializationId: (value) => (!isRequired(value) ? "Chuyên ngành là bắt buộc!" : ""),
+        classCode: (value) => (!isRequired(value) ? t("classes.form.errors.classCodeRequired") : ""),
+        teacherId: (value) => (!isRequired(value) ? t("classes.form.errors.teacherRequired") : ""),
+        specializationId: (value) => (!isRequired(value) ? t("classes.form.errors.specializationRequired") : ""),
         className: () => "",
         size: () => "",
         classType: () => "",
@@ -163,7 +165,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
             return "";
         }
         if (dayjs(openAt).isAfter(dayjs(closeAt))) {
-            return "Thời gian mở đăng ký phải nhỏ hơn hoặc bằng thời gian đóng đăng ký";
+            return t("classes.form.errors.registrationWindow");
         }
         return "";
     };
@@ -356,7 +358,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 await editClass({ id: ID, data: payload });
 
             showSnackbar(
-                mode === "add" ? "Thêm lớp thành công!" : "Cập nhật lớp thành công!",
+                mode === "add" ? t("classes.messages.addSuccess") : t("classes.messages.updateSuccess"),
                 "success"
             );
 
@@ -364,7 +366,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
             onClose();
         } catch (error) {
             console.error(error);
-            showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+            showSnackbar(t("classes.messages.genericError"), "error");
         }
     };
 
@@ -377,13 +379,13 @@ const ClassForm: React.FC<ClassFormProps> = ({
             fullWidth
         >
             <DialogTitle className="primary-dialog-title">
-                {mode === "add" ? "ADD CLASS" : "EDIT CLASS"}
+                {mode === "add" ? t("classes.form.titleAdd") : t("classes.form.titleEdit")}
             </DialogTitle>
 
             <DialogContent className="primary-dialog-content">
                 <Grid container spacing={2}>
                     <Grid size={6}>
-                        <LabelPrimary value="Mã lớp" required />
+                        <LabelPrimary value={t("classes.form.labels.classCode")} required />
                         <TextField
                             value={formValues.classCode}
                             onChange={(e) =>
@@ -399,7 +401,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Tên lớp" />
+                        <LabelPrimary value={t("classes.form.labels.className")} />
                         <TextField
                             value={formValues.className}
                             onChange={(e) =>
@@ -412,7 +414,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Sĩ số" />
+                        <LabelPrimary value={t("classes.form.labels.size")} />
                         <TextField
                             type="number"
                             value={formValues.size}
@@ -426,7 +428,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Loại lớp" />
+                        <LabelPrimary value={t("classes.form.labels.classType")} />
                         <TextField
                             select
                             value={formValues.classType}
@@ -446,7 +448,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Trạng thái đăng ký" />
+                        <LabelPrimary value={t("classes.form.labels.registrationStatus")} />
                         <TextField
                             select
                             value={formValues.registrationStatus}
@@ -469,7 +471,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Mở đăng ký lúc" />
+                        <LabelPrimary value={t("classes.form.labels.registrationOpenAt")} />
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
                                 value={toDateValue(formValues.registrationOpenAt)}
@@ -498,7 +500,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Đóng đăng ký lúc" />
+                        <LabelPrimary value={t("classes.form.labels.registrationCloseAt")} />
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
                                 value={toDateValue(formValues.registrationCloseAt)}
@@ -527,7 +529,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Môn học" />
+                        <LabelPrimary value={t("classes.form.labels.subject")} />
                         <MainAutocomplete
                             options={subjectOptions}
                             value={
@@ -549,12 +551,12 @@ const ClassForm: React.FC<ClassFormProps> = ({
                             }
                             getOptionId={(option) => option.id?.toString() || ""}
                             className="primary-dialog-input"
-                            placeholder="Chọn môn học"
+                            placeholder={t("classes.form.placeholders.subject")}
                         />
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Chuyên Ngành" required />
+                        <LabelPrimary value={t("classes.form.labels.specialization")} required />
                         <MainAutocomplete
                             options={specializationOptions}
                             value={
@@ -587,7 +589,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                     </Grid>
 
                     <Grid size={6}>
-                        <LabelPrimary value="Giáo viên chủ nhiệm" required />
+                        <LabelPrimary value={t("classes.form.labels.teacher")} required />
                         <MainAutocomplete
                             options={teacherOptions}
                             value={
@@ -619,17 +621,17 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
             <DialogActions className="primary-dialog-actions">
                 <Button onClick={handleCloseClick} className="button-cancel">
-                    Hủy
+                    {t("common.cancel")}
                 </Button>
                 <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
-                    {mode === "add" ? "Thêm" : "Lưu"}
+                    {mode === "add" ? t("common.add") : t("common.save")}
                 </Button>
             </DialogActions>
 
             <ConfirmDialog
                 open={openConfirm}
-                title="Xác nhận thoát"
-                message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+                title={t("common.confirmExitTitle")}
+                message={t("classes.form.confirmExit")}
                 onConfirm={() => {
                     setOpenConfirm(false);
                     onClose();
@@ -639,8 +641,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
             <ConfirmDialog
                 open={confirm.save}
-                title="Xác nhận lưu"
-                message="Bạn có chắc muốn lưu các thay đổi?"
+                title={t("classes.form.confirmSaveTitle")}
+                message={t("classes.form.confirmSave")}
                 onConfirm={() => confirm.pendingPayload && handleConfirmSave(confirm.pendingPayload)}
                 onCancel={() => setConfirm({ ...confirm, save: false })}
             />

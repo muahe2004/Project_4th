@@ -7,6 +7,7 @@ import {
   TextField,
 } from "@mui/material";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
@@ -32,6 +33,7 @@ export function RoomFormModel({
   initialValues,
   onClose,
 }: RoomFormModelProps) {
+  const { t } = useTranslation();
   const roomId = initialValues?.id;
   const { showSnackbar } = useSnackbar();
 
@@ -94,16 +96,16 @@ export function RoomFormModel({
   const validateForm = (): boolean => {
     const roomNumberValue = Number(roomNumber);
     if (!Number.isInteger(roomNumberValue) || roomNumberValue <= 0) {
-      showSnackbar("Số phòng phải là số nguyên dương", "error");
+      showSnackbar(t("rooms.form.errors.roomNumber"), "error");
       return false;
     }
     if (!roomType.trim()) {
-      showSnackbar("Loại phòng là bắt buộc", "error");
+      showSnackbar(t("rooms.form.errors.roomType"), "error");
       return false;
     }
     const seatsValue = Number(seats);
     if (!Number.isInteger(seatsValue) || seatsValue <= 0) {
-      showSnackbar("Số chỗ ngồi phải là số nguyên dương", "error");
+      showSnackbar(t("rooms.form.errors.seats"), "error");
       return false;
     }
     return true;
@@ -155,14 +157,14 @@ export function RoomFormModel({
       }
 
       showSnackbar(
-        mode === "add" ? "Thêm phòng thành công!" : "Cập nhật phòng thành công!",
+        mode === "add" ? t("rooms.messages.addSuccess") : t("rooms.messages.updateSuccess"),
         "success"
       );
       setOpenConfirmSave(false);
       onClose();
     } catch (error) {
       console.error(error);
-      showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+      showSnackbar(t("rooms.messages.genericError"), "error");
     }
   };
 
@@ -175,11 +177,11 @@ export function RoomFormModel({
       fullWidth
     >
       <DialogTitle className="primary-dialog-title">
-        {mode === "add" ? "ADD ROOM" : "EDIT ROOM"}
+        {mode === "add" ? t("rooms.form.titleAdd") : t("rooms.form.titleEdit")}
       </DialogTitle>
 
       <DialogContent className="primary-dialog-content">
-        <LabelPrimary value="Số phòng" required />
+        <LabelPrimary value={t("rooms.form.labels.roomNumber")} required />
         <TextField
           value={roomNumber}
           onChange={(event) => setRoomNumber(event.target.value)}
@@ -189,7 +191,7 @@ export function RoomFormModel({
           className="main-text__field primary-dialog-input"
         />
 
-        <LabelPrimary value="Loại phòng" required />
+        <LabelPrimary value={t("rooms.form.labels.roomType")} required />
         <TextField
           value={roomType}
           onChange={(event) => setRoomType(event.target.value)}
@@ -198,7 +200,7 @@ export function RoomFormModel({
           className="main-text__field primary-dialog-input"
         />
 
-        <LabelPrimary value="Số chỗ ngồi" required />
+        <LabelPrimary value={t("rooms.form.labels.seats")} required />
         <TextField
           value={seats}
           onChange={(event) => setSeats(event.target.value)}
@@ -211,17 +213,17 @@ export function RoomFormModel({
 
       <DialogActions className="primary-dialog-actions">
         <Button onClick={handleCloseClick} className="button-cancel">
-          Hủy
+          {t("common.cancel")}
         </Button>
         <Button onClick={handleSubmitClick} variant="contained">
-          {mode === "add" ? "Thêm" : "Lưu"}
+          {mode === "add" ? t("common.add") : t("common.save")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirm}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+        title={t("common.confirmExitTitle")}
+        message={t("rooms.form.confirmExit")}
         onConfirm={() => {
           setOpenConfirm(false);
           onClose();
@@ -232,8 +234,8 @@ export function RoomFormModel({
       {mode === "edit" && (
         <ConfirmDialog
           open={openConfirmSave}
-          title="Xác nhận lưu"
-          message="Bạn có chắc muốn lưu các thay đổi?"
+          title={t("rooms.form.confirmSaveTitle")}
+          message={t("rooms.form.confirmSave")}
           onConfirm={handleConfirmSave}
           onCancel={() => setOpenConfirmSave(false)}
         />

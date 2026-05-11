@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
 import CheckBox from "../../../components/Checkbox/CheckBox";
@@ -20,6 +21,7 @@ export default function AllocateTuitionFeeFormModel({
   open,
   onClose,
 }: AllocateTuitionFeeFormModelProps) {
+  const { t } = useTranslation();
   const [selectedDepartmentIds, setSelectedDepartmentIds] = useState<string[]>([]);
   const { showSnackbar } = useSnackbar();
   const { mutateAsync: bulkAllocateTuitionFee, isPending } =
@@ -44,15 +46,12 @@ export default function AllocateTuitionFeeFormModel({
   const handleSave = () => {
     void bulkAllocateTuitionFee({ department_ids: selectedDepartmentIds })
       .then((response) => {
-        showSnackbar(
-          `Đã gán học phí cho ${response.created_records} bản ghi.`,
-          "success"
-        );
+        showSnackbar(t("tuitionFees.allocate.success", { count: response.created_records }), "success");
         onClose();
       })
       .catch((error) => {
         const detail = axios.isAxiosError(error) ? error.response?.data?.detail : undefined;
-        showSnackbar(detail || "Có lỗi xảy ra, vui lòng thử lại!", "error");
+        showSnackbar(detail || t("tuitionFees.allocate.genericError"), "error");
       });
   };
 
@@ -64,7 +63,7 @@ export default function AllocateTuitionFeeFormModel({
       maxWidth="sm"
       fullWidth
     >
-      <DialogTitle className="primary-dialog-title">ALLOCATE TUITION FEE</DialogTitle>
+      <DialogTitle className="primary-dialog-title">{t("tuitionFees.allocate.title")}</DialogTitle>
 
       <DialogContent className="primary-dialog-content">
         {isLoading ? (
@@ -99,8 +98,8 @@ export default function AllocateTuitionFeeFormModel({
               );
             })}
             {!departmentOptions.length && (
-              <Typography className="allocate-tuition-fee-form__empty">
-                Không có department nào để chọn.
+                <Typography className="allocate-tuition-fee-form__empty">
+                {t("tuitionFees.allocate.empty")}
               </Typography>
             )}
           </Box>
@@ -109,10 +108,10 @@ export default function AllocateTuitionFeeFormModel({
 
       <DialogActions className="primary-dialog-actions">
         <Button onClick={onClose} className="button-cancel">
-          Hủy
+          {t("common.cancel")}
         </Button>
         <Button onClick={handleSave} variant="contained" disabled={!selectedDepartmentIds.length || isPending}>
-          Lưu
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

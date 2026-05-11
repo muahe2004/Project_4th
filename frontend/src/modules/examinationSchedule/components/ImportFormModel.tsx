@@ -28,6 +28,7 @@ import type {
 import Button from "../../../components/Button/Button";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import ImportFormModelDialog from "./ImportFormModelDialog";
+import { useTranslation } from "react-i18next";
 
 interface ImportFormModelProps {
   open: boolean;
@@ -99,6 +100,7 @@ const ImportFormModel = ({
   onImport,
   isImporting = false,
 }: ImportFormModelProps) => {
+  const { t } = useTranslation();
   const [openConfirmClose, setOpenConfirmClose] = useState(false);
   const [validSchedules, setValidSchedules] = useState<EditableExaminationSchedule[]>([]);
   const [invalidSchedules, setInvalidSchedules] = useState<IUploadExaminationScheduleInvalidRow[]>([]);
@@ -226,23 +228,23 @@ const ImportFormModel = ({
 
   return (
     <Dialog open={open} onClose={() => setOpenConfirmClose(true)} fullWidth maxWidth="xl">
-      <DialogTitle className="primary-dialog-title">Import Examination Schedule Preview</DialogTitle>
+      <DialogTitle className="primary-dialog-title">{t("examinationSchedules.import.title")}</DialogTitle>
       <DialogContent dividers>
         {!data ? (
-          <Typography>Không có dữ liệu import.</Typography>
+          <Typography>{t("examinationSchedules.import.noData")}</Typography>
         ) : (
           <Box sx={{ display: "grid", gap: 2 }}>
             <Typography sx={{ fontWeight: 600 }}>
-              File name: {data.file_information?.file_name ?? ""}
+              {t("examinationSchedules.import.fileName")}: {data.file_information?.file_name ?? ""}
             </Typography>
             {hasNoValidRows && !hasInvalidRows && (
               <Typography sx={{ color: "#d32f2f", fontWeight: 600 }}>
-                Không có dòng hợp lệ để import.
+                {t("examinationSchedules.import.noValidRows")}
               </Typography>
             )}
             {hasInvalidRows && (
               <Typography sx={{ color: "#d32f2f", fontWeight: 600 }}>
-                Còn {invalidSchedules.length} dòng lỗi, vui lòng sửa trước khi import.
+                {t("examinationSchedules.import.invalidRows", { count: invalidSchedules.length })}
               </Typography>
             )}
 
@@ -250,15 +252,15 @@ const ImportFormModel = ({
               <Table stickyHeader className="sticky-table" aria-label="import preview examination schedules table">
                 <TableHead className="primary-thead">
                   <TableRow className="primary-trow">
-                    <TableCell className="primary-thead__cell" align="center">Mã MH</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Mã Lớp</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Ngày thi</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Giờ bắt đầu</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Giờ kết thúc</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Phòng</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Loại</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Lý do lỗi</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Actions</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("examinationSchedules.import.table.subjectCode")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("examinationSchedules.import.table.classCode")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("examinationSchedules.import.table.date")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("examinationSchedules.import.table.startTime")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("examinationSchedules.import.table.endTime")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("examinationSchedules.import.table.room")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("examinationSchedules.import.table.type")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("examinationSchedules.import.table.errorReason")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("examinationSchedules.import.table.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -302,9 +304,9 @@ const ImportFormModel = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">Huỷ</Button>
+        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">{t("examinationSchedules.common.cancel")}</Button>
         <Button onClick={handleImport} disabled={isImporting || hasInvalidRows || hasNoValidRows}>
-          {isImporting ? "Importing..." : "Import"}
+          {isImporting ? t("examinationSchedules.import.importing") : t("examinationSchedules.import.importButton")}
         </Button>
       </DialogActions>
 
@@ -317,8 +319,8 @@ const ImportFormModel = ({
 
       <ConfirmDialog
         open={openConfirmClose}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát form import?"
+        title={t("examinationSchedules.confirm.exitTitle")}
+        message={t("examinationSchedules.confirm.importExitMessage")}
         onConfirm={onClose}
         onCancel={() => setOpenConfirmClose(false)}
       />

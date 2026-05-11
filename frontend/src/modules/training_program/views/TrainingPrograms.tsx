@@ -1,6 +1,7 @@
 
 import { useRef, useState, type ChangeEvent } from "react";
 import { Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import Button from "../../../components/Button/Button";
@@ -25,6 +26,7 @@ import type {
 } from "../types";
 
 export function TrainingPrograms() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState("");
@@ -113,8 +115,8 @@ export function TrainingPrograms() {
       <BreadCrumb
         className="subjects-breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
-          { label: "Training Programs" },
+          { label: t("common.dashboard"), to: dashBoardUrl },
+          { label: t("trainingProgram.title") },
         ]}
       />
 
@@ -129,7 +131,7 @@ export function TrainingPrograms() {
         />
 
         <SearchEngine
-          placeholder="Tìm theo tên CTĐT, niên khoá, loại CTĐT..."
+          placeholder={t("trainingProgram.searchPlaceholder")}
           onSearch={(value) => {
             setSearch(value);
             setPage(1);
@@ -144,11 +146,11 @@ export function TrainingPrograms() {
           }}
           className="btn-spacing-left"
         >
-          Add Training Program
+          {t("trainingProgram.add")}
         </Button>
 
         <Button onClick={handleImportClick} className="btn-spacing-left">
-          Import
+          {t("trainingProgram.actions.import")}
         </Button>
         <input
           ref={fileInputRef}
@@ -203,8 +205,8 @@ export function TrainingPrograms() {
 
       <ConfirmDialog
         open={openDeleteConfirm}
-        title="Xác nhận xoá"
-        message="CTĐT sẽ được chuyển sang trạng thái inactive. Bạn có chắc muốn tiếp tục?"
+        title={t("trainingProgram.confirmDeleteTitle")}
+        message={t("trainingProgram.confirmDelete")}
         onCancel={() => {
           setOpenDeleteConfirm(false);
           setDeleteTarget(undefined);

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import Button from "../../../components/Button/Button";
@@ -35,6 +36,7 @@ export function Teachers() {
   const [importPreview, setImportPreview] = useState<ITeacherUploadResponse | null>(null);
   const [openImportFormModel, setOpenImportFormModel] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { t } = useTranslation();
 
   const { showSnackbar } = useSnackbar();
   const deleteTeacherMutation = useDeleteTeacher({});
@@ -80,22 +82,22 @@ export function Teachers() {
 
   const handleDeleteTeacher = (teacher?: ITeacherResponse) => {
     if (!teacher?.id) {
-      showSnackbar("Không tìm thấy mã giảng viên để xoá", "error");
+      showSnackbar(t("teachers.messages.notFoundToDelete"), "error");
       return;
     }
 
-    if (!window.confirm("Bạn có chắc muốn xoá giảng viên này không?")) {
+    if (!window.confirm(t("teachers.confirmDelete"))) {
       return;
     }
 
     deleteTeacherMutation.mutate([teacher.id], {
       onSuccess: (responses) => {
-        const message = responses?.[0]?.message ?? "Xoá giảng viên thành công";
+        const message = responses?.[0]?.message ?? t("teachers.messages.deleteSuccess");
         showSnackbar(message, "success");
         void refetch();
       },
       onError: (error: any) => {
-        const detail = error?.response?.data?.detail ?? "Xoá giảng viên thất bại";
+        const detail = error?.response?.data?.detail ?? t("teachers.messages.deleteFailed");
         showSnackbar(detail, "error");
       },
     });
@@ -114,8 +116,8 @@ export function Teachers() {
       <BreadCrumb
         className="teachers-breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
-          { label: "Teachers" },
+          { label: t("common.dashboard"), to: dashBoardUrl },
+          { label: t("teachers.title") },
         ]}
       />
 
@@ -130,7 +132,7 @@ export function Teachers() {
         />
 
         <SearchEngine
-          placeholder="Tìm theo tên giảng viên, mã giảng viên..."
+          placeholder={t("teachers.searchPlaceholder")}
           onSearch={(value) => {
             setSearch(value);
             setPage(1);
@@ -145,7 +147,7 @@ export function Teachers() {
           }}
           className="btn-spacing-left"
         >
-          Add Teacher
+          {t("teachers.actions.add")}
         </Button>
 
         <Button
@@ -155,7 +157,7 @@ export function Teachers() {
           disabled={isExportingExampleFile}
           className="btn-spacing-left"
         >
-          {isExportingExampleFile ? "Đang xuất file..." : "Xuất file mẫu"}
+          {isExportingExampleFile ? t("teachers.actions.exporting") : t("teachers.actions.exportSample")}
         </Button>
 
         <Button
@@ -163,7 +165,7 @@ export function Teachers() {
           disabled={isUploadingTeacherFile}
           className="btn-spacing-left"
         >
-          {isUploadingTeacherFile ? "Importing..." : "Import Teacher"}
+          {isUploadingTeacherFile ? t("teachers.actions.importing") : t("teachers.actions.import")}
         </Button>
         <input
           ref={fileInputRef}
@@ -210,11 +212,11 @@ export function Teachers() {
         onImport={async (teachersPayload) => {
           try {
             await importTeacher(teachersPayload);
-            showSnackbar("Import giảng viên thành công", "success");
+            showSnackbar(t("teachers.messages.importSuccess"), "success");
             setOpenImportFormModel(false);
             setImportPreview(null);
           } catch (error: any) {
-            const detail = error?.response?.data?.detail ?? error?.data?.detail ?? "Import giảng viên thất bại";
+            const detail = error?.response?.data?.detail ?? error?.data?.detail ?? t("teachers.messages.importFailed");
             showSnackbar(detail, "error");
           }
         }}

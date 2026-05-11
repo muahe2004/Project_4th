@@ -25,6 +25,7 @@ import type {
 import Button from "../../../components/Button/Button";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import ImportFormModelDialog from "./ImportFormModelDialog";
+import { useTranslation } from "react-i18next";
 
 interface ImportFormModelProps {
     open: boolean;
@@ -54,15 +55,15 @@ const formatDate = (dateValue?: string | null) => {
     return parsedDate.toLocaleDateString("vi-VN");
 };
 
-const getImportGenderDisplay = (gender?: string | null) => {
+const getImportGenderDisplay = (gender?: string | null, t?: (key: string) => string) => {
     if (gender === "1") {
-        return "Nam";
+        return t?.("students.gender.male") ?? "Nam";
     }
     if (gender === "2") {
-        return "Nữ";
+        return t?.("students.gender.female") ?? "Nữ";
     }
     if (gender === "3") {
-        return "Khác";
+        return t?.("students.gender.other") ?? "Khác";
     }
     return "";
 };
@@ -74,6 +75,7 @@ const ImportFormModel = ({
     onImport,
     isImporting = false,
 }: ImportFormModelProps) => {
+    const { t } = useTranslation();
     const [openConfirmClose, setOpenConfirmClose] = useState(false);
     const [validStudents, setValidStudents] = useState<IStudentFileData[]>([]);
     const [invalidStudents, setInvalidStudents] = useState<IStudentFileInvalidRow[]>([]);
@@ -164,19 +166,19 @@ const ImportFormModel = ({
             fullWidth
             maxWidth="xl"
         >
-            <DialogTitle className="primary-dialog-title">Import Student Preview</DialogTitle>
+            <DialogTitle className="primary-dialog-title">{t("students.import.title")}</DialogTitle>
 
             <DialogContent dividers>
                 {!data ? (
-                    <Typography>Không có dữ liệu import.</Typography>
+                    <Typography>{t("students.import.noData")}</Typography>
                 ) : (
                     <Box sx={{ display: "grid", gap: 2 }}>
                         <Typography sx={{ fontWeight: 600 }}>
-                            File name: {data.file_information.file_name}
+                            {t("students.import.fileName")}: {data.file_information.file_name}
                         </Typography>
                         {hasInvalidRows && (
                             <Typography sx={{ color: "#d32f2f", fontWeight: 600 }}>
-                                Còn {invalidStudents.length} dòng lỗi, vui lòng sửa trước khi import.
+                                {t("students.import.invalidRows", { count: invalidStudents.length })}
                             </Typography>
                         )}
 
@@ -184,15 +186,15 @@ const ImportFormModel = ({
                             <Table stickyHeader className="sticky-table" aria-label="import preview students table">
                                 <TableHead className="primary-thead">
                                     <TableRow className="primary-trow">
-                                        <TableCell className="primary-thead__cell" align="center">Mã sinh viên</TableCell>
-                                        <TableCell className="primary-thead__cell" align="left">Tên sinh viên</TableCell>
-                                        <TableCell className="primary-thead__cell" align="center">Giới tính</TableCell>
-                                        <TableCell className="primary-thead__cell" align="center">Ngày sinh</TableCell>
-                                        <TableCell className="primary-thead__cell" align="left">Email</TableCell>
-                                        <TableCell className="primary-thead__cell" align="left">Điện thoại</TableCell>
-                                        <TableCell className="primary-thead__cell" align="center">Mã lớp</TableCell>
-                                        <TableCell className="primary-thead__cell" align="left">Lý do lỗi</TableCell>
-                                        <TableCell className="primary-thead__cell" align="center">Actions</TableCell>
+                                        <TableCell className="primary-thead__cell" align="center">{t("students.import.table.studentCode")}</TableCell>
+                                        <TableCell className="primary-thead__cell" align="left">{t("students.import.table.studentName")}</TableCell>
+                                        <TableCell className="primary-thead__cell" align="center">{t("students.import.table.gender")}</TableCell>
+                                        <TableCell className="primary-thead__cell" align="center">{t("students.import.table.dateOfBirth")}</TableCell>
+                                        <TableCell className="primary-thead__cell" align="left">{t("students.import.table.email")}</TableCell>
+                                        <TableCell className="primary-thead__cell" align="left">{t("students.import.table.phone")}</TableCell>
+                                        <TableCell className="primary-thead__cell" align="center">{t("students.import.table.classCode")}</TableCell>
+                                        <TableCell className="primary-thead__cell" align="left">{t("students.import.table.errorReason")}</TableCell>
+                                        <TableCell className="primary-thead__cell" align="center">{t("students.import.table.actions")}</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -200,7 +202,7 @@ const ImportFormModel = ({
                                         <TableRow key={`${student.student_code || "student"}-${student.source}-${index}`} className="sticky-trow">
                                             <TableCell className="sticky-tcell" align="center">{student.student_code || ""}</TableCell>
                                             <TableCell className="sticky-tcell" align="left">{student.name || ""}</TableCell>
-                                            <TableCell className="sticky-tcell" align="center">{getImportGenderDisplay(student.gender)}</TableCell>
+                                            <TableCell className="sticky-tcell" align="center">{getImportGenderDisplay(student.gender, t)}</TableCell>
                                             <TableCell className="sticky-tcell" align="center">{formatDate(student.date_of_birth)}</TableCell>
                                             <TableCell className="sticky-tcell" align="left">{student.email || ""}</TableCell>
                                             <TableCell className="sticky-tcell" align="left">{student.phone || ""}</TableCell>
@@ -245,16 +247,16 @@ const ImportFormModel = ({
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCloseWithConfirm} className="button-cancel">Huỷ</Button>
+                <Button onClick={handleCloseWithConfirm} className="button-cancel">{t("students.common.cancel")}</Button>
                 <Button onClick={handleImport} disabled={isImporting || hasInvalidRows}>
-                    {isImporting ? "Importing..." : "Import"}
+                    {isImporting ? t("students.import.importing") : t("students.import.importButton")}
                 </Button>
             </DialogActions>
 
             <ConfirmDialog
                 open={openConfirmClose}
-                title="Xác nhận thoát"
-                message="Bạn có chắc muốn thoát form import?"
+                title={t("students.confirm.exitTitle")}
+                message={t("students.confirm.importExitMessage")}
                 onCancel={() => setOpenConfirmClose(false)}
                 onConfirm={() => {
                     setOpenConfirmClose(false);

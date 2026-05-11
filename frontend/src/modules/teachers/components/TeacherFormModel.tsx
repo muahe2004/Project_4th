@@ -25,6 +25,7 @@ import { RELATIONSHIP } from "../../../constants/relationships";
 import { STATUS } from "../../../constants/status";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
 import { useGetDepartment } from "../../department/apis/getDepartments";
+import { useTranslation } from "react-i18next";
 import { useCreateTeacher } from "../apis/addTeacher";
 import { useUpdateTeacher } from "../apis/updateTeacher";
 import type {
@@ -80,8 +81,6 @@ const RELATIVE_RELATIONSHIPS = [
   RELATIONSHIP.MOTHER,
   RELATIONSHIP.MARITAL,
 ];
-
-const SECTION_TITLES = ["THÔNG TIN CỦA CHA", "THÔNG TIN CỦA MẸ", "THÔNG TIN CỦA NGƯỜI THÂN"];
 
 const buildRelatives = (rels?: ITeacherRelative[] | null) => {
   const map = new Map<ITeacherRelative["relationship"], ITeacherRelative>();
@@ -170,6 +169,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
   initialValues,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const [teacher, setTeacher] = useState<ITeacherResponse>({ ...DEFAULT_TEACHER });
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [value, setValue] = useState<number>(0);
@@ -214,26 +214,26 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
 
   const validateBasicInfo = (): boolean => {
     if (!teacher.teacher_code.trim()) {
-      showSnackbar("Mã giảng viên là bắt buộc", "error");
+      showSnackbar(t("teachers.form.errors.teacherCodeRequired"), "error");
       setValue(0);
       return false;
     }
 
     if (!teacher.name.trim()) {
-      showSnackbar("Tên giảng viên là bắt buộc", "error");
+      showSnackbar(t("teachers.form.errors.teacherNameRequired"), "error");
       setValue(0);
       return false;
     }
 
     if (!teacher.email.trim()) {
-      showSnackbar("Email là bắt buộc", "error");
+      showSnackbar(t("teachers.form.errors.emailRequired"), "error");
       setValue(0);
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(teacher.email.trim())) {
-      showSnackbar("Email không đúng định dạng", "error");
+      showSnackbar(t("teachers.form.errors.emailInvalid"), "error");
       setValue(0);
       return false;
     }
@@ -315,13 +315,13 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
 
       showSnackbar(
         mode === "add"
-          ? "Thêm giảng viên thành công!"
-          : "Cập nhật giảng viên thành công!",
+          ? t("teachers.messages.createSuccess")
+          : t("teachers.messages.updateSuccess"),
         "success"
       );
       onClose();
     } catch (error: any) {
-      const detail = error?.response?.data?.detail ?? "Có lỗi xảy ra, vui lòng thử lại";
+      const detail = error?.response?.data?.detail ?? t("teachers.messages.genericError");
       showSnackbar(detail, "error");
     }
   };
@@ -367,20 +367,20 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
       onClose={handleCloseClick}
     >
       <DialogTitle className="primary-dialog-title">
-        {mode === "add" ? "ADD TEACHER" : "SỬA THÔNG TIN"}
+        {mode === "add" ? t("teachers.form.addTitle") : t("teachers.form.editTitle")}
       </DialogTitle>
 
       <Tabs className="myprofile-tabs" value={value} onChange={handleTabChange}>
-        <Tab classes={{ selected: "active-tab" }} label="Thông tin cơ bản" />
-        <Tab classes={{ selected: "active-tab" }} label="Thông tin khác" />
-        <Tab classes={{ selected: "active-tab" }} label="Thông tin người thân" />
+        <Tab classes={{ selected: "active-tab" }} label={t("teachers.form.tabs.basic")} />
+        <Tab classes={{ selected: "active-tab" }} label={t("teachers.form.tabs.other")} />
+        <Tab classes={{ selected: "active-tab" }} label={t("teachers.form.tabs.relative")} />
       </Tabs>
 
       <DialogContent className="primary-dialog-content">
         <TabPanel value={value} index={0}>
           <Grid container spacing={2} className="myprofile-form">
             <Grid size={4}>
-              <LabelPrimary value="Mã giảng viên" required />
+              <LabelPrimary value={t("teachers.form.teacherCode")} required />
               <TextField
                 value={teacher.teacher_code}
                 onChange={(event) =>
@@ -393,7 +393,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Họ và tên" required />
+              <LabelPrimary value={t("teachers.form.teacherName")} required />
               <TextField
                 value={teacher.name}
                 onChange={(event) =>
@@ -406,7 +406,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Sinh nhật" />
+              <LabelPrimary value={t("teachers.form.dateOfBirth")} />
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   value={dateOfBirth}
@@ -417,7 +417,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Giới tính" required />
+              <LabelPrimary value={t("teachers.form.gender")} required />
               <Select
                 value={teacher.gender}
                 onChange={(event) =>
@@ -427,14 +427,14 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                 variant="outlined"
                 className="main-text__field"
               >
-                <MenuItem value="1">Nam</MenuItem>
-                <MenuItem value="2">Nữ</MenuItem>
-                <MenuItem value="3">Khác</MenuItem>
+                <MenuItem value="1">{t("common.male")}</MenuItem>
+                <MenuItem value="2">{t("common.female")}</MenuItem>
+                <MenuItem value="3">{t("common.other")}</MenuItem>
               </Select>
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Email" required />
+              <LabelPrimary value={t("teachers.form.email")} required />
               <TextField
                 value={teacher.email}
                 onChange={(event) =>
@@ -447,7 +447,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Số điện thoại" />
+              <LabelPrimary value={t("teachers.form.phone")} />
               <TextField
                 value={teacher.phone ?? ""}
                 onChange={(event) =>
@@ -460,7 +460,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={12}>
-              <LabelPrimary value="Địa chỉ" />
+              <LabelPrimary value={t("teachers.form.address")} />
               <TextField
                 value={teacher.address ?? ""}
                 onChange={(event) =>
@@ -473,7 +473,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Khoa" />
+              <LabelPrimary value={t("teachers.form.department")} />
               <Select
                 value={teacher.department_id ?? ""}
                 onChange={(event) =>
@@ -482,7 +482,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                 fullWidth
                 className="main-text__field"
               >
-                <MenuItem value="">Không chọn</MenuItem>
+                <MenuItem value="">{t("common.none")}</MenuItem>
                 {(departments?.data ?? []).map((department) => (
                   <MenuItem key={department.id} value={department.id}>
                     {department.name}
@@ -492,7 +492,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Học hàm/Học vị" />
+              <LabelPrimary value={t("teachers.form.academicRank")} />
               <TextField
                 value={teacher.academic_rank ?? ""}
                 onChange={(event) =>
@@ -509,7 +509,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
         <TabPanel value={value} index={1}>
           <Grid container spacing={2} className="myprofile-form">
             <Grid size={4}>
-              <LabelPrimary value="Nơi sinh" />
+              <LabelPrimary value={t("teachers.form.placeOfOrigin")} />
               <TextField
                 value={teacherInfo.place_of_origin ?? ""}
                 onChange={(event) =>
@@ -522,7 +522,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Nhóm miễn giảm" />
+              <LabelPrimary value={t("teachers.form.exemptedGroup")} />
               <TextField
                 value={teacherInfo.exempted_group ?? ""}
                 onChange={(event) =>
@@ -535,7 +535,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Nhóm ưu tiên" />
+              <LabelPrimary value={t("teachers.form.priorityGroup")} />
               <TextField
                 value={teacherInfo.priority_group ?? ""}
                 onChange={(event) =>
@@ -548,7 +548,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="CMND/CCCD" />
+              <LabelPrimary value={t("teachers.form.citizenId")} />
               <TextField
                 value={teacherInfo.citizen_id ?? ""}
                 onChange={(event) =>
@@ -561,7 +561,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Ngày cấp" />
+              <LabelPrimary value={t("teachers.form.issueDate")} />
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   value={issueDateValue}
@@ -574,7 +574,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Nơi cấp" />
+              <LabelPrimary value={t("teachers.form.issuePlace")} />
               <TextField
                 value={teacherInfo.issue_place ?? ""}
                 onChange={(event) =>
@@ -587,7 +587,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Quốc tịch" />
+              <LabelPrimary value={t("teachers.form.nationality")} />
               <TextField
                 value={teacherInfo.nationality ?? ""}
                 onChange={(event) =>
@@ -600,7 +600,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Dân tộc" />
+              <LabelPrimary value={t("teachers.form.ethnicity")} />
               <TextField
                 value={teacherInfo.ethnicity ?? ""}
                 onChange={(event) =>
@@ -613,7 +613,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Tôn giáo" />
+              <LabelPrimary value={t("teachers.form.religion")} />
               <TextField
                 value={teacherInfo.religion ?? ""}
                 onChange={(event) =>
@@ -626,7 +626,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Số bảo hiểm" />
+              <LabelPrimary value={t("teachers.form.insuranceNumber")} />
               <TextField
                 value={teacherInfo.insurance_number ?? ""}
                 onChange={(event) =>
@@ -639,7 +639,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Tên ngân hàng" />
+              <LabelPrimary value={t("teachers.form.bankName")} />
               <TextField
                 value={teacherInfo.bank_name ?? ""}
                 onChange={(event) =>
@@ -652,7 +652,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Số tài khoản" />
+              <LabelPrimary value={t("teachers.form.bankAccountNumber")} />
               <TextField
                 value={teacherInfo.bank_account_number ?? ""}
                 onChange={(event) =>
@@ -673,11 +673,17 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
               return (
                 <React.Fragment key={`relative-${index}`}>
                   <Grid size={12}>
-                    <Box className="myprofile-panel__title">{SECTION_TITLES[index] ?? `THÔNG TIN NGƯỜI THÂN ${index + 1}`}</Box>
+                    <Box className="myprofile-panel__title">
+                      {index === 0
+                        ? t("teachers.form.relativeSections.father")
+                        : index === 1
+                          ? t("teachers.form.relativeSections.mother")
+                          : t("teachers.form.relativeSections.relative", { index: index + 1 })}
+                    </Box>
                   </Grid>
 
                   <Grid size={4}>
-                    <LabelPrimary value="Họ và tên người thân" />
+                    <LabelPrimary value={t("teachers.form.relativeName")} />
                     <TextField
                       value={relative.name ?? ""}
                       onChange={(event) => handleRelativeUpdate(index, { name: event.target.value })}
@@ -688,7 +694,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                   </Grid>
 
                   <Grid size={4}>
-                    <LabelPrimary value="Ngày sinh" />
+                    <LabelPrimary value={t("teachers.form.relativeDateOfBirth")} />
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DatePicker
                         value={relativeDob}
@@ -703,7 +709,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                   </Grid>
 
                   <Grid size={4}>
-                    <LabelPrimary value="Nghề nghiệp" />
+                    <LabelPrimary value={t("teachers.form.relativeOccupation")} />
                     <TextField
                       value={relative.occupation ?? ""}
                       onChange={(event) =>
@@ -716,7 +722,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                   </Grid>
 
                   <Grid size={4}>
-                    <LabelPrimary value="Số điện thoại" />
+                    <LabelPrimary value={t("teachers.form.relativePhone")} />
                     <TextField
                       value={relative.phone ?? ""}
                       onChange={(event) => handleRelativeUpdate(index, { phone: event.target.value })}
@@ -727,7 +733,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                   </Grid>
 
                   <Grid size={4}>
-                    <LabelPrimary value="Địa chỉ" />
+                    <LabelPrimary value={t("teachers.form.relativeAddress")} />
                     <TextField
                       value={relative.address ?? ""}
                       onChange={(event) => handleRelativeUpdate(index, { address: event.target.value })}
@@ -738,7 +744,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                   </Grid>
 
                   <Grid size={4}>
-                    <LabelPrimary value="Dân tộc" />
+                    <LabelPrimary value={t("teachers.form.relativeEthnicity")} />
                     <TextField
                       value={relative.ethnicity ?? ""}
                       onChange={(event) => handleRelativeUpdate(index, { ethnicity: event.target.value })}
@@ -749,7 +755,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                   </Grid>
 
                   <Grid size={4}>
-                    <LabelPrimary value="Tôn giáo" />
+                    <LabelPrimary value={t("teachers.form.relativeReligion")} />
                     <TextField
                       value={relative.religion ?? ""}
                       onChange={(event) => handleRelativeUpdate(index, { religion: event.target.value })}
@@ -760,7 +766,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                   </Grid>
 
                   <Grid size={4}>
-                    <LabelPrimary value="Quốc tịch" />
+                    <LabelPrimary value={t("teachers.form.relativeNationality")} />
                     <TextField
                       value={relative.nationality ?? ""}
                       onChange={(event) =>
@@ -780,17 +786,17 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
 
       <DialogActions className="primary-dialog-actions">
         <Button onClick={handleCloseClick} className="button-cancel">
-          Hủy
+          {t("common.cancel")}
         </Button>
         <Button onClick={handleSubmitClick} variant="contained">
-          {mode === "add" ? "Thêm" : "Lưu"}
+          {mode === "add" ? t("common.add") : t("common.save")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirm}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+        title={t("common.confirmExitTitle")}
+        message={t("teachers.form.confirmExit")}
         onConfirm={() => {
           setOpenConfirm(false);
           onClose();

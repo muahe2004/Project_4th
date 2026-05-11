@@ -6,6 +6,7 @@ import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from "@mui/icons-material/Delete";
 import type { IStudentsResponse } from "../types";
 import { getGenderDisplay } from "../../../utils/status/gender-display";
+import { useTranslation } from "react-i18next";
 
 interface StudentTableProps {
     students?: {
@@ -18,6 +19,7 @@ interface StudentTableProps {
 
 
 export const StudentTable = ({ students, onEdit, onDelete }: StudentTableProps) => {
+    const { t } = useTranslation();
 
     return(
         <TableContainer
@@ -28,25 +30,25 @@ export const StudentTable = ({ students, onEdit, onDelete }: StudentTableProps) 
                 <TableHead className="primary-thead">
                     <TableRow className="primary-trow">
                         <TableCell className="primary-thead__cell" align="center">
-                            Mã sinh viên
+                            {t("students.table.studentCode")}
                         </TableCell>
                         <TableCell className="primary-thead__cell department-name-tcell" align="center">
-                            Tên sinh viên
+                            {t("students.table.studentName")}
                         </TableCell>
                         <TableCell className="primary-thead__cell" align="center">
                             Email
                         </TableCell>
                         <TableCell className="primary-thead__cell" align="center">
-                            Giới tính
+                            {t("students.table.gender")}
                         </TableCell>
                         <TableCell className="primary-thead__cell" align="center">
-                            Lớp
+                            {t("students.table.class")}
                         </TableCell>
                         <TableCell className="primary-thead__cell" align="center">
-                            Trạng thái
+                            {t("students.table.status")}
                         </TableCell>
                         <TableCell className="primary-thead__cell" align="center">
-                            Actions
+                            {t("students.table.actions")}
                         </TableCell>
                     </TableRow>
                 </TableHead>

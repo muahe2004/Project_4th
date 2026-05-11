@@ -11,10 +11,6 @@ interface RoomFilterProps {
   onChangeRoomId: (roomId?: string) => void;
 }
 
-function getRoomLabel(room: IRoomDropDown): string {
-  return `Phòng ${room.room_number}`;
-}
-
 export function RoomFilter({ selectedRoomId, onChangeRoomId }: RoomFilterProps) {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
@@ -64,7 +60,7 @@ export function RoomFilter({ selectedRoomId, onChangeRoomId }: RoomFilterProps) 
               className={`room-filter__item${active ? " room-filter__item--active" : ""}`}
               onClick={() => onChangeRoomId(active ? undefined : room.id)}
             >
-              {getRoomLabel(room)}
+              {t("teachingSchedules.roomLabel", { room: room.room_number })}
             </button>
           );
         })}

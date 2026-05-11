@@ -11,6 +11,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
@@ -50,6 +51,7 @@ export function TuitionFeeFormModel({
   initialValues,
   onClose,
 }: TuitionFeeFormModelProps) {
+  const { t } = useTranslation();
   const id = initialValues?.id;
   const { showSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
@@ -162,11 +164,11 @@ export function TuitionFeeFormModel({
 
   const validateForm = (): boolean => {
     if (!pricePerCredit.trim() || Number.isNaN(Number(pricePerCredit)) || Number(pricePerCredit) < 0) {
-      showSnackbar("Giá / tín chỉ không hợp lệ", "error");
+      showSnackbar(t("tuitionFees.form.errors.pricePerCredit"), "error");
       return false;
     }
     if (mode === "add" && !departmentId.trim()) {
-      showSnackbar("Khoa là bắt buộc", "error");
+      showSnackbar(t("tuitionFees.form.errors.departmentRequired"), "error");
       return false;
     }
     return true;
@@ -216,18 +218,18 @@ export function TuitionFeeFormModel({
       if (mode === "add") {
         await createTuitionFee(payload as TuitionFeeCreatePayload);
         await queryClient.invalidateQueries({ queryKey: ["tuition-fees"] });
-        showSnackbar("Thêm học phí thành công!", "success");
+        showSnackbar(t("tuitionFees.messages.addSuccess"), "success");
       } else if (mode === "edit" && id) {
         await updateTuitionFee({ id, data: payload as TuitionFeeUpdatePayload });
         await queryClient.invalidateQueries({ queryKey: ["tuition-fees"] });
-        showSnackbar("Cập nhật học phí thành công!", "success");
+        showSnackbar(t("tuitionFees.messages.updateSuccess"), "success");
       }
 
       setOpenConfirmSave(false);
       onClose();
     } catch (error) {
       console.error(error);
-      showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+      showSnackbar(t("tuitionFees.messages.genericError"), "error");
     }
   };
 
@@ -240,11 +242,11 @@ export function TuitionFeeFormModel({
       fullWidth
     >
       <DialogTitle className="primary-dialog-title">
-        {mode === "add" ? "ADD TUITION FEE" : "EDIT TUITION FEE"}
+        {mode === "add" ? t("tuitionFees.form.titleAdd") : t("tuitionFees.form.titleEdit")}
       </DialogTitle>
 
       <DialogContent className="primary-dialog-content">
-        <LabelPrimary value="Tên học phí" />
+        <LabelPrimary value={t("tuitionFees.form.labels.name")} />
         <TextField
           value={name}
           onChange={(event) => setName(event.target.value)}
@@ -255,7 +257,7 @@ export function TuitionFeeFormModel({
 
         
 
-        <LabelPrimary value="Giá / tín chỉ" required />
+        <LabelPrimary value={t("tuitionFees.form.labels.pricePerCredit")} required />
         <TextField
           value={pricePerCredit}
           onChange={(event) => setPricePerCredit(event.target.value)}
@@ -267,7 +269,7 @@ export function TuitionFeeFormModel({
 
         {mode === "add" ? (
           <>
-            <LabelPrimary value="Khoa" required />
+            <LabelPrimary value={t("tuitionFees.form.labels.department")} required />
             <MainAutocomplete
               options={departmentOptions}
               value={departmentId}
@@ -277,12 +279,12 @@ export function TuitionFeeFormModel({
                 `${option.department_code} - ${option.department_name}`
               }
               getOptionId={(option: IDepartmentsDropDown) => option.id}
-              placeholder="Chọn khoa"
+              placeholder={t("tuitionFees.form.placeholders.department")}
             />
           </>
         ) : (
           <>
-            <LabelPrimary value="CTĐT" />
+            <LabelPrimary value={t("tuitionFees.form.labels.trainingProgram")} />
             <MainAutocomplete
               options={trainingProgramOptions}
               value={trainingProgramId}
@@ -292,12 +294,12 @@ export function TuitionFeeFormModel({
                 `${option.training_program_name || option.program_type || "CTĐT"} (${option.academic_year})`
               }
               getOptionId={(option: any) => option.id}
-              placeholder="Chọn CTĐT"
+              placeholder={t("tuitionFees.form.placeholders.trainingProgram")}
             />
           </>
         )}
 
-        <LabelPrimary value="Ngày bắt đầu" />
+        <LabelPrimary value={t("tuitionFees.form.labels.startDate")} />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
             value={startDate}
@@ -307,7 +309,7 @@ export function TuitionFeeFormModel({
           />
         </LocalizationProvider>
 
-        <LabelPrimary value="Ngày kết thúc" />
+        <LabelPrimary value={t("tuitionFees.form.labels.endDate")} />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
             value={endDate}
@@ -321,17 +323,17 @@ export function TuitionFeeFormModel({
 
       <DialogActions className="primary-dialog-actions">
         <Button onClick={handleCloseClick} className="button-cancel">
-          Hủy
+          {t("common.cancel")}
         </Button>
         <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
-          {mode === "add" ? "Thêm" : "Lưu"}
+          {mode === "add" ? t("common.add") : t("common.save")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirm}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+        title={t("common.confirmExitTitle")}
+        message={t("tuitionFees.form.confirmExit")}
         onConfirm={() => {
           setOpenConfirm(false);
           onClose();
@@ -341,8 +343,8 @@ export function TuitionFeeFormModel({
 
       <ConfirmDialog
         open={openConfirmSave}
-        title="Xác nhận lưu"
-        message="Bạn có chắc muốn lưu các thay đổi?"
+        title={t("tuitionFees.form.confirmSaveTitle")}
+        message={t("tuitionFees.form.confirmSave")}
         onConfirm={() => {
           if (pendingPayload) {
             void handleConfirmSave(pendingPayload);

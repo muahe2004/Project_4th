@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useTranslation } from "react-i18next";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 
@@ -29,25 +30,26 @@ export function TrainingProgramTable({
   onEdit,
   onDelete,
 }: TrainingProgramTableProps) {
+  const { t } = useTranslation();
   return (
     <TableContainer className="sticky-table-container" component={Paper}>
       <Table stickyHeader className="sticky-table" aria-label="training programs table">
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
-            <TableCell className="primary-thead__cell" align="center">
-              Tên CTĐT
+              <TableCell className="primary-thead__cell" align="center">
+              {t("trainingProgram.table.name")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Loại CTĐT
+              {t("trainingProgram.table.type")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Niên khoá
+              {t("trainingProgram.table.academicYear")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Trạng thái
+              {t("trainingProgram.table.status")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Actions
+              {t("common.actions")}
             </TableCell>
           </TableRow>
         </TableHead>

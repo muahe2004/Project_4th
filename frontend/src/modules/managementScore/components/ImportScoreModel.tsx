@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Button from "../../../components/Button/Button";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import type { IScoreUploadInvalidRow, IScoreUploadResponse, IScoreUploadRow } from "../types";
@@ -48,6 +49,7 @@ const formatScore = (value?: number | null) => {
 };
 
 const ImportScoreModel = ({ open, onClose, data, onImport, isImporting = false, errorMessage }: ImportScoreModelProps) => {
+  const { t } = useTranslation();
   const [openConfirmClose, setOpenConfirmClose] = useState(false);
   const [validScores, setValidScores] = useState<IScoreUploadRow[]>([]);
   const [invalidScores, setInvalidScores] = useState<IScoreUploadInvalidRow[]>([]);
@@ -127,30 +129,30 @@ const ImportScoreModel = ({ open, onClose, data, onImport, isImporting = false, 
 
   return (
     <Dialog open={open} onClose={() => setOpenConfirmClose(true)} fullWidth maxWidth="xl">
-      <DialogTitle className="primary-dialog-title">Import Score Preview</DialogTitle>
+      <DialogTitle className="primary-dialog-title">{t("managementScore.import.title")}</DialogTitle>
       <DialogContent dividers>
         {errorMessage ? (
           <Typography sx={{ color: "#d32f2f", fontWeight: 700 }}>{errorMessage}</Typography>
         ) : isImporting && !data ? (
-          <Typography>Đang đọc file điểm...</Typography>
+          <Typography>{t("managementScore.import.loading")}</Typography>
         ) : !data ? (
-          <Typography>Không có dữ liệu import.</Typography>
+          <Typography>{t("managementScore.import.noData")}</Typography>
         ) : (
           <Box sx={{ display: "grid", gap: 2 }}>
             <Box sx={{ display: "grid", gap: 0.5 }}>
-              <Typography sx={{ fontWeight: 700 }}>File name: {data.file_information.file_name}</Typography>
+              <Typography sx={{ fontWeight: 700 }}>{t("managementScore.import.fileName")}: {data.file_information.file_name}</Typography>
               <Typography sx={{ color: "#374151" }}>
-                Lớp: {data.file_information.class_code || "-"}
+                {t("managementScore.import.class")}: {data.file_information.class_code || "-"}
               </Typography>
               <Typography sx={{ color: "#374151" }}>
-                Học phần: {data.file_information.subject_name || "-"} ({data.file_information.subject_code || "-"})
+                {t("managementScore.import.subject")}: {data.file_information.subject_name || "-"} ({data.file_information.subject_code || "-"})
               </Typography>
               <Typography sx={{ color: "#374151" }}>
-                Năm học: {data.file_information.academic_year || "-"}
+                {t("managementScore.import.academicYear")}: {data.file_information.academic_year || "-"}
               </Typography>
               {hasInvalidRows && (
                 <Typography sx={{ color: "#d32f2f", fontWeight: 700 }}>
-                  Còn {invalidScores.length} dòng lỗi, vui lòng sửa trước khi import.
+                  {t("managementScore.import.invalidRows", { count: invalidScores.length })}
                 </Typography>
               )}
             </Box>
@@ -159,16 +161,16 @@ const ImportScoreModel = ({ open, onClose, data, onImport, isImporting = false, 
               <Table stickyHeader className="sticky-table" aria-label="import preview score table">
                 <TableHead className="primary-thead">
                   <TableRow className="primary-trow">
-                    <TableCell className="primary-thead__cell" align="center">Mã lớp</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">MSV</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Họ và đệm</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Tên</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">D1</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">D2</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Thi</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">TBM</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Lý do lỗi</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Actions</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("managementScore.import.table.classCode")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("managementScore.import.table.studentCode")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("managementScore.import.table.familyName")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("managementScore.import.table.givenName")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("managementScore.import.table.d1")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("managementScore.import.table.d2")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("managementScore.import.table.thi")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("managementScore.import.table.tbm")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("managementScore.import.table.errorReason")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("common.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -215,16 +217,16 @@ const ImportScoreModel = ({ open, onClose, data, onImport, isImporting = false, 
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">Huỷ</Button>
+        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">{t("common.cancel")}</Button>
         <Button onClick={handleImport} disabled={isImporting || hasInvalidRows || !data}>
-          {isImporting ? "Importing..." : "Import"}
+          {isImporting ? t("managementScore.actions.importing") : t("managementScore.actions.import")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirmClose}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát form import?"
+        title={t("common.confirmExitTitle")}
+        message={t("managementScore.import.confirmExit")}
         onCancel={() => setOpenConfirmClose(false)}
         onConfirm={() => {
           setOpenConfirmClose(false);

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { IExaminationScheduleResponse } from "../types";
 
 interface ExaminationPeriodCellProps {
@@ -15,7 +16,10 @@ function formatDateTime(dateValue: string): string {
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
-function buildTooltip(schedules?: IExaminationScheduleResponse[]): string {
+function buildTooltip(
+  schedules: IExaminationScheduleResponse[] | undefined,
+  t: (key: string) => string
+): string {
   if (!schedules || schedules.length === 0) {
     return "";
   }
@@ -34,10 +38,10 @@ function buildTooltip(schedules?: IExaminationScheduleResponse[]): string {
 
       return [
         `${index + 1}. ${formatDateTime(schedule.start_time)} - ${formatDateTime(schedule.end_time)}`,
-        `Lớp: ${classCode} - ${className}`,
-        `Môn: ${subjectName}`,
-        `Phòng: ${roomNumber}`,
-        `Giám thị: ${invigilators || "-"}`,
+        `${t("examinationSchedules.tooltip.class")}: ${classCode} - ${className}`,
+        `${t("examinationSchedules.tooltip.subject")}: ${subjectName}`,
+        `${t("examinationSchedules.tooltip.room")}: ${roomNumber}`,
+        `${t("examinationSchedules.tooltip.invigilator")}: ${invigilators || "-"}`,
       ].join("\n");
     })
     .join("\n\n");
@@ -47,6 +51,7 @@ export function ExaminationPeriodCell({
   period,
   schedules,
 }: ExaminationPeriodCellProps) {
+  const { t } = useTranslation();
   const itemCount = schedules?.length ?? 0;
   const hasSchedule = itemCount > 0;
 
@@ -57,7 +62,7 @@ export function ExaminationPeriodCell({
           ? "teaching-room-cell--busy"
           : "teaching-room-cell--empty"
       }`}
-      title={buildTooltip(schedules)}
+      title={buildTooltip(schedules, t)}
     >
       <span>{String(period).padStart(2, "0")}</span>
       {itemCount > 1 && (

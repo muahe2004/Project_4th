@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import Button from "../../../components/Button/Button";
@@ -17,6 +18,7 @@ import RoomTable from "../components/RoomTable";
 import type { IRoom } from "../types";
 
 export function Rooms() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState("");
@@ -40,21 +42,21 @@ export function Rooms() {
 
   const handleDeleteRoom = (room?: IRoom) => {
     if (!room?.id) {
-      showSnackbar("Không tìm thấy mã phòng để xoá", "error");
+      showSnackbar(t("rooms.messages.missingId"), "error");
       return;
     }
 
-    if (!window.confirm("Bạn có chắc muốn xoá phòng này không?")) {
+    if (!window.confirm(t("rooms.confirmDelete"))) {
       return;
     }
 
     deleteRoomMutation.mutate(room.id, {
       onSuccess: (response) => {
-        showSnackbar(response?.message ?? "Xoá phòng thành công", "success");
+        showSnackbar(response?.message ?? t("rooms.messages.deleteSuccess"), "success");
         void refetch();
       },
       onError: (error: any) => {
-        const detail = error?.response?.data?.detail ?? "Xoá phòng thất bại";
+        const detail = error?.response?.data?.detail ?? t("rooms.messages.deleteFailed");
         showSnackbar(detail, "error");
       },
     });
@@ -73,8 +75,8 @@ export function Rooms() {
       <BreadCrumb
         className="rooms-breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
-          { label: "Rooms" },
+          { label: t("common.dashboard"), to: dashBoardUrl },
+          { label: t("rooms.title") },
         ]}
       />
 
@@ -89,7 +91,7 @@ export function Rooms() {
         />
 
         <SearchEngine
-          placeholder="Tìm theo số phòng, loại phòng..."
+          placeholder={t("rooms.searchPlaceholder")}
           onSearch={(value) => {
             setSearch(value);
             setPage(1);
@@ -103,7 +105,7 @@ export function Rooms() {
           }}
           className="btn-spacing-left"
         >
-          Add Room
+          {t("rooms.addRoom")}
         </Button>
       </Box>
 

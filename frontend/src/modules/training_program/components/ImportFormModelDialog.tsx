@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import type { ITrainingProgramFileSubjectData } from "../types";
 import Button from "../../../components/Button/Button";
@@ -22,6 +23,7 @@ const ImportFormModelDialog = ({
   initialSubject,
   onSave,
 }: ImportFormModelDialogProps) => {
+  const { t } = useTranslation();
   const [subject, setSubject] = useState<ITrainingProgramFileSubjectData>({
     subject_id: null,
     subject_code: null,
@@ -102,11 +104,11 @@ const ImportFormModelDialog = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle className="primary-dialog-title">Chỉnh sửa môn học import</DialogTitle>
+      <DialogTitle className="primary-dialog-title">{t("trainingProgram.import.editTitle")}</DialogTitle>
       <DialogContent dividers>
         <Box className="myprofile-form" sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <div>
-            <LabelPrimary value="Môn học" required />
+            <LabelPrimary value={t("trainingProgram.form.subject")} required />
             <MainAutocomplete
               options={subjectOptions}
               value={selectedSubjectId || null}
@@ -125,11 +127,11 @@ const ImportFormModelDialog = ({
                 option.subject_code ? `${option.subject_code} - ${option.name}` : option.name
               }
               getOptionId={(option: ISubjectDropDown) => option.id}
-              placeholder="Chọn môn học"
+              placeholder={t("trainingProgram.form.selectSubject")}
             />
           </div>
           <div>
-            <LabelPrimary value="Học kỳ" required />
+            <LabelPrimary value={t("trainingProgram.form.term")} required />
             <TextField
               type="number"
               inputProps={{ min: 1 }}
@@ -143,12 +145,12 @@ const ImportFormModelDialog = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} className="button-cancel">Huỷ</Button>
+        <Button onClick={onClose} className="button-cancel">{t("common.cancel")}</Button>
         <Button
           onClick={() => onSave(subject)}
           disabled={!subject.subject_code || !subject.subject_name || !subject.term}
         >
-          Lưu
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

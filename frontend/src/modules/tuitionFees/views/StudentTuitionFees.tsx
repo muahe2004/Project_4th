@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import Button from "../../../components/Button/Button";
@@ -13,6 +14,7 @@ import StudentTuitionFeeTable from "../components/StudentTuitionFeeTable";
 import "./styles/StudentTuitionFees.css";
 
 export function StudentTuitionFees() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -39,15 +41,15 @@ export function StudentTuitionFees() {
       <BreadCrumb
         className="student-tuition-fees-breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
-          { label: "Tuition Fees", to: `${layOutAdminUrl}/${tuitionFeeUrl}` },
-          { label: "Students with Tuition Fees" },
+          { label: t("common.dashboard"), to: dashBoardUrl },
+          { label: t("tuitionFees.title"), to: `${layOutAdminUrl}/${tuitionFeeUrl}` },
+          { label: t("tuitionFees.studentTitle") },
         ]}
       />
 
       <Box className="admin-main-box">
         <SearchEngine
-          placeholder="Tìm theo mã sinh viên, tên, email..."
+          placeholder={t("tuitionFees.studentSearchPlaceholder")}
           onSearch={(value) => {
             setSearch(value);
             setPage(1);
@@ -60,7 +62,7 @@ export function StudentTuitionFees() {
           }}
           className="btn-spacing-left"
         >
-          Back to Tuition Fees
+          {t("tuitionFees.backToTuitionFees")}
         </Button>
       </Box>
 

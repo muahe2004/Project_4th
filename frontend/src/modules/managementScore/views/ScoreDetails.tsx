@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl, layOutAdminUrl, managementScoreUrl } from "../../../routes/urls";
@@ -159,6 +160,7 @@ function getScoreMode(subject: SubjectAggregate): "official" | "retake" {
 }
 
 export function ScoreDetails() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const location = useLocation();
   const [editingRow, setEditingRow] = useState<ScoreTableRow | null>(null);
@@ -407,7 +409,7 @@ export function ScoreDetails() {
   if (!state?.studentId) {
     return (
       <main className="admin-main-container">
-        <Alert severity="warning">Không tìm thấy sinh viên để xem chi tiết điểm.</Alert>
+        <Alert severity="warning">{t("managementScore.details.noStudent")}</Alert>
       </main>
     );
   }
@@ -418,13 +420,14 @@ export function ScoreDetails() {
         className="score-details__breadcrumb"
         items={[
           { label: "Dashboard", to: dashBoardUrl },
-          { label: "Quản lý điểm", to: `${layOutAdminUrl}/${managementScoreUrl}` },
-          { label: "Chi tiết điểm" },
+          { label: t("common.dashboard"), to: dashBoardUrl },
+          { label: t("managementScore.title"), to: `${layOutAdminUrl}/${managementScoreUrl}` },
+          { label: t("managementScore.details.title") },
         ]}
       />
 
       <Typography className="primary-title">
-        {state.studentCode ?? "-"} - {state.studentName ?? "SCORE DETAILS"}
+        {state.studentCode ?? "-"} - {state.studentName ?? t("managementScore.details.title")}
       </Typography>
 
       {isLoading ? (
@@ -433,7 +436,7 @@ export function ScoreDetails() {
         </Box>
       ) : isError ? (
         <Alert severity="error">
-          {(error as any)?.response?.data?.detail ?? "Lấy dữ liệu điểm thất bại"}
+          {(error as any)?.response?.data?.detail ?? t("managementScore.errors.loadData")}
         </Alert>
       ) : (
         <>

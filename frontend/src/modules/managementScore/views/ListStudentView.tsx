@@ -2,6 +2,7 @@ import { Alert, Box, CircularProgress, Dialog, DialogActions, DialogContent, Dia
 import { useLocation } from "react-router-dom";
 import { useMemo, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useGetScoreByClassSubject } from "../apis/getScoreByClassSubject";
 import ListStudentScoreTable from "../components/ListStudentScoreTable";
@@ -55,7 +56,7 @@ function ListStudentScoreSubjectContent({
         </Box>
       ) : isError ? (
         <Alert severity="error">
-          {(error as any)?.response?.data?.detail ?? "Lấy danh sách điểm theo lớp/môn thất bại"}
+          {(error as any)?.response?.data?.detail ?? t("managementScore.subject.error")}
         </Alert>
       ) : (
         <ListStudentScoreTable
@@ -73,6 +74,7 @@ function ListStudentScoreSubjectContent({
 }
 
 export function ListStudentScoreSubject() {
+  const { t } = useTranslation();
   const location = useLocation();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [openImportScoreModel, setOpenImportScoreModel] = useState(false);
@@ -212,17 +214,17 @@ export function ListStudentScoreSubject() {
     );
 
     if (scores.length === 0) {
-      showSnackbar("Không có điểm pending để khoá.", "info");
+      showSnackbar(t("managementScore.actions.noPending"), "info");
       return;
     }
 
     try {
       await updateScoreStatusBulk({ scores });
-      showSnackbar("Khoá điểm thành công.", "success");
+      showSnackbar(t("managementScore.actions.lockSuccess"), "success");
       await scoreQuery.refetch();
     } catch (error) {
       console.error("lock scores error", error);
-      showSnackbar("Khoá điểm thất bại.", "error");
+      showSnackbar(t("managementScore.actions.lockFailed"), "error");
     }
   };
 
@@ -240,7 +242,7 @@ export function ListStudentScoreSubject() {
       setOpenImportScoreModel(true);
     } catch (uploadError) {
       console.error("Upload score file failed:", uploadError);
-      setImportScoreError((uploadError as any)?.response?.data?.detail ?? "Upload score file failed");
+      setImportScoreError((uploadError as any)?.response?.data?.detail ?? t("managementScore.actions.uploadFailed"));
       setOpenImportScoreModel(false);
     } finally {
       setIsUploadingScorePreview(false);
@@ -291,12 +293,12 @@ export function ListStudentScoreSubject() {
 
     try {
       await fillComponentScore(payload);
-      showSnackbar("Lưu điểm thành phần thành công.", "success");
+      showSnackbar(t("managementScore.actions.saveMidtermSuccess"), "success");
       setEditableMidterm(false);
       setMidtermDrafts({});
     } catch (error) {
       console.error("save midterm error", error);
-      showSnackbar("Lưu điểm thành phần thất bại.", "error");
+      showSnackbar(t("managementScore.actions.saveMidtermFailed"), "error");
     }
   };
 
@@ -394,12 +396,12 @@ export function ListStudentScoreSubject() {
         await addScoreList(createPayload);
       }
 
-      showSnackbar("Lưu điểm thi thành công.", "success");
+      showSnackbar(t("managementScore.actions.saveFinalSuccess"), "success");
       setEditableFinal(false);
       setFinalDrafts({});
     } catch (error) {
       console.error("save final error", error);
-      showSnackbar("Lưu điểm thi thất bại.", "error");
+      showSnackbar(t("managementScore.actions.saveFinalFailed"), "error");
     }
   };
 
@@ -419,9 +421,18 @@ export function ListStudentScoreSubject() {
           Lớp: {state?.className ?? "-"} ({state?.classCode ?? "-"}) - Môn: {state?.subjectName ?? "-"} ({state?.subjectCode ?? "-"})
         </Typography>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            width: "100%",
+            justifyContent: "flex-end",
+            flexWrap: "wrap",
+          }}
+        >
           <Button onClick={handleImportClick} className="btn-spacing-left" disabled={isUploadingScoreFile || isScoreLocked}>
-            {isUploadingScoreFile ? "Uploading..." : "Import"}
+            {isUploadingScoreFile ? t("managementScore.actions.uploading") : t("managementScore.actions.import")}
           </Button>
           <input
             ref={fileInputRef}
@@ -433,12 +444,12 @@ export function ListStudentScoreSubject() {
 
           {canLockScore && !isScoreLocked && (
             <Button onClick={() => setOpenLockConfirm(true)} className="" disabled={isUpdatingScoreStatusBulk}>
-              {isUpdatingScoreStatusBulk ? "Đang khoá..." : "Khoá điểm"}
+              {isUpdatingScoreStatusBulk ? t("managementScore.actions.locking") : t("managementScore.actions.lock")}
             </Button>
           )}
 
           <Button onClick={handleComponentClick} className="" disabled={!classId || !subjectId || scoreQuery.isLoading || isScoreLocked}>
-            Thành phần
+            {t("managementScore.actions.component")}
           </Button>
 
           <Button
@@ -451,7 +462,7 @@ export function ListStudentScoreSubject() {
             className=""
             disabled={!canEditMidterm || isScoreLocked}
           >
-            {editableMidterm ? "Dừng nhập TP" : "Nhập điểm TP"}
+            {editableMidterm ? t("managementScore.actions.stopMidterm") : t("managementScore.actions.enterMidterm")}
           </Button>
 
           <Button
@@ -461,7 +472,7 @@ export function ListStudentScoreSubject() {
             className=""
             disabled={!canEditFinal || isScoreLocked}
           >
-            {editableFinal ? "Dừng nhập Thi" : "Nhập điểm Thi"}
+            {editableFinal ? t("managementScore.actions.stopFinal") : t("managementScore.actions.enterFinal")}
           </Button>
 
           {(editableMidterm || editableFinal) && (
@@ -477,14 +488,14 @@ export function ListStudentScoreSubject() {
               className=""
               disabled={isFillingComponentScore}
             >
-              {isFillingComponentScore ? "Đang lưu..." : "Lưu lại"}
+              {isFillingComponentScore ? t("managementScore.component.saving") : t("managementScore.component.save")}
             </Button>
           )}
         </Box>
       </Box>
 
       {!classId || !subjectId ? (
-        <Alert severity="warning">Thiếu classId hoặc subjectId để tải dữ liệu.</Alert>
+        <Alert severity="warning">{t("managementScore.subject.missingContext")}</Alert>
       ) : (
         <ListStudentScoreSubjectContent
           {...scoreQuery}
@@ -527,7 +538,7 @@ export function ListStudentScoreSubject() {
           const academicTermId = importPreview?.file_information.academic_term_id;
           const subjectId = importPreview?.file_information.subject_id;
           if (!academicTermId || !subjectId) {
-            setImportScoreError("Thiếu academic_term_id hoặc subject_id từ file upload.");
+            setImportScoreError(t("managementScore.import.missingFileContext"));
             return;
           }
           const importPayload = {
@@ -551,7 +562,7 @@ export function ListStudentScoreSubject() {
             setImportPreview(null);
             setImportScoreError(null);
           } catch (error) {
-            setImportScoreError((error as any)?.response?.data?.detail ?? "Import score list failed");
+            setImportScoreError((error as any)?.response?.data?.detail ?? t("managementScore.actions.importFailed"));
           }
         }}
       />
@@ -562,16 +573,16 @@ export function ListStudentScoreSubject() {
         fullWidth
         maxWidth="xs"
       >
-        <DialogTitle>Xác nhận khoá điểm</DialogTitle>
+        <DialogTitle>{t("managementScore.lock.title")}</DialogTitle>
         <DialogContent>
-          Bạn có chắc muốn khoá tất cả các điểm đang ở trạng thái pending không?
+          {t("managementScore.lock.message")}
         </DialogContent>
         <DialogActions>
           <Button
             onClick={() => setOpenLockConfirm(false)}
             className="button-cancel"
           >
-            Huỷ
+            {t("common.cancel")}
           </Button>
           <Button
             onClick={async () => {
@@ -580,7 +591,7 @@ export function ListStudentScoreSubject() {
             }}
             disabled={isUpdatingScoreStatusBulk}
           >
-            {isUpdatingScoreStatusBulk ? "Đang khoá..." : "Xác nhận"}
+            {isUpdatingScoreStatusBulk ? t("managementScore.actions.locking") : t("managementScore.lock.confirm")}
           </Button>
         </DialogActions>
       </Dialog>

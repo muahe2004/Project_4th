@@ -6,6 +6,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import type { IStudentFileData } from "../types";
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
+import { useTranslation } from "react-i18next";
 
 interface ImportFormModelDialogProps {
     open: boolean;
@@ -27,6 +28,7 @@ const ImportFormModelDialog = ({
     initialStudent,
     onSave,
 }: ImportFormModelDialogProps) => {
+    const { t } = useTranslation();
     const [student, setStudent] = useState<IStudentFileData>({
         student_code: null,
         name: null,
@@ -76,11 +78,11 @@ const ImportFormModelDialog = ({
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-            <DialogTitle className="primary-dialog-title">Chỉnh sửa sinh viên import</DialogTitle>
+            <DialogTitle className="primary-dialog-title">{t("students.importEdit.title")}</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2} className="myprofile-form">
                     <Grid size={6}>
-                        <LabelPrimary value="Mã sinh viên" required />
+                        <LabelPrimary value={t("students.importEdit.studentCode")} required />
                         <TextField
                             value={student.student_code || ""}
                             onChange={(event) => setField("student_code", event.target.value)}
@@ -90,7 +92,7 @@ const ImportFormModelDialog = ({
                         />
                     </Grid>
                     <Grid size={6}>
-                        <LabelPrimary value="Họ và tên" required />
+                        <LabelPrimary value={t("students.importEdit.studentName")} required />
                         <TextField
                             value={student.name || ""}
                             onChange={(event) => setField("name", event.target.value)}
@@ -100,7 +102,7 @@ const ImportFormModelDialog = ({
                         />
                     </Grid>
                     <Grid size={6}>
-                        <LabelPrimary value="Giới tính" />
+                        <LabelPrimary value={t("students.importEdit.gender")} />
                         <Select
                             value={student.gender || "3"}
                             onChange={(event) => setField("gender", String(event.target.value))}
@@ -108,13 +110,13 @@ const ImportFormModelDialog = ({
                             variant="outlined"
                             className="main-text__field"
                         >
-                            <MenuItem value="1">Nam</MenuItem>
-                            <MenuItem value="2">Nữ</MenuItem>
-                            <MenuItem value="3">Khác</MenuItem>
+                            <MenuItem value="1">{t("students.gender.male")}</MenuItem>
+                            <MenuItem value="2">{t("students.gender.female")}</MenuItem>
+                            <MenuItem value="3">{t("students.gender.other")}</MenuItem>
                         </Select>
                     </Grid>
                     <Grid size={6}>
-                        <LabelPrimary value="Sinh nhật" />
+                        <LabelPrimary value={t("students.importEdit.dateOfBirth")} />
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
                                 value={dateOfBirth}
@@ -127,7 +129,7 @@ const ImportFormModelDialog = ({
                         </LocalizationProvider>
                     </Grid>
                     <Grid size={6}>
-                        <LabelPrimary value="Email" />
+                        <LabelPrimary value={t("students.importEdit.email")} />
                         <TextField
                             value={student.email || ""}
                             onChange={(event) => setField("email", event.target.value)}
@@ -137,7 +139,7 @@ const ImportFormModelDialog = ({
                         />
                     </Grid>
                     <Grid size={6}>
-                        <LabelPrimary value="Số điện thoại" />
+                        <LabelPrimary value={t("students.importEdit.phone")} />
                         <TextField
                             value={student.phone || ""}
                             onChange={(event) => setField("phone", event.target.value)}
@@ -147,7 +149,7 @@ const ImportFormModelDialog = ({
                         />
                     </Grid>
                     <Grid size={6}>
-                        <LabelPrimary value="Mã lớp" />
+                        <LabelPrimary value={t("students.importEdit.classCode")} />
                         <TextField
                             value={student.class_code || ""}
                             onChange={(event) => setField("class_code", event.target.value)}
@@ -157,7 +159,7 @@ const ImportFormModelDialog = ({
                         />
                     </Grid>
                     <Grid size={12}>
-                        <LabelPrimary value="Địa chỉ" />
+                        <LabelPrimary value={t("students.importEdit.address")} />
                         <TextField
                             value={student.address || ""}
                             onChange={(event) => setField("address", event.target.value)}
@@ -169,8 +171,8 @@ const ImportFormModelDialog = ({
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} className="button-cancel">Huỷ</Button>
-                <Button onClick={() => onSave(student)}>Lưu</Button>
+                <Button onClick={onClose} className="button-cancel">{t("students.common.cancel")}</Button>
+                <Button onClick={() => onSave(student)}>{t("students.common.save")}</Button>
             </DialogActions>
         </Dialog>
     );

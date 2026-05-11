@@ -14,6 +14,7 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { layOutAdminUrl, scoreDetailsUrl, teacherScoreDetailsUrl } from "../../../routes/urls";
 import getGradeColor from "../../grades/utils/gradesColor";
 import type { IManagementScoreTableRow } from "../types";
+import { useTranslation } from "react-i18next";
 
 import "../../grades/components/styles/studentTableScore.css";
 
@@ -22,6 +23,7 @@ interface ManagementScoreTableProps {
 }
 
 export function ManagementScoreTable({ rows }: ManagementScoreTableProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -48,14 +50,14 @@ export function ManagementScoreTable({ rows }: ManagementScoreTableProps) {
       <Table className="primary-table" aria-label="student gpa table">
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
-            <TableCell className="primary-thead__cell" align="left">MSV</TableCell>
-            <TableCell className="primary-thead__cell" align="left">Họ và tên</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Xếp loại H4</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Xếp loại H10</TableCell>
-            <TableCell className="primary-thead__cell" align="center">TBC H4</TableCell>
-            <TableCell className="primary-thead__cell" align="center">TBC TL H4</TableCell>
-            <TableCell className="primary-thead__cell" align="center">TBC TL H10</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Actions</TableCell>
+            <TableCell className="primary-thead__cell" align="left">{t("managementScore.table.studentCode")}</TableCell>
+            <TableCell className="primary-thead__cell" align="left">{t("managementScore.table.studentName")}</TableCell>
+            <TableCell className="primary-thead__cell" align="center">{t("managementScore.table.rank4")}</TableCell>
+            <TableCell className="primary-thead__cell" align="center">{t("managementScore.table.rank10")}</TableCell>
+            <TableCell className="primary-thead__cell" align="center">{t("managementScore.table.gpa4")}</TableCell>
+            <TableCell className="primary-thead__cell" align="center">{t("managementScore.table.gpaAccum4")}</TableCell>
+            <TableCell className="primary-thead__cell" align="center">{t("managementScore.table.gpaAccum10")}</TableCell>
+            <TableCell className="primary-thead__cell" align="center">{t("common.actions")}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody className="primary-tbody">

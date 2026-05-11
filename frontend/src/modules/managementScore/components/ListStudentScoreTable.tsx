@@ -9,6 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import type { ChangeEvent } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   COMPONENT_TYPE_FINAL_ALIASES,
@@ -239,40 +240,41 @@ export function ListStudentScoreTable({
   onMidtermChange,
   onFinalChange,
 }: ListStudentScoreTableProps) {
+  const { t } = useTranslation();
   return (
     <TableContainer className="primary-table-container" component={Paper}>
       <Table className="primary-table" aria-label="class subject student score table">
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
-            <TableCell className="primary-thead__cell" rowSpan={2} align="center">STT</TableCell>
-            <TableCell className="primary-thead__cell" rowSpan={2} align="left">MSSV</TableCell>
-            <TableCell className="primary-thead__cell" rowSpan={2} align="left">Họ và tên</TableCell>
-            <TableCell className="primary-thead__cell" colSpan={3} align="center">Điểm thành phần</TableCell>
-            <TableCell className="primary-thead__cell" colSpan={3} align="center">Điểm thi lại</TableCell>
-            <TableCell className="primary-thead__cell" colSpan={3} align="center">Trung bình môn</TableCell>
+            <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("managementScore.studentTable.index")}</TableCell>
+            <TableCell className="primary-thead__cell" rowSpan={2} align="left">{t("managementScore.studentTable.studentCode")}</TableCell>
+            <TableCell className="primary-thead__cell" rowSpan={2} align="left">{t("managementScore.studentTable.studentName")}</TableCell>
+            <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("managementScore.studentTable.componentScores")}</TableCell>
+            <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("managementScore.studentTable.retakeScores")}</TableCell>
+            <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("managementScore.studentTable.average")}</TableCell>
           </TableRow>
           <TableRow className="primary-trow">
             <TableCell className="primary-thead__cell" align="center">
-              {getComponentLabel(rows?.[0]?.scores?.find((item) => !isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))?.score_component.component_type, "Đ1")}
+              {getComponentLabel(rows?.[0]?.scores?.find((item) => !isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))?.score_component.component_type, t("managementScore.studentTable.mid1"))}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              {getComponentLabel(rows?.[0]?.scores?.filter((item) => !isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))[1]?.score_component.component_type, "Đ2")}
+              {getComponentLabel(rows?.[0]?.scores?.filter((item) => !isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))[1]?.score_component.component_type, t("managementScore.studentTable.mid2"))}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              {getComponentLabel(rows?.[0]?.scores?.find((item) => !isRetakeScore(item) && isFinalComponent(item.score_component.component_type))?.score_component.component_type, "Thi")}
+              {getComponentLabel(rows?.[0]?.scores?.find((item) => !isRetakeScore(item) && isFinalComponent(item.score_component.component_type))?.score_component.component_type, t("managementScore.studentTable.final"))}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              {getComponentLabel(rows?.[0]?.scores?.find((item) => isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))?.score_component.component_type, "Đ1")}
+              {getComponentLabel(rows?.[0]?.scores?.find((item) => isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))?.score_component.component_type, t("managementScore.studentTable.mid1"))}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              {getComponentLabel(rows?.[0]?.scores?.filter((item) => isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))[1]?.score_component.component_type, "Đ2")}
+              {getComponentLabel(rows?.[0]?.scores?.filter((item) => isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))[1]?.score_component.component_type, t("managementScore.studentTable.mid2"))}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              {getComponentLabel(rows?.[0]?.scores?.find((item) => isRetakeScore(item) && isFinalComponent(item.score_component.component_type))?.score_component.component_type, "Thi")}
+              {getComponentLabel(rows?.[0]?.scores?.find((item) => isRetakeScore(item) && isFinalComponent(item.score_component.component_type))?.score_component.component_type, t("managementScore.studentTable.final"))}
             </TableCell>
-            <TableCell className="primary-thead__cell" align="center">Hệ 10</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Hệ 4</TableCell>
-            <TableCell className="primary-thead__cell" align="center">Điểm chữ</TableCell>
+            <TableCell className="primary-thead__cell" align="center">{t("managementScore.studentTable.system10")}</TableCell>
+            <TableCell className="primary-thead__cell" align="center">{t("managementScore.studentTable.system4")}</TableCell>
+            <TableCell className="primary-thead__cell" align="center">{t("managementScore.studentTable.letter")}</TableCell>
           </TableRow>
         </TableHead>
 
@@ -280,7 +282,7 @@ export function ListStudentScoreTable({
           {(rows ?? []).length === 0 ? (
             <TableRow className="primary-trow">
               <TableCell className="primary-tcell" colSpan={12} align="center">
-                Không có dữ liệu điểm
+                {t("managementScore.studentTable.noData")}
               </TableCell>
             </TableRow>
           ) : (

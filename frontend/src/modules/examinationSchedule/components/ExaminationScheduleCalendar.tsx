@@ -1,4 +1,5 @@
 import { useMemo, type CSSProperties } from "react";
+import { useTranslation } from "react-i18next";
 import { useGetExaminationSchedules } from "../apis/getExaminationSchedule";
 import type { IExaminationScheduleResponse } from "../types";
 import LearningBox from "../../learningSchedule/components/LearningBox";
@@ -8,16 +9,6 @@ import "../../learningSchedule/components/styles/LearningScheduleCalender.css";
 
 const HOURS = Array.from({ length: 14 }, (_, index) => index + 7);
 const HOUR_HEIGHT = 48;
-
-const DAYS = [
-  { label: "Thứ Hai", value: 1 },
-  { label: "Thứ Ba", value: 2 },
-  { label: "Thứ Tư", value: 3 },
-  { label: "Thứ Năm", value: 4 },
-  { label: "Thứ Sáu", value: 5 },
-  { label: "Thứ Bảy", value: 6 },
-  { label: "Chủ Nhật", value: 0 },
-];
 
 function addDays(date: Date, days: number): Date {
   const nextDate = new Date(date);
@@ -90,6 +81,7 @@ export function ExaminationScheduleCalendar({
   roomId,
   onEdit,
 }: ExaminationScheduleCalendarProps) {
+  const { t } = useTranslation();
   const monday = useMemo(() => getMonday(selectedDate), [selectedDate]);
   const weekDays = useMemo(
     () => Array.from({ length: 7 }, (_, index) => addDays(monday, index)),
@@ -121,7 +113,7 @@ export function ExaminationScheduleCalendar({
   }, [data?.data, roomId, weekDays]);
 
   if (isLoading) {
-    return <div className="teaching-schedule-by-room teaching-schedule-by-room--empty">Loading...</div>;
+    return <div className="teaching-schedule-by-room teaching-schedule-by-room--empty">{t("examinationSchedules.calendar.loading")}</div>;
   }
 
   const calendarStyle = {
@@ -138,7 +130,7 @@ export function ExaminationScheduleCalendar({
 
           {weekDays.map((day, index) => (
             <div className="examination-calendar__head" key={`${day.toISOString()}-${index}`}>
-              <strong>{DAYS[index].label}</strong>
+              <strong>{t(`examinationSchedules.calendar.days.${index}`)}</strong>
             </div>
           ))}
 
@@ -206,18 +198,19 @@ export function ExaminationScheduleCalendar({
                         }}
                       >
                         <LearningBox
-                          title={item.subject_info?.subject_name ?? "Môn thi"}
-                          periodText={
-                            `${new Date(item.start_time).toLocaleTimeString("vi-VN", {
+                          title={item.subject_info?.subject_name ?? t("examinationSchedules.subjectFallback")}
+                          periodText={t("examinationSchedules.periodRange", {
+                            start: new Date(item.start_time).toLocaleTimeString(undefined, {
                               hour: "2-digit",
                               minute: "2-digit",
-                            })} - ${new Date(item.end_time).toLocaleTimeString("vi-VN", {
+                            }),
+                            end: new Date(item.end_time).toLocaleTimeString(undefined, {
                               hour: "2-digit",
                               minute: "2-digit",
-                            })}`
-                          }
+                            }),
+                          })}
                           roomText={
-                            item.room_info?.room_number ? `Phòng ${item.room_info.room_number}` : undefined
+                            item.room_info?.room_number ? t("examinationSchedules.roomLabel", { room: item.room_info.room_number }) : undefined
                           }
                           teacherText={item.invigilator?.[0]?.invigilator_name ?? undefined}
                           classText={item.class_info?.class_code ?? item.class_info?.class_name ?? undefined}

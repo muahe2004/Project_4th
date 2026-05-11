@@ -16,6 +16,7 @@ import {
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   ITrainingProgramUploadResponse,
   ITrainingProgramFileSubjectData,
@@ -49,6 +50,7 @@ const ImportFormModel = ({
   onImport,
   isImporting = false,
 }: ImportFormModelProps) => {
+  const { t } = useTranslation();
   const [openConfirmClose, setOpenConfirmClose] = useState(false);
   const [validSubjects, setValidSubjects] = useState<ITrainingProgramFileSubjectData[]>([]);
   const [invalidSubjects, setInvalidSubjects] = useState<ITrainingProgramFileInvalidSubject[]>([]);
@@ -121,32 +123,32 @@ const ImportFormModel = ({
 
   return (
     <Dialog open={open} onClose={() => setOpenConfirmClose(true)} fullWidth maxWidth="xl">
-      <DialogTitle className="primary-dialog-title">Import Training Program Preview</DialogTitle>
+      <DialogTitle className="primary-dialog-title">{t("trainingProgram.import.title")}</DialogTitle>
       <DialogContent dividers>
         {!data ? (
-          <Typography>Không có dữ liệu import.</Typography>
+          <Typography>{t("trainingProgram.import.noData")}</Typography>
         ) : (
           <>
             <Typography sx={{ fontWeight: 600, mb: 1 }}>
-              File name: {data.file_information.file_name}
+              {t("trainingProgram.import.fileName")}: {data.file_information.file_name}
             </Typography>
             <Typography sx={{ mb: 2 }}>
-              CTĐT: {data.training_program.training_program_name || ""} | Niên khoá: {data.training_program.academic_year || ""}
+              {t("trainingProgram.import.program")}: {data.training_program.training_program_name || ""} | {t("trainingProgram.import.academicYear")}: {data.training_program.academic_year || ""}
             </Typography>
             {invalidSubjects.length > 0 && (
               <Typography sx={{ color: "#d32f2f", fontWeight: 600, mb: 2 }}>
-                Còn {invalidSubjects.length} dòng lỗi trong file.
+                {t("trainingProgram.import.invalidRows", { count: invalidSubjects.length })}
               </Typography>
             )}
             <TableContainer className="sticky-table-container" component={Paper} sx={{ maxHeight: 520 }}>
               <Table stickyHeader className="sticky-table" aria-label="import preview training programs table">
                 <TableHead className="primary-thead">
                   <TableRow className="primary-trow">
-                    <TableCell className="primary-thead__cell" align="center">Mã môn</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Tên môn</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Học kỳ</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Lý do lỗi</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Actions</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("trainingProgram.import.table.subjectCode")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("trainingProgram.import.table.subjectName")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("trainingProgram.import.table.term")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("trainingProgram.import.table.errorReason")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("common.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -188,16 +190,16 @@ const ImportFormModel = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">Huỷ</Button>
+        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">{t("common.cancel")}</Button>
         <Button onClick={handleImport} disabled={isImporting || invalidSubjects.length > 0}>
-          {isImporting ? "Importing..." : "Import"}
+          {isImporting ? t("trainingProgram.actions.importing") : t("trainingProgram.actions.import")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirmClose}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát form import?"
+        title={t("common.confirmExitTitle")}
+        message={t("trainingProgram.import.confirmExit")}
         onCancel={() => setOpenConfirmClose(false)}
         onConfirm={() => {
           setOpenConfirmClose(false);

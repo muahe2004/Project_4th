@@ -1,4 +1,5 @@
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { formatVndAmount } from "../../../utils/formatCurrency";
 import type { IStudentTuitionFeeListResponse } from "../types/studentTuitionFee";
 
@@ -9,34 +10,35 @@ interface StudentTuitionFeeTableProps {
 export default function StudentTuitionFeeTable({
   studentsWithTuitionFees,
 }: StudentTuitionFeeTableProps) {
+  const { t } = useTranslation();
   return (
     <TableContainer className="sticky-table-container" component={Paper}>
       <Table stickyHeader className="sticky-table" aria-label="student tuition fees table">
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
             <TableCell className="primary-thead__cell" align="center">
-              Mã sinh viên
+              {t("tuitionFees.studentTable.studentCode")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="left">
-              Tên sinh viên
+              {t("tuitionFees.studentTable.studentName")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="left">
-              Lớp
+              {t("tuitionFees.studentTable.class")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Học phí
+              {t("tuitionFees.studentTable.tuitionFee")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Kỳ
+              {t("tuitionFees.studentTable.term")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Số tiền phải đóng
+              {t("tuitionFees.studentTable.payableAmount")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Đã đóng
+              {t("tuitionFees.studentTable.paidAmount")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Còn nợ
+              {t("tuitionFees.studentTable.debtAmount")}
             </TableCell>
           </TableRow>
         </TableHead>

@@ -10,10 +10,15 @@ export function DashBoard() {
 
     return (
         <main className="dash-board">
-            <Typography className='dash-board__welcome'> {user ? `Xin chào, ${user?.name}` : "Đang tải..."} ✨</Typography>
+            <Typography className='dash-board__welcome'>
+              {user
+                ? t("dashboard.welcome", { name: user?.name })
+                : t("dashboard.loading")}
+              {" ✨"}
+            </Typography>
             <Typography variant="body1" className="dash-board__subtitle">
-          {t("dashboard_subtitle", "Chúc bạn một ngày làm việc hiệu quả ✨")}
-        </Typography>
+              {t("dashboard.subtitle")}
+            </Typography>
         </main>
     );
 }

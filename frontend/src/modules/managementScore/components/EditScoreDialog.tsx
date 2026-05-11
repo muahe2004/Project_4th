@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
@@ -92,6 +93,7 @@ const getChangedFields = (current: ScoreFormValues, initial: ScoreFormValues) =>
 };
 
 export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
+  const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const [formValues, setFormValues] = useState<ScoreFormValues>(buildFormValues(row));
   const { mutateAsync: updateScore, isPending } = useUpdateScore();
@@ -111,7 +113,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
 
   const handleSubmitClick = () => {
     if (!hasChanges(formValues, initialValues)) {
-      showSnackbar("Không có thay đổi nào để lưu.", "info");
+      showSnackbar(t("managementScore.edit.noChanges"), "info");
       return;
     }
 
@@ -121,7 +123,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
 
     const changedFields = getChangedFields(formValues, initialValues);
     if (changedFields.length === 0) {
-      showSnackbar("Không có thay đổi nào để lưu.", "info");
+      showSnackbar(t("managementScore.edit.noChanges"), "info");
       return;
     }
 
@@ -148,7 +150,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
         )?.id;
 
       if (!scoreComponentId) {
-        throw new Error(`Không tìm thấy loại điểm để xử lý: ${field.key}`);
+        throw new Error(t("managementScore.edit.missingScoreType", { field: field.key }));
       }
 
       const score = parseScore(field.value);
@@ -161,7 +163,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
       }
 
       if (!row.student_id || !row.subject_id || !row.academic_term_id) {
-        throw new Error("Thiếu payload nền để tạo mới điểm.");
+        throw new Error(t("managementScore.edit.missingPayload"));
       }
 
       return addScore({
@@ -178,12 +180,12 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
 
     void Promise.all(requests)
       .then(() => {
-        showSnackbar("Đã lưu thay đổi điểm.", "success");
+        showSnackbar(t("managementScore.edit.saveSuccess"), "success");
         onClose();
       })
       .catch((error) => {
         console.error(error);
-        showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+        showSnackbar(t("managementScore.edit.genericError"), "error");
       });
   };
 
@@ -195,13 +197,13 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
       maxWidth="md"
       fullWidth
     >
-      <DialogTitle className="primary-dialog-title">EDIT SCORE</DialogTitle>
+      <DialogTitle className="primary-dialog-title">{t("managementScore.edit.title")}</DialogTitle>
 
       <DialogContent className="primary-dialog-content">
         {row ? (
           <Grid container spacing={2}>
             <Grid size={4}>
-              <LabelPrimary value="Mã học phần" required />
+              <LabelPrimary value={t("managementScore.edit.subjectCode")} required />
               <TextField
                 value={row.subject_code}
                 fullWidth
@@ -212,7 +214,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Tên học phần" />
+              <LabelPrimary value={t("managementScore.edit.subjectName")} />
               <TextField
                 value={row.subject_name}
                 fullWidth
@@ -223,7 +225,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
             </Grid>
 
             <Grid size={4}>
-              <LabelPrimary value="Số tín chỉ" />
+              <LabelPrimary value={t("managementScore.edit.credits")} />
               <TextField
                 value={String(row.credits)}
                 fullWidth
@@ -236,7 +238,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
             {row.score_mode === "retake" ? (
               <>
                 <Grid size={4}>
-                  <LabelPrimary value="Điểm học lại Đ1" />
+                  <LabelPrimary value={t("managementScore.edit.retake1")} />
                   <TextField
                     value={formValues.recheck1}
                     onChange={(event) =>
@@ -249,7 +251,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
                 </Grid>
 
                 <Grid size={4}>
-                  <LabelPrimary value="Điểm học lại Đ2" />
+                  <LabelPrimary value={t("managementScore.edit.retake2")} />
                   <TextField
                     value={formValues.recheck2}
                     onChange={(event) =>
@@ -262,7 +264,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
                 </Grid>
 
                 <Grid size={4}>
-                  <LabelPrimary value="Điểm học lại Thi" />
+                  <LabelPrimary value={t("managementScore.edit.retakeFinal")} />
                   <TextField
                     value={formValues.recheck3}
                     onChange={(event) =>
@@ -277,7 +279,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
             ) : (
               <>
                 <Grid size={4}>
-                  <LabelPrimary value="Điểm thành phần Đ1" />
+                  <LabelPrimary value={t("managementScore.edit.mid1")} />
                   <TextField
                     value={formValues.exam1}
                     onChange={(event) =>
@@ -290,7 +292,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
                 </Grid>
 
                 <Grid size={4}>
-                  <LabelPrimary value="Điểm thành phần Đ2" />
+                  <LabelPrimary value={t("managementScore.edit.mid2")} />
                   <TextField
                     value={formValues.exam2}
                     onChange={(event) =>
@@ -303,7 +305,7 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
                 </Grid>
 
                 <Grid size={4}>
-                  <LabelPrimary value="Điểm thành phần Thi" />
+                  <LabelPrimary value={t("managementScore.edit.final")} />
                   <TextField
                     value={formValues.exam3}
                     onChange={(event) =>
@@ -322,14 +324,14 @@ export function EditScoreDialog({ open, row, onClose }: EditScoreDialogProps) {
 
       <DialogActions className="primary-dialog-actions">
         <Button onClick={handleCloseClick} className="button-cancel">
-          HỦY
+          {t("common.cancel")}
         </Button>
         <Button
           onClick={handleSubmitClick}
           variant="contained"
           disabled={!hasChanges(formValues, initialValues) || isPending}
         >
-          LƯU
+          {t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

@@ -18,6 +18,7 @@ import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete"
 import { useMajorsDropDown } from "../../majors/apis/getMajorsDropDown";
 import { useMajorsDropDownByIds } from "../../majors/apis/getMajorsDropDownByIds";
 import type { IMajorsDropDown } from "../../majors/types";
+import { useTranslation } from "react-i18next";
 
 interface SpecializationsFormProps {
     open: boolean;
@@ -27,6 +28,7 @@ interface SpecializationsFormProps {
 }
 
 const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, initialValues, onClose }) => {
+    const { t } = useTranslation();
     const ID = initialValues?.id;
     const { showSnackbar } = useSnackbar();
     
@@ -141,7 +143,9 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
             else if (mode === "edit" && ID) await editSpecialization({ id: ID, data: payload });
 
             showSnackbar(
-                mode === "add" ? "Thêm chuyên ngành thành công!" : "Cập nhật chuyên ngành thành công!",
+                mode === "add"
+                    ? t("specializations.messages.addSuccess")
+                    : t("specializations.messages.updateSuccess"),
                 "success"
             );
 
@@ -149,17 +153,17 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
             onClose();
         } catch (error) {
             console.error(error);
-            showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+            showSnackbar(t("specializations.messages.genericError"), "error");
         }
     };
 
     return (
         <Dialog open={open} onClose={handleCloseClick} className="primary-dialog department-form" maxWidth="sm" fullWidth>
             <DialogTitle className="primary-dialog-title">
-                {mode === "add" ? "ADD SPECIALIZATION" : "EDIT SPECIALIZATION"}
+                {mode === "add" ? t("specializations.form.titleAdd") : t("specializations.form.titleEdit")}
             </DialogTitle>
             <DialogContent className="primary-dialog-content">
-                <LabelPrimary value="Mã chuyên ngành" required />
+                <LabelPrimary value={t("specializations.form.labels.specializationCode")} required />
                 <TextField
                     value={specializationCode}
                     onChange={(e) => setSpecializationCode(e.target.value)}
@@ -168,7 +172,7 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                     className="main-text__field primary-dialog-input"
                 />
 
-                <LabelPrimary value="Tên chuyên ngành" required />
+                <LabelPrimary value={t("specializations.form.labels.specializationName")} required />
                 <TextField
                     value={specializationName}
                     onChange={(e) => setSpecializationName(e.target.value)}
@@ -177,7 +181,7 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                     className="main-text__field primary-dialog-input"
                 />
 
-                <LabelPrimary value="Ngày thành lập" />
+                <LabelPrimary value={t("specializations.form.labels.establishedDate")} />
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
                         value={establishedDate ? new Date(establishedDate) : null}
@@ -187,7 +191,7 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                     />
                 </LocalizationProvider>
 
-                <LabelPrimary value="Ngành" required />
+                <LabelPrimary value={t("specializations.form.labels.major")} required />
                 <MainAutocomplete
                     options={autocompleteMajorOptions}
                     value={majorId}
@@ -195,10 +199,10 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                     onSearchChange={setSearchMajor}
                     getOptionLabel={(option) => `${option.major_name} (${option.major_code})`}
                     getOptionId={(option) => option.id.toString()}
-                    placeholder="Chọn ngành"
+                    placeholder={t("specializations.form.majorPlaceholder")}
                 />
 
-                <LabelPrimary value="Mô tả" />
+                <LabelPrimary value={t("specializations.form.labels.description")} />
                 <TextField
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -210,16 +214,18 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                 />
             </DialogContent>
             <DialogActions className="primary-dialog-actions">
-                <Button onClick={handleCloseClick} className="button-cancel">Hủy</Button>
+                <Button onClick={handleCloseClick} className="button-cancel">
+                    {t("specializations.common.cancel")}
+                </Button>
                 <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
-                    {mode === "add" ? "Thêm" : "Lưu"}
+                    {mode === "add" ? t("specializations.common.add") : t("specializations.common.save")}
                 </Button>
             </DialogActions>
 
             <ConfirmDialog
                 open={openConfirm}
-                title="Xác nhận thoát"
-                message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+                title={t("specializations.confirm.exitTitle")}
+                message={t("specializations.confirm.exitMessage")}
                 onConfirm={() => {
                     setOpenConfirm(false);
                     onClose();
@@ -229,8 +235,8 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
 
             <ConfirmDialog
                 open={openConfirmSave}
-                title="Xác nhận lưu"
-                message="Bạn có chắc muốn lưu các thay đổi?"
+                title={t("specializations.confirm.saveTitle")}
+                message={t("specializations.confirm.saveMessage")}
                 onConfirm={() => pendingPayload && handleConfirmSave(pendingPayload)}
                 onCancel={() => setOpenConfirmSave(false)}
             />

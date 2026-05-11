@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useGetScoreByStudentID } from "../../grades/apis/getScoreByStudentID";
 import ScoresTable from "../../grades/components/ScoresTable";
@@ -118,6 +119,7 @@ function getScoreMode(subject: SubjectAggregate): "official" | "retake" {
 }
 
 export function TeacherScoreDetails() {
+  const { t } = useTranslation();
   const location = useLocation();
   const state = location.state as
     | { studentId?: string; studentCode?: string; studentName?: string; classId?: string | null; classCode?: string | null; className?: string | null }
@@ -284,20 +286,20 @@ export function TeacherScoreDetails() {
   }, [studentInfo, scoreRows]);
 
   if (!state?.studentId) {
-    return <main className="admin-main-container"><Alert severity="warning">Không tìm thấy sinh viên để xem chi tiết điểm.</Alert></main>;
+    return <main className="admin-main-container"><Alert severity="warning">{t("managementScore.details.noStudent")}</Alert></main>;
   }
 
   return (
     <main className="admin-main-container">
       <Typography className="primary-title">
-        {state.studentCode ?? "-"} - {state.studentName ?? "SCORE DETAILS"}
+        {state.studentCode ?? "-"} - {state.studentName ?? t("managementScore.details.title")}
       </Typography>
       {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={LOADING_SPINNER_SIZE} />
         </Box>
       ) : isError ? (
-        <Alert severity="error">{(error as any)?.response?.data?.detail ?? "Lấy dữ liệu điểm thất bại"}</Alert>
+        <Alert severity="error">{(error as any)?.response?.data?.detail ?? t("managementScore.errors.loadData")}</Alert>
       ) : (
         <>
           <Box sx={{ mt: 2 }}>

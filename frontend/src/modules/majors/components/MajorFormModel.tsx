@@ -18,6 +18,7 @@ import { useCreateMajor } from "../apis/addMajor";
 import { useEditMajor } from "../apis/editMajor";
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import type { IDepartmentsDropDown } from "../../department/types";
+import { useTranslation } from "react-i18next";
 
 interface MajorFormProps {
     open: boolean;
@@ -27,6 +28,7 @@ interface MajorFormProps {
 }
 
 const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClose }) => {
+    const { t } = useTranslation();
     const ID = initialValues?.id;
     const { showSnackbar } = useSnackbar();
     
@@ -141,7 +143,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
             else if (mode === "edit" && ID) await editMajor({ id: ID, data: payload });
 
             showSnackbar(
-                mode === "add" ? "Thêm ngành thành công!" : "Cập nhật ngành thành công!",
+                mode === "add" ? t("majors.messages.addSuccess") : t("majors.messages.updateSuccess"),
                 "success"
             );
 
@@ -149,17 +151,17 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
             onClose();
         } catch (error) {
             console.error(error);
-            showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+            showSnackbar(t("majors.messages.genericError"), "error");
         }
     };
 
     return (
         <Dialog open={open} onClose={handleCloseClick} className="primary-dialog department-form" maxWidth="sm" fullWidth>
             <DialogTitle className="primary-dialog-title">
-                {mode === "add" ? "ADD MAJOR" : "Sửa ngành"}
+                {mode === "add" ? t("majors.form.titleAdd") : t("majors.form.titleEdit")}
             </DialogTitle>
             <DialogContent className="primary-dialog-content">
-                <LabelPrimary value="Mã ngành" required />
+                <LabelPrimary value={t("majors.form.labels.majorCode")} required />
                 <TextField
                     value={majorCode}
                     onChange={(e) => setMajorCode(e.target.value)}
@@ -168,7 +170,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     className="main-text__field primary-dialog-input"
                 />
 
-                <LabelPrimary value="Tên ngành" required />
+                <LabelPrimary value={t("majors.form.labels.majorName")} required />
                 <TextField
                     value={majorName}
                     onChange={(e) => setMajorName(e.target.value)}
@@ -177,7 +179,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     className="main-text__field primary-dialog-input"
                 />
 
-                <LabelPrimary value="Ngày thành lập" />
+                <LabelPrimary value={t("majors.form.labels.establishedDate")} />
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
                         value={establishedDate ? new Date(establishedDate) : null}
@@ -187,7 +189,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     />
                 </LocalizationProvider>
 
-                <LabelPrimary value="Khoa" required />
+                <LabelPrimary value={t("majors.form.labels.department")} required />
                 <MainAutocomplete
                     options={autocompleteDepartmentOptions}
                     value={departmentId}
@@ -195,10 +197,10 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     onSearchChange={setSearchDepartment}
                     getOptionLabel={(option) => `${option.department_name} (${option.department_code})`}
                     getOptionId={(option) => option.id.toString()}
-                    placeholder="Chọn khoa"
+                    placeholder={t("majors.form.departmentPlaceholder")}
                 />
 
-                <LabelPrimary value="Mô tả" />
+                <LabelPrimary value={t("majors.form.labels.description")} />
                 <TextField
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -210,16 +212,18 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                 />
             </DialogContent>
             <DialogActions className="primary-dialog-actions">
-                <Button onClick={handleCloseClick} className="button-cancel">Hủy</Button>
+                <Button onClick={handleCloseClick} className="button-cancel">
+                    {t("majors.common.cancel")}
+                </Button>
                 <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
-                    {mode === "add" ? "Thêm" : "Lưu"}
+                    {mode === "add" ? t("majors.common.add") : t("majors.common.save")}
                 </Button>
             </DialogActions>
 
             <ConfirmDialog
                 open={openConfirm}
-                title="Xác nhận thoát"
-                message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+                title={t("majors.confirm.exitTitle")}
+                message={t("majors.confirm.exitMessage")}
                 onConfirm={() => {
                     setOpenConfirm(false);
                     onClose();
@@ -229,8 +233,8 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
 
             <ConfirmDialog
                 open={openConfirmSave}
-                title="Xác nhận lưu"
-                message="Bạn có chắc muốn lưu các thay đổi?"
+                title={t("majors.confirm.saveTitle")}
+                message={t("majors.confirm.saveMessage")}
                 onConfirm={() => pendingPayload && handleConfirmSave(pendingPayload)}
                 onCancel={() => setOpenConfirmSave(false)}
             />

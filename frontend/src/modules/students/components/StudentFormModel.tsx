@@ -14,6 +14,7 @@ import { useCreateStudent } from "../apis/addStudent";
 import { useUpdateStudent } from "../apis/updateStudent";
 import { useClassesDropDown } from "../../classes/apis/getClassDropDown";
 import { useClassesDropDownByIds } from "../../classes/apis/getClassDropDownByIds";
+import { useTranslation } from "react-i18next";
 
 interface TabPanelProps {
     children?: ReactNode;
@@ -146,7 +147,7 @@ const DEFAULT_STUDENT: IStudentsResponse = {
 };
 
 const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initialValues, onClose }) => {
-
+    const { t } = useTranslation();
     const [student, setStudent] = useState<IStudentsResponse>({ ...DEFAULT_STUDENT });
     const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
 
@@ -310,13 +311,13 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
             onClose={handleCloseClick}
         >
             <DialogTitle className="primary-dialog-title">
-                {mode === "add" ? "ADD STUDENT" : "SỬA THÔNG TIN"}
+                {mode === "add" ? t("students.form.titleAdd") : t("students.form.titleEdit")}
             </DialogTitle>
 
             <Tabs className="myprofile-tabs" value={value} onChange={handleChange}>
-                <Tab classes={{ selected: "active-tab" }} label="Thông tin cơ bản" />
-                <Tab classes={{ selected: "active-tab" }} label="Thông tin khác" />
-                <Tab classes={{ selected: "active-tab" }} label="Thông tin người thân" />
+                <Tab classes={{ selected: "active-tab" }} label={t("students.tabs.basic")} />
+                <Tab classes={{ selected: "active-tab" }} label={t("students.tabs.other")} />
+                <Tab classes={{ selected: "active-tab" }} label={t("students.tabs.relatives")} />
             </Tabs>
 
             <DialogContent className="primary-dialog-content">
@@ -346,17 +347,17 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
                 </TabPanel>
             </DialogContent>
             <DialogActions className="primary-dialog-actions">
-                <Button onClick={handleCloseClick} className="button-cancel">Hủy</Button>
+                <Button onClick={handleCloseClick} className="button-cancel">{t("students.common.cancel")}</Button>
                 <Button onClick={handleSubmitClick} variant="contained">
-                    {mode === "add" ? "Thêm" : "Lưu"}
+                    {mode === "add" ? t("students.common.add") : t("students.common.save")}
                 </Button>
             </DialogActions>
 
             {/* Confirm thoát nếu không thay đổi */}
             <ConfirmDialog
                 open={openConfirm}
-                title="Xác nhận thoát"
-                message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+                title={t("students.confirm.exitTitle")}
+                message={t("students.confirm.exitMessage")}
                 onConfirm={() => {
                     setOpenConfirm(false);
                     onClose();

@@ -5,6 +5,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import type { IStudentRelative } from "../types";
+import { useTranslation } from "react-i18next";
 
 interface RelativeInformationTabProps {
     relatives: IStudentRelative[];
@@ -14,6 +15,7 @@ interface RelativeInformationTabProps {
 const SECTION_TITLES = ["THÔNG TIN CỦA CHA", "THÔNG TIN CỦA MẸ", "THÔNG TIN CỦA NGƯỜI THÂN"];
 
 const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relatives, onRelativeChange }) => {
+    const { t } = useTranslation();
     const handleFieldChange = (
         index: number,
         field: keyof IStudentRelative,
@@ -30,12 +32,14 @@ const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relativ
                     <React.Fragment key={`relative-${index}`}>
                         <Grid size={12}>
                             <Typography className="myprofile-panel__title">
-                                {SECTION_TITLES[index] ?? `THÔNG TIN NGƯỜI THÂN ${index + 1}`}
+                                {t(`students.relativeSections.${index}`, {
+                                    defaultValue: `Relative Information ${index + 1}`,
+                                })}
                             </Typography>
                         </Grid>
 
                         <Grid size={4} className="">
-                            <LabelPrimary value="Họ và tên người thân" />
+                            <LabelPrimary value={t("students.relative.name")} />
                             <TextField
                                 value={relative.name ?? ""}
                                 onChange={(e) => handleFieldChange(index, "name", e.target.value)}
@@ -63,7 +67,7 @@ const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relativ
                         </Grid>
 
                         <Grid size={4} className="">
-                            <LabelPrimary value="Ngày sinh" />
+                            <LabelPrimary value={t("students.relative.birthYear")} />
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DatePicker
                                     value={relativeDob}
@@ -80,7 +84,7 @@ const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relativ
                         </Grid>
 
                         <Grid size={4} className="">
-                            <LabelPrimary value="Nghề nghiệp" />
+                            <LabelPrimary value={t("students.relative.occupation")} />
                             <TextField
                                 value={relative.occupation ?? ""}
                                 onChange={(e) => handleFieldChange(index, "occupation", e.target.value)}
@@ -91,7 +95,7 @@ const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relativ
                         </Grid>
 
                         <Grid size={4} className="">
-                            <LabelPrimary value="Số điện thoại" />
+                            <LabelPrimary value={t("students.relative.phone")} />
                             <TextField
                                 value={relative.phone ?? ""}
                                 onChange={(e) => handleFieldChange(index, "phone", e.target.value)}
@@ -102,7 +106,7 @@ const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relativ
                         </Grid>
 
                         <Grid size={4} className="">
-                            <LabelPrimary value="Địa chỉ" />
+                            <LabelPrimary value={t("students.relative.address")} />
                             <TextField
                                 value={relative.address ?? ""}
                                 onChange={(e) => handleFieldChange(index, "address", e.target.value)}
@@ -113,7 +117,7 @@ const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relativ
                         </Grid>
 
                         <Grid size={4} className="">
-                            <LabelPrimary value="Dân tộc" />
+                            <LabelPrimary value={t("students.relative.ethnicity")} />
                             <TextField
                                 value={relative.ethnicity ?? ""}
                                 onChange={(e) => handleFieldChange(index, "ethnicity", e.target.value)}
@@ -124,7 +128,7 @@ const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relativ
                         </Grid>
 
                         <Grid size={4} className="">
-                            <LabelPrimary value="Tôn giáo" />
+                            <LabelPrimary value={t("students.relative.religion")} />
                             <TextField
                                 value={relative.religion ?? ""}
                                 onChange={(e) => handleFieldChange(index, "religion", e.target.value)}
@@ -135,7 +139,7 @@ const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relativ
                         </Grid>
 
                         <Grid size={4} className="">
-                            <LabelPrimary value="Quốc tịch" />
+                            <LabelPrimary value={t("students.relative.nationality")} />
                             <TextField
                                 value={relative.nationality ?? ""}
                                 onChange={(e) => handleFieldChange(index, "nationality", e.target.value)}

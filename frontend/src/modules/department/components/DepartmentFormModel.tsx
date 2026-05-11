@@ -13,6 +13,7 @@ import { useEditDepartment } from "../apis/editDepartment";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
+import { useTranslation } from "react-i18next";
 
 interface DepartmentFormProps {
     open: boolean;
@@ -22,6 +23,7 @@ interface DepartmentFormProps {
 }
 
 const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValues, onClose }) => {
+    const { t } = useTranslation();
     const ID = initialValues?.id;
     const { showSnackbar } = useSnackbar();
 
@@ -110,22 +112,27 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
             if (mode === "add") await createDepartment(payload);
             else if (mode === "edit") await editDepartment({ id: ID as string, data: payload });
 
-            showSnackbar(mode === "add" ? "Thêm khoa thành công!" : "Cập nhật khoa thành công!", "success");
+            showSnackbar(
+                mode === "add"
+                    ? t("departments.messages.addSuccess")
+                    : t("departments.messages.updateSuccess"),
+                "success"
+            );
             setOpenConfirmSave(false);
             onClose();
         } catch (error: any) {
             console.error(error);
-            showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+            showSnackbar(t("departments.messages.genericError"), "error");
         }
     };
 
     return (
         <Dialog open={open} onClose={handleCloseClick} className="primary-dialog department-form" maxWidth="sm" fullWidth>
             <DialogTitle className="primary-dialog-title">
-                {mode === "add" ? "ADD DEPARTMENT" : "Sửa Khoa"}
+                {mode === "add" ? t("departments.form.titleAdd") : t("departments.form.titleEdit")}
             </DialogTitle>
             <DialogContent className="primary-dialog-content">
-                <LabelPrimary value="Mã Khoa" required />
+                <LabelPrimary value={t("departments.form.labels.departmentCode")} required />
                 <TextField
                     value={departmentCode}
                     onChange={(e) => setDepartmentCode(e.target.value)}
@@ -134,7 +141,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                     className="main-text__field primary-dialog-input"
                 />
 
-                <LabelPrimary value="Tên Khoa" required />
+                <LabelPrimary value={t("departments.form.labels.departmentName")} required />
                 <TextField
                     value={departmentName}
                     onChange={(e) => setDepartmentName(e.target.value)}
@@ -143,7 +150,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                     className="main-text__field primary-dialog-input"
                 />
 
-                <LabelPrimary value="Ngày thành lập" />
+                <LabelPrimary value={t("departments.form.labels.establishedDate")} />
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
                         value={establishedDate ? new Date(establishedDate) : null}
@@ -153,7 +160,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                     />
                 </LocalizationProvider>
 
-                <LabelPrimary value="Mô tả" />
+                <LabelPrimary value={t("departments.form.labels.description")} />
                 <TextField
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -165,17 +172,19 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                 />
             </DialogContent>
             <DialogActions className="primary-dialog-actions">
-                <Button onClick={handleCloseClick} className="button-cancel">Hủy</Button>
+                <Button onClick={handleCloseClick} className="button-cancel">
+                    {t("departments.common.cancel")}
+                </Button>
                 <Button onClick={handleSubmitClick} variant="contained">
-                    {mode === "add" ? "Thêm" : "Lưu"}
+                    {mode === "add" ? t("departments.common.add") : t("departments.common.save")}
                 </Button>
             </DialogActions>
 
             {/* Confirm thoát nếu không thay đổi */}
             <ConfirmDialog
                 open={openConfirm}
-                title="Xác nhận thoát"
-                message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+                title={t("departments.confirm.exitTitle")}
+                message={t("departments.confirm.exitMessage")}
                 onConfirm={() => {
                     setOpenConfirm(false);
                     onClose();
@@ -187,8 +196,8 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
             {mode === "edit" && (
                 <ConfirmDialog
                     open={openConfirmSave}
-                    title="Xác nhận lưu"
-                    message="Bạn có chắc muốn lưu các thay đổi?"
+                    title={t("departments.confirm.saveTitle")}
+                    message={t("departments.confirm.saveMessage")}
                     onConfirm={handleConfirmSave}
                     onCancel={() => setOpenConfirmSave(false)}
                 />

@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
 import CheckBox from "../../../components/Checkbox/CheckBox";
@@ -47,6 +48,7 @@ export function AddScoreComponent({
   existingScoreIdsByStudentAndComponent = {},
   students = [],
 }: AddScoreComponentProps) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const { data: scoreComponents = [] } = useGetScoreComponents({ enabled: open });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -164,13 +166,13 @@ export function AddScoreComponent({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" className="add-score-component__dialog">
-      <DialogTitle className="add-score-component__title">Thành phần điểm</DialogTitle>
+      <DialogTitle className="add-score-component__title">{t("managementScore.component.title")}</DialogTitle>
       <DialogContent className="add-score-component__content">
         <Box className="add-score-component__search">
           <TextField
             fullWidth
             variant="outlined"
-            placeholder="Tìm thành phần..."
+            placeholder={t("managementScore.component.searchPlaceholder")}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             className="add-score-component__input"
@@ -188,7 +190,7 @@ export function AddScoreComponent({
 
         <Box className="add-score-component__list">
           {filteredComponents.length === 0 ? (
-            <Typography className="add-score-component__empty">Không có dữ liệu</Typography>
+            <Typography className="add-score-component__empty">{t("managementScore.component.empty")}</Typography>
           ) : (
             filteredComponents.map((component) => {
               const isSelected = selectedIds.includes(component.id);
@@ -206,7 +208,7 @@ export function AddScoreComponent({
                       {component.description || component.component_type}
                     </Typography>
                     <Typography className="add-score-component__item-desc">
-                      {component.description ? `(${component.component_type})` : "Không có mô tả"}
+                      {component.description ? `(${component.component_type})` : t("managementScore.component.noDescription")}
                     </Typography>
                   </Box>
                 </Box>
@@ -226,7 +228,7 @@ export function AddScoreComponent({
           }}
           className="button-cancel"
         >
-          Huỷ
+          {t("common.cancel")}
         </Button>
         <Button
           onClick={() => {
@@ -234,7 +236,7 @@ export function AddScoreComponent({
           }}
           disabled={isAddingScoreList || isFillingComponentScore || selectedIds.length === 0}
         >
-          {isAddingScoreList || isFillingComponentScore ? "Đang lưu..." : "Lưu"}
+          {isAddingScoreList || isFillingComponentScore ? t("managementScore.component.saving") : t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

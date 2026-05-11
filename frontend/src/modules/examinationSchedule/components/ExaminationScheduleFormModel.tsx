@@ -30,6 +30,7 @@ import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
 import { useTeacherDropdownByIds } from "../../teachers/apis/getTeacherDropDownByIds";
 import { useCreateExaminationSchedule } from "../apis/addExaminationSchedule";
 import { useUpdateExaminationSchedule } from "../apis/updateExaminationSchedule";
+import { useTranslation } from "react-i18next";
 import type {
   IExaminationScheduleCreatePayload,
   IExaminationScheduleResponse,
@@ -97,6 +98,7 @@ export function ExaminationScheduleFormModel({
   initialValues,
   onClose,
 }: ExaminationScheduleFormModelProps) {
+  const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const examScheduleId = initialValues?.id;
 
@@ -268,27 +270,27 @@ export function ExaminationScheduleFormModel({
     let isValid = true;
 
     if (!isRequired(formValues.classId)) {
-      nextErrors.classId = "Lớp là bắt buộc!";
+      nextErrors.classId = t("examinationSchedules.form.errors.classRequired");
       isValid = false;
     }
 
     if (!isRequired(formValues.subjectId)) {
-      nextErrors.subjectId = "Môn thi là bắt buộc!";
+      nextErrors.subjectId = t("examinationSchedules.form.errors.subjectRequired");
       isValid = false;
     }
 
     if (!formValues.date) {
-      nextErrors.date = "Ngày thi là bắt buộc!";
+      nextErrors.date = t("examinationSchedules.form.errors.dateRequired");
       isValid = false;
     }
 
     if (!formValues.startTime) {
-      nextErrors.startTime = "Giờ bắt đầu là bắt buộc!";
+      nextErrors.startTime = t("examinationSchedules.form.errors.startTimeRequired");
       isValid = false;
     }
 
     if (!formValues.endTime) {
-      nextErrors.endTime = "Giờ kết thúc là bắt buộc!";
+      nextErrors.endTime = t("examinationSchedules.form.errors.endTimeRequired");
       isValid = false;
     }
 
@@ -299,7 +301,7 @@ export function ExaminationScheduleFormModel({
       const endTotalMinutes = endHours * 60 + endMinutes;
 
       if (endTotalMinutes <= startTotalMinutes) {
-        nextErrors.endTime = "Giờ kết thúc phải sau giờ bắt đầu!";
+        nextErrors.endTime = t("examinationSchedules.form.errors.endTimeAfterStart");
         isValid = false;
       }
     }
@@ -339,14 +341,14 @@ export function ExaminationScheduleFormModel({
 
       showSnackbar(
         mode === "add"
-          ? "Thêm lịch thi thành công!"
-          : "Cập nhật lịch thi thành công!",
+          ? t("examinationSchedules.form.messages.addSuccess")
+          : t("examinationSchedules.form.messages.updateSuccess"),
         "success"
       );
       onClose();
     } catch (error) {
       console.error(error);
-      showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+      showSnackbar(t("examinationSchedules.form.messages.genericError"), "error");
     }
   };
 
@@ -359,14 +361,14 @@ export function ExaminationScheduleFormModel({
       fullWidth
     >
       <DialogTitle className="primary-dialog-title">
-        {mode === "add" ? "ADD EXAMINATION SCHEDULE" : "EDIT EXAMINATION SCHEDULE"}
+        {mode === "add" ? t("examinationSchedules.form.titleAdd") : t("examinationSchedules.form.titleEdit")}
       </DialogTitle>
 
       <DialogContent className="primary-dialog-content">
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Grid container spacing={2}>
             <Grid size={6}>
-              <LabelPrimary value="Lớp" required />
+              <LabelPrimary value={t("examinationSchedules.form.labels.class")} required />
               <MainAutocomplete
                 options={classOptions}
                 value={formValues.classId || null}
@@ -378,14 +380,14 @@ export function ExaminationScheduleFormModel({
                     : option?.class_name ?? ""
                 }
                 getOptionId={(option: any) => option?.id?.toString() ?? ""}
-                placeholder="Chọn lớp"
+                placeholder={t("examinationSchedules.form.placeholders.selectClass")}
                 error={!!errors.classId}
                 helperText={errors.classId}
               />
             </Grid>
 
             <Grid size={6}>
-              <LabelPrimary value="Môn thi" required />
+              <LabelPrimary value={t("examinationSchedules.form.labels.subject")} required />
               <MainAutocomplete
                 options={subjectOptions}
                 value={formValues.subjectId || null}
@@ -397,14 +399,14 @@ export function ExaminationScheduleFormModel({
                     : option?.name ?? ""
                 }
                 getOptionId={(option: any) => option?.id?.toString() ?? ""}
-                placeholder="Chọn môn thi"
+                placeholder={t("examinationSchedules.form.placeholders.selectSubject")}
                 error={!!errors.subjectId}
                 helperText={errors.subjectId}
               />
             </Grid>
 
             <Grid size={6}>
-              <LabelPrimary value="Ngày thi" required />
+              <LabelPrimary value={t("examinationSchedules.form.labels.date")} required />
               <DatePicker
                 value={formValues.date}
                 onChange={(newValue) =>
@@ -422,7 +424,7 @@ export function ExaminationScheduleFormModel({
             </Grid>
 
             <Grid size={6}>
-              <LabelPrimary value="Loại lịch thi" />
+              <LabelPrimary value={t("examinationSchedules.form.labels.scheduleType")} />
               <TextField
                 value={formValues.scheduleType}
                 onChange={(event) =>
@@ -430,13 +432,13 @@ export function ExaminationScheduleFormModel({
                 }
                 fullWidth
                 variant="outlined"
-                placeholder="Ví dụ: final_exam"
+                placeholder={t("examinationSchedules.form.placeholders.scheduleType")}
                 className="main-text__field primary-dialog-input"
               />
             </Grid>
 
             <Grid size={6}>
-              <LabelPrimary value="Giờ bắt đầu" required />
+              <LabelPrimary value={t("examinationSchedules.form.labels.startTime")} required />
               <TextField
                 type="time"
                 value={formValues.startTime}
@@ -454,7 +456,7 @@ export function ExaminationScheduleFormModel({
             </Grid>
 
             <Grid size={6}>
-              <LabelPrimary value="Giờ kết thúc" required />
+              <LabelPrimary value={t("examinationSchedules.form.labels.endTime")} required />
               <TextField
                 type="time"
                 value={formValues.endTime}
@@ -472,22 +474,22 @@ export function ExaminationScheduleFormModel({
             </Grid>
 
             <Grid size={6}>
-              <LabelPrimary value="Phòng thi" />
+              <LabelPrimary value={t("examinationSchedules.form.labels.room")} />
               <MainAutocomplete
                 options={roomOptions}
                 value={formValues.roomId || null}
                 onChange={(id) => setFormValues((prev) => ({ ...prev, roomId: id }))}
                 onSearchChange={setRoomSearch}
                 getOptionLabel={(option: any) =>
-                  option?.room_number ? `Phòng ${option.room_number}` : ""
+                  option?.room_number ? t("examinationSchedules.roomLabel", { room: option.room_number }) : ""
                 }
                 getOptionId={(option: any) => option?.id?.toString() ?? ""}
-                placeholder="Chọn phòng"
+                placeholder={t("examinationSchedules.form.placeholders.selectRoom")}
               />
             </Grid>
 
             <Grid size={6}>
-              <LabelPrimary value="Giám thị 1" />
+              <LabelPrimary value={t("examinationSchedules.form.labels.invigilator1")} />
               <MainAutocomplete
                 options={teacherOptions}
                 value={formValues.invigilator1Id || null}
@@ -499,12 +501,12 @@ export function ExaminationScheduleFormModel({
                     : ""
                 }
                 getOptionId={(option: any) => option?.id?.toString() ?? ""}
-                placeholder="Chọn giám thị 1"
+                placeholder={t("examinationSchedules.form.placeholders.selectInvigilator1")}
               />
             </Grid>
 
             <Grid size={6}>
-              <LabelPrimary value="Giám thị 2" />
+              <LabelPrimary value={t("examinationSchedules.form.labels.invigilator2")} />
               <MainAutocomplete
                 options={teacherOptions}
                 value={formValues.invigilator2Id || null}
@@ -516,7 +518,7 @@ export function ExaminationScheduleFormModel({
                     : ""
                 }
                 getOptionId={(option: any) => option?.id?.toString() ?? ""}
-                placeholder="Chọn giám thị 2"
+                placeholder={t("examinationSchedules.form.placeholders.selectInvigilator2")}
               />
             </Grid>
           </Grid>
@@ -525,17 +527,17 @@ export function ExaminationScheduleFormModel({
 
       <DialogActions className="primary-dialog-actions">
         <Button onClick={handleCloseClick} className="button-cancel">
-          Hủy
+          {t("examinationSchedules.common.cancel")}
         </Button>
         <Button onClick={handleSubmit} variant="contained">
-          {mode === "add" ? "Thêm" : "Lưu"}
+          {mode === "add" ? t("examinationSchedules.common.add") : t("examinationSchedules.common.save")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirm}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+        title={t("examinationSchedules.confirm.exitTitle")}
+        message={t("examinationSchedules.confirm.exitMessage")}
         onConfirm={() => {
           setOpenConfirm(false);
           onClose();

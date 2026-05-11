@@ -25,6 +25,7 @@ import type {
 import Button from "../../../components/Button/Button";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import ImportFormModelDialog from "./ImportFormModelDialog";
+import { useTranslation } from "react-i18next";
 
 interface ImportFormModelProps {
   open: boolean;
@@ -54,15 +55,15 @@ const formatDate = (dateValue?: string | null) => {
   return parsedDate.toLocaleDateString("vi-VN");
 };
 
-const getImportGenderDisplay = (gender?: string | null) => {
+const getImportGenderDisplay = (gender?: string | null, t?: (key: string, options?: any) => string) => {
   if (gender === "1") {
-    return "Nam";
+    return t ? t("common.male") : "Nam";
   }
   if (gender === "2") {
-    return "Nữ";
+    return t ? t("common.female") : "Nữ";
   }
   if (gender === "3") {
-    return "Khác";
+    return t ? t("common.other") : "Khác";
   }
   return "";
 };
@@ -74,6 +75,7 @@ const ImportFormModel = ({
   onImport,
   isImporting = false,
 }: ImportFormModelProps) => {
+  const { t } = useTranslation();
   const [openConfirmClose, setOpenConfirmClose] = useState(false);
   const [validTeachers, setValidTeachers] = useState<ITeacherFileData[]>([]);
   const [invalidTeachers, setInvalidTeachers] = useState<ITeacherFileInvalidRow[]>([]);
@@ -157,19 +159,19 @@ const ImportFormModel = ({
       fullWidth
       maxWidth="xl"
     >
-      <DialogTitle className="primary-dialog-title">Import Teacher Preview</DialogTitle>
+      <DialogTitle className="primary-dialog-title">{t("teachers.import.title")}</DialogTitle>
 
       <DialogContent dividers>
         {!data ? (
-          <Typography>Không có dữ liệu import.</Typography>
+          <Typography>{t("teachers.import.noData")}</Typography>
         ) : (
           <Box sx={{ display: "grid", gap: 2 }}>
             <Typography sx={{ fontWeight: 600 }}>
-              File name: {data.file_information.file_name}
+              {t("teachers.import.fileName")}: {data.file_information.file_name}
             </Typography>
             {hasInvalidRows && (
               <Typography sx={{ color: "#d32f2f", fontWeight: 600 }}>
-                Còn {invalidTeachers.length} dòng lỗi, vui lòng sửa trước khi import.
+                {t("teachers.import.invalidRows", { count: invalidTeachers.length })}
               </Typography>
             )}
 
@@ -177,15 +179,15 @@ const ImportFormModel = ({
               <Table stickyHeader className="sticky-table" aria-label="import preview teachers table">
                 <TableHead className="primary-thead">
                   <TableRow className="primary-trow">
-                    <TableCell className="primary-thead__cell" align="center">Mã giảng viên</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Tên giảng viên</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Giới tính</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Ngày sinh</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Email</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Điện thoại</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Nơi sinh</TableCell>
-                    <TableCell className="primary-thead__cell" align="left">Lý do lỗi</TableCell>
-                    <TableCell className="primary-thead__cell" align="center">Actions</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachers.import.table.teacherCode")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("teachers.import.table.teacherName")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachers.import.table.gender")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("teachers.import.table.dateOfBirth")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("teachers.import.table.email")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("teachers.import.table.phone")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("teachers.import.table.placeOfOrigin")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="left">{t("teachers.import.table.errorReason")}</TableCell>
+                    <TableCell className="primary-thead__cell" align="center">{t("common.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -193,7 +195,7 @@ const ImportFormModel = ({
                     <TableRow key={`${teacher.teacher_code || "teacher"}-${teacher.source}-${index}`} className="sticky-trow">
                       <TableCell className="sticky-tcell" align="center">{teacher.teacher_code || ""}</TableCell>
                       <TableCell className="sticky-tcell" align="left">{teacher.name || ""}</TableCell>
-                      <TableCell className="sticky-tcell" align="center">{getImportGenderDisplay(teacher.gender)}</TableCell>
+                      <TableCell className="sticky-tcell" align="center">{getImportGenderDisplay(teacher.gender, t)}</TableCell>
                       <TableCell className="sticky-tcell" align="center">{formatDate(teacher.date_of_birth)}</TableCell>
                       <TableCell className="sticky-tcell" align="left">{teacher.email || ""}</TableCell>
                       <TableCell className="sticky-tcell" align="left">{teacher.phone || ""}</TableCell>
@@ -234,16 +236,16 @@ const ImportFormModel = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">Huỷ</Button>
+        <Button onClick={() => setOpenConfirmClose(true)} className="button-cancel">{t("common.cancel")}</Button>
         <Button onClick={handleImport} disabled={isImporting || hasInvalidRows}>
-          {isImporting ? "Importing..." : "Import"}
+          {isImporting ? t("teachers.actions.importing") : t("teachers.actions.import")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirmClose}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát form import?"
+        title={t("common.confirmExitTitle")}
+        message={t("teachers.import.confirmExit")}
         onCancel={() => setOpenConfirmClose(false)}
         onConfirm={() => {
           setOpenConfirmClose(false);

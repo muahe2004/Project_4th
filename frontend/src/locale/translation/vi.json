@@ -17,11 +17,40 @@
     "tuition": "Học phí",
     "logout": "Đăng xuất"
   },
+  "adminNavbar": {
+    "home": "Trang chủ",
+    "department": "Khoa",
+    "major": "Ngành",
+    "specialization": "Chuyên ngành",
+    "subject": "Môn học",
+    "teachingSchedule": "Lịch dạy",
+    "examinationSchedule": "Lịch thi",
+    "student": "Sinh viên",
+    "teacher": "Giảng viên",
+    "class": "Lớp",
+    "room": "Phòng học",
+    "trainingProgram": "Chương trình",
+    "tuitionFee": "Học phí",
+    "studentScore": "Điểm sinh viên"
+  },
   "signIn": {
     "username": "Tên đăng nhập",
     "password": "Mật khẩu",
     "signIn": "Đăng nhập",
     "forgetPassword": "Quên mật khẩu"
+  },
+  "common": {
+    "dashboard": "Trang chủ",
+    "actions": "Thao tác",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "add": "Thêm",
+    "selectStatus": "Chọn trạng thái",
+    "none": "Không chọn",
+    "male": "Nam",
+    "female": "Nữ",
+    "other": "Khác",
+    "confirmExitTitle": "Xác nhận thoát"
   },
   "footer": {
     "unicores": "UNICORE",
@@ -161,8 +190,640 @@
       "view": "VIEW"
     }
   },
+  "managementScore": {
+    "title": "Quản lý điểm",
+    "searchPlaceholder": "Tìm theo mã sinh viên, tên sinh viên...",
+    "actions": {
+      "uploading": "Đang tải lên...",
+      "import": "Import điểm",
+      "importing": "Đang import...",
+      "locking": "Đang khoá...",
+      "lock": "Khoá điểm",
+      "component": "Thành phần",
+      "stopMidterm": "Dừng nhập TP",
+      "enterMidterm": "Nhập điểm TP",
+      "stopFinal": "Dừng nhập Thi",
+      "enterFinal": "Nhập điểm Thi",
+      "noPending": "Không có điểm pending để khoá.",
+      "lockSuccess": "Khoá điểm thành công.",
+      "lockFailed": "Khoá điểm thất bại.",
+      "saveMidtermFailed": "Lưu điểm thành phần thất bại.",
+      "saveFinalFailed": "Lưu điểm thi thất bại.",
+      "saveMidtermSuccess": "Lưu điểm thành phần thành công.",
+      "saveFinalSuccess": "Lưu điểm thi thành công.",
+      "uploadFailed": "Upload score file failed.",
+      "importFailed": "Import score list failed."
+    },
+    "errors": {
+      "loadData": "Lấy dữ liệu điểm thất bại"
+    },
+    "subject": {
+      "error": "Lấy danh sách điểm theo lớp/môn thất bại",
+      "missingContext": "Thiếu classId hoặc subjectId để tải dữ liệu."
+    },
+    "table": {
+      "studentCode": "MSV",
+      "studentName": "Họ và tên",
+      "rank4": "Xếp loại H4",
+      "rank10": "Xếp loại H10",
+      "gpa4": "TBC H4",
+      "gpaAccum4": "TBC TL H4",
+      "gpaAccum10": "TBC TL H10"
+    },
+    "import": {
+      "title": "Import Score Preview",
+      "editTitle": "Chỉnh sửa dòng điểm import",
+      "loading": "Đang đọc file điểm...",
+      "noData": "Không có dữ liệu import.",
+      "fileName": "File name",
+      "class": "Lớp",
+      "subject": "Học phần",
+      "academicYear": "Năm học",
+      "invalidRows": "Còn {{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "confirmExit": "Bạn có chắc muốn thoát form import?",
+      "table": {
+        "classCode": "Mã lớp",
+        "studentCode": "MSV",
+        "familyName": "Họ và đệm",
+        "givenName": "Tên",
+        "d1": "D1",
+        "d2": "D2",
+        "thi": "Thi",
+        "tbm": "TBM",
+        "errorReason": "Lý do lỗi"
+      },
+      "form": {
+        "classCode": "Mã lớp",
+        "studentCode": "Mã sinh viên",
+        "familyName": "Họ và đệm",
+        "givenName": "Tên",
+        "d1": "D1",
+        "d2": "D2",
+        "thi": "Thi",
+        "tbm": "TBM"
+      }
+    },
+    "edit": {
+      "title": "Sửa điểm",
+      "noChanges": "Không có thay đổi nào để lưu.",
+      "missingScoreType": "Không tìm thấy loại điểm để xử lý: {{field}}.",
+      "missingPayload": "Thiếu payload nền để tạo mới điểm.",
+      "saveSuccess": "Đã lưu thay đổi điểm.",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!",
+      "subjectCode": "Mã học phần",
+      "subjectName": "Tên học phần",
+      "credits": "Số tín chỉ",
+      "retake1": "Điểm học lại Đ1",
+      "retake2": "Điểm học lại Đ2",
+      "retakeFinal": "Điểm học lại Thi",
+      "mid1": "Điểm thành phần Đ1",
+      "mid2": "Điểm thành phần Đ2",
+      "final": "Điểm thành phần Thi"
+    },
+    "details": {
+      "title": "Chi tiết điểm",
+      "noStudent": "Không tìm thấy sinh viên để xem chi tiết điểm."
+    },
+    "studentTable": {
+      "index": "STT",
+      "studentCode": "MSSV",
+      "studentName": "Họ và tên",
+      "componentScores": "Điểm thành phần",
+      "retakeScores": "Điểm thi lại",
+      "average": "Trung bình môn",
+      "mid1": "Đ1",
+      "mid2": "Đ2",
+      "final": "Thi",
+      "system10": "Hệ 10",
+      "system4": "Hệ 4",
+      "letter": "Điểm chữ",
+      "noData": "Không có dữ liệu điểm"
+    },
+    "component": {
+      "title": "Thành phần điểm",
+      "searchPlaceholder": "Tìm thành phần...",
+      "empty": "Không có dữ liệu",
+      "noDescription": "Không có mô tả",
+      "saving": "Đang lưu...",
+      "save": "Lưu lại"
+    },
+    "lock": {
+      "title": "Xác nhận khoá điểm",
+      "message": "Bạn có chắc muốn khoá tất cả các điểm đang ở trạng thái pending không?",
+      "confirm": "Xác nhận"
+    },
+    "import": {
+      "missingFileContext": "Thiếu academic_term_id hoặc subject_id từ file upload."
+    }
+  },
+  "teachers": {
+    "title": "Giảng viên",
+    "searchPlaceholder": "Tìm theo tên giảng viên, mã giảng viên...",
+    "confirmDelete": "Bạn có chắc muốn xoá giảng viên này không?",
+    "actions": {
+      "add": "Thêm giảng viên",
+      "exporting": "Đang xuất file...",
+      "exportSample": "Xuất file mẫu",
+      "importing": "Đang nhập...",
+      "import": "Import giảng viên"
+    },
+    "messages": {
+      "notFoundToDelete": "Không tìm thấy mã giảng viên để xoá",
+      "deleteSuccess": "Xoá giảng viên thành công",
+      "deleteFailed": "Xoá giảng viên thất bại",
+      "importSuccess": "Import giảng viên thành công",
+      "importFailed": "Import giảng viên thất bại",
+      "createSuccess": "Thêm giảng viên thành công!",
+      "updateSuccess": "Cập nhật giảng viên thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại"
+    },
+    "table": {
+      "teacherCode": "Mã giảng viên",
+      "teacherName": "Tên giảng viên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "department": "Khoa",
+      "status": "Trạng thái"
+    },
+    "form": {
+      "addTitle": "THÊM GIẢNG VIÊN",
+      "editTitle": "SỬA THÔNG TIN",
+      "tabs": {
+        "basic": "Thông tin cơ bản",
+        "other": "Thông tin khác",
+        "relative": "Thông tin người thân"
+      },
+      "teacherCode": "Mã giảng viên",
+      "teacherName": "Họ và tên",
+      "dateOfBirth": "Sinh nhật",
+      "gender": "Giới tính",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "department": "Khoa",
+      "academicRank": "Học hàm/Học vị",
+      "placeOfOrigin": "Nơi sinh",
+      "exemptedGroup": "Nhóm miễn giảm",
+      "priorityGroup": "Nhóm ưu tiên",
+      "citizenId": "CMND/CCCD",
+      "issueDate": "Ngày cấp",
+      "issuePlace": "Nơi cấp",
+      "nationality": "Quốc tịch",
+      "ethnicity": "Dân tộc",
+      "religion": "Tôn giáo",
+      "insuranceNumber": "Số bảo hiểm",
+      "bankName": "Tên ngân hàng",
+      "bankAccountNumber": "Số tài khoản",
+      "relativeName": "Họ và tên người thân",
+      "relativeDateOfBirth": "Ngày sinh",
+      "relativeOccupation": "Nghề nghiệp",
+      "relativePhone": "Số điện thoại",
+      "relativeAddress": "Địa chỉ",
+      "relativeEthnicity": "Dân tộc",
+      "relativeReligion": "Tôn giáo",
+      "relativeNationality": "Quốc tịch",
+      "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "errors": {
+        "teacherCodeRequired": "Mã giảng viên là bắt buộc",
+        "teacherNameRequired": "Tên giảng viên là bắt buộc",
+        "emailRequired": "Email là bắt buộc",
+        "emailInvalid": "Email không đúng định dạng"
+      },
+      "relativeSections": {
+        "father": "THÔNG TIN CỦA CHA",
+        "mother": "THÔNG TIN CỦA MẸ",
+        "relative": "THÔNG TIN NGƯỜI THÂN {{index}}"
+      }
+    },
+    "import": {
+      "title": "Import Teacher Preview",
+      "editTitle": "Chỉnh sửa giảng viên import",
+      "noData": "Không có dữ liệu import.",
+      "fileName": "File name",
+      "invalidRows": "Còn {{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "confirmExit": "Bạn có chắc muốn thoát form import?",
+      "table": {
+        "teacherCode": "Mã giảng viên",
+        "teacherName": "Tên giảng viên",
+        "gender": "Giới tính",
+        "dateOfBirth": "Ngày sinh",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "placeOfOrigin": "Nơi sinh",
+        "errorReason": "Lý do lỗi"
+      }
+    }
+  },
+  "classes": {
+    "title": "Lớp",
+    "searchPlaceholder": "Tìm theo tên lớp, mã lớp...",
+    "addClass": "Thêm lớp",
+    "filters": {
+      "specialization": "Lọc theo chuyên ngành"
+    },
+    "table": {
+      "classCode": "Mã lớp",
+      "className": "Tên lớp",
+      "size": "Sĩ số",
+      "teacher": "Giáo viên chủ nhiệm",
+      "specialization": "Chuyên ngành",
+      "status": "Trạng thái"
+    },
+    "messages": {
+      "addSuccess": "Thêm lớp thành công!",
+      "updateSuccess": "Cập nhật lớp thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+    },
+    "form": {
+      "titleAdd": "THÊM LỚP",
+      "titleEdit": "SỬA LỚP",
+      "labels": {
+        "classCode": "Mã lớp",
+        "className": "Tên lớp",
+        "size": "Sĩ số",
+        "classType": "Loại lớp",
+        "registrationStatus": "Trạng thái đăng ký",
+        "registrationOpenAt": "Mở đăng ký lúc",
+        "registrationCloseAt": "Đóng đăng ký lúc",
+        "subject": "Môn học",
+        "specialization": "Chuyên ngành",
+        "teacher": "Giáo viên chủ nhiệm"
+      },
+      "placeholders": {
+        "subject": "Chọn môn học"
+      },
+      "errors": {
+        "classCodeRequired": "Mã lớp là bắt buộc!",
+        "teacherRequired": "Giáo viên chủ nhiệm là bắt buộc!",
+        "specializationRequired": "Chuyên ngành là bắt buộc!",
+        "registrationWindow": "Thời gian mở đăng ký phải nhỏ hơn hoặc bằng thời gian đóng đăng ký"
+      },
+      "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "confirmSaveTitle": "Xác nhận lưu",
+      "confirmSave": "Bạn có chắc muốn lưu các thay đổi?"
+    }
+  },
+  "rooms": {
+    "title": "Phòng học",
+    "searchPlaceholder": "Tìm theo số phòng, loại phòng...",
+    "addRoom": "Thêm phòng",
+    "confirmDelete": "Bạn có chắc muốn xoá phòng này không?",
+    "messages": {
+      "missingId": "Không tìm thấy mã phòng để xoá",
+      "deleteSuccess": "Xoá phòng thành công",
+      "deleteFailed": "Xoá phòng thất bại",
+      "addSuccess": "Thêm phòng thành công!",
+      "updateSuccess": "Cập nhật phòng thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+    },
+    "table": {
+      "roomNumber": "Số phòng",
+      "roomType": "Loại phòng",
+      "seats": "Số chỗ ngồi",
+      "status": "Trạng thái"
+    },
+    "form": {
+      "titleAdd": "THÊM PHÒNG",
+      "titleEdit": "SỬA PHÒNG",
+      "labels": {
+        "roomNumber": "Số phòng",
+        "roomType": "Loại phòng",
+        "seats": "Số chỗ ngồi"
+      },
+      "errors": {
+        "roomNumber": "Số phòng phải là số nguyên dương",
+        "roomType": "Loại phòng là bắt buộc",
+        "seats": "Số chỗ ngồi phải là số nguyên dương"
+      },
+      "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "confirmSaveTitle": "Xác nhận lưu",
+      "confirmSave": "Bạn có chắc muốn lưu các thay đổi?"
+    }
+  },
+  "trainingProgram": {
+    "title": "Chương trình đào tạo",
+    "searchPlaceholder": "Tìm theo tên CTĐT, niên khoá, loại CTĐT...",
+    "add": "Thêm chương trình đào tạo",
+    "import": "Import",
+    "confirmDeleteTitle": "Xác nhận xoá",
+    "confirmDelete": "CTĐT sẽ được chuyển sang trạng thái inactive. Bạn có chắc muốn tiếp tục?",
+    "messages": {
+      "addSuccess": "Thêm chương trình đào tạo thành công!",
+      "updateSuccess": "Cập nhật chương trình đào tạo thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!",
+      "missingSubjectId": "Thiếu subject_id để cập nhật chương trình đào tạo."
+    },
+    "table": {
+      "name": "Tên CTĐT",
+      "type": "Loại CTĐT",
+      "academicYear": "Niên khoá",
+      "status": "Trạng thái"
+    },
+    "actions": {
+      "import": "Import",
+      "importing": "Đang import..."
+    },
+    "form": {
+      "titleAdd": "THÊM CHƯƠNG TRÌNH ĐÀO TẠO",
+      "titleEdit": "SỬA CHƯƠNG TRÌNH ĐÀO TẠO",
+      "programType": "Loại CTĐT",
+      "selectProgramType": "Chọn loại CTĐT",
+      "programName": "Tên CTĐT",
+      "academicYear": "Niên khoá",
+      "selectAcademicYear": "Chọn niên khoá",
+      "specialization": "Chuyên ngành",
+      "selectSpecialization": "Chọn chuyên ngành",
+      "subjects": "Môn học",
+      "addSubject": "Thêm môn",
+      "noSubjects": "Chưa có môn học nào",
+      "term": "Học kỳ",
+      "table": {
+        "subjectCode": "Mã môn",
+        "subjectName": "Tên môn",
+        "term": "Học kỳ"
+      },
+      "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "confirmSaveTitle": "Xác nhận lưu",
+      "confirmSave": "Bạn có chắc muốn lưu các thay đổi?"
+    },
+    "import": {
+      "title": "Import Training Program Preview",
+      "editTitle": "Chỉnh sửa môn học import",
+      "noData": "Không có dữ liệu import.",
+      "fileName": "File name",
+      "program": "CTĐT",
+      "academicYear": "Niên khoá",
+      "invalidRows": "Còn {{count}} dòng lỗi trong file.",
+      "confirmExit": "Bạn có chắc muốn thoát form import?",
+      "table": {
+        "subjectCode": "Mã môn",
+        "subjectName": "Tên môn",
+        "term": "Học kỳ",
+        "errorReason": "Lý do lỗi"
+      }
+    }
+  },
+  "tuitionFees": {
+    "title": "Học phí",
+    "searchPlaceholder": "Tìm theo tên học phí, niên khoá, CTĐT...",
+    "addTuitionFee": "Thêm học phí",
+    "allocateTuitionFee": "Gán học phí",
+    "studentView": "Xem sinh viên",
+    "studentTitle": "Sinh viên có học phí",
+    "studentSearchPlaceholder": "Tìm theo mã sinh viên, tên, email...",
+    "backToTuitionFees": "Quay lại học phí",
+    "table": {
+      "name": "Tên học phí",
+      "academicYear": "Niên khoá",
+      "term": "Học kỳ",
+      "trainingProgram": "CTĐT",
+      "pricePerCredit": "Giá / tín chỉ",
+      "amount": "Tổng tiền",
+      "status": "Trạng thái"
+    },
+    "studentTable": {
+      "studentCode": "Mã sinh viên",
+      "studentName": "Tên sinh viên",
+      "class": "Lớp",
+      "tuitionFee": "Học phí",
+      "term": "Kỳ",
+      "payableAmount": "Số tiền phải đóng",
+      "paidAmount": "Đã đóng",
+      "debtAmount": "Còn nợ"
+    },
+    "messages": {
+      "addSuccess": "Thêm học phí thành công!",
+      "updateSuccess": "Cập nhật học phí thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+    },
+    "allocate": {
+      "title": "Gán học phí",
+      "success": "Đã gán học phí cho {{count}} bản ghi.",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!",
+      "empty": "Không có department nào để chọn."
+    },
+    "form": {
+      "titleAdd": "THÊM HỌC PHÍ",
+      "titleEdit": "SỬA HỌC PHÍ",
+      "labels": {
+        "name": "Tên học phí",
+        "pricePerCredit": "Giá / tín chỉ",
+        "department": "Khoa",
+        "trainingProgram": "CTĐT",
+        "startDate": "Ngày bắt đầu",
+        "endDate": "Ngày kết thúc"
+      },
+      "placeholders": {
+        "department": "Chọn khoa",
+        "trainingProgram": "Chọn CTĐT"
+      },
+      "errors": {
+        "pricePerCredit": "Giá / tín chỉ không hợp lệ",
+        "departmentRequired": "Khoa là bắt buộc"
+      },
+      "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "confirmSaveTitle": "Xác nhận lưu",
+      "confirmSave": "Bạn có chắc muốn lưu các thay đổi?"
+    }
+  },
   "pagination": {
     "itemsPerPage": "Mục/trang"
+  },
+  "dashboard": {
+    "welcome": "Xin chào, {{name}}",
+    "loading": "Đang tải...",
+    "subtitle": "Chúc bạn một ngày làm việc hiệu quả ✨"
+  },
+  "departments": {
+    "breadcrumb": {
+      "dashboard": "Trang chủ",
+      "title": "Khoa"
+    },
+    "searchPlaceholder": "Tìm theo tên khoa, mã...",
+    "addDepartment": "Thêm khoa",
+    "confirmDelete": "Bạn có chắc muốn xoá khoa này không?",
+    "common": {
+      "cancel": "Hủy",
+      "add": "Thêm",
+      "save": "Lưu"
+    },
+    "messages": {
+      "missingId": "Không tìm thấy mã khoa để xoá",
+      "deleteSuccess": "Xoá khoa thành công",
+      "deleteFailed": "Xoá khoa thất bại",
+      "addSuccess": "Thêm khoa thành công!",
+      "updateSuccess": "Cập nhật khoa thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+    },
+    "table": {
+      "departmentCode": "Mã khoa",
+      "departmentName": "Tên khoa",
+      "establishedDate": "Ngày thành lập",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "form": {
+      "titleAdd": "THÊM KHOA",
+      "titleEdit": "SỬA KHOA",
+      "labels": {
+        "departmentCode": "Mã khoa",
+        "departmentName": "Tên khoa",
+        "establishedDate": "Ngày thành lập",
+        "description": "Mô tả"
+      }
+    },
+    "confirm": {
+      "exitTitle": "Xác nhận thoát",
+      "exitMessage": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "saveTitle": "Xác nhận lưu",
+      "saveMessage": "Bạn có chắc muốn lưu các thay đổi?"
+    }
+  },
+  "majors": {
+    "breadcrumb": {
+      "dashboard": "Trang chủ",
+      "title": "Ngành"
+    },
+    "searchPlaceholder": "Tìm theo tên ngành, mã ngành...",
+    "departmentFilterPlaceholder": "Lọc theo khoa",
+    "addMajor": "Thêm ngành",
+    "confirmDelete": "Bạn có chắc muốn xoá ngành này không?",
+    "common": {
+      "cancel": "Hủy",
+      "add": "Thêm",
+      "save": "Lưu"
+    },
+    "messages": {
+      "missingId": "Không tìm thấy mã ngành để xoá",
+      "deleteSuccess": "Xoá ngành thành công",
+      "deleteFailed": "Xoá ngành thất bại",
+      "addSuccess": "Thêm ngành thành công!",
+      "updateSuccess": "Cập nhật ngành thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+    },
+    "table": {
+      "majorCode": "Mã ngành",
+      "majorName": "Tên ngành",
+      "establishedDate": "Ngày thành lập",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "form": {
+      "titleAdd": "THÊM NGÀNH",
+      "titleEdit": "SỬA NGÀNH",
+      "labels": {
+        "majorCode": "Mã ngành",
+        "majorName": "Tên ngành",
+        "establishedDate": "Ngày thành lập",
+        "department": "Khoa",
+        "description": "Mô tả"
+      },
+      "departmentPlaceholder": "Chọn khoa"
+    },
+    "confirm": {
+      "exitTitle": "Xác nhận thoát",
+      "exitMessage": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "saveTitle": "Xác nhận lưu",
+      "saveMessage": "Bạn có chắc muốn lưu các thay đổi?"
+    }
+  },
+  "specializations": {
+    "breadcrumb": {
+      "dashboard": "Trang chủ",
+      "title": "Chuyên ngành"
+    },
+    "searchPlaceholder": "Tìm theo tên chuyên ngành, mã chuyên ngành...",
+    "majorFilterPlaceholder": "Lọc theo ngành",
+    "addSpecialization": "Thêm chuyên ngành",
+    "confirmDelete": "Bạn có chắc muốn xoá chuyên ngành này không?",
+    "common": {
+      "cancel": "Hủy",
+      "add": "Thêm",
+      "save": "Lưu"
+    },
+    "messages": {
+      "missingId": "Không tìm thấy mã chuyên ngành để xoá",
+      "deleteSuccess": "Xoá chuyên ngành thành công",
+      "deleteFailed": "Xoá chuyên ngành thất bại",
+      "addSuccess": "Thêm chuyên ngành thành công!",
+      "updateSuccess": "Cập nhật chuyên ngành thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+    },
+    "table": {
+      "specializationCode": "Mã chuyên ngành",
+      "specializationName": "Tên chuyên ngành",
+      "establishedDate": "Ngày thành lập",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "form": {
+      "titleAdd": "THÊM CHUYÊN NGÀNH",
+      "titleEdit": "SỬA CHUYÊN NGÀNH",
+      "labels": {
+        "specializationCode": "Mã chuyên ngành",
+        "specializationName": "Tên chuyên ngành",
+        "establishedDate": "Ngày thành lập",
+        "major": "Ngành",
+        "description": "Mô tả"
+      },
+      "majorPlaceholder": "Chọn ngành"
+    },
+    "confirm": {
+      "exitTitle": "Xác nhận thoát",
+      "exitMessage": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "saveTitle": "Xác nhận lưu",
+      "saveMessage": "Bạn có chắc muốn lưu các thay đổi?"
+    }
+  },
+  "subjects": {
+    "breadcrumb": {
+      "dashboard": "Trang chủ",
+      "title": "Học phần"
+    },
+    "searchPlaceholder": "Tìm theo tên học phần, mã học phần...",
+    "addSubject": "Thêm học phần",
+    "confirmDelete": "Bạn có chắc muốn xoá học phần này không?",
+    "common": {
+      "cancel": "Hủy",
+      "add": "Thêm",
+      "save": "Lưu"
+    },
+    "messages": {
+      "missingId": "Không tìm thấy mã học phần để xoá",
+      "deleteSuccess": "Xoá học phần thành công",
+      "deleteFailed": "Xoá học phần thất bại",
+      "addSuccess": "Thêm học phần thành công!",
+      "updateSuccess": "Cập nhật học phần thành công!",
+      "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+    },
+    "table": {
+      "subjectCode": "Mã học phần",
+      "subjectName": "Tên học phần",
+      "credit": "Số tín chỉ",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "form": {
+      "titleAdd": "THÊM HỌC PHẦN",
+      "titleEdit": "SỬA HỌC PHẦN",
+      "labels": {
+        "subjectCode": "Mã học phần",
+        "subjectName": "Tên học phần",
+        "credit": "Số tín chỉ",
+        "description": "Mô tả"
+      },
+      "errors": {
+        "subjectCodeRequired": "Mã học phần là bắt buộc",
+        "subjectNameRequired": "Tên học phần là bắt buộc",
+        "creditInvalid": "Số tín chỉ phải là số nguyên dương"
+      }
+    },
+    "confirm": {
+      "exitTitle": "Xác nhận thoát",
+      "exitMessage": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "saveTitle": "Xác nhận lưu",
+      "saveMessage": "Bạn có chắc muốn lưu các thay đổi?"
+    }
   },
   "teachingSchedules": {
     "breadcrumb": {
@@ -221,6 +882,30 @@
         "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
       }
     },
+    "roomFilter": {
+      "searchPlaceholder": "Tìm phòng...",
+      "allRooms": "Tất cả phòng",
+      "loading": "Đang tải..."
+    },
+    "tooltip": {
+      "class": "Lớp",
+      "subject": "Môn",
+      "teacher": "Giảng viên",
+      "room": "Phòng",
+      "period": "Tiết"
+    },
+    "roomGrid": {
+      "days": {
+        "0": "Chủ Nhật",
+        "1": "Thứ Hai",
+        "2": "Thứ Ba",
+        "3": "Thứ Tư",
+        "4": "Thứ Năm",
+        "5": "Thứ Sáu",
+        "6": "Thứ Bảy"
+      }
+    },
+    "periodNumber": "Tiết {{period}}",
     "import": {
       "title": "Import Teaching Schedule Preview",
       "noData": "Không có dữ liệu import.",
@@ -415,6 +1100,259 @@
     "periodRange": "Tiết {{start}} - {{end}}",
     "roomLabel": "Phòng {{room}}",
     "subjectFallback": "Môn học"
+  },
+  "examinationSchedules": {
+    "breadcrumb": {
+      "dashboard": "Trang chủ",
+      "title": "Lịch thi"
+    },
+    "searchPlaceholder": "Tìm theo lớp, môn, phòng...",
+    "addSchedule": "Thêm lịch thi",
+    "uploading": "Đang tải lên...",
+    "importSchedule": "Import lịch thi",
+    "errors": {
+      "uploadFailed": "Upload file lịch thi thất bại",
+      "importFailed": "Import lịch thi thất bại"
+    },
+    "messages": {
+      "importSuccess": "Import lịch thi thành công",
+      "importSuccessWithCount": "Import lịch thi thành công ({{count}} dòng)"
+    },
+    "common": {
+      "cancel": "Huỷ",
+      "save": "Lưu",
+      "add": "Thêm"
+    },
+    "confirm": {
+      "exitTitle": "Xác nhận thoát",
+      "exitMessage": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "importExitMessage": "Bạn có chắc muốn thoát form import?"
+    },
+    "table": {
+      "class": "Lớp",
+      "subject": "Môn thi",
+      "date": "Ngày thi",
+      "time": "Giờ thi",
+      "room": "Phòng",
+      "invigilator1": "Giám thị 1",
+      "invigilator2": "Giám thị 2",
+      "status": "Trạng thái",
+      "actions": "Thao tác",
+      "empty": "Không có dữ liệu"
+    },
+    "form": {
+      "titleAdd": "THÊM LỊCH THI",
+      "titleEdit": "SỬA LỊCH THI",
+      "labels": {
+        "class": "Lớp",
+        "subject": "Môn thi",
+        "date": "Ngày thi",
+        "scheduleType": "Loại lịch thi",
+        "startTime": "Giờ bắt đầu",
+        "endTime": "Giờ kết thúc",
+        "room": "Phòng thi",
+        "invigilator1": "Giám thị 1",
+        "invigilator2": "Giám thị 2"
+      },
+      "placeholders": {
+        "selectClass": "Chọn lớp",
+        "selectSubject": "Chọn môn thi",
+        "scheduleType": "Ví dụ: final_exam",
+        "selectRoom": "Chọn phòng",
+        "selectInvigilator1": "Chọn giám thị 1",
+        "selectInvigilator2": "Chọn giám thị 2"
+      },
+      "errors": {
+        "classRequired": "Lớp là bắt buộc!",
+        "subjectRequired": "Môn thi là bắt buộc!",
+        "dateRequired": "Ngày thi là bắt buộc!",
+        "startTimeRequired": "Giờ bắt đầu là bắt buộc!",
+        "endTimeRequired": "Giờ kết thúc là bắt buộc!",
+        "endTimeAfterStart": "Giờ kết thúc phải sau giờ bắt đầu!"
+      },
+      "messages": {
+        "addSuccess": "Thêm lịch thi thành công!",
+        "updateSuccess": "Cập nhật lịch thi thành công!",
+        "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+      }
+    },
+    "import": {
+      "title": "Import preview lịch thi",
+      "noData": "Không có dữ liệu import.",
+      "fileName": "File name",
+      "noValidRows": "Không có dòng hợp lệ để import.",
+      "invalidRows": "{{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "importing": "Importing...",
+      "importButton": "Import",
+      "table": {
+        "subjectCode": "Mã MH",
+        "classCode": "Mã Lớp",
+        "date": "Ngày thi",
+        "startTime": "Giờ bắt đầu",
+        "endTime": "Giờ kết thúc",
+        "room": "Phòng",
+        "type": "Loại",
+        "errorReason": "Lý do lỗi",
+        "actions": "Thao tác"
+      }
+    },
+    "importEdit": {
+      "title": "Sửa lịch thi import",
+      "subjectCode": "Mã môn thi",
+      "classCode": "Mã lớp",
+      "invigilator1": "Giám thị 1",
+      "invigilator2": "Giám thị 2",
+      "room": "Phòng",
+      "date": "Ngày thi",
+      "startTime": "Giờ bắt đầu",
+      "endTime": "Giờ kết thúc",
+      "scheduleType": "Loại",
+      "selectSubject": "Chọn môn thi",
+      "selectClass": "Chọn lớp",
+      "selectInvigilator1": "Chọn giám thị 1",
+      "selectInvigilator2": "Chọn giám thị 2",
+      "selectRoom": "Chọn phòng"
+    },
+    "calendar": {
+      "loading": "Đang tải...",
+      "days": {
+        "0": "Chủ Nhật",
+        "1": "Thứ Hai",
+        "2": "Thứ Ba",
+        "3": "Thứ Tư",
+        "4": "Thứ Năm",
+        "5": "Thứ Sáu",
+        "6": "Thứ Bảy"
+      }
+    },
+    "tooltip": {
+      "class": "Lớp",
+      "subject": "Môn",
+      "room": "Phòng",
+      "invigilator": "Giám thị"
+    },
+    "roomLabel": "Phòng {{room}}",
+    "subjectFallback": "Môn thi",
+    "periodRange": "{{start}} - {{end}}"
+  },
+  "students": {
+    "breadcrumb": {
+      "dashboard": "Trang chủ",
+      "title": "Sinh viên"
+    },
+    "searchPlaceholder": "Tìm theo tên sinh viên, mã sinh viên...",
+    "addStudent": "Thêm sinh viên",
+    "exportTemplate": "Xuất file mẫu",
+    "exporting": "Đang xuất file...",
+    "importStudent": "Import sinh viên",
+    "uploading": "Đang import...",
+    "common": {
+      "cancel": "Huỷ",
+      "save": "Lưu",
+      "add": "Thêm"
+    },
+    "confirm": {
+      "exitTitle": "Xác nhận thoát",
+      "exitMessage": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
+      "importExitMessage": "Bạn có chắc muốn thoát form import?"
+    },
+    "tabs": {
+      "basic": "Thông tin cơ bản",
+      "other": "Thông tin khác",
+      "relatives": "Thông tin người thân"
+    },
+    "table": {
+      "studentCode": "Mã sinh viên",
+      "studentName": "Tên sinh viên",
+      "gender": "Giới tính",
+      "class": "Lớp",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "gender": {
+      "male": "Nam",
+      "female": "Nữ",
+      "other": "Khác"
+    },
+    "trainingProgram": {
+      "fullTime": "Đại học chính quy",
+      "transfer": "Liên thông",
+      "secondDegree": "Văn bằng hai"
+    },
+    "form": {
+      "titleAdd": "THÊM SINH VIÊN",
+      "titleEdit": "SỬA THÔNG TIN",
+      "studentCode": "Mã sinh viên",
+      "studentName": "Họ và tên",
+      "dateOfBirth": "Sinh nhật",
+      "gender": "Giới tính",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "class": "Lớp",
+      "selectClass": "Chọn lớp",
+      "trainingProgram": "Chương trình đào tạo",
+      "course": "Niên khoá"
+    },
+    "other": {
+      "placeOfOrigin": "Nơi sinh",
+      "exemptedGroup": "Nhóm miễn giảm",
+      "priorityGroup": "Nhóm ưu tiên",
+      "citizenId": "CMND/CCCD",
+      "issueDate": "Ngày cấp",
+      "issuePlace": "Nơi cấp",
+      "nationality": "Quốc tịch",
+      "ethnicity": "Dân tộc",
+      "religion": "Tôn giáo",
+      "insuranceNumber": "Số bảo hiểm",
+      "bankName": "Tên ngân hàng",
+      "bankAccountNumber": "Số tài khoản"
+    },
+    "relativeSections": {
+      "0": "THÔNG TIN CỦA CHA",
+      "1": "THÔNG TIN CỦA MẸ",
+      "2": "THÔNG TIN CỦA NGƯỜI THÂN"
+    },
+    "relative": {
+      "name": "Họ và tên người thân",
+      "birthYear": "Ngày sinh",
+      "occupation": "Nghề nghiệp",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "ethnicity": "Dân tộc",
+      "religion": "Tôn giáo",
+      "nationality": "Quốc tịch"
+    },
+    "import": {
+      "title": "Import preview sinh viên",
+      "noData": "Không có dữ liệu import.",
+      "fileName": "File name",
+      "invalidRows": "{{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "importing": "Importing...",
+      "importButton": "Import",
+      "table": {
+        "studentCode": "Mã sinh viên",
+        "studentName": "Tên sinh viên",
+        "gender": "Giới tính",
+        "dateOfBirth": "Ngày sinh",
+        "email": "Email",
+        "phone": "Điện thoại",
+        "classCode": "Mã lớp",
+        "errorReason": "Lý do lỗi",
+        "actions": "Thao tác"
+      }
+    },
+    "importEdit": {
+      "title": "Sửa sinh viên import",
+      "studentCode": "Mã sinh viên",
+      "studentName": "Họ và tên",
+      "gender": "Giới tính",
+      "dateOfBirth": "Sinh nhật",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "classCode": "Mã lớp",
+      "address": "Địa chỉ"
+    }
   },
   "weekPicker": {
     "currentWeek": "Tuần hiện tại",

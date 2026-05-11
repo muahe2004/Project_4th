@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import Button from "../../../components/Button/Button";
@@ -19,6 +20,7 @@ import type { ITuitionFee } from "../types";
 import "./styles/TuitionFees.css";
 
 export function TuitionFees() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -52,8 +54,8 @@ export function TuitionFees() {
       <BreadCrumb
         className="tuition-fees-breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
-          { label: "Tuition Fees" },
+          { label: t("common.dashboard"), to: dashBoardUrl },
+          { label: t("tuitionFees.title") },
         ]}
       />
 
@@ -68,7 +70,7 @@ export function TuitionFees() {
         />
 
         <SearchEngine
-          placeholder="Tìm theo tên học phí, niên khoá, CTĐT..."
+          placeholder={t("tuitionFees.searchPlaceholder")}
           onSearch={(value) => {
             setSearch(value);
             setPage(1);
@@ -82,7 +84,7 @@ export function TuitionFees() {
           }}
           className="btn-spacing-left"
         >
-          Add Tuition Fee
+          {t("tuitionFees.addTuitionFee")}
         </Button>
 
         <Button
@@ -91,7 +93,7 @@ export function TuitionFees() {
           }}
           className="btn-spacing-left"
         >
-          Allocate Tuition Fee
+          {t("tuitionFees.allocateTuitionFee")}
         </Button>
 
         <Button
@@ -100,7 +102,7 @@ export function TuitionFees() {
           }}
           className="btn-spacing-left"
         >
-          Student view
+          {t("tuitionFees.studentView")}
         </Button>
       </Box>
 

@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useTranslation } from "react-i18next";
 
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
@@ -23,6 +24,7 @@ interface TuitionFeeTableProps {
 }
 
 export function TuitionFeeTable({ tuitionFees, onEdit, onDelete }: TuitionFeeTableProps) {
+  const { t } = useTranslation();
   const normalizeStatus = (status?: string | null) => status || "";
 
   return (
@@ -31,28 +33,28 @@ export function TuitionFeeTable({ tuitionFees, onEdit, onDelete }: TuitionFeeTab
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
             <TableCell className="primary-thead__cell" align="left">
-              Tên học phí
+              {t("tuitionFees.table.name")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Niên khoá
+              {t("tuitionFees.table.academicYear")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Học kỳ
+              {t("tuitionFees.table.term")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="left">
-              CTĐT
+              {t("tuitionFees.table.trainingProgram")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Giá / tín chỉ
+              {t("tuitionFees.table.pricePerCredit")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Tổng tiền
+              {t("tuitionFees.table.amount")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Trạng thái
+              {t("tuitionFees.table.status")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Actions
+              {t("common.actions")}
             </TableCell>
           </TableRow>
         </TableHead>

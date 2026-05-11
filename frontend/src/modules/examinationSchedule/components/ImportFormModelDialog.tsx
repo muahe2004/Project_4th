@@ -3,6 +3,7 @@ import { Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField } fro
 import Button from "../../../components/Button/Button";
 import LabelPrimary from "../../../components/Label/Label";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
+import { useTranslation } from "react-i18next";
 import { useClassesDropDown } from "../../classes/apis/getClassDropDown";
 import { useClassesDropDownByIds } from "../../classes/apis/getClassDropDownByIds";
 import { useRoomDropDown } from "../../teachingSchedule/apis/getRoomDropDown";
@@ -59,6 +60,7 @@ const ImportFormModelDialog = ({
   initialSchedule,
   onSave,
 }: ImportFormModelDialogProps) => {
+  const { t } = useTranslation();
   const [schedule, setSchedule] = useState<EditableExaminationSchedule>(defaultSchedule);
   const [subjectSearch, setSubjectSearch] = useState("");
   const [classSearch, setClassSearch] = useState("");
@@ -195,11 +197,11 @@ const ImportFormModelDialog = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle className="primary-dialog-title">Chỉnh sửa lịch thi import</DialogTitle>
+      <DialogTitle className="primary-dialog-title">{t("examinationSchedules.importEdit.title")}</DialogTitle>
       <DialogContent dividers>
         <Box className="myprofile-form" sx={{ display: "grid", gap: 2 }}>
           <div>
-            <LabelPrimary value="Mã môn thi" required />
+            <LabelPrimary value={t("examinationSchedules.importEdit.subjectCode")} required />
             <MainAutocomplete
               options={subjectOptions}
               value={selectedSubjectId || null}
@@ -209,12 +211,12 @@ const ImportFormModelDialog = ({
                 option.subject_code ? `${option.subject_code} - ${option.name}` : option.name
               }
               getOptionId={(option) => option.id}
-              placeholder="Chọn môn thi"
+              placeholder={t("examinationSchedules.importEdit.selectSubject")}
             />
           </div>
 
           <div>
-            <LabelPrimary value="Mã lớp" required />
+            <LabelPrimary value={t("examinationSchedules.importEdit.classCode")} required />
             <MainAutocomplete
               options={classOptions}
               value={selectedClassId || null}
@@ -224,12 +226,12 @@ const ImportFormModelDialog = ({
                 option.class_code ? `${option.class_code} - ${option.class_name ?? ""}`.trim() : option.class_name ?? ""
               }
               getOptionId={(option) => option.id}
-              placeholder="Chọn lớp"
+              placeholder={t("examinationSchedules.importEdit.selectClass")}
             />
           </div>
 
           <div>
-            <LabelPrimary value="Giám thị 1" />
+            <LabelPrimary value={t("examinationSchedules.importEdit.invigilator1")} />
             <MainAutocomplete
               options={teacherOptions}
               value={selectedTeacher1Id || null}
@@ -239,12 +241,12 @@ const ImportFormModelDialog = ({
                 option.teacher_code ? `${option.teacher_code} - ${option.name}` : option.name
               }
               getOptionId={(option) => option.id}
-              placeholder="Chọn giám thị 1"
+              placeholder={t("examinationSchedules.importEdit.selectInvigilator1")}
             />
           </div>
 
           <div>
-            <LabelPrimary value="Giám thị 2" />
+            <LabelPrimary value={t("examinationSchedules.importEdit.invigilator2")} />
             <MainAutocomplete
               options={teacherOptions}
               value={selectedTeacher2Id || null}
@@ -254,25 +256,25 @@ const ImportFormModelDialog = ({
                 option.teacher_code ? `${option.teacher_code} - ${option.name}` : option.name
               }
               getOptionId={(option) => option.id}
-              placeholder="Chọn giám thị 2"
+              placeholder={t("examinationSchedules.importEdit.selectInvigilator2")}
             />
           </div>
 
           <div>
-            <LabelPrimary value="Phòng" />
+            <LabelPrimary value={t("examinationSchedules.importEdit.room")} />
             <MainAutocomplete
               options={roomOptions}
               value={selectedRoomId || null}
               onChange={(id) => syncSelectedRoom(id)}
               onSearchChange={setRoomSearch}
-              getOptionLabel={(option) => (option.room_number ? `Phòng ${option.room_number}` : "")}
+              getOptionLabel={(option) => (option.room_number ? t("examinationSchedules.roomLabel", { room: option.room_number }) : "")}
               getOptionId={(option) => option.id}
-              placeholder="Chọn phòng"
+              placeholder={t("examinationSchedules.importEdit.selectRoom")}
             />
           </div>
 
           <div>
-            <LabelPrimary value="Ngày thi" required />
+            <LabelPrimary value={t("examinationSchedules.importEdit.date")} required />
             <TextField
               value={schedule.date || ""}
               onChange={(event) => setSchedule((prev) => ({ ...prev, date: event.target.value }))}
@@ -283,7 +285,7 @@ const ImportFormModelDialog = ({
           </div>
 
           <div>
-            <LabelPrimary value="Giờ bắt đầu" required />
+            <LabelPrimary value={t("examinationSchedules.importEdit.startTime")} required />
             <TextField
               value={schedule.start_time || ""}
               onChange={(event) => setSchedule((prev) => ({ ...prev, start_time: event.target.value }))}
@@ -294,7 +296,7 @@ const ImportFormModelDialog = ({
           </div>
 
           <div>
-            <LabelPrimary value="Giờ kết thúc" required />
+            <LabelPrimary value={t("examinationSchedules.importEdit.endTime")} required />
             <TextField
               value={schedule.end_time || ""}
               onChange={(event) => setSchedule((prev) => ({ ...prev, end_time: event.target.value }))}
@@ -305,7 +307,7 @@ const ImportFormModelDialog = ({
           </div>
 
           <div>
-            <LabelPrimary value="Loại" />
+            <LabelPrimary value={t("examinationSchedules.importEdit.scheduleType")} />
             <TextField
               value={schedule.schedule_type || ""}
               onChange={(event) => setSchedule((prev) => ({ ...prev, schedule_type: event.target.value || null }))}
@@ -317,12 +319,8 @@ const ImportFormModelDialog = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} className="button-cancel">Huỷ</Button>
-        <Button
-          onClick={() => onSave(schedule)}
-        >
-          Lưu
-        </Button>
+        <Button onClick={onClose} className="button-cancel">{t("examinationSchedules.common.cancel")}</Button>
+        <Button onClick={() => onSave(schedule)}>{t("examinationSchedules.common.save")}</Button>
       </DialogActions>
     </Dialog>
   );

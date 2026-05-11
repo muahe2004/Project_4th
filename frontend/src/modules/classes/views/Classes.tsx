@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
     Box,
@@ -34,6 +35,7 @@ import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 
 export function Classes() {
+    const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -79,8 +81,8 @@ export function Classes() {
             <BreadCrumb
                 className="department-breadcrumb"
                 items={[
-                    { label: "Dashboard", to: dashBoardUrl },
-                    { label: "Classes" },
+                    { label: t("common.dashboard"), to: dashBoardUrl },
+                    { label: t("classes.title") },
                 ]}
             />
             <Box className="admin-main-box">
@@ -102,12 +104,12 @@ export function Classes() {
                     onResetPage={() => setPage(1)} 
                     getOptionLabel={(option) => option.name}
                     getOptionId={(option) => option.id?.toString() || ""} 
-                    placeholder="Lọc theo chuyên ngành"
+                    placeholder={t("classes.filters.specialization")}
                     className="classes-filter__specialization"
                 />
 
                 <SearchEngine 
-                    placeholder="Tìm theo tên lớp, mã lớp..." 
+                    placeholder={t("classes.searchPlaceholder")} 
                     onSearch={(val) => {
                         setSearch(val);
                         setPage(1);
@@ -120,7 +122,7 @@ export function Classes() {
                         setOpen(true);
                     }}
                     className="btn-spacing-left">
-                    Add CLASS
+                    {t("classes.addClass")}
                 </Button>
             </Box>
 
@@ -132,25 +134,25 @@ export function Classes() {
                     <TableHead className="primary-thead">
                         <TableRow className="primary-trow">
                             <TableCell className="primary-thead__cell" align="center">
-                                Mã lớp
+                                {t("classes.table.classCode")}
                             </TableCell>
                             <TableCell className="primary-thead__cell department-name-tcell" align="center">
-                                Tên lớp
+                                {t("classes.table.className")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Sĩ số
+                                {t("classes.table.size")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Chủ nhiệm
+                                {t("classes.table.teacher")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Chuyên ngành
+                                {t("classes.table.specialization")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Trạng thái
+                                {t("classes.table.status")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Actions
+                                {t("common.actions")}
                             </TableCell>
                         </TableRow>
                     </TableHead>

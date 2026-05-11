@@ -16,6 +16,7 @@ import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import { Home, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import "./AdminNavbar.css";
 import { classesUrl, dashBoardUrl, departmentUrl, examinationScheduleUrl, majorUrl, managementScoreUrl, roomUrl, specializationsUrl, studentUrl, subjectUrl, teacherUrl, teachingScheduleUrl, trainingProgramUrl, tuitionFeeUrl } from "../../routes/urls";
@@ -28,27 +29,27 @@ type NavbarProps = {
 export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const handleToggle = () => {
     setIsOpen((prev) => !prev);
   };
 
   const menuItems = [
-    { label: "Trang chủ", icon: <Home />, path: `${dashBoardUrl}` },
-    { label: "Khoa", icon: <SchoolIcon />, path: `${dashBoardUrl}/${departmentUrl}` },
-    { label: "Ngành", icon: <MenuBookIcon />, path: `${dashBoardUrl}/${majorUrl}` },
-    { label: "Chuyên ngành", icon: <AccountTreeIcon />, path: `${dashBoardUrl}/${specializationsUrl}` },
-    { label: "Môn học", icon: <AutoStoriesIcon />, path: `${dashBoardUrl}/${subjectUrl}` },
-    // { label: "Lịch học", icon: <EventIcon />, path: `${dashBoardUrl}/${learningScheduleUrl}` },
-    { label: "Lịch dạy", icon: <EditCalendarIcon />, path: `${dashBoardUrl}/${teachingScheduleUrl}` },
-    { label: "Lịch thi", icon: <AssignmentIcon />, path: `${dashBoardUrl}/${examinationScheduleUrl}` },
-    { label: "Sinh viên", icon: <GroupsIcon />, path: `${dashBoardUrl}/${studentUrl}` },
-    { label: "Giảng viên", icon: <PersonIcon />, path: `${dashBoardUrl}/${teacherUrl}` },
-    { label: "Lớp", icon: <ClassIcon />, path: `${dashBoardUrl}/${classesUrl}` },
-    { label: "Phòng học", icon: <MeetingRoomIcon />, path: `${dashBoardUrl}/${roomUrl}` },
-    { label: "Chương trình", icon: <WorkspacePremiumIcon />, path: `${dashBoardUrl}/${trainingProgramUrl}` },
-    { label: "Học phí", icon: <RequestQuoteIcon />, path: `${dashBoardUrl}/${tuitionFeeUrl}` },
-    { label: "Điểm sinh viên", icon: <LeaderboardIcon />, path: `${dashBoardUrl}/${managementScoreUrl}` },
+    { label: t("adminNavbar.home"), icon: <Home />, path: `${dashBoardUrl}` },
+    { label: t("adminNavbar.department"), icon: <SchoolIcon />, path: `${dashBoardUrl}/${departmentUrl}` },
+    { label: t("adminNavbar.major"), icon: <MenuBookIcon />, path: `${dashBoardUrl}/${majorUrl}` },
+    { label: t("adminNavbar.specialization"), icon: <AccountTreeIcon />, path: `${dashBoardUrl}/${specializationsUrl}` },
+    { label: t("adminNavbar.subject"), icon: <AutoStoriesIcon />, path: `${dashBoardUrl}/${subjectUrl}` },
+    { label: t("adminNavbar.teachingSchedule"), icon: <EditCalendarIcon />, path: `${dashBoardUrl}/${teachingScheduleUrl}` },
+    { label: t("adminNavbar.examinationSchedule"), icon: <AssignmentIcon />, path: `${dashBoardUrl}/${examinationScheduleUrl}` },
+    { label: t("adminNavbar.student"), icon: <GroupsIcon />, path: `${dashBoardUrl}/${studentUrl}` },
+    { label: t("adminNavbar.teacher"), icon: <PersonIcon />, path: `${dashBoardUrl}/${teacherUrl}` },
+    { label: t("adminNavbar.class"), icon: <ClassIcon />, path: `${dashBoardUrl}/${classesUrl}` },
+    { label: t("adminNavbar.room"), icon: <MeetingRoomIcon />, path: `${dashBoardUrl}/${roomUrl}` },
+    { label: t("adminNavbar.trainingProgram"), icon: <WorkspacePremiumIcon />, path: `${dashBoardUrl}/${trainingProgramUrl}` },
+    { label: t("adminNavbar.tuitionFee"), icon: <RequestQuoteIcon />, path: `${dashBoardUrl}/${tuitionFeeUrl}` },
+    { label: t("adminNavbar.studentScore"), icon: <LeaderboardIcon />, path: `${dashBoardUrl}/${managementScoreUrl}` },
 
   ];
 

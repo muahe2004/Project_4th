@@ -18,6 +18,7 @@ import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import { useCreateSubject } from "../apis/addSubject";
 import { useUpdateSubject } from "../apis/updateSubject";
 import type { ISubject, ISubjectCreate, ISubjectUpdate } from "../types";
+import { useTranslation } from "react-i18next";
 
 interface SubjectFormModelProps {
   open: boolean;
@@ -32,6 +33,7 @@ export function SubjectFormModel({
   initialValues,
   onClose,
 }: SubjectFormModelProps) {
+  const { t } = useTranslation();
   const subjectId = initialValues?.id;
   const { showSnackbar } = useSnackbar();
 
@@ -110,17 +112,17 @@ export function SubjectFormModel({
 
   const validateForm = (): boolean => {
     if (!subjectCode.trim()) {
-      showSnackbar("Mã học phần là bắt buộc", "error");
+      showSnackbar(t("subjects.form.errors.subjectCodeRequired"), "error");
       return false;
     }
     if (!subjectName.trim()) {
-      showSnackbar("Tên học phần là bắt buộc", "error");
+      showSnackbar(t("subjects.form.errors.subjectNameRequired"), "error");
       return false;
     }
 
     const creditValue = Number(credit);
     if (!Number.isInteger(creditValue) || creditValue <= 0) {
-      showSnackbar("Số tín chỉ phải là số nguyên dương", "error");
+      showSnackbar(t("subjects.form.errors.creditInvalid"), "error");
       return false;
     }
 
@@ -175,15 +177,15 @@ export function SubjectFormModel({
 
       showSnackbar(
         mode === "add"
-          ? "Thêm học phần thành công!"
-          : "Cập nhật học phần thành công!",
+          ? t("subjects.messages.addSuccess")
+          : t("subjects.messages.updateSuccess"),
         "success"
       );
       setOpenConfirmSave(false);
       onClose();
     } catch (error) {
       console.error(error);
-      showSnackbar("Có lỗi xảy ra, vui lòng thử lại!", "error");
+      showSnackbar(t("subjects.messages.genericError"), "error");
     }
   };
 
@@ -196,10 +198,10 @@ export function SubjectFormModel({
       fullWidth
     >
       <DialogTitle className="primary-dialog-title">
-        {mode === "add" ? "ADD SUBJECT" : "SỬA HỌC PHẦN"}
+        {mode === "add" ? t("subjects.form.titleAdd") : t("subjects.form.titleEdit")}
       </DialogTitle>
       <DialogContent className="primary-dialog-content">
-        <LabelPrimary value="Mã học phần" required />
+        <LabelPrimary value={t("subjects.form.labels.subjectCode")} required />
         <TextField
           value={subjectCode}
           onChange={(event) => setSubjectCode(event.target.value)}
@@ -208,7 +210,7 @@ export function SubjectFormModel({
           className="main-text__field primary-dialog-input"
         />
 
-        <LabelPrimary value="Tên học phần" required />
+        <LabelPrimary value={t("subjects.form.labels.subjectName")} required />
         <TextField
           value={subjectName}
           onChange={(event) => setSubjectName(event.target.value)}
@@ -217,7 +219,7 @@ export function SubjectFormModel({
           className="main-text__field primary-dialog-input"
         />
 
-        <LabelPrimary value="Số tín chỉ" required />
+        <LabelPrimary value={t("subjects.form.labels.credit")} required />
         <TextField
           value={credit}
           onChange={(event) => setCredit(event.target.value)}
@@ -227,7 +229,7 @@ export function SubjectFormModel({
           className="main-text__field primary-dialog-input"
         />
 
-        <LabelPrimary value="Mô tả" />
+        <LabelPrimary value={t("subjects.form.labels.description")} />
         <TextField
           value={description}
           onChange={(event) => setDescription(event.target.value)}
@@ -240,17 +242,17 @@ export function SubjectFormModel({
       </DialogContent>
       <DialogActions className="primary-dialog-actions">
         <Button onClick={handleCloseClick} className="button-cancel">
-          Hủy
+          {t("subjects.common.cancel")}
         </Button>
         <Button onClick={handleSubmitClick} variant="contained">
-          {mode === "add" ? "Thêm" : "Lưu"}
+          {mode === "add" ? t("subjects.common.add") : t("subjects.common.save")}
         </Button>
       </DialogActions>
 
       <ConfirmDialog
         open={openConfirm}
-        title="Xác nhận thoát"
-        message="Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu."
+        title={t("subjects.confirm.exitTitle")}
+        message={t("subjects.confirm.exitMessage")}
         onConfirm={() => {
           setOpenConfirm(false);
           onClose();
@@ -261,8 +263,8 @@ export function SubjectFormModel({
       {mode === "edit" && (
         <ConfirmDialog
           open={openConfirmSave}
-          title="Xác nhận lưu"
-          message="Bạn có chắc muốn lưu các thay đổi?"
+          title={t("subjects.confirm.saveTitle")}
+          message={t("subjects.confirm.saveMessage")}
           onConfirm={handleConfirmSave}
           onCancel={() => setOpenConfirmSave(false)}
         />

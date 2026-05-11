@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useTranslation } from "react-i18next";
 
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
@@ -25,25 +26,27 @@ interface RoomTableProps {
 }
 
 export function RoomTable({ rooms, onEdit, onDelete }: RoomTableProps) {
+  const { t } = useTranslation();
+
   return (
     <TableContainer className="sticky-table-container" component={Paper}>
       <Table stickyHeader className="sticky-table" aria-label="rooms table">
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
             <TableCell className="primary-thead__cell" align="center">
-              Số phòng
+              {t("rooms.table.roomNumber")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Loại phòng
+              {t("rooms.table.roomType")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Số chỗ ngồi
+              {t("rooms.table.seats")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Trạng thái
+              {t("rooms.table.status")}
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
-              Actions
+              {t("common.actions")}
             </TableCell>
           </TableRow>
         </TableHead>

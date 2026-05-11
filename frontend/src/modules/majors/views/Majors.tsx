@@ -35,8 +35,10 @@ import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useDeleteMajor } from "../apis/deleteMajor";
+import { useTranslation } from "react-i18next";
 
 export function Majors() {
+    const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [searchDepartment, setSearchDepartment] = useState("");
@@ -65,20 +67,20 @@ export function Majors() {
 
     const handleDeleteMajor = (majorId?: string) => {
         if (!majorId) {
-            showSnackbar("Không tìm thấy mã ngành để xoá", "error");
+            showSnackbar(t("majors.messages.missingId"), "error");
             return;
         }
 
-        if (!window.confirm("Bạn có chắc muốn xoá ngành này không?")) {
+        if (!window.confirm(t("majors.confirmDelete"))) {
             return;
         }
 
         deleteMajorMutation.mutate(majorId, {
             onSuccess: () => {
-                showSnackbar("Xoá ngành thành công", "success");
+                showSnackbar(t("majors.messages.deleteSuccess"), "success");
             },
             onError: (error: any) => {
-                const detail = error?.response?.data?.detail ?? "Xoá ngành thất bại";
+                const detail = error?.response?.data?.detail ?? t("majors.messages.deleteFailed");
                 showSnackbar(detail, "error");
             },
         });
@@ -97,8 +99,8 @@ export function Majors() {
             <BreadCrumb
                 className="department-breadcrumb"
                 items={[
-                    { label: "Dashboard", to: dashBoardUrl },
-                    { label: "Majors" },
+                    { label: t("majors.breadcrumb.dashboard"), to: dashBoardUrl },
+                    { label: t("majors.breadcrumb.title") },
                 ]}
             />
             <Box className="admin-main-box">
@@ -116,12 +118,12 @@ export function Majors() {
                     onResetPage={() => setPage(1)}
                     getOptionLabel={(option) => option.name}
                     getOptionId={(option) => (option.id?.toString() || "")}
-                    placeholder="Lọc theo khoa"
+                    placeholder={t("majors.departmentFilterPlaceholder")}
                     className="major-filter__department"
                 />
 
                 <SearchEngine 
-                    placeholder="Tìm theo tên ngành, mã ngành..." 
+                    placeholder={t("majors.searchPlaceholder")}
                     onSearch={(val) => {
                         setSearch(val);
                         setPage(1);
@@ -134,7 +136,7 @@ export function Majors() {
                         setOpen(true);
                     }}
                     className="btn-spacing-left">
-                    Add Major
+                    {t("majors.addMajor")}
                 </Button>
             </Box>
 
@@ -146,19 +148,19 @@ export function Majors() {
                     <TableHead className="primary-thead">
                         <TableRow className="primary-trow">
                             <TableCell className="primary-thead__cell" align="center">
-                                Mã ngành
+                                {t("majors.table.majorCode")}
                             </TableCell>
                             <TableCell className="primary-thead__cell department-name-tcell" align="center">
-                                Tên ngành
+                                {t("majors.table.majorName")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Ngày thành lập
+                                {t("majors.table.establishedDate")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Trạng thái
+                                {t("majors.table.status")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Actions
+                                {t("majors.table.actions")}
                             </TableCell>
                         </TableRow>
                     </TableHead>

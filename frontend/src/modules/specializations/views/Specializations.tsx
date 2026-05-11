@@ -35,8 +35,10 @@ import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useDeleteSpecialization } from "../apis/deleteSpecialization";
+import { useTranslation } from "react-i18next";
 
 export function Specializations() {
+    const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [searchMajor, setSearchMajor] = useState("");
@@ -72,20 +74,20 @@ export function Specializations() {
     const { data: major } = useGetMajor(ParamsMajor);
     const handleDeleteSpecialization = (id?: string) => {
         if (!id) {
-            showSnackbar("Không tìm thấy mã chuyên ngành để xoá", "error");
+            showSnackbar(t("specializations.messages.missingId"), "error");
             return;
         }
 
-        if (!window.confirm("Bạn có chắc muốn xoá chuyên ngành này không?")) {
+        if (!window.confirm(t("specializations.confirmDelete"))) {
             return;
         }
 
         deleteSpecializationMutation.mutate(id, {
             onSuccess: () => {
-                showSnackbar("Xoá chuyên ngành thành công", "success");
+                showSnackbar(t("specializations.messages.deleteSuccess"), "success");
             },
             onError: (error: any) => {
-                const detail = error?.response?.data?.detail ?? "Xoá chuyên ngành thất bại";
+                const detail = error?.response?.data?.detail ?? t("specializations.messages.deleteFailed");
                 showSnackbar(detail, "error");
             },
         });
@@ -96,8 +98,8 @@ export function Specializations() {
             <BreadCrumb
                 className="department-breadcrumb"
                 items={[
-                    { label: "Dashboard", to: dashBoardUrl },
-                    { label: "Specializations" },
+                    { label: t("specializations.breadcrumb.dashboard"), to: dashBoardUrl },
+                    { label: t("specializations.breadcrumb.title") },
                 ]}
             />
             
@@ -116,12 +118,12 @@ export function Specializations() {
                     onResetPage={() => setPage(1)}
                     getOptionLabel={(option) => option.name}
                     getOptionId={(option) => (option.id?.toString() || "")}
-                    placeholder="Lọc theo ngành"
+                    placeholder={t("specializations.majorFilterPlaceholder")}
                     className="specialization-filter__major"
                 />
 
                 <SearchEngine 
-                    placeholder="Tìm theo tên chuyên ngành, mã chuyên ngành..." 
+                    placeholder={t("specializations.searchPlaceholder")}
                     onSearch={(val) => {
                         setSearch(val);
                         setPage(1);
@@ -134,7 +136,7 @@ export function Specializations() {
                         setOpen(true);
                     }}
                     className="btn-spacing-left">
-                    Add SPECIALIZATION
+                    {t("specializations.addSpecialization")}
                 </Button>
             </Box>
 
@@ -146,19 +148,19 @@ export function Specializations() {
                     <TableHead className="primary-thead">
                         <TableRow className="primary-trow">
                             <TableCell className="primary-thead__cell" align="center">
-                                Mã chuyên ngành
+                                {t("specializations.table.specializationCode")}
                             </TableCell>
                             <TableCell className="primary-thead__cell department-name-tcell" align="center">
-                                Tên chuyên ngành
+                                {t("specializations.table.specializationName")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Ngày thành lập
+                                {t("specializations.table.establishedDate")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Trạng thái
+                                {t("specializations.table.status")}
                             </TableCell>
                             <TableCell className="primary-thead__cell" align="center">
-                                Actions
+                                {t("specializations.table.actions")}
                             </TableCell>
                         </TableRow>
                     </TableHead>

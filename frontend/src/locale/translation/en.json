@@ -17,11 +17,40 @@
     "tuition": "Tuition",
     "logout": "Logout"
   },
+  "adminNavbar": {
+    "home": "Home",
+    "department": "Department",
+    "major": "Major",
+    "specialization": "Specialization",
+    "subject": "Subject",
+    "teachingSchedule": "Teaching Schedule",
+    "examinationSchedule": "Examination Schedule",
+    "student": "Student",
+    "teacher": "Teacher",
+    "class": "Class",
+    "room": "Room",
+    "trainingProgram": "Training Program",
+    "tuitionFee": "Tuition Fee",
+    "studentScore": "Student Score"
+  },
   "signIn": {
     "username": "Username",
     "password": "Password",
     "signIn": "Sign In",
     "forgetPassword": "Forget Password"
+  },
+  "common": {
+    "dashboard": "Dashboard",
+    "actions": "Actions",
+    "cancel": "Cancel",
+    "save": "Save",
+    "add": "Add",
+    "selectStatus": "Select status",
+    "none": "None",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "confirmExitTitle": "Confirm Exit"
   },
   "footer": {
     "unicores": "UNICORE",
@@ -161,8 +190,640 @@
       "view": "VIEW"
     }
   },
+  "managementScore": {
+    "title": "Manage Scores",
+    "searchPlaceholder": "Search by student code, student name...",
+    "actions": {
+      "uploading": "Uploading...",
+      "import": "Import Score",
+      "importing": "Importing...",
+      "locking": "Locking...",
+      "lock": "Lock Score",
+      "component": "Component",
+      "stopMidterm": "Stop Midterm Entry",
+      "enterMidterm": "Enter Midterm Scores",
+      "stopFinal": "Stop Final Entry",
+      "enterFinal": "Enter Final Scores",
+      "noPending": "No pending scores to lock.",
+      "lockSuccess": "Scores locked successfully.",
+      "lockFailed": "Failed to lock scores.",
+      "saveMidtermFailed": "Failed to save component scores.",
+      "saveFinalFailed": "Failed to save final scores.",
+      "saveMidtermSuccess": "Component scores saved.",
+      "saveFinalSuccess": "Final scores saved.",
+      "uploadFailed": "Failed to upload score file.",
+      "importFailed": "Failed to import score list."
+    },
+    "errors": {
+      "loadData": "Failed to load score data"
+    },
+    "subject": {
+      "error": "Failed to load score list by class/subject",
+      "missingContext": "Missing classId or subjectId to load data."
+    },
+    "table": {
+      "studentCode": "Student Code",
+      "studentName": "Student Name",
+      "rank4": "Rank H4",
+      "rank10": "Rank H10",
+      "gpa4": "GPA H4",
+      "gpaAccum4": "Accum. GPA H4",
+      "gpaAccum10": "Accum. GPA H10"
+    },
+    "import": {
+      "title": "Import Score Preview",
+      "editTitle": "Edit Imported Score Row",
+      "loading": "Reading score file...",
+      "noData": "No import data available.",
+      "fileName": "File Name",
+      "class": "Class",
+      "subject": "Subject",
+      "academicYear": "Academic Year",
+      "invalidRows": "{{count}} invalid rows remain, please fix them before importing.",
+      "confirmExit": "Are you sure you want to exit the import form?",
+      "table": {
+        "classCode": "Class Code",
+        "studentCode": "Student Code",
+        "familyName": "Family Name",
+        "givenName": "Given Name",
+        "d1": "D1",
+        "d2": "D2",
+        "thi": "Final",
+        "tbm": "Average",
+        "errorReason": "Error Reason"
+      },
+      "form": {
+        "classCode": "Class Code",
+        "studentCode": "Student Code",
+        "familyName": "Family Name",
+        "givenName": "Given Name",
+        "d1": "D1",
+        "d2": "D2",
+        "thi": "Final",
+        "tbm": "Average"
+      }
+    },
+    "edit": {
+      "title": "Edit Score",
+      "noChanges": "No changes to save.",
+      "missingScoreType": "Could not find score type for {{field}}.",
+      "missingPayload": "Missing base payload to create score.",
+      "saveSuccess": "Score changes saved.",
+      "genericError": "An error occurred, please try again!",
+      "subjectCode": "Subject Code",
+      "subjectName": "Subject Name",
+      "credits": "Credits",
+      "retake1": "Retake D1",
+      "retake2": "Retake D2",
+      "retakeFinal": "Retake Final",
+      "mid1": "Component D1",
+      "mid2": "Component D2",
+      "final": "Final Score"
+    },
+    "details": {
+      "title": "Score Details",
+      "noStudent": "No student found to view score details."
+    },
+    "studentTable": {
+      "index": "No.",
+      "studentCode": "Student Code",
+      "studentName": "Student Name",
+      "componentScores": "Component Scores",
+      "retakeScores": "Retake Scores",
+      "average": "Average Score",
+      "mid1": "D1",
+      "mid2": "D2",
+      "final": "Final",
+      "system10": "10-point",
+      "system4": "4-point",
+      "letter": "Letter",
+      "noData": "No score data"
+    },
+    "component": {
+      "title": "Score Components",
+      "searchPlaceholder": "Search components...",
+      "empty": "No data",
+      "noDescription": "No description",
+      "saving": "Saving...",
+      "save": "Save"
+    },
+    "lock": {
+      "title": "Confirm Lock",
+      "message": "Are you sure you want to lock all scores currently in pending status?",
+      "confirm": "Confirm"
+    },
+    "import": {
+      "missingFileContext": "Missing academic_term_id or subject_id from uploaded file."
+    }
+  },
+  "teachers": {
+    "title": "Teachers",
+    "searchPlaceholder": "Search by teacher name, teacher code...",
+    "confirmDelete": "Are you sure you want to delete this teacher?",
+    "actions": {
+      "add": "Add Teacher",
+      "exporting": "Exporting...",
+      "exportSample": "Export Sample File",
+      "importing": "Importing...",
+      "import": "Import Teacher"
+    },
+    "messages": {
+      "notFoundToDelete": "Teacher code not found for deletion",
+      "deleteSuccess": "Teacher deleted successfully",
+      "deleteFailed": "Failed to delete teacher",
+      "importSuccess": "Teacher import completed successfully",
+      "importFailed": "Teacher import failed",
+      "createSuccess": "Teacher added successfully!",
+      "updateSuccess": "Teacher updated successfully!",
+      "genericError": "An error occurred, please try again!"
+    },
+    "table": {
+      "teacherCode": "Teacher Code",
+      "teacherName": "Teacher Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "department": "Department",
+      "status": "Status"
+    },
+    "form": {
+      "addTitle": "ADD TEACHER",
+      "editTitle": "EDIT TEACHER",
+      "tabs": {
+        "basic": "Basic Information",
+        "other": "Other Information",
+        "relative": "Relative Information"
+      },
+      "teacherCode": "Teacher Code",
+      "teacherName": "Full Name",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "email": "Email",
+      "phone": "Phone Number",
+      "address": "Address",
+      "department": "Department",
+      "academicRank": "Academic Rank",
+      "placeOfOrigin": "Place of Origin",
+      "exemptedGroup": "Exempted Group",
+      "priorityGroup": "Priority Group",
+      "citizenId": "Citizen ID",
+      "issueDate": "Issue Date",
+      "issuePlace": "Issue Place",
+      "nationality": "Nationality",
+      "ethnicity": "Ethnicity",
+      "religion": "Religion",
+      "insuranceNumber": "Insurance Number",
+      "bankName": "Bank Name",
+      "bankAccountNumber": "Bank Account Number",
+      "relativeName": "Relative Full Name",
+      "relativeDateOfBirth": "Date of Birth",
+      "relativeOccupation": "Occupation",
+      "relativePhone": "Phone Number",
+      "relativeAddress": "Address",
+      "relativeEthnicity": "Ethnicity",
+      "relativeReligion": "Religion",
+      "relativeNationality": "Nationality",
+      "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
+      "errors": {
+        "teacherCodeRequired": "Teacher code is required",
+        "teacherNameRequired": "Teacher name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Email format is invalid"
+      },
+      "relativeSections": {
+        "father": "FATHER INFORMATION",
+        "mother": "MOTHER INFORMATION",
+        "relative": "RELATIVE INFORMATION {{index}}"
+      }
+    },
+    "import": {
+      "title": "Import Teacher Preview",
+      "editTitle": "Edit Imported Teacher",
+      "noData": "No import data available.",
+      "fileName": "File Name",
+      "invalidRows": "{{count}} invalid rows remain, please fix them before importing.",
+      "confirmExit": "Are you sure you want to exit the import form?",
+      "table": {
+        "teacherCode": "Teacher Code",
+        "teacherName": "Teacher Name",
+        "gender": "Gender",
+        "dateOfBirth": "Date of Birth",
+        "email": "Email",
+        "phone": "Phone Number",
+        "placeOfOrigin": "Place of Origin",
+        "errorReason": "Error Reason"
+      }
+    }
+  },
+  "classes": {
+    "title": "Classes",
+    "searchPlaceholder": "Search by class name, class code...",
+    "addClass": "Add Class",
+    "filters": {
+      "specialization": "Filter by specialization"
+    },
+    "table": {
+      "classCode": "Class Code",
+      "className": "Class Name",
+      "size": "Size",
+      "teacher": "Homeroom Teacher",
+      "specialization": "Specialization",
+      "status": "Status"
+    },
+    "messages": {
+      "addSuccess": "Class added successfully!",
+      "updateSuccess": "Class updated successfully!",
+      "genericError": "An error occurred, please try again!"
+    },
+    "form": {
+      "titleAdd": "ADD CLASS",
+      "titleEdit": "EDIT CLASS",
+      "labels": {
+        "classCode": "Class Code",
+        "className": "Class Name",
+        "size": "Size",
+        "classType": "Class Type",
+        "registrationStatus": "Registration Status",
+        "registrationOpenAt": "Registration Opens At",
+        "registrationCloseAt": "Registration Closes At",
+        "subject": "Subject",
+        "specialization": "Specialization",
+        "teacher": "Homeroom Teacher"
+      },
+      "placeholders": {
+        "subject": "Choose subject"
+      },
+      "errors": {
+        "classCodeRequired": "Class code is required",
+        "teacherRequired": "Homeroom teacher is required",
+        "specializationRequired": "Specialization is required",
+        "registrationWindow": "Registration open time must be earlier than or equal to close time"
+      },
+      "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
+      "confirmSaveTitle": "Confirm Save",
+      "confirmSave": "Are you sure you want to save the changes?"
+    }
+  },
+  "rooms": {
+    "title": "Rooms",
+    "searchPlaceholder": "Search by room number, room type...",
+    "addRoom": "Add Room",
+    "confirmDelete": "Are you sure you want to delete this room?",
+    "messages": {
+      "missingId": "Room code not found for deletion",
+      "deleteSuccess": "Room deleted successfully",
+      "deleteFailed": "Failed to delete room",
+      "addSuccess": "Room added successfully!",
+      "updateSuccess": "Room updated successfully!",
+      "genericError": "An error occurred, please try again!"
+    },
+    "table": {
+      "roomNumber": "Room Number",
+      "roomType": "Room Type",
+      "seats": "Seats",
+      "status": "Status"
+    },
+    "form": {
+      "titleAdd": "ADD ROOM",
+      "titleEdit": "EDIT ROOM",
+      "labels": {
+        "roomNumber": "Room Number",
+        "roomType": "Room Type",
+        "seats": "Seats"
+      },
+      "errors": {
+        "roomNumber": "Room number must be a positive integer",
+        "roomType": "Room type is required",
+        "seats": "Seat count must be a positive integer"
+      },
+      "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
+      "confirmSaveTitle": "Confirm Save",
+      "confirmSave": "Are you sure you want to save the changes?"
+    }
+  },
+  "trainingProgram": {
+    "title": "Training Programs",
+    "searchPlaceholder": "Search by training program name, academic year, program type...",
+    "add": "Add Training Program",
+    "import": "Import",
+    "confirmDeleteTitle": "Confirm Delete",
+    "confirmDelete": "The training program will be moved to inactive status. Are you sure you want to continue?",
+    "messages": {
+      "addSuccess": "Training program added successfully!",
+      "updateSuccess": "Training program updated successfully!",
+      "genericError": "An error occurred, please try again!",
+      "missingSubjectId": "Missing subject_id for training program update."
+    },
+    "table": {
+      "name": "Training Program Name",
+      "type": "Training Program Type",
+      "academicYear": "Academic Year",
+      "status": "Status"
+    },
+    "actions": {
+      "import": "Import",
+      "importing": "Importing..."
+    },
+    "form": {
+      "titleAdd": "ADD TRAINING PROGRAM",
+      "titleEdit": "EDIT TRAINING PROGRAM",
+      "programType": "Training Program Type",
+      "selectProgramType": "Choose program type",
+      "programName": "Training Program Name",
+      "academicYear": "Academic Year",
+      "selectAcademicYear": "Choose academic year",
+      "specialization": "Specialization",
+      "selectSpecialization": "Choose specialization",
+      "subjects": "Subjects",
+      "addSubject": "Add Subject",
+      "noSubjects": "No subjects yet",
+      "term": "Term",
+      "table": {
+        "subjectCode": "Subject Code",
+        "subjectName": "Subject Name",
+        "term": "Term"
+      },
+      "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
+      "confirmSaveTitle": "Confirm Save",
+      "confirmSave": "Are you sure you want to save the changes?"
+    },
+    "import": {
+      "title": "Import Training Program Preview",
+      "editTitle": "Edit Imported Subject",
+      "noData": "No import data available.",
+      "fileName": "File Name",
+      "program": "Training Program",
+      "academicYear": "Academic Year",
+      "invalidRows": "{{count}} invalid rows remain in the file.",
+      "confirmExit": "Are you sure you want to exit the import form?",
+      "table": {
+        "subjectCode": "Subject Code",
+        "subjectName": "Subject Name",
+        "term": "Term",
+        "errorReason": "Error Reason"
+      }
+    }
+  },
+  "tuitionFees": {
+    "title": "Tuition Fees",
+    "searchPlaceholder": "Search by tuition fee name, academic year, training program...",
+    "addTuitionFee": "Add Tuition Fee",
+    "allocateTuitionFee": "Allocate Tuition Fee",
+    "studentView": "Student View",
+    "studentTitle": "Students with Tuition Fees",
+    "studentSearchPlaceholder": "Search by student code, name, email...",
+    "backToTuitionFees": "Back to Tuition Fees",
+    "table": {
+      "name": "Tuition Fee Name",
+      "academicYear": "Academic Year",
+      "term": "Term",
+      "trainingProgram": "Training Program",
+      "pricePerCredit": "Price / Credit",
+      "amount": "Total Amount",
+      "status": "Status"
+    },
+    "studentTable": {
+      "studentCode": "Student Code",
+      "studentName": "Student Name",
+      "class": "Class",
+      "tuitionFee": "Tuition Fee",
+      "term": "Term",
+      "payableAmount": "Payable Amount",
+      "paidAmount": "Paid",
+      "debtAmount": "Debt"
+    },
+    "messages": {
+      "addSuccess": "Tuition fee added successfully!",
+      "updateSuccess": "Tuition fee updated successfully!",
+      "genericError": "An error occurred, please try again!"
+    },
+    "allocate": {
+      "title": "Allocate Tuition Fee",
+      "success": "Tuition fee allocated to {{count}} records.",
+      "genericError": "An error occurred, please try again!",
+      "empty": "No departments available to select."
+    },
+    "form": {
+      "titleAdd": "ADD TUITION FEE",
+      "titleEdit": "EDIT TUITION FEE",
+      "labels": {
+        "name": "Tuition Fee Name",
+        "pricePerCredit": "Price / Credit",
+        "department": "Department",
+        "trainingProgram": "Training Program",
+        "startDate": "Start Date",
+        "endDate": "End Date"
+      },
+      "placeholders": {
+        "department": "Choose department",
+        "trainingProgram": "Choose training program"
+      },
+      "errors": {
+        "pricePerCredit": "Price / credit is invalid",
+        "departmentRequired": "Department is required"
+      },
+      "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
+      "confirmSaveTitle": "Confirm Save",
+      "confirmSave": "Are you sure you want to save the changes?"
+    }
+  },
   "pagination": {
     "itemsPerPage": "Items / page"
+  },
+  "dashboard": {
+    "welcome": "Hello, {{name}}",
+    "loading": "Loading...",
+    "subtitle": "Have a productive working day ✨"
+  },
+  "departments": {
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "title": "Departments"
+    },
+    "searchPlaceholder": "Search by department name, code...",
+    "addDepartment": "Add Department",
+    "confirmDelete": "Are you sure you want to delete this department?",
+    "common": {
+      "cancel": "Cancel",
+      "add": "Add",
+      "save": "Save"
+    },
+    "messages": {
+      "missingId": "Department code not found for deletion",
+      "deleteSuccess": "Department deleted successfully",
+      "deleteFailed": "Failed to delete department",
+      "addSuccess": "Department added successfully!",
+      "updateSuccess": "Department updated successfully!",
+      "genericError": "An error occurred, please try again!"
+    },
+    "table": {
+      "departmentCode": "Department Code",
+      "departmentName": "Department Name",
+      "establishedDate": "Established Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
+      "titleAdd": "ADD DEPARTMENT",
+      "titleEdit": "EDIT DEPARTMENT",
+      "labels": {
+        "departmentCode": "Department Code",
+        "departmentName": "Department Name",
+        "establishedDate": "Established Date",
+        "description": "Description"
+      }
+    },
+    "confirm": {
+      "exitTitle": "Confirm Exit",
+      "exitMessage": "Are you sure you want to exit? Entered data will not be saved.",
+      "saveTitle": "Confirm Save",
+      "saveMessage": "Are you sure you want to save the changes?"
+    }
+  },
+  "majors": {
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "title": "Majors"
+    },
+    "searchPlaceholder": "Search by major name, major code...",
+    "departmentFilterPlaceholder": "Filter by department",
+    "addMajor": "Add Major",
+    "confirmDelete": "Are you sure you want to delete this major?",
+    "common": {
+      "cancel": "Cancel",
+      "add": "Add",
+      "save": "Save"
+    },
+    "messages": {
+      "missingId": "Major code not found for deletion",
+      "deleteSuccess": "Major deleted successfully",
+      "deleteFailed": "Failed to delete major",
+      "addSuccess": "Major added successfully!",
+      "updateSuccess": "Major updated successfully!",
+      "genericError": "An error occurred, please try again!"
+    },
+    "table": {
+      "majorCode": "Major Code",
+      "majorName": "Major Name",
+      "establishedDate": "Established Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
+      "titleAdd": "ADD MAJOR",
+      "titleEdit": "EDIT MAJOR",
+      "labels": {
+        "majorCode": "Major Code",
+        "majorName": "Major Name",
+        "establishedDate": "Established Date",
+        "department": "Department",
+        "description": "Description"
+      },
+      "departmentPlaceholder": "Select department"
+    },
+    "confirm": {
+      "exitTitle": "Confirm Exit",
+      "exitMessage": "Are you sure you want to exit? Entered data will not be saved.",
+      "saveTitle": "Confirm Save",
+      "saveMessage": "Are you sure you want to save the changes?"
+    }
+  },
+  "specializations": {
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "title": "Specializations"
+    },
+    "searchPlaceholder": "Search by specialization name, specialization code...",
+    "majorFilterPlaceholder": "Filter by major",
+    "addSpecialization": "Add Specialization",
+    "confirmDelete": "Are you sure you want to delete this specialization?",
+    "common": {
+      "cancel": "Cancel",
+      "add": "Add",
+      "save": "Save"
+    },
+    "messages": {
+      "missingId": "Specialization code not found for deletion",
+      "deleteSuccess": "Specialization deleted successfully",
+      "deleteFailed": "Failed to delete specialization",
+      "addSuccess": "Specialization added successfully!",
+      "updateSuccess": "Specialization updated successfully!",
+      "genericError": "An error occurred, please try again!"
+    },
+    "table": {
+      "specializationCode": "Specialization Code",
+      "specializationName": "Specialization Name",
+      "establishedDate": "Established Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
+      "titleAdd": "ADD SPECIALIZATION",
+      "titleEdit": "EDIT SPECIALIZATION",
+      "labels": {
+        "specializationCode": "Specialization Code",
+        "specializationName": "Specialization Name",
+        "establishedDate": "Established Date",
+        "major": "Major",
+        "description": "Description"
+      },
+      "majorPlaceholder": "Select major"
+    },
+    "confirm": {
+      "exitTitle": "Confirm Exit",
+      "exitMessage": "Are you sure you want to exit? Entered data will not be saved.",
+      "saveTitle": "Confirm Save",
+      "saveMessage": "Are you sure you want to save the changes?"
+    }
+  },
+  "subjects": {
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "title": "Subjects"
+    },
+    "searchPlaceholder": "Search by subject name, subject code...",
+    "addSubject": "Add Subject",
+    "confirmDelete": "Are you sure you want to delete this subject?",
+    "common": {
+      "cancel": "Cancel",
+      "add": "Add",
+      "save": "Save"
+    },
+    "messages": {
+      "missingId": "Subject code not found for deletion",
+      "deleteSuccess": "Subject deleted successfully",
+      "deleteFailed": "Failed to delete subject",
+      "addSuccess": "Subject added successfully!",
+      "updateSuccess": "Subject updated successfully!",
+      "genericError": "An error occurred, please try again!"
+    },
+    "table": {
+      "subjectCode": "Subject Code",
+      "subjectName": "Subject Name",
+      "credit": "Credits",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
+      "titleAdd": "ADD SUBJECT",
+      "titleEdit": "EDIT SUBJECT",
+      "labels": {
+        "subjectCode": "Subject Code",
+        "subjectName": "Subject Name",
+        "credit": "Credits",
+        "description": "Description"
+      },
+      "errors": {
+        "subjectCodeRequired": "Subject code is required",
+        "subjectNameRequired": "Subject name is required",
+        "creditInvalid": "Credits must be a positive integer"
+      }
+    },
+    "confirm": {
+      "exitTitle": "Confirm Exit",
+      "exitMessage": "Are you sure you want to exit? Entered data will not be saved.",
+      "saveTitle": "Confirm Save",
+      "saveMessage": "Are you sure you want to save the changes?"
+    }
   },
   "teachingSchedules": {
     "breadcrumb": {
@@ -221,6 +882,30 @@
         "genericError": "An error occurred, please try again!"
       }
     },
+    "roomFilter": {
+      "searchPlaceholder": "Search room...",
+      "allRooms": "All rooms",
+      "loading": "Loading..."
+    },
+    "tooltip": {
+      "class": "Class",
+      "subject": "Subject",
+      "teacher": "Teacher",
+      "room": "Room",
+      "period": "Period"
+    },
+    "roomGrid": {
+      "days": {
+        "0": "Sunday",
+        "1": "Monday",
+        "2": "Tuesday",
+        "3": "Wednesday",
+        "4": "Thursday",
+        "5": "Friday",
+        "6": "Saturday"
+      }
+    },
+    "periodNumber": "Period {{period}}",
     "import": {
       "title": "Import Teaching Schedule Preview",
       "noData": "No import data.",
@@ -410,6 +1095,259 @@
     "periodRange": "Period {{start}} - {{end}}",
     "roomLabel": "Room {{room}}",
     "subjectFallback": "Subject"
+  },
+  "examinationSchedules": {
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "title": "Examination Schedules"
+    },
+    "searchPlaceholder": "Search by class, subject, room...",
+    "addSchedule": "Add Examination Schedule",
+    "uploading": "Uploading...",
+    "importSchedule": "Import Examination Schedule",
+    "errors": {
+      "uploadFailed": "Failed to upload examination schedule file",
+      "importFailed": "Failed to import examination schedule"
+    },
+    "messages": {
+      "importSuccess": "Examination schedule imported successfully",
+      "importSuccessWithCount": "Examination schedule imported successfully ({{count}} rows)"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "add": "Add"
+    },
+    "confirm": {
+      "exitTitle": "Confirm Exit",
+      "exitMessage": "Are you sure you want to exit? Entered data will not be saved.",
+      "importExitMessage": "Are you sure you want to exit the import form?"
+    },
+    "table": {
+      "class": "Class",
+      "subject": "Subject",
+      "date": "Exam Date",
+      "time": "Exam Time",
+      "room": "Room",
+      "invigilator1": "Invigilator 1",
+      "invigilator2": "Invigilator 2",
+      "status": "Status",
+      "actions": "Actions",
+      "empty": "No data"
+    },
+    "form": {
+      "titleAdd": "ADD EXAMINATION SCHEDULE",
+      "titleEdit": "EDIT EXAMINATION SCHEDULE",
+      "labels": {
+        "class": "Class",
+        "subject": "Subject",
+        "date": "Exam Date",
+        "scheduleType": "Schedule Type",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "room": "Room",
+        "invigilator1": "Invigilator 1",
+        "invigilator2": "Invigilator 2"
+      },
+      "placeholders": {
+        "selectClass": "Select class",
+        "selectSubject": "Select subject",
+        "scheduleType": "Example: final_exam",
+        "selectRoom": "Select room",
+        "selectInvigilator1": "Select invigilator 1",
+        "selectInvigilator2": "Select invigilator 2"
+      },
+      "errors": {
+        "classRequired": "Class is required!",
+        "subjectRequired": "Subject is required!",
+        "dateRequired": "Exam date is required!",
+        "startTimeRequired": "Start time is required!",
+        "endTimeRequired": "End time is required!",
+        "endTimeAfterStart": "End time must be after start time!"
+      },
+      "messages": {
+        "addSuccess": "Examination schedule added successfully!",
+        "updateSuccess": "Examination schedule updated successfully!",
+        "genericError": "An error occurred, please try again!"
+      }
+    },
+    "import": {
+      "title": "Import Examination Schedule Preview",
+      "noData": "No import data.",
+      "fileName": "File name",
+      "noValidRows": "No valid rows to import.",
+      "invalidRows": "{{count}} rows have errors, please fix them before importing.",
+      "importing": "Importing...",
+      "importButton": "Import",
+      "table": {
+        "subjectCode": "Subject Code",
+        "classCode": "Class Code",
+        "date": "Exam Date",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "room": "Room",
+        "type": "Type",
+        "errorReason": "Error Reason",
+        "actions": "Actions"
+      }
+    },
+    "importEdit": {
+      "title": "Edit Imported Examination Schedule",
+      "subjectCode": "Subject Code",
+      "classCode": "Class Code",
+      "invigilator1": "Invigilator 1",
+      "invigilator2": "Invigilator 2",
+      "room": "Room",
+      "date": "Exam Date",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "scheduleType": "Schedule Type",
+      "selectSubject": "Select subject",
+      "selectClass": "Select class",
+      "selectInvigilator1": "Select invigilator 1",
+      "selectInvigilator2": "Select invigilator 2",
+      "selectRoom": "Select room"
+    },
+    "calendar": {
+      "loading": "Loading...",
+      "days": {
+        "0": "Sunday",
+        "1": "Monday",
+        "2": "Tuesday",
+        "3": "Wednesday",
+        "4": "Thursday",
+        "5": "Friday",
+        "6": "Saturday"
+      }
+    },
+    "tooltip": {
+      "class": "Class",
+      "subject": "Subject",
+      "room": "Room",
+      "invigilator": "Invigilator"
+    },
+    "roomLabel": "Room {{room}}",
+    "subjectFallback": "Exam subject",
+    "periodRange": "{{start}} - {{end}}"
+  },
+  "students": {
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "title": "Students"
+    },
+    "searchPlaceholder": "Search by student name, code...",
+    "addStudent": "Add Student",
+    "exportTemplate": "Export template file",
+    "exporting": "Exporting...",
+    "importStudent": "Import Student",
+    "uploading": "Importing...",
+    "common": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "add": "Add"
+    },
+    "confirm": {
+      "exitTitle": "Confirm Exit",
+      "exitMessage": "Are you sure you want to exit? Entered data will not be saved.",
+      "importExitMessage": "Are you sure you want to exit the import form?"
+    },
+    "tabs": {
+      "basic": "Basic Information",
+      "other": "Other Information",
+      "relatives": "Relatives Information"
+    },
+    "table": {
+      "studentCode": "Student Code",
+      "studentName": "Student Name",
+      "gender": "Gender",
+      "class": "Class",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "trainingProgram": {
+      "fullTime": "Full-time",
+      "transfer": "Transfer",
+      "secondDegree": "Second degree"
+    },
+    "form": {
+      "titleAdd": "ADD STUDENT",
+      "titleEdit": "EDIT STUDENT",
+      "studentCode": "Student Code",
+      "studentName": "Student Name",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "email": "Email",
+      "phone": "Phone Number",
+      "address": "Address",
+      "class": "Class",
+      "selectClass": "Select class",
+      "trainingProgram": "Training Program",
+      "course": "Course"
+    },
+    "other": {
+      "placeOfOrigin": "Place of Origin",
+      "exemptedGroup": "Exempted Group",
+      "priorityGroup": "Priority Group",
+      "citizenId": "Citizen ID",
+      "issueDate": "Issue Date",
+      "issuePlace": "Issue Place",
+      "nationality": "Nationality",
+      "ethnicity": "Ethnicity",
+      "religion": "Religion",
+      "insuranceNumber": "Insurance Number",
+      "bankName": "Bank Name",
+      "bankAccountNumber": "Bank Account Number"
+    },
+    "relativeSections": {
+      "0": "FATHER INFORMATION",
+      "1": "MOTHER INFORMATION",
+      "2": "RELATIVE INFORMATION"
+    },
+    "relative": {
+      "name": "Relative Name",
+      "birthYear": "Date of Birth",
+      "occupation": "Occupation",
+      "phone": "Phone Number",
+      "address": "Address",
+      "ethnicity": "Ethnicity",
+      "religion": "Religion",
+      "nationality": "Nationality"
+    },
+    "import": {
+      "title": "Import Student Preview",
+      "noData": "No import data.",
+      "fileName": "File name",
+      "invalidRows": "{{count}} rows have errors, please fix them before importing.",
+      "importing": "Importing...",
+      "importButton": "Import",
+      "table": {
+        "studentCode": "Student Code",
+        "studentName": "Student Name",
+        "gender": "Gender",
+        "dateOfBirth": "Date of Birth",
+        "email": "Email",
+        "phone": "Phone Number",
+        "classCode": "Class Code",
+        "errorReason": "Error Reason",
+        "actions": "Actions"
+      }
+    },
+    "importEdit": {
+      "title": "Edit Imported Student",
+      "studentCode": "Student Code",
+      "studentName": "Student Name",
+      "gender": "Gender",
+      "dateOfBirth": "Date of Birth",
+      "email": "Email",
+      "phone": "Phone Number",
+      "classCode": "Class Code",
+      "address": "Address"
+    }
   },
   "weekPicker": {
     "currentWeek": "Current week",

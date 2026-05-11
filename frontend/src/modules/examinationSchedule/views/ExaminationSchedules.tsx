@@ -6,6 +6,7 @@ import { Box } from "@mui/material";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import Button from "../../../components/Button/Button";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
+import { useTranslation } from "react-i18next";
 import MiniCalender from "../../courseRegistration/components/MiniCalender";
 import RoomFilter from "../../teachingSchedule/components/RoomFilter";
 import ExaminationScheduleFormModel from "../components/ExaminationScheduleFormModel";
@@ -17,6 +18,7 @@ import type { IExaminationScheduleResponse, IUploadExaminationScheduleResponse }
 import "./styles/ExaminationSchedules.css";
 
 export function ExaminationSchedules() {
+  const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedRoomId, setSelectedRoomId] = useState<string | undefined>(undefined);
@@ -49,7 +51,7 @@ export function ExaminationSchedules() {
       setImportPreview(uploadedResult);
       setOpenImportFormModel(true);
     } catch (error: any) {
-      const detail = error?.response?.data?.detail ?? "Upload file lịch thi thất bại";
+      const detail = error?.response?.data?.detail ?? t("examinationSchedules.errors.uploadFailed");
       showSnackbar(detail, "error");
       setImportPreview(null);
       setOpenImportFormModel(false);
@@ -75,21 +77,21 @@ export function ExaminationSchedules() {
       <BreadCrumb
         className="students-breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
-          { label: "ExaminationSchedules" },
+          { label: t("examinationSchedules.breadcrumb.dashboard"), to: dashBoardUrl },
+          { label: t("examinationSchedules.breadcrumb.title") },
         ]}
       />
 
       <Box className="admin-main-box">
         <SearchEngine
-          placeholder="Tìm theo lớp, môn, phòng..."
+          placeholder={t("examinationSchedules.searchPlaceholder")}
           onSearch={(val) => {
             setSearch(val);
           }}
         />
 
         <Button onClick={handleOpenAddForm} className="btn-spacing-left">
-          Add Examination Schedule
+          {t("examinationSchedules.addSchedule")}
         </Button>
 
         <Button
@@ -97,7 +99,7 @@ export function ExaminationSchedules() {
           disabled={isUploadingExaminationScheduleFile}
           className="btn-spacing-left"
         >
-          {isUploadingExaminationScheduleFile ? "Uploading..." : "Import lịch thi"}
+          {isUploadingExaminationScheduleFile ? t("examinationSchedules.uploading") : t("examinationSchedules.importSchedule")}
         </Button>
 
         <input
@@ -150,14 +152,14 @@ export function ExaminationSchedules() {
             const response = await importExaminationSchedule(payload);
             showSnackbar(
               response?.items?.length
-                ? `Import lịch thi thành công (${response.items.length} dòng)`
-                : "Import lịch thi thành công",
+                ? t("examinationSchedules.messages.importSuccessWithCount", { count: response.items.length })
+                : t("examinationSchedules.messages.importSuccess"),
               "success"
             );
             setOpenImportFormModel(false);
             setImportPreview(null);
           } catch (error: any) {
-            const detail = error?.response?.data?.detail ?? "Import lịch thi thất bại";
+            const detail = error?.response?.data?.detail ?? t("examinationSchedules.errors.importFailed");
             showSnackbar(detail, "error");
           }
         }}

@@ -7,6 +7,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import type { IStudentsResponse } from "../types";
 import type { IClassesDropDown } from "../../classes/types";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
+import { useTranslation } from "react-i18next";
 
 interface BasicInformationTabProps {
     student: IStudentsResponse;
@@ -27,9 +28,32 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
     onClassSearchChange,
     onClassResetPage,
 }) => (
+    <BasicInformationTabContent
+        student={student}
+        classes={classes}
+        dateOfBirth={dateOfBirth}
+        onStudentChange={onStudentChange}
+        onDateChange={onDateChange}
+        onClassSearchChange={onClassSearchChange}
+        onClassResetPage={onClassResetPage}
+    />
+);
+
+const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
+    student,
+    classes,
+    dateOfBirth,
+    onStudentChange,
+    onDateChange,
+    onClassSearchChange,
+    onClassResetPage,
+}) => {
+    const { t } = useTranslation();
+
+    return (
     <Grid container spacing={2} className="myprofile-form">
         <Grid size={4} className="">
-            <LabelPrimary value="Mã sinh viên" required />
+            <LabelPrimary value={t("students.form.studentCode")} required />
             <TextField
                 value={student.student_code}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, student_code: e.target.value }))}
@@ -40,7 +64,7 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value="Họ và tên" required />
+            <LabelPrimary value={t("students.form.studentName")} required />
             <TextField
                 value={student.name}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, name: e.target.value }))}
@@ -51,7 +75,7 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value="Sinh nhật" />
+            <LabelPrimary value={t("students.form.dateOfBirth")} />
             <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                     value={dateOfBirth}
@@ -62,7 +86,7 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value="Giới tính" required />
+            <LabelPrimary value={t("students.form.gender")} required />
             <Select
                 value={student.gender}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, gender: e.target.value }))}
@@ -70,14 +94,14 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
                 variant="outlined"
                 className="main-text__field"
             >
-                <MenuItem value="1">Nam</MenuItem>
-                <MenuItem value="2">Nữ</MenuItem>
-                <MenuItem value="3">Khác</MenuItem>
+                <MenuItem value="1">{t("students.gender.male")}</MenuItem>
+                <MenuItem value="2">{t("students.gender.female")}</MenuItem>
+                <MenuItem value="3">{t("students.gender.other")}</MenuItem>
             </Select>
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value="Email" required />
+            <LabelPrimary value={t("students.form.email")} required />
             <TextField
                 value={student.email}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, email: e.target.value }))}
@@ -88,7 +112,7 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value="Số điện thoại" required />
+            <LabelPrimary value={t("students.form.phone")} required />
             <TextField
                 value={student.phone}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, phone: e.target.value }))}
@@ -99,7 +123,7 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={12} className="">
-            <LabelPrimary value="Địa chỉ" required />
+            <LabelPrimary value={t("students.form.address")} required />
             <TextField
                 value={student.address ?? ""}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, address: e.target.value }))}
@@ -110,7 +134,7 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value="Lớp" required />
+            <LabelPrimary value={t("students.form.class")} required />
             <MainAutocomplete
                 options={classes}
                 value={
@@ -140,26 +164,26 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
                 onResetPage={onClassResetPage}
                 getOptionLabel={(option) => `${option.class_code} - ${option.class_name}`}
                 getOptionId={(option) => option.id}
-                placeholder="Chọn lớp"
+                placeholder={t("students.form.selectClass")}
             />
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value="Chương trình đào tạo" required />
+            <LabelPrimary value={t("students.form.trainingProgram")} required />
             <Select
                 value={student.training_program ?? ""}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, training_program: e.target.value }))}
                 fullWidth
                 className="main-text__field"
             >
-                <MenuItem value="1">Đại học chính quy</MenuItem>
-                <MenuItem value="2">Liên thông</MenuItem>
-                <MenuItem value="3">Văn bằng hai</MenuItem>
+                <MenuItem value="1">{t("students.trainingProgram.fullTime")}</MenuItem>
+                <MenuItem value="2">{t("students.trainingProgram.transfer")}</MenuItem>
+                <MenuItem value="3">{t("students.trainingProgram.secondDegree")}</MenuItem>
             </Select>
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value="Niên khoá" required />
+            <LabelPrimary value={t("students.form.course")} required />
             <Select
                 value={student.course ?? ""}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, course: e.target.value }))}
@@ -171,6 +195,7 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
             </Select>
         </Grid>
     </Grid>
-);
+    );
+};
 
 export default BasicInformationTab;
