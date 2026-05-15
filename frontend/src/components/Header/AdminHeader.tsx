@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from "../../stores/useAuthStore";
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
-import { homeUrl, profileUrl, signinUrl, gradesUrl, learningScheduleUrl  } from "../../routes/urls"
+import { homeUrl, signinUrl, testAIUrl } from "../../routes/urls"
 import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
 
@@ -55,6 +55,14 @@ const AdminHeader: React.FC = () => {
 
         <Box className="header-flex">
           <LanguageSwitcher />
+          <Button
+            className="header-navbar__item"
+            disableRipple
+            color="inherit"
+            onClick={() => handleNavigate(testAIUrl)}
+          >
+            AI Test
+          </Button>
 
           <IconButton onClick={handleOpenUserMenu}>
             <Avatar alt="User Avatar" src="" className="header-avatar"/>

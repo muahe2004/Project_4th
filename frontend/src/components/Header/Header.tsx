@@ -24,6 +24,7 @@ import {
   studentLearningSchedules,
   teacherTeachingSchedules,
   courseRegistrationUrl,
+  testAIUrl,
 } from "../../routes/urls"
 import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
@@ -95,6 +96,14 @@ const Header: React.FC = () => {
             onClick={() => handleNavigate(courseRegistrationUrl)}
           >
             {t('header_navbar.register')}
+          </Button>
+          <Button
+            className="header-navbar__item"
+            disableRipple
+            color="inherit"
+            onClick={() => handleNavigate(testAIUrl)}
+          >
+            AI Test
           </Button>
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.onlineLearning')}</Button>
         </Stack>

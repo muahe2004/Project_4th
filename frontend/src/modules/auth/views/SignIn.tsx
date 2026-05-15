@@ -49,7 +49,10 @@ export function SignIn() {
       mutation.mutate(
         { username, password },
         {
-          onSuccess: async () => {
+          onSuccess: async (data) => {
+            if (data?.access_token) {
+              localStorage.setItem("access_token", data.access_token);
+            }
             const user = await fetchMe(); 
             if (user?.role === ROLES.ADMIN) {
               navigate(layOutAdminUrl); 

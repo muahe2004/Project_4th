@@ -66,6 +66,7 @@ export const useAuthStore = create<AuthState>()(
         } catch (e) {
           console.error("Logout failed:", e);
         }
+        localStorage.removeItem("access_token");
         set({ user: null });
       },
     }),

@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl, studentTuitionFeeUrl, managementScoreUrl, scoreDetailsUrl, teacherManagementScoreUrl, teacherManagementListStudentScoreUrl, advisorClassScoreUrl, teacherScoreDetailsUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl, studentTuitionFeeUrl, managementScoreUrl, scoreDetailsUrl, teacherManagementScoreUrl, teacherManagementListStudentScoreUrl, advisorClassScoreUrl, teacherScoreDetailsUrl, testAIUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -34,6 +34,7 @@ import { TeacherManagementScore } from "../modules/managementScore/views/Teacher
 import { ListStudentScoreSubject } from "../modules/managementScore/views/ListStudentView";
 import { AdvisorClassScore } from "../modules/managementScore/views/AdvisorClassScore";
 import { TeacherScoreDetails } from "../modules/managementScore/views/TeacherScoreDetails";
+import ChatBot from "../modules/umsChatbot/views/ChatBot";
 
 const ProtectedRoute = ({
   children,
@@ -114,6 +115,10 @@ export const createRouterConfig = () => {
         {
           path: teacherScoreDetailsUrl,
           element: <TeacherScoreDetails/>
+        },
+        {
+          path: testAIUrl,
+          element: <ChatBot/>
         }
       ],
     },

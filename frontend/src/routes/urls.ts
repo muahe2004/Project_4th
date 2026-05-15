@@ -33,3 +33,5 @@ export const teacherManagementScoreUrl = "teacher-management-score";
 export const teacherManagementListStudentScoreUrl = "teacher-management-list-student-score";
 export const advisorClassScoreUrl = "advisor-class-score";
 export const teacherScoreDetailsUrl = "teacher-score-details";
+
+export const testAIUrl = "test-ai-model";
