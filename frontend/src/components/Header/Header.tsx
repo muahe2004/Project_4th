@@ -29,6 +29,7 @@ import {
 import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
 import { ROLES } from '../../constants/roles';
+import UMSChatBot from '../../modules/umsChatbot/views/UMSChatBot';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -45,6 +46,7 @@ const Header: React.FC = () => {
     : t('header_menu.examSchedule');
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [openChatBot, setOpenChatBot] = useState(false);
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -101,9 +103,9 @@ const Header: React.FC = () => {
             className="header-navbar__item"
             disableRipple
             color="inherit"
-            onClick={() => handleNavigate(testAIUrl)}
+            onClick={() => setOpenChatBot(true)}
           >
-            AI Test
+            AI Chat
           </Button>
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.onlineLearning')}</Button>
         </Stack>
@@ -137,6 +139,10 @@ const Header: React.FC = () => {
           </Menu>
         </Box>
       </Toolbar>
+      <UMSChatBot
+        open={openChatBot}
+        onClose={() => setOpenChatBot(false)}
+      />
     </AppBar>
   );
 };

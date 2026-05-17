@@ -16,7 +16,13 @@ export interface PredictIntentRequest {
 
 export interface PredictIntentResponse {
   intent: string;
+  service_name?: string;
   time_scope: string | null;
+  date_range?: {
+    start_date: string | null;
+    end_date: string | null;
+  } | null;
+  service_data?: unknown[];
   confidence: number;
   index: number;
   normalized_text: string;

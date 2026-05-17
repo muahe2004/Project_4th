@@ -18,6 +18,7 @@ import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import { homeUrl, signinUrl, testAIUrl } from "../../routes/urls"
 import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
+import UMSChatBot from '../../modules/umsChatbot/views/UMSChatBot';
 
 const AdminHeader: React.FC = () => {
   const { t } = useTranslation();
@@ -25,6 +26,7 @@ const AdminHeader: React.FC = () => {
   const logout = useAuthStore((state) => state.logout); 
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [openChatBot, setOpenChatBot] = useState(false);
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -59,9 +61,9 @@ const AdminHeader: React.FC = () => {
             className="header-navbar__item"
             disableRipple
             color="inherit"
-            onClick={() => handleNavigate(testAIUrl)}
+            onClick={() => setOpenChatBot(true)}
           >
-            AI Test
+            AI Chat
           </Button>
 
           <IconButton onClick={handleOpenUserMenu}>
@@ -78,6 +80,10 @@ const AdminHeader: React.FC = () => {
           </Menu>
         </Box>
       </Toolbar>
+      <UMSChatBot
+        open={openChatBot}
+        onClose={() => setOpenChatBot(false)}
+      />
     </AppBar>
   );
 };
