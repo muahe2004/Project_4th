@@ -246,6 +246,7 @@ class StudentTuitionFeeServices:
         skip: int = 0,
         limit: int = 10,
         search: str | None = None,
+        student_id: uuid.UUID | None = None,
     ) -> StudentWithTuitionFeesListResponse:
         conditions = [
             or_(
@@ -253,6 +254,8 @@ class StudentTuitionFeeServices:
                 StudentClass.status.is_(None),
             )
         ]
+        if student_id is not None:
+            conditions.append(Students.id == student_id)
         if search:
             search_pattern = f"%{search}%"
             conditions.append(

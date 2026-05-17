@@ -20,6 +20,7 @@ import {
   profileUrl,
   signinUrl,
   gradesUrl,
+  studentTuitionFeesUrl,
   teacherManagementScoreUrl,
   studentLearningSchedules,
   teacherTeachingSchedules,
@@ -131,7 +132,9 @@ const Header: React.FC = () => {
             </MenuItem>
             <MenuItem onClick={handleCloseUserMenu}>{examScheduleLabel}</MenuItem>
             {!isTeacher && (
-              <MenuItem onClick={handleCloseUserMenu}>{t('header_menu.tuition')}</MenuItem>
+              <MenuItem onClick={() => handleNavigate(studentTuitionFeesUrl)}>
+                {t('header_menu.tuition')}
+              </MenuItem>
             )}
             <MenuItem 
               onClick={handleLogout}

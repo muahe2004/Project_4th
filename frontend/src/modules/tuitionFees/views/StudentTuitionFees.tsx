@@ -1,29 +1,24 @@
 import { useState } from "react";
 import { Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
-import Button from "../../../components/Button/Button";
 import Loading from "../../../components/Loading/Loading";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
-import SearchEngine from "../../../components/SearchEngine/SearchEngine";
-import { dashBoardUrl, layOutAdminUrl, tuitionFeeUrl } from "../../../routes/urls";
+import { useAuthStore } from "../../../stores/useAuthStore";
 import { useGetStudentsWithTuitionFees } from "../apis/getStudentsWithTuitionFees";
 import StudentTuitionFeeTable from "../components/StudentTuitionFeeTable";
 import "./styles/StudentTuitionFees.css";
 
 export function StudentTuitionFees() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [search, setSearch] = useState("");
 
   const params = {
     limit: rowsPerPage,
     skip: (page - 1) * rowsPerPage,
-    ...(search && { search }),
+    ...(user?.id && { student_id: user.id }),
   };
 
   const { data: studentsWithTuitionFees, isLoading } = useGetStudentsWithTuitionFees(params);
@@ -38,33 +33,6 @@ export function StudentTuitionFees() {
 
   return (
     <main className="admin-main-container">
-      <BreadCrumb
-        className="student-tuition-fees-breadcrumb"
-        items={[
-          { label: t("common.dashboard"), to: dashBoardUrl },
-          { label: t("tuitionFees.title"), to: `${layOutAdminUrl}/${tuitionFeeUrl}` },
-          { label: t("tuitionFees.studentTitle") },
-        ]}
-      />
-
-      <Box className="admin-main-box">
-        <SearchEngine
-          placeholder={t("tuitionFees.studentSearchPlaceholder")}
-          onSearch={(value) => {
-            setSearch(value);
-            setPage(1);
-          }}
-        />
-
-        <Button
-          onClick={() => {
-            navigate(`${layOutAdminUrl}/${tuitionFeeUrl}`);
-          }}
-          className="btn-spacing-left"
-        >
-          {t("tuitionFees.backToTuitionFees")}
-        </Button>
-      </Box>
 
       <StudentTuitionFeeTable studentsWithTuitionFees={studentsWithTuitionFees} />
 

@@ -9,6 +9,7 @@ class BaseQueryParams(SQLModel):
     limit: int = Field(10, ge=1)
     status: Optional[str] = Field(None)
     search: Optional[str] = Field(None)
+    student_id: Optional[UUID] = Field(None)
 
 class DateRange(SQLModel):
     start_date: Optional[date] = Field(None)

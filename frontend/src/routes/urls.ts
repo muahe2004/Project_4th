@@ -8,6 +8,7 @@ export const gradesUrl = "/grades";
 export const studentLearningSchedules = "student-learning-schedules"
 export const teacherTeachingSchedules = "teacher-teaching-schedules"
 export const courseRegistrationUrl = "/course-registration"
+export const studentTuitionFeesUrl = "/student-tuition-fees"
 
 // ADMIN
 export const layOutAdminUrl = "/admin"
