@@ -19,6 +19,7 @@ import {
   COMPONENT_TYPE_MIDDLE_ALIASES,
   SCORE_TYPE_OFFICIAL,
 } from "../../grades/types";
+import type { TFunction } from "i18next";
 import type {
   IScoreByClassSubjectResponse,
   IScoreUploadResponse,
@@ -36,6 +37,7 @@ function ListStudentScoreSubjectContent({
   finalDrafts,
   onMidtermChange,
   onFinalChange,
+  t,
 }: {
   data?: IScoreByClassSubjectResponse;
   isLoading: boolean;
@@ -47,6 +49,7 @@ function ListStudentScoreSubjectContent({
   finalDrafts?: Record<string, string>;
   onMidtermChange?: (scoreId: string, value: string) => void;
   onFinalChange?: (scoreId: string, value: string) => void;
+  t: TFunction;
 }) {
   return (
     <>
@@ -498,6 +501,7 @@ export function ListStudentScoreSubject() {
         <Alert severity="warning">{t("managementScore.subject.missingContext")}</Alert>
       ) : (
         <ListStudentScoreSubjectContent
+          t={t}
           {...scoreQuery}
           data={scoreQuery.data}
           isLoading={scoreQuery.isLoading}

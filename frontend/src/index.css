@@ -237,3 +237,7 @@ body {
 .main-auto-complete .MuiAutocomplete-inputRoot{
   padding: 0 !important;
 }
+
+.primary-dialog-auto-complete {
+  margin-bottom: 25px !important;
+}

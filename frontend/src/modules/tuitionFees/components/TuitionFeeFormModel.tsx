@@ -280,6 +280,7 @@ export function TuitionFeeFormModel({
               }
               getOptionId={(option: IDepartmentsDropDown) => option.id}
               placeholder={t("tuitionFees.form.placeholders.department")}
+              className="primary-dialog-auto-complete"
             />
           </>
         ) : (

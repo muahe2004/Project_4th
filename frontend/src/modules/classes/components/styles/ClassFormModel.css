@@ -1,3 +1,11 @@
 .department-form .MuiDialog-paper {
     width: 30% !important;
 }
+
+.department-form .primary-dialog-input {
+    margin-bottom: 12px !important;
+}
+
+.class-form__content {
+    padding-bottom: 12px !important;
+}

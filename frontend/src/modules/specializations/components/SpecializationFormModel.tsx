@@ -17,7 +17,6 @@ import { useEditSpecialization } from "../apis/editSpecialization";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
 import { useMajorsDropDown } from "../../majors/apis/getMajorsDropDown";
 import { useMajorsDropDownByIds } from "../../majors/apis/getMajorsDropDownByIds";
-import type { IMajorsDropDown } from "../../majors/types";
 import { useTranslation } from "react-i18next";
 
 interface SpecializationsFormProps {
@@ -200,6 +199,7 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                     getOptionLabel={(option) => `${option.major_name} (${option.major_code})`}
                     getOptionId={(option) => option.id.toString()}
                     placeholder={t("specializations.form.majorPlaceholder")}
+                    className="primary-dialog-auto-complete"
                 />
 
                 <LabelPrimary value={t("specializations.form.labels.description")} />

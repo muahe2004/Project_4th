@@ -17,7 +17,6 @@ import { useDepartmentsDropDownByIds } from "../../department/apis/getDepartment
 import { useCreateMajor } from "../apis/addMajor";
 import { useEditMajor } from "../apis/editMajor";
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
-import type { IDepartmentsDropDown } from "../../department/types";
 import { useTranslation } from "react-i18next";
 
 interface MajorFormProps {
@@ -198,6 +197,7 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     getOptionLabel={(option) => `${option.department_name} (${option.department_code})`}
                     getOptionId={(option) => option.id.toString()}
                     placeholder={t("majors.form.departmentPlaceholder")}
+                    className="primary-dialog-auto-complete"
                 />
 
                 <LabelPrimary value={t("majors.form.labels.description")} />

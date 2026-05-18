@@ -36,6 +36,7 @@ import type {
   IExaminationScheduleResponse,
   IExaminationScheduleUpdatePayload,
 } from "../types";
+import "./styles/ExaminationScheduleFormModel.css";
 
 type ExaminationScheduleFormMode = "add" | "edit";
 
@@ -356,17 +357,17 @@ export function ExaminationScheduleFormModel({
     <Dialog
       open={open}
       onClose={handleCloseClick}
-      className="primary-dialog department-form"
-      maxWidth="md"
+      className="primary-dialog department-form examination-schedules-form"
+      maxWidth="sm"
       fullWidth
     >
       <DialogTitle className="primary-dialog-title">
         {mode === "add" ? t("examinationSchedules.form.titleAdd") : t("examinationSchedules.form.titleEdit")}
       </DialogTitle>
 
-      <DialogContent className="primary-dialog-content">
+      <DialogContent className="primary-dialog-content examination-schedules-form__content">
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <Grid container spacing={2}>
+          <Grid container rowSpacing={1} columnSpacing={2}>
             <Grid size={6}>
               <LabelPrimary value={t("examinationSchedules.form.labels.class")} required />
               <MainAutocomplete

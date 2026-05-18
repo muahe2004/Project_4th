@@ -15,10 +15,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from "../../stores/useAuthStore";
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
-import { homeUrl, signinUrl, testAIUrl } from "../../routes/urls"
+import { homeUrl, signinUrl } from "../../routes/urls"
 import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
-import UMSChatBot from '../../modules/umsChatbot/views/UMSChatBot';
 
 const AdminHeader: React.FC = () => {
   const { t } = useTranslation();
@@ -26,7 +25,6 @@ const AdminHeader: React.FC = () => {
   const logout = useAuthStore((state) => state.logout); 
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const [openChatBot, setOpenChatBot] = useState(false);
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -57,14 +55,6 @@ const AdminHeader: React.FC = () => {
 
         <Box className="header-flex">
           <LanguageSwitcher />
-          <Button
-            className="header-navbar__item"
-            disableRipple
-            color="inherit"
-            onClick={() => setOpenChatBot(true)}
-          >
-            AI Chat
-          </Button>
 
           <IconButton onClick={handleOpenUserMenu}>
             <Avatar alt="User Avatar" src="" className="header-avatar"/>
@@ -80,10 +70,6 @@ const AdminHeader: React.FC = () => {
           </Menu>
         </Box>
       </Toolbar>
-      <UMSChatBot
-        open={openChatBot}
-        onClose={() => setOpenChatBot(false)}
-      />
     </AppBar>
   );
 };

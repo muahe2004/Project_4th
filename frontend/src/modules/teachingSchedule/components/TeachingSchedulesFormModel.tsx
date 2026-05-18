@@ -41,6 +41,7 @@ import type {
   ITeachingScheduleResponse,
   ITeachingScheduleUpdatePayload,
 } from "../types";
+import "./styles/TeachingSchedulesFormModel.css";
 
 interface TeachingSchedulesFormProps {
   open: boolean;
@@ -405,7 +406,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
     <Dialog
       open={open}
       onClose={handleCloseClick}
-      className="primary-dialog department-form"
+      className="primary-dialog department-form teaching-schedules-form"
       maxWidth="sm"
       fullWidth
     >
@@ -413,8 +414,8 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
         {isEdit ? t("teachingSchedules.form.titleEdit") : t("teachingSchedules.form.titleAdd")}
       </DialogTitle>
 
-      <DialogContent className="primary-dialog-content">
-        <Grid container spacing={2}>
+      <DialogContent className="primary-dialog-content teaching-schedules-form__content">
+        <Grid container rowSpacing={1} columnSpacing={2}>
           <Grid size={6}>
             <LabelPrimary value={t("teachingSchedules.form.labels.class")} required />
             <MainAutocomplete

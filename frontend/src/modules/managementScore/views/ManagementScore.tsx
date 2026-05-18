@@ -84,13 +84,6 @@ export function ManagementScore() {
             setPage(1);
           }}
         />
-        <Button
-          onClick={handleOpenImportFilePicker}
-          disabled={isUploadingScoreFile}
-          className="management-score__import-button"
-        >
-          {isUploadingScoreFile ? t("managementScore.actions.uploading") : t("managementScore.actions.import")}
-        </Button>
         <input
           ref={fileInputRef}
           type="file"

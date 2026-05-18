@@ -382,8 +382,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
                 {mode === "add" ? t("classes.form.titleAdd") : t("classes.form.titleEdit")}
             </DialogTitle>
 
-            <DialogContent className="primary-dialog-content">
-                <Grid container spacing={2}>
+            <DialogContent className="primary-dialog-content class-form__content">
+                <Grid container rowSpacing={1} columnSpacing={2}>
                     <Grid size={6}>
                         <LabelPrimary value={t("classes.form.labels.classCode")} required />
                         <TextField

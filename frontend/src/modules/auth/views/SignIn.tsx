@@ -38,7 +38,7 @@ export function SignIn() {
 
   const handleBlurUsername = () => {
     if (!isRequired(username)) {
-      setUsernameError("Username is required!");
+      setUsernameError(t("signIn.errors.usernameRequired"));
     } else {
       setUsernameError("");
     }
@@ -63,11 +63,11 @@ export function SignIn() {
           onError: (error) => {
             const status = error.response?.status;
             if (status === 401) {
-              showSnackbar("Incorrect username or password!", "error");
+              showSnackbar(t("signIn.errors.invalidCredentials"), "error");
             } else if (status === 403) {
-              showSnackbar("Incorrect username or password!", "error");
+              showSnackbar(t("signIn.errors.invalidCredentials"), "error");
             } else {
-              showSnackbar(error.response?.data?.detail || "An error occurred", "error");
+              showSnackbar(error.response?.data?.detail || t("signIn.errors.genericError"), "error");
             }
           },
         }
@@ -121,7 +121,7 @@ export function SignIn() {
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
-                      aria-label={showPassword ? 'hide the password' : 'display the password'}
+                      aria-label={showPassword ? t("signIn.passwordAria.hide") : t("signIn.passwordAria.show")}
                       onClick={handleClickShowPassword}
                       onMouseDown={handleMouseDownPassword}
                       onMouseUp={handleMouseUpPassword}

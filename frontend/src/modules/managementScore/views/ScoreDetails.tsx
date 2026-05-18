@@ -419,7 +419,6 @@ export function ScoreDetails() {
       <BreadCrumb
         className="score-details__breadcrumb"
         items={[
-          { label: "Dashboard", to: dashBoardUrl },
           { label: t("common.dashboard"), to: dashBoardUrl },
           { label: t("managementScore.title"), to: `${layOutAdminUrl}/${managementScoreUrl}` },
           { label: t("managementScore.details.title") },

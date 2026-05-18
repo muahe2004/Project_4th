@@ -37,7 +37,16 @@
     "username": "Tên đăng nhập",
     "password": "Mật khẩu",
     "signIn": "Đăng nhập",
-    "forgetPassword": "Quên mật khẩu"
+    "forgetPassword": "Quên mật khẩu",
+    "passwordAria": {
+      "show": "Hiển thị mật khẩu",
+      "hide": "Ẩn mật khẩu"
+    },
+    "errors": {
+      "usernameRequired": "Tên đăng nhập là bắt buộc!",
+      "invalidCredentials": "Sai tên đăng nhập hoặc mật khẩu!",
+      "genericError": "Đã xảy ra lỗi"
+    }
   },
   "common": {
     "dashboard": "Trang chủ",

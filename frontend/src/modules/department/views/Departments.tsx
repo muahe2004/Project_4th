@@ -31,6 +31,7 @@ import { dashBoardUrl } from "../../../routes/urls";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useDeleteDepartment } from "../apis/deleteDepartment";
 import { useTranslation } from "react-i18next";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 
 export function Departments() {
     const { t } = useTranslation();
@@ -44,6 +45,8 @@ export function Departments() {
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
     const [selectedDepartment, setSelectedDepartment] = useState<IDepartments | undefined>(undefined); 
+    const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | undefined>(undefined);
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -64,18 +67,28 @@ export function Departments() {
             return;
         }
 
-        if (!window.confirm(t("departments.confirmDelete"))) {
+        setPendingDeleteId(departmentId);
+        setOpenDeleteConfirm(true);
+    };
+
+    const confirmDeleteDepartment = () => {
+        if (!pendingDeleteId) {
+            setOpenDeleteConfirm(false);
             return;
         }
 
-        deleteDepartmentMutation.mutate(departmentId, {
+        deleteDepartmentMutation.mutate(pendingDeleteId, {
             onSuccess: () => {
                 showSnackbar(t("departments.messages.deleteSuccess"), "success");
             },
             onError: (error: any) => {
                 const detail = error?.response?.data?.detail ?? t("departments.messages.deleteFailed");
                 showSnackbar(detail, "error");
-            }
+            },
+            onSettled: () => {
+                setOpenDeleteConfirm(false);
+                setPendingDeleteId(undefined);
+            },
         });
     };
 
@@ -200,6 +213,18 @@ export function Departments() {
                 mode={mode} 
                 initialValues={selectedDepartment}
                 onClose={() => setOpen(false)}
+            />
+
+            <ConfirmDialog
+                open={openDeleteConfirm}
+                message={t("departments.confirmDelete")}
+                confirmLabel={t("departments.common.delete", "Xóa")}
+                cancelLabel={t("departments.common.cancel")}
+                onConfirm={confirmDeleteDepartment}
+                onCancel={() => {
+                    setOpenDeleteConfirm(false);
+                    setPendingDeleteId(undefined);
+                }}
             />
         </main>
     );

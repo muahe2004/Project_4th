@@ -37,7 +37,16 @@
     "username": "Username",
     "password": "Password",
     "signIn": "Sign In",
-    "forgetPassword": "Forget Password"
+    "forgetPassword": "Forget Password",
+    "passwordAria": {
+      "show": "Show password",
+      "hide": "Hide password"
+    },
+    "errors": {
+      "usernameRequired": "Username is required!",
+      "invalidCredentials": "Incorrect username or password!",
+      "genericError": "An error occurred"
+    }
   },
   "common": {
     "dashboard": "Dashboard",
