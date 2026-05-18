@@ -6,7 +6,6 @@ import "./styles/LearningBox.css";
 
 interface LearningBoxProps {
   title: string;
-  periodText: string;
   roomText?: string;
   teacherText?: string;
   classText?: string;
@@ -14,7 +13,6 @@ interface LearningBoxProps {
 
 export function LearningBox({
   title,
-  periodText,
   roomText,
   teacherText,
   classText,
@@ -22,10 +20,6 @@ export function LearningBox({
   return (
     <article className="learning-box">
       <h4 className="learning-box__title">{title}</h4>
-      <div className="learning-box__row">
-        <EventNoteOutlinedIcon className="learning-box__icon" />
-        <span>{periodText}</span>
-      </div>
       {roomText && (
         <div className="learning-box__row">
           <LocationOnOutlinedIcon className="learning-box__icon" />

@@ -6,7 +6,6 @@ import "../../learningSchedule/components/styles/LearningBox.css";
 
 interface TeachingBoxProps {
   title: string;
-  periodText: string;
   timeText: string;
   roomText?: string;
   classText?: string;
@@ -14,7 +13,6 @@ interface TeachingBoxProps {
 
 export function TeachingBox({
   title,
-  periodText,
   timeText,
   roomText,
   classText,
@@ -24,7 +22,6 @@ export function TeachingBox({
       <h4 className="learning-box__title">{title}</h4>
       <div className="learning-box__row">
         <EventNoteOutlinedIcon className="learning-box__icon" />
-        <span>{periodText}</span>
         <span className="learning-box__time">{timeText}</span>
       </div>
       {classText && (

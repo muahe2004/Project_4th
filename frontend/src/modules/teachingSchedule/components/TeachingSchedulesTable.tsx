@@ -201,10 +201,6 @@ export function TeachingSchedulesTable({
                       >
                         <LearningBox
                           title={item.subject?.subject_name ?? t("teachingSchedules.table.subjectFallback")}
-                          periodText={t("teachingSchedules.periodRange", {
-                            start: item.learning_schedule.start_period,
-                            end: item.learning_schedule.end_period,
-                          })}
                           roomText={
                             item.room?.room_number
                               ? t("teachingSchedules.roomLabel", { room: item.room.room_number })

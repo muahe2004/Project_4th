@@ -180,10 +180,6 @@ export function LearningScheduleCalender({
                         title={
                           item.subject?.subject_name ?? t("learningSchedule.subjectFallback")
                         }
-                        periodText={t("learningSchedule.periodRange", {
-                          start: item.learning_schedule.start_period,
-                          end: item.learning_schedule.end_period,
-                        })}
                         roomText={
                           item.room?.room_number
                             ? t("learningSchedule.roomLabel", { room: item.room.room_number })

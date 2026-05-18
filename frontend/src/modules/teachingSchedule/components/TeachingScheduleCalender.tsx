@@ -224,10 +224,6 @@ export function TeachingScheduleCalender({
                     >
                       <TeachingBox
                         title={item.subject?.subject_name ?? t("teachingSchedules.table.subjectFallback")}
-                        periodText={t("teachingSchedules.periodRange", {
-                          start: item.learning_schedule.start_period,
-                          end: item.learning_schedule.end_period,
-                        })}
                         timeText={`(${toDisplayMinute(startMinute)} - ${toDisplayMinute(endMinute)})`}
                         roomText={
                           item.room?.room_number

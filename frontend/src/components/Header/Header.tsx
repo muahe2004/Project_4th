@@ -23,7 +23,9 @@ import {
   studentTuitionFeesUrl,
   teacherManagementScoreUrl,
   studentLearningSchedules,
+  studentExaminationSchedules,
   teacherTeachingSchedules,
+  teacherExaminationSchedules,
   courseRegistrationUrl,
   testAIUrl,
 } from "../../routes/urls"
@@ -130,7 +132,9 @@ const Header: React.FC = () => {
             <MenuItem onClick={() => handleNavigate(scheduleUrl)}>
               {learningScheduleLabel}
             </MenuItem>
-            <MenuItem onClick={handleCloseUserMenu}>{examScheduleLabel}</MenuItem>
+            <MenuItem onClick={() => handleNavigate(isTeacher ? teacherExaminationSchedules : studentExaminationSchedules)}>
+              {examScheduleLabel}
+            </MenuItem>
             {!isTeacher && (
               <MenuItem onClick={() => handleNavigate(studentTuitionFeesUrl)}>
                 {t('header_menu.tuition')}

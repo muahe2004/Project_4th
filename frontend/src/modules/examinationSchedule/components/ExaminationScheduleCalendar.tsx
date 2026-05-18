@@ -2,6 +2,7 @@ import { useMemo, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { useGetExaminationSchedules } from "../apis/getExaminationSchedule";
 import type { IExaminationScheduleResponse } from "../types";
+import { useAuthStore } from "../../../stores/useAuthStore";
 import LearningBox from "../../learningSchedule/components/LearningBox";
 import "./styles/ExaminationScheduleCalendar.css";
 import "../../teachingSchedule/components/styles/TeachingScheduleByRoom.css";
@@ -72,6 +73,8 @@ interface ExaminationScheduleCalendarProps {
   selectedDate: Date;
   search?: string;
   roomId?: string;
+  studentId?: string;
+  invigilatorId?: string;
   onEdit?: (schedule: IExaminationScheduleResponse) => void;
 }
 
@@ -79,6 +82,8 @@ export function ExaminationScheduleCalendar({
   selectedDate,
   search,
   roomId,
+  studentId,
+  invigilatorId,
   onEdit,
 }: ExaminationScheduleCalendarProps) {
   const { t } = useTranslation();
@@ -97,8 +102,10 @@ export function ExaminationScheduleCalendar({
       ...(search && { search }),
       start_date: formatLocalDate(monday),
       end_date: formatLocalDate(addDays(monday, 6)),
+      ...(studentId ? { student_id: studentId } : {}),
+      ...(invigilatorId ? { invigilator_id: invigilatorId } : {}),
     }),
-    [monday, search]
+    [monday, search, studentId, invigilatorId]
   );
 
   const { data, isLoading } = useGetExaminationSchedules(params);
@@ -199,16 +206,6 @@ export function ExaminationScheduleCalendar({
                       >
                         <LearningBox
                           title={item.subject_info?.subject_name ?? t("examinationSchedules.subjectFallback")}
-                          periodText={t("examinationSchedules.periodRange", {
-                            start: new Date(item.start_time).toLocaleTimeString(undefined, {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }),
-                            end: new Date(item.end_time).toLocaleTimeString(undefined, {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }),
-                          })}
                           roomText={
                             item.room_info?.room_number ? t("examinationSchedules.roomLabel", { room: item.room_info.room_number }) : undefined
                           }
