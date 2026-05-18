@@ -1,0 +1,58 @@
+.allocate-tuition-fee-form__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.allocate-tuition-fee-form__card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.allocate-tuition-fee-form__card:hover {
+  border-color: rgba(52, 61, 96, 0.35);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.allocate-tuition-fee-form__card--checked {
+  border-color: #343d60;
+  background: rgba(52, 61, 96, 0.04);
+}
+
+.allocate-tuition-fee-form__card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.allocate-tuition-fee-form__label {
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 600 !important;
+  line-height: 1.25;
+}
+
+.allocate-tuition-fee-form__code {
+  color: rgba(15, 23, 42, 0.6);
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.allocate-tuition-fee-form__empty {
+  color: rgba(15, 23, 42, 0.72);
+  text-align: center;
+  padding: 24px 0;
+}

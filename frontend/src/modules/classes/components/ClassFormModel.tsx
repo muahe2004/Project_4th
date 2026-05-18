@@ -39,6 +39,12 @@ import { CLASSTYPE, REGISTRATION_STATUS_OPTIONS } from "../../../constants/class
 import type { IClasses, IClassesResponse } from "../types";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
 
+const CLASS_TYPE_LABELS: Record<string, string> = {
+    [CLASSTYPE.HOMEROOM]: "Lớp chính",
+    [CLASSTYPE.COURSE_SECTION]: "Lớp học phần",
+    [CLASSTYPE.OTHER]: "Khác",
+};
+
 interface ClassFormProps {
     open: boolean;
     mode: "add" | "edit";
@@ -138,6 +144,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
         () => Array.from(new Map([...selectedSubjectOptions, ...subjects].map((item) => [item.id, item])).values()),
         [selectedSubjectOptions, subjects]
     );
+    const isCourseSection = formValues.classType === CLASSTYPE.COURSE_SECTION;
 
     const { openConfirm, setOpenConfirm, handleCloseClick } =
         useConfirmCloseForm({ mode, isChanged, onClose });
@@ -285,6 +292,39 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
         setIsChanged(false);
     }, [mode, initialValues, open]);
+
+    useEffect(() => {
+        if (isCourseSection) {
+            return;
+        }
+
+        setFormValues((prev) => {
+            if (
+                prev.registrationStatus === "closed" &&
+                prev.registrationOpenAt === "" &&
+                prev.registrationCloseAt === "" &&
+                prev.subjectId === ""
+            ) {
+                return prev;
+            }
+
+            return {
+                ...prev,
+                registrationStatus: "closed",
+                registrationOpenAt: "",
+                registrationCloseAt: "",
+                subjectId: "",
+            };
+        });
+
+        setErrors((prev) => ({
+            ...prev,
+            registrationStatus: "",
+            registrationOpenAt: "",
+            registrationCloseAt: "",
+            subjectId: "",
+        }));
+    }, [isCourseSection]);
 
     useEffect(() => {
         const payload: IClasses = {
@@ -441,118 +481,10 @@ const ClassForm: React.FC<ClassFormProps> = ({
                         >
                             {Object.values(CLASSTYPE).map((option) => (
                                 <MenuItem key={option} value={option}>
-                                    {option}
+                                    {CLASS_TYPE_LABELS[option] ?? option}
                                 </MenuItem>
                             ))}
                         </TextField>
-                    </Grid>
-
-                    <Grid size={6}>
-                        <LabelPrimary value={t("classes.form.labels.registrationStatus")} />
-                        <TextField
-                            select
-                            value={formValues.registrationStatus}
-                            onChange={(e) =>
-                                setFormValues((prev) => ({
-                                    ...prev,
-                                    registrationStatus: e.target.value,
-                                }))
-                            }
-                            fullWidth
-                            variant="outlined"
-                            className="main-text__field primary-dialog-input"
-                        >
-                            {Object.values(REGISTRATION_STATUS_OPTIONS).map((option) => (
-                                <MenuItem key={option} value={option}>
-                                    {option}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-
-                    <Grid size={6}>
-                        <LabelPrimary value={t("classes.form.labels.registrationOpenAt")} />
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                value={toDateValue(formValues.registrationOpenAt)}
-                                onChange={(value) => {
-                                    const nextOpenAt = toDayValue(value);
-                                    const error = validateRegistrationWindow(
-                                        nextOpenAt,
-                                        formValues.registrationCloseAt
-                                    );
-                                    setFormValues((prev) => ({
-                                        ...prev,
-                                        registrationOpenAt: nextOpenAt,
-                                    }));
-                                    setErrors((prev) => ({ ...prev, registrationCloseAt: error }));
-                                }}
-                                className="main-text__field primary-dialog-input"
-                                slotProps={{
-                                    textField: {
-                                        fullWidth: true,
-                                        error: Boolean(errors.registrationOpenAt),
-                                        helperText: errors.registrationOpenAt,
-                                    },
-                                }}
-                            />
-                        </LocalizationProvider>
-                    </Grid>
-
-                    <Grid size={6}>
-                        <LabelPrimary value={t("classes.form.labels.registrationCloseAt")} />
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                value={toDateValue(formValues.registrationCloseAt)}
-                                onChange={(value) => {
-                                    const nextCloseAt = toDayValue(value);
-                                    const error = validateRegistrationWindow(
-                                        formValues.registrationOpenAt,
-                                        nextCloseAt
-                                    );
-                                    setFormValues((prev) => ({
-                                        ...prev,
-                                        registrationCloseAt: nextCloseAt,
-                                    }));
-                                    setErrors((prev) => ({ ...prev, registrationCloseAt: error }));
-                                }}
-                                className="main-text__field primary-dialog-input"
-                                slotProps={{
-                                    textField: {
-                                        fullWidth: true,
-                                        error: Boolean(errors.registrationCloseAt),
-                                        helperText: errors.registrationCloseAt,
-                                    },
-                                }}
-                            />
-                        </LocalizationProvider>
-                    </Grid>
-
-                    <Grid size={6}>
-                        <LabelPrimary value={t("classes.form.labels.subject")} />
-                        <MainAutocomplete
-                            options={subjectOptions}
-                            value={
-                                formValues.subjectId
-                                    ? subjectOptions.find(
-                                          (subject) => subject.id.toString() === formValues.subjectId
-                                      ) ?? null
-                                    : null
-                            }
-                            onChange={(id) => {
-                                setFormValues((prev) => ({ ...prev, subjectId: id }));
-                            }}
-                            onSearchChange={setSearchSubject}
-                            onResetPage={() => setSubjectPage(1)}
-                            getOptionLabel={(option) =>
-                                option.subject_code
-                                    ? `${option.subject_code} - ${option.name}`
-                                    : option.name
-                            }
-                            getOptionId={(option) => option.id?.toString() || ""}
-                            className="primary-dialog-input"
-                            placeholder={t("classes.form.placeholders.subject")}
-                        />
                     </Grid>
 
                     <Grid size={6}>
@@ -614,6 +546,118 @@ const ClassForm: React.FC<ClassFormProps> = ({
                             className="primary-dialog-input"
                             error={Boolean(errors.teacherId)}
                             helperText={errors.teacherId}
+                        />
+                    </Grid>
+
+                    <Grid size={6}>
+                        <LabelPrimary value={t("classes.form.labels.registrationStatus")} />
+                        <TextField
+                            select
+                            value={formValues.registrationStatus}
+                            disabled={!isCourseSection}
+                            onChange={(e) =>
+                                setFormValues((prev) => ({
+                                    ...prev,
+                                    registrationStatus: e.target.value,
+                                }))
+                            }
+                            fullWidth
+                            variant="outlined"
+                            className="main-text__field primary-dialog-input"
+                        >
+                            {Object.values(REGISTRATION_STATUS_OPTIONS).map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
+
+                    <Grid size={6}>
+                        <LabelPrimary value={t("classes.form.labels.registrationOpenAt")} />
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                                value={toDateValue(formValues.registrationOpenAt)}
+                                disabled={!isCourseSection}
+                                onChange={(value) => {
+                                    const nextOpenAt = toDayValue(value);
+                                    const error = validateRegistrationWindow(
+                                        nextOpenAt,
+                                        formValues.registrationCloseAt
+                                    );
+                                    setFormValues((prev) => ({
+                                        ...prev,
+                                        registrationOpenAt: nextOpenAt,
+                                    }));
+                                    setErrors((prev) => ({ ...prev, registrationCloseAt: error }));
+                                }}
+                                className="main-text__field primary-dialog-input"
+                                slotProps={{
+                                    textField: {
+                                        fullWidth: true,
+                                        error: Boolean(errors.registrationOpenAt),
+                                        helperText: errors.registrationOpenAt,
+                                    },
+                                }}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
+
+                    <Grid size={6}>
+                        <LabelPrimary value={t("classes.form.labels.registrationCloseAt")} />
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                                value={toDateValue(formValues.registrationCloseAt)}
+                                disabled={!isCourseSection}
+                                onChange={(value) => {
+                                    const nextCloseAt = toDayValue(value);
+                                    const error = validateRegistrationWindow(
+                                        formValues.registrationOpenAt,
+                                        nextCloseAt
+                                    );
+                                    setFormValues((prev) => ({
+                                        ...prev,
+                                        registrationCloseAt: nextCloseAt,
+                                    }));
+                                    setErrors((prev) => ({ ...prev, registrationCloseAt: error }));
+                                }}
+                                className="main-text__field primary-dialog-input"
+                                slotProps={{
+                                    textField: {
+                                        fullWidth: true,
+                                        error: Boolean(errors.registrationCloseAt),
+                                        helperText: errors.registrationCloseAt,
+                                    },
+                                }}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
+
+                    <Grid size={6}>
+                        <LabelPrimary value={t("classes.form.labels.subject")} />
+                        <MainAutocomplete
+                            options={subjectOptions}
+                            value={
+                                formValues.subjectId
+                                    ? subjectOptions.find(
+                                          (subject) => subject.id.toString() === formValues.subjectId
+                                      ) ?? null
+                                    : null
+                            }
+                            onChange={(id) => {
+                                setFormValues((prev) => ({ ...prev, subjectId: id }));
+                            }}
+                            disabled={!isCourseSection}
+                            onSearchChange={setSearchSubject}
+                            onResetPage={() => setSubjectPage(1)}
+                            getOptionLabel={(option) =>
+                                option.subject_code
+                                    ? `${option.subject_code} - ${option.name}`
+                                    : option.name
+                            }
+                            getOptionId={(option) => option.id?.toString() || ""}
+                            className="primary-dialog-input"
+                            placeholder={t("classes.form.placeholders.subject")}
                         />
                     </Grid>
                 </Grid>

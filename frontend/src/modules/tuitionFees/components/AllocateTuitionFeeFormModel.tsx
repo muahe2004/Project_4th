@@ -89,7 +89,10 @@ export default function AllocateTuitionFeeFormModel({
                 >
                   <Box className="allocate-tuition-fee-form__card-content">
                     <Typography className="allocate-tuition-fee-form__label">
-                      {`${department.department_name} (${department.department_code})`}
+                      {department.department_name}
+                    </Typography>
+                    <Typography className="allocate-tuition-fee-form__code">
+                      {department.department_code}
                     </Typography>
                   </Box>
 

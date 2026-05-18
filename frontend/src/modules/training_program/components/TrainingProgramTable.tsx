@@ -16,6 +16,17 @@ import { getStatusDisplay } from "../../../utils/status/status-display";
 
 import type { ITrainingProgram } from "../types";
 
+const normalizeTrainingProgramType = (value: string) => value.trim().toLowerCase().replace(/\s+/g, " ");
+
+const TRAINING_PROGRAM_TYPE_LABELS: Record<string, string> = {
+  [normalizeTrainingProgramType("Dai hoc chinh quy")]: "Đại học chính quy",
+  [normalizeTrainingProgramType("Lien thong")]: "Liên thông",
+  [normalizeTrainingProgramType("Van bang 2")]: "Văn bằng 2",
+  [normalizeTrainingProgramType("Đại học chính quy")]: "Đại học chính quy",
+  [normalizeTrainingProgramType("Liên thông")]: "Liên thông",
+  [normalizeTrainingProgramType("Văn bằng 2")]: "Văn bằng 2",
+};
+
 interface TrainingProgramTableProps {
   trainingPrograms?: {
     total: number;
@@ -60,7 +71,7 @@ export function TrainingProgramTable({
                 {row.training_program_name || ""}
               </TableCell>
               <TableCell className="sticky-tcell" align="center">
-                {row.program_type}
+                {TRAINING_PROGRAM_TYPE_LABELS[normalizeTrainingProgramType(row.program_type)] || row.program_type}
               </TableCell>
               <TableCell className="sticky-tcell" align="center">
                 {row.academic_year}

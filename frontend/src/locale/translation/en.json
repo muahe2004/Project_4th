@@ -550,6 +550,8 @@
       "addSubject": "Add Subject",
       "noSubjects": "No subjects yet",
       "term": "Term",
+      "subject": "Subject",
+      "selectSubject": "Select subject",
       "table": {
         "subjectCode": "Subject Code",
         "subjectName": "Subject Name",
@@ -1336,6 +1338,7 @@
       "noData": "No import data.",
       "fileName": "File name",
       "invalidRows": "{{count}} rows have errors, please fix them before importing.",
+      "editTitle": "Edit Imported Subject",
       "importing": "Importing...",
       "importButton": "Import",
       "table": {

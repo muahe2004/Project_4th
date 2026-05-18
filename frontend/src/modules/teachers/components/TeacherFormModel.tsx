@@ -181,6 +181,15 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
     skip: 0,
   });
 
+  const toValidDate = (value?: string | null) => {
+    if (!value) {
+      return null;
+    }
+
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
   useEffect(() => {
     if (mode === "edit" && initialValues) {
       setTeacher({
@@ -194,7 +203,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
         },
         teacher_relative: buildRelatives(initialValues.teacher_relative),
       });
-      setDateOfBirth(initialValues.date_of_birth ? new Date(initialValues.date_of_birth) : null);
+      setDateOfBirth(toValidDate(initialValues.date_of_birth));
     } else {
       setTeacher({ ...DEFAULT_TEACHER, teacher_relative: buildRelatives() });
       setDateOfBirth(null);
@@ -205,7 +214,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
     setDateOfBirth(newValue);
     setTeacher((prev) => ({
       ...prev,
-      date_of_birth: newValue ? dayjs(newValue).toISOString() : null,
+      date_of_birth: newValue && dayjs(newValue).isValid() ? dayjs(newValue).toISOString() : null,
     }));
   };
 
@@ -356,7 +365,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
     }));
   };
 
-  const issueDateValue = teacherInfo.issue_date ? new Date(teacherInfo.issue_date) : null;
+  const issueDateValue = toValidDate(teacherInfo.issue_date);
 
   return (
     <Dialog
@@ -566,7 +575,10 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                 <DatePicker
                   value={issueDateValue}
                   onChange={(newValue) =>
-                    updateTeacherInfo("issue_date", newValue ? newValue.toISOString() : null)
+                    updateTeacherInfo(
+                      "issue_date",
+                      newValue && !Number.isNaN(newValue.getTime()) ? newValue.toISOString() : null
+                    )
                   }
                   slotProps={{ textField: { fullWidth: true } }}
                 />
@@ -669,7 +681,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
         <TabPanel value={value} index={2}>
           <Grid container spacing={2} className="myprofile-form">
             {(teacher.teacher_relative ?? buildRelatives()).map((relative, index) => {
-              const relativeDob = relative.date_of_birth ? new Date(relative.date_of_birth) : null;
+              const relativeDob = toValidDate(relative.date_of_birth);
               return (
                 <React.Fragment key={`relative-${index}`}>
                   <Grid size={12}>
@@ -696,15 +708,15 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                   <Grid size={4}>
                     <LabelPrimary value={t("teachers.form.relativeDateOfBirth")} />
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DatePicker
-                        value={relativeDob}
-                        onChange={(newValue) =>
-                          handleRelativeUpdate(index, {
-                            date_of_birth: newValue ? newValue.toISOString() : null,
-                          })
-                        }
-                        slotProps={{ textField: { fullWidth: true } }}
-                      />
+                        <DatePicker
+                          value={relativeDob}
+                          onChange={(newValue) =>
+                            handleRelativeUpdate(index, {
+                              date_of_birth: newValue && !Number.isNaN(newValue.getTime()) ? newValue.toISOString() : null,
+                            })
+                          }
+                          slotProps={{ textField: { fullWidth: true } }}
+                        />
                     </LocalizationProvider>
                   </Grid>
 

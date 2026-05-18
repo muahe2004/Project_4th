@@ -16,6 +16,7 @@ import SubjectFormModel from "../components/SubjectFormModel";
 import SubjectsTable from "../components/SubjectsTable";
 import type { ISubject } from "../types";
 import { useTranslation } from "react-i18next";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 
 import "./styles/Subjects.css";
 
@@ -31,6 +32,8 @@ export function Subjects() {
   const [selectedSubject, setSelectedSubject] = useState<ISubject | undefined>(
     undefined
   );
+  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | undefined>(undefined);
 
   const { showSnackbar } = useSnackbar();
   const deleteSubjectMutation = useDeleteSubject({});
@@ -54,11 +57,17 @@ export function Subjects() {
       return;
     }
 
-    if (!window.confirm(t("subjects.confirmDelete"))) {
+    setPendingDeleteId(subject.id);
+    setOpenDeleteConfirm(true);
+  };
+
+  const confirmDeleteSubject = () => {
+    if (!pendingDeleteId) {
+      setOpenDeleteConfirm(false);
       return;
     }
 
-    deleteSubjectMutation.mutate([subject.id], {
+    deleteSubjectMutation.mutate([pendingDeleteId], {
       onSuccess: (responses) => {
         const message = responses?.[0]?.message ?? t("subjects.messages.deleteSuccess");
         showSnackbar(message, "success");
@@ -67,6 +76,10 @@ export function Subjects() {
       onError: (error: any) => {
         const detail = error?.response?.data?.detail ?? t("subjects.messages.deleteFailed");
         showSnackbar(detail, "error");
+      },
+      onSettled: () => {
+        setOpenDeleteConfirm(false);
+        setPendingDeleteId(undefined);
       },
     });
   };
@@ -145,6 +158,18 @@ export function Subjects() {
         mode={mode}
         initialValues={selectedSubject}
         onClose={() => setOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={openDeleteConfirm}
+        message={t("subjects.confirmDelete")}
+        confirmLabel={t("subjects.common.delete", "Xóa")}
+        cancelLabel={t("subjects.common.cancel")}
+        onConfirm={confirmDeleteSubject}
+        onCancel={() => {
+          setOpenDeleteConfirm(false);
+          setPendingDeleteId(undefined);
+        }}
       />
     </main>
   );

@@ -1,6 +1,6 @@
 import uuid
 from app.models.schemas.common.query import BaseQueryParams, IdsRequest
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, Query
 from app.api.deps import SessionDep
 from app.models.schemas.subjects.subject_schemas import (
     SubjectListResponse,
@@ -78,6 +78,6 @@ def update_subject(
     response_model=List[SubjectDeleteResponse],
 )
 def delete_multiple_subjects(
-    session: SessionDep, subject_ids: List[uuid.UUID]
+    session: SessionDep, subject_ids: List[uuid.UUID] = Query(...)
 ) -> List[SubjectDeleteResponse]:
     return SubjectServices.delete_many(session=session, subject_ids=subject_ids)

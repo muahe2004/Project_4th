@@ -36,6 +36,7 @@ import { dashBoardUrl } from "../../../routes/urls";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useDeleteSpecialization } from "../apis/deleteSpecialization";
 import { useTranslation } from "react-i18next";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 
 export function Specializations() {
     const { t } = useTranslation();
@@ -46,6 +47,8 @@ export function Specializations() {
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
     const [selectedMajor, setSelectedMajor] = useState<ISpecializations | undefined>(undefined); 
+    const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | undefined>(undefined);
 
     const [majorId, setMajorId] = useState("");
     const [status, setStatus] = useState("");
@@ -78,17 +81,27 @@ export function Specializations() {
             return;
         }
 
-        if (!window.confirm(t("specializations.confirmDelete"))) {
+        setPendingDeleteId(id);
+        setOpenDeleteConfirm(true);
+    };
+
+    const confirmDeleteSpecialization = () => {
+        if (!pendingDeleteId) {
+            setOpenDeleteConfirm(false);
             return;
         }
 
-        deleteSpecializationMutation.mutate(id, {
+        deleteSpecializationMutation.mutate(pendingDeleteId, {
             onSuccess: () => {
                 showSnackbar(t("specializations.messages.deleteSuccess"), "success");
             },
             onError: (error: any) => {
                 const detail = error?.response?.data?.detail ?? t("specializations.messages.deleteFailed");
                 showSnackbar(detail, "error");
+            },
+            onSettled: () => {
+                setOpenDeleteConfirm(false);
+                setPendingDeleteId(undefined);
             },
         });
     };
@@ -220,6 +233,18 @@ export function Specializations() {
                 mode={mode} 
                 initialValues={selectedMajor}
                 onClose={() => setOpen(false)}
+            />
+
+            <ConfirmDialog
+                open={openDeleteConfirm}
+                message={t("specializations.confirmDelete")}
+                confirmLabel={t("specializations.common.delete", "Xóa")}
+                cancelLabel={t("specializations.common.cancel")}
+                onConfirm={confirmDeleteSpecialization}
+                onCancel={() => {
+                    setOpenDeleteConfirm(false);
+                    setPendingDeleteId(undefined);
+                }}
             />
         </main>
     );

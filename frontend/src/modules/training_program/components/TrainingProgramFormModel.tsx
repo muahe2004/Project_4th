@@ -47,6 +47,17 @@ const TRAINING_PROGRAM_TYPE_OPTIONS = [
   { value: "Van bang 2", label: "Văn bằng 2" },
 ];
 
+const normalizeTrainingProgramType = (value: string) => value.trim().toLowerCase().replace(/\s+/g, " ");
+
+const TRAINING_PROGRAM_TYPE_LABELS: Record<string, string> = {
+  [normalizeTrainingProgramType("Dai hoc chinh quy")]: "Đại học chính quy",
+  [normalizeTrainingProgramType("Lien thong")]: "Liên thông",
+  [normalizeTrainingProgramType("Van bang 2")]: "Văn bằng 2",
+  [normalizeTrainingProgramType("Đại học chính quy")]: "Đại học chính quy",
+  [normalizeTrainingProgramType("Liên thông")]: "Liên thông",
+  [normalizeTrainingProgramType("Văn bằng 2")]: "Văn bằng 2",
+};
+
 const getAcademicYearOptions = () => {
   const currentYear = new Date().getFullYear();
   return Array.from({ length: 6 }, (_, index) => {
@@ -216,8 +227,8 @@ const TrainingProgramFormModel = ({
           displayEmpty
           className="main-text__field primary-dialog-input"
           renderValue={(value) => {
-            const selected = TRAINING_PROGRAM_TYPE_OPTIONS.find((option) => option.value === value);
-            return selected?.label || t("trainingProgram.form.selectProgramType");
+            const normalizedValue = normalizeTrainingProgramType(String(value));
+            return TRAINING_PROGRAM_TYPE_LABELS[normalizedValue] || t("trainingProgram.form.selectProgramType");
           }}
         >
           {TRAINING_PROGRAM_TYPE_OPTIONS.map((option) => (

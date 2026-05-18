@@ -36,6 +36,7 @@ import { dashBoardUrl } from "../../../routes/urls";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useDeleteMajor } from "../apis/deleteMajor";
 import { useTranslation } from "react-i18next";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 
 export function Majors() {
     const { t } = useTranslation();
@@ -46,6 +47,8 @@ export function Majors() {
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
     const [selectedMajor, setSelectedMajor] = useState<IMajors | undefined>(undefined); 
+    const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | undefined>(undefined);
 
     const [departmentId, setDepartmentId] = useState("");
     const [status, setStatus] = useState("");
@@ -71,17 +74,27 @@ export function Majors() {
             return;
         }
 
-        if (!window.confirm(t("majors.confirmDelete"))) {
+        setPendingDeleteId(majorId);
+        setOpenDeleteConfirm(true);
+    };
+
+    const confirmDeleteMajor = () => {
+        if (!pendingDeleteId) {
+            setOpenDeleteConfirm(false);
             return;
         }
 
-        deleteMajorMutation.mutate(majorId, {
+        deleteMajorMutation.mutate(pendingDeleteId, {
             onSuccess: () => {
                 showSnackbar(t("majors.messages.deleteSuccess"), "success");
             },
             onError: (error: any) => {
                 const detail = error?.response?.data?.detail ?? t("majors.messages.deleteFailed");
                 showSnackbar(detail, "error");
+            },
+            onSettled: () => {
+                setOpenDeleteConfirm(false);
+                setPendingDeleteId(undefined);
             },
         });
     };
@@ -220,6 +233,18 @@ export function Majors() {
                 mode={mode} 
                 initialValues={selectedMajor}
                 onClose={() => setOpen(false)}
+            />
+
+            <ConfirmDialog
+                open={openDeleteConfirm}
+                message={t("majors.confirmDelete")}
+                confirmLabel={t("majors.common.delete", "Xóa")}
+                cancelLabel={t("majors.common.cancel")}
+                onConfirm={confirmDeleteMajor}
+                onCancel={() => {
+                    setOpenDeleteConfirm(false);
+                    setPendingDeleteId(undefined);
+                }}
             />
         </main>
     );

@@ -550,6 +550,8 @@
       "addSubject": "Thêm môn",
       "noSubjects": "Chưa có môn học nào",
       "term": "Học kỳ",
+      "subject": "Môn học",
+      "selectSubject": "Chọn môn học",
       "table": {
         "subjectCode": "Mã môn",
         "subjectName": "Tên môn",
@@ -1341,6 +1343,7 @@
       "noData": "Không có dữ liệu import.",
       "fileName": "File name",
       "invalidRows": "{{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "editTitle": "Chỉnh sửa môn học import",
       "importing": "Importing...",
       "importButton": "Import",
       "table": {
