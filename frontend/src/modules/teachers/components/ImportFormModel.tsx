@@ -19,11 +19,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useMemo, useState } from "react";
 import type {
   ITeacherFileData,
+  ITeacherFileError,
   ITeacherFileInvalidRow,
   ITeacherUploadResponse,
 } from "../types";
 import Button from "../../../components/Button/Button";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
+import ImportFeedback from "../../../components/Import/ImportFeedback";
 import ImportFormModelDialog from "./ImportFormModelDialog";
 import { useTranslation } from "react-i18next";
 
@@ -40,7 +42,7 @@ type RowSource = "valid" | "invalid";
 type ImportPreviewRow = ITeacherFileData & {
   source: RowSource;
   row?: number;
-  errors?: string[];
+  errors?: ITeacherFileError[];
   index: number;
 };
 
@@ -67,6 +69,14 @@ const getImportGenderDisplay = (gender?: string | null, t?: (key: string, option
   }
   return "";
 };
+
+function renderImportError(
+  error: ITeacherFileError,
+  t: (key: string, options?: Record<string, string | number>) => string
+) {
+  const translated = t(error.code, error.params);
+  return translated === error.code ? error.code.split(".").slice(-1)[0] ?? error.code : translated;
+}
 
 const ImportFormModel = ({
   open,
@@ -109,6 +119,18 @@ const ImportFormModel = ({
   }, [validTeachers, invalidTeachers]);
 
   const hasInvalidRows = invalidTeachers.length > 0;
+  const importFeedbackMessages = useMemo(() => {
+    const messages: { severity: "error" | "warning" | "info"; content: string }[] = [];
+
+    if (hasInvalidRows) {
+      messages.push({
+        severity: "error",
+        content: t("teachers.import.invalidRows", { count: invalidTeachers.length }),
+      });
+    }
+
+    return messages;
+  }, [hasInvalidRows, invalidTeachers.length, t]);
 
   const handleImport = async () => {
     if (hasInvalidRows) {
@@ -169,11 +191,7 @@ const ImportFormModel = ({
             <Typography sx={{ fontWeight: 600 }}>
               {t("teachers.import.fileName")}: {data.file_information.file_name}
             </Typography>
-            {hasInvalidRows && (
-              <Typography sx={{ color: "#d32f2f", fontWeight: 600 }}>
-                {t("teachers.import.invalidRows", { count: invalidTeachers.length })}
-              </Typography>
-            )}
+            <ImportFeedback messages={importFeedbackMessages} />
 
             <TableContainer className="sticky-table-container" component={Paper} sx={{ maxHeight: 520 }}>
               <Table stickyHeader className="sticky-table" aria-label="import preview teachers table">
@@ -205,7 +223,9 @@ const ImportFormModel = ({
                         align="left"
                         sx={teacher.source === "invalid" ? { color: "#d32f2f", fontWeight: 600 } : undefined}
                       >
-                        {teacher.source === "invalid" ? teacher.errors?.join(", ") || "" : ""}
+                        {teacher.source === "invalid"
+                          ? teacher.errors?.map((error) => renderImportError(error, t)).join(", ") || ""
+                          : ""}
                       </TableCell>
                       <TableCell className="sticky-tcell" align="center">
                         <IconButton

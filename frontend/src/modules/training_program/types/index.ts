@@ -96,9 +96,14 @@ export interface ITrainingProgramFileSubjectData {
   term?: number | null;
 }
 
+export interface ITrainingProgramFileError {
+  code: string;
+  params?: Record<string, string | number>;
+}
+
 export interface ITrainingProgramFileInvalidSubject extends ITrainingProgramFileSubjectData {
   row: number;
-  errors: string[];
+  errors: ITrainingProgramFileError[];
 }
 
 export interface ITrainingProgramFileInfo {

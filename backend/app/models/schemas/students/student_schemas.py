@@ -149,9 +149,14 @@ class StudentFileData(SQLModel):
     class_name: str | None = Field(default=None)
 
 
+class StudentFileError(SQLModel):
+    code: str
+    params: dict[str, str | int] = Field(default_factory=dict)
+
+
 class StudentFileInvalidRow(StudentFileData):
     row: int
-    errors: list[str] = Field(default_factory=list)
+    errors: list[StudentFileError] = Field(default_factory=list)
 
 
 class StudentFileInfo(SQLModel):

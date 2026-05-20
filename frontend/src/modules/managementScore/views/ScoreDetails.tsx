@@ -189,10 +189,6 @@ export function ScoreDetails() {
     const items = scoreData?.scores.items ?? [];
 
     items.forEach((item) => {
-      if (item.status && normalizeText(item.status) !== "ACTIVE") {
-        return;
-      }
-
       const key = `${item.subject_id}-${item.academic_term_id}`;
       const existing = map.get(key);
 

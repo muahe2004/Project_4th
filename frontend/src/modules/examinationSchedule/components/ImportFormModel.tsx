@@ -19,6 +19,7 @@ import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useMemo, useState } from "react";
 import type {
+  IUploadExaminationScheduleError,
   IImportExaminationScheduleItem,
   IImportExaminationSchedulePayload,
   IUploadExaminationScheduleInvalidRow,
@@ -26,6 +27,7 @@ import type {
   IUploadExaminationScheduleResponse,
 } from "../types";
 import Button from "../../../components/Button/Button";
+import ImportFeedback from "../../../components/Import/ImportFeedback";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import ImportFormModelDialog from "./ImportFormModelDialog";
 import { useTranslation } from "react-i18next";
@@ -43,7 +45,7 @@ type RowSource = "valid" | "invalid";
 type ImportPreviewRow = IUploadExaminationScheduleItem & {
   source: RowSource;
   row?: number;
-  errors?: string[];
+  errors?: IUploadExaminationScheduleError[];
   index: number;
 };
 
@@ -92,6 +94,14 @@ const toInputTimeValue = (dateValue?: string | null) => {
 
 const normalizeDateTime = (dateValue: string, timeValue: string) =>
   `${dateValue}T${timeValue.length === 5 ? `${timeValue}:00` : timeValue}`;
+
+function renderImportError(
+  error: IUploadExaminationScheduleError,
+  t: (key: string, options?: Record<string, string | number>) => string
+) {
+  const translated = t(error.code, error.params);
+  return translated === error.code ? error.code.split(".").slice(-1)[0] ?? error.code : translated;
+}
 
 const ImportFormModel = ({
   open,
@@ -157,6 +167,25 @@ const ImportFormModel = ({
 
   const hasInvalidRows = invalidSchedules.length > 0;
   const hasNoValidRows = validSchedules.length === 0;
+  const importFeedbackMessages = useMemo(() => {
+    const messages: { severity: "error" | "warning" | "info"; content: string }[] = [];
+
+    if (hasNoValidRows && !hasInvalidRows) {
+      messages.push({
+        severity: "warning",
+        content: t("examinationSchedules.import.noValidRows"),
+      });
+    }
+
+    if (hasInvalidRows) {
+      messages.push({
+        severity: "error",
+        content: t("examinationSchedules.import.invalidRows", { count: invalidSchedules.length }),
+      });
+    }
+
+    return messages;
+  }, [hasInvalidRows, hasNoValidRows, invalidSchedules.length, t]);
 
   const openEdit = (row: ImportPreviewRow) => {
     setEditingSource(row.source);
@@ -237,16 +266,7 @@ const ImportFormModel = ({
             <Typography sx={{ fontWeight: 600 }}>
               {t("examinationSchedules.import.fileName")}: {data.file_information?.file_name ?? ""}
             </Typography>
-            {hasNoValidRows && !hasInvalidRows && (
-              <Typography sx={{ color: "#d32f2f", fontWeight: 600 }}>
-                {t("examinationSchedules.import.noValidRows")}
-              </Typography>
-            )}
-            {hasInvalidRows && (
-              <Typography sx={{ color: "#d32f2f", fontWeight: 600 }}>
-                {t("examinationSchedules.import.invalidRows", { count: invalidSchedules.length })}
-              </Typography>
-            )}
+            <ImportFeedback messages={importFeedbackMessages} />
 
             <TableContainer className="sticky-table-container" component={Paper} sx={{ maxHeight: 520 }}>
               <Table stickyHeader className="sticky-table" aria-label="import preview examination schedules table">
@@ -278,7 +298,9 @@ const ImportFormModel = ({
                         align="left"
                         sx={schedule.source === "invalid" ? { color: "#d32f2f", fontWeight: 600 } : undefined}
                       >
-                        {schedule.source === "invalid" ? schedule.errors?.join("; ") : ""}
+                        {schedule.source === "invalid"
+                          ? schedule.errors?.map((error) => renderImportError(error, t)).join("; ")
+                          : ""}
                       </TableCell>
                       <TableCell className="sticky-tcell" align="center">
                         <IconButton className="primary-tcell__button--icon" onClick={() => openEdit(schedule)}>

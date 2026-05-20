@@ -92,9 +92,14 @@ export interface IUploadExaminationScheduleItem {
   schedule_type?: string | null;
 }
 
+export interface IUploadExaminationScheduleError {
+  code: string;
+  params?: Record<string, string | number>;
+}
+
 export interface IUploadExaminationScheduleInvalidRow extends IUploadExaminationScheduleItem {
   row: number;
-  errors: string[];
+  errors: IUploadExaminationScheduleError[];
 }
 
 export interface IUploadExaminationScheduleFileInfo {

@@ -86,7 +86,7 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value={t("students.form.gender")} required />
+            <LabelPrimary value={t("students.form.gender")} />
             <Select
                 value={student.gender}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, gender: e.target.value }))}
@@ -112,7 +112,7 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value={t("students.form.phone")} required />
+            <LabelPrimary value={t("students.form.phone")} />
             <TextField
                 value={student.phone}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, phone: e.target.value }))}
@@ -123,7 +123,7 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={12} className="">
-            <LabelPrimary value={t("students.form.address")} required />
+            <LabelPrimary value={t("students.form.address")} />
             <TextField
                 value={student.address ?? ""}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, address: e.target.value }))}
@@ -134,7 +134,7 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value={t("students.form.class")} required />
+            <LabelPrimary value={t("students.form.class")} />
             <MainAutocomplete
                 options={classes}
                 value={
@@ -169,7 +169,7 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value={t("students.form.trainingProgram")} required />
+            <LabelPrimary value={t("students.form.trainingProgram")} />
             <Select
                 value={student.training_program ?? ""}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, training_program: e.target.value }))}
@@ -183,7 +183,7 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
         </Grid>
 
         <Grid size={4} className="">
-            <LabelPrimary value={t("students.form.course")} required />
+            <LabelPrimary value={t("students.form.course")} />
             <Select
                 value={student.course ?? ""}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, course: e.target.value }))}

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -9,6 +9,7 @@ import {
 import type { SelectChangeEvent } from "@mui/material/Select";
 
 import { useAuthStore } from "../../../stores/useAuthStore";
+import { useGetAcademicTerms } from "../../managementScore/apis/getAcademicTerms";
 import { useGetScoreByStudentID } from "../apis/getScoreByStudentID";
 import GradeControls from "../components/GradeControls";
 import StudentTotalScore from "../components/StudentTotalScore";
@@ -152,19 +153,57 @@ function getAcademicYearStart(academicYear: string): number {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
+function findAcademicTerm(
+  academicTermGroups: Array<{
+    academic_year: string;
+    terms: Array<{
+      id: string;
+      semester: number | null;
+      start_date: string;
+      end_date: string;
+      status?: string | null;
+    }>;
+  }>,
+  academicYear: string,
+  semester: string
+) {
+  if (!academicYear || !semester) {
+    return null;
+  }
+
+  const selectedSemester = Number(semester);
+  if (Number.isNaN(selectedSemester)) {
+    return null;
+  }
+
+  return (
+    academicTermGroups.find((group) => group.academic_year === academicYear)?.terms.find((term) => term.semester === selectedSemester) ?? null
+  );
+}
+
 export function GradesPage() {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const [academicYearFilter, setAcademicYearFilter] = useState<string>("");
   const [semesterFilter, setSemesterFilter] = useState<string>("");
   const [subjectFilter, setSubjectFilter] = useState<string>("");
+  const [academicTermId, setAcademicTermId] = useState<string>("");
+
+  const currentYear = new Date().getFullYear();
+  const { data: academicTermGroups = [] } = useGetAcademicTerms(currentYear, {
+    enabled: Boolean(user?.id),
+  });
 
   const {
     data: scoreData,
     isLoading,
     isError,
     error,
-  } = useGetScoreByStudentID(user?.id, {}, Boolean(user?.id));
+  } = useGetScoreByStudentID(
+    user?.id,
+    academicTermId ? { academic_term_id: academicTermId } : {},
+    Boolean(user?.id)
+  );
 
   const aggregatedSubjects = useMemo(() => {
     const map = new Map<string, SubjectAggregate>();
@@ -179,6 +218,8 @@ export function GradesPage() {
       const existing = map.get(key);
 
       const scorePoint: ScorePoint = {
+        id: item.id,
+        score_component_id: item.score_component.id,
         score: item.score,
         weight: item.score_component.weight,
         attempt: item.attempt,
@@ -252,18 +293,43 @@ export function GradesPage() {
   }, [scoreData?.scores.items]);
 
   const academicYearOptions = useMemo(() => {
-    const unique = new Set(aggregatedSubjects.map((item) => item.academic_year));
-    return [...unique].sort((left, right) => getAcademicYearStart(right) - getAcademicYearStart(left));
-  }, [aggregatedSubjects]);
+    return [...academicTermGroups.map((group) => group.academic_year)].sort(
+      (left, right) => getAcademicYearStart(right) - getAcademicYearStart(left)
+    );
+  }, [academicTermGroups]);
 
+  const currentTerm = useMemo(() => {
+    for (const group of academicTermGroups) {
+      const matchedTerm = group.terms.find((term) => {
+        if ((term.status ?? "").toLowerCase() === "active") {
+          return true;
+        }
+
+        const now = new Date();
+        const startDate = new Date(term.start_date);
+        const endDate = new Date(term.end_date);
+        return startDate <= now && now <= endDate;
+      });
+
+      if (matchedTerm) {
+        return {
+          academic_year: group.academic_year,
+          term: matchedTerm,
+        };
+      }
+    }
+
+    return null;
+  }, [academicTermGroups]);
+
+  const selectedAcademicYear = academicYearFilter || currentTerm?.academic_year || academicYearOptions[0] || "";
   const semesterOptions = useMemo(() => {
-    const semesters = aggregatedSubjects
-      .filter((item) => !academicYearFilter || item.academic_year === academicYearFilter)
-      .map((item) => item.semester)
-      .filter((semester): semester is number => semester !== null);
-
-    return [...new Set(semesters)].sort((left, right) => left - right);
-  }, [aggregatedSubjects, academicYearFilter]);
+    const terms = academicTermGroups.find((group) => group.academic_year === selectedAcademicYear)?.terms ?? [];
+    return terms
+      .map((term) => term.semester)
+      .filter((semester): semester is number => semester !== null)
+      .sort((left, right) => left - right);
+  }, [academicTermGroups, selectedAcademicYear]);
 
   const subjectOptions = useMemo(() => {
     const map = new Map<string, SubjectOption>();
@@ -276,6 +342,25 @@ export function GradesPage() {
 
     return [...map.values()].sort((left, right) => left.name.localeCompare(right.name, "vi"));
   }, [aggregatedSubjects, academicYearFilter, semesterFilter]);
+
+  useEffect(() => {
+    if (!academicYearFilter && academicYearOptions.length > 0) {
+      setAcademicYearFilter(currentTerm?.academic_year || academicYearOptions[0]);
+    }
+  }, [academicYearFilter, academicYearOptions, currentTerm]);
+
+  useEffect(() => {
+    if (!semesterFilter && currentTerm) {
+      setAcademicYearFilter(currentTerm.academic_year);
+      setSemesterFilter(String(currentTerm.term.semester ?? ""));
+      setAcademicTermId(currentTerm.term.id);
+    }
+  }, [semesterFilter, currentTerm]);
+
+  useEffect(() => {
+    const term = findAcademicTerm(academicTermGroups, selectedAcademicYear, semesterFilter);
+    setAcademicTermId(term?.id ?? "");
+  }, [academicTermGroups, selectedAcademicYear, semesterFilter]);
 
   const filteredSubjects = useMemo(() => {
     return aggregatedSubjects
@@ -404,12 +489,15 @@ export function GradesPage() {
     setAcademicYearFilter(value);
     setSemesterFilter("");
     setSubjectFilter("");
+    setAcademicTermId("");
   };
 
   const handleSemesterChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     setSemesterFilter(value);
     setSubjectFilter("");
+    const term = findAcademicTerm(academicTermGroups, selectedAcademicYear, value);
+    setAcademicTermId(term?.id ?? "");
   };
 
   const handleSubjectChange = (event: SelectChangeEvent<string>) => {

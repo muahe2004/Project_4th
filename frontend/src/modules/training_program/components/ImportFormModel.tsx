@@ -20,10 +20,12 @@ import { useTranslation } from "react-i18next";
 import type {
   ITrainingProgramUploadResponse,
   ITrainingProgramFileSubjectData,
+  ITrainingProgramFileError,
   ITrainingProgramFileInvalidSubject,
 } from "../types";
 import Button from "../../../components/Button/Button";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
+import ImportFeedback from "../../../components/Import/ImportFeedback";
 import ImportFormModelDialog from "./ImportFormModelDialog";
 
 interface ImportFormModelProps {
@@ -39,9 +41,17 @@ type RowSource = "valid" | "invalid";
 type ImportPreviewRow = ITrainingProgramFileSubjectData & {
   source: RowSource;
   row?: number;
-  errors?: string[];
+  errors?: ITrainingProgramFileError[];
   index: number;
 };
+
+function renderImportError(
+  error: ITrainingProgramFileError,
+  t: (key: string, options?: Record<string, string | number>) => string
+) {
+  const translated = t(error.code, error.params);
+  return translated === error.code ? error.code.split(".").slice(-1)[0] ?? error.code : translated;
+}
 
 const ImportFormModel = ({
   open,
@@ -82,6 +92,19 @@ const ImportFormModel = ({
     }));
     return [...validRows, ...invalidRows];
   }, [validSubjects, invalidSubjects]);
+
+  const importFeedbackMessages = useMemo(() => {
+    const messages: { severity: "error" | "warning" | "info"; content: string }[] = [];
+
+    if (invalidSubjects.length > 0) {
+      messages.push({
+        severity: "error",
+        content: t("trainingProgram.import.invalidRows", { count: invalidSubjects.length }),
+      });
+    }
+
+    return messages;
+  }, [invalidSubjects.length, t]);
 
   const handleImport = async () => {
     if (invalidSubjects.length > 0) {
@@ -135,11 +158,7 @@ const ImportFormModel = ({
             <Typography sx={{ mb: 2 }}>
               {t("trainingProgram.import.program")}: {data.training_program.training_program_name || ""} | {t("trainingProgram.import.academicYear")}: {data.training_program.academic_year || ""}
             </Typography>
-            {invalidSubjects.length > 0 && (
-              <Typography sx={{ color: "#d32f2f", fontWeight: 600, mb: 2 }}>
-                {t("trainingProgram.import.invalidRows", { count: invalidSubjects.length })}
-              </Typography>
-            )}
+            <ImportFeedback messages={importFeedbackMessages} />
             <TableContainer className="sticky-table-container" component={Paper} sx={{ maxHeight: 520 }}>
               <Table stickyHeader className="sticky-table" aria-label="import preview training programs table">
                 <TableHead className="primary-thead">
@@ -162,7 +181,9 @@ const ImportFormModel = ({
                         align="left"
                         sx={row.source === "invalid" ? { color: "#d32f2f", fontWeight: 600 } : undefined}
                       >
-                        {row.source === "invalid" ? row.errors?.join(", ") || "" : ""}
+                        {row.source === "invalid"
+                          ? row.errors?.map((error) => renderImportError(error, t)).join(", ") || ""
+                          : ""}
                       </TableCell>
                       <TableCell className="sticky-tcell" align="center">
                         <IconButton className="primary-tcell__button--icon" onClick={() => openEdit(row)}>

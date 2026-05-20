@@ -10,6 +10,11 @@ class TrainingProgramFileSubjectData(SQLModel):
     term: int | None = None
 
 
+class TrainingProgramFileError(SQLModel):
+    code: str
+    params: dict[str, str | int] = Field(default_factory=dict)
+
+
 class TrainingProgramFileData(SQLModel):
     program_type: str | None = None
     training_program_name: str | None = None
@@ -22,7 +27,7 @@ class TrainingProgramFileData(SQLModel):
 
 class TrainingProgramFileInvalidSubject(TrainingProgramFileSubjectData):
     row: int
-    errors: list[str] = Field(default_factory=list)
+    errors: list[TrainingProgramFileError] = Field(default_factory=list)
 
 
 class TrainingProgramFileInfo(SQLModel):

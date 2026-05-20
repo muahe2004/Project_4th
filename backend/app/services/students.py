@@ -23,6 +23,7 @@ from app.models.schemas.students.student_schemas import (
     StudentFileData,
     StudentFileDataResponse,
     StudentFileInfo,
+    StudentFileError,
     StudentFileInvalidRow,
     StudentUploadField,
     StudentPublic,
@@ -70,6 +71,10 @@ def _normalize_gender(raw_value: object) -> str | None:
 
 
 class StudentServices:
+    @staticmethod
+    def _build_error(code: str, **params: int | str) -> StudentFileError:
+        return StudentFileError(code=code, params=params)
+
     @staticmethod
     def get_student_term(student_course: str) -> int | None:
         """Estimate the current term from the student's course start year and current year."""
@@ -687,23 +692,23 @@ class StudentServices:
                         class_id=class_id,
                         class_code=class_code,
                         class_name=class_name,
-                        errors=[str(exc)],
+                        errors=[StudentServices._build_error("students.import.errorReasons.invalidDateOfBirth")],
                     )
                 )
                 continue
 
             # validate required fields
-            row_errors: list[str] = []
+            row_errors: list[StudentFileError] = []
             if not student_code:
-                row_errors.append("Student Code is required.")
+                row_errors.append(StudentServices._build_error("students.import.errorReasons.studentCodeRequired"))
             if not student_name:
-                row_errors.append("Student Name is required.")
+                row_errors.append(StudentServices._build_error("students.import.errorReasons.studentNameRequired"))
             if not gender:
-                row_errors.append("Gender is required.")
+                row_errors.append(StudentServices._build_error("students.import.errorReasons.genderRequired"))
             if not email:
-                row_errors.append("Email is required.")
+                row_errors.append(StudentServices._build_error("students.import.errorReasons.emailRequired"))
             if not class_code:
-                row_errors.append("Class Code is required.")
+                row_errors.append(StudentServices._build_error("students.import.errorReasons.classCodeRequired"))
 
             if row_errors:
                 invalid_rows.append(

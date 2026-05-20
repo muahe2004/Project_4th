@@ -24,6 +24,7 @@ from app.models.schemas.teachers.teacher_schemas import (
     TeacherDeleteResponse,
     TeacherDropdownResponse,
     TeacherFileData,
+    TeacherFileError,
     TeacherFileDataResponse,
     TeacherFileInfo,
     TeacherFileInvalidRow,
@@ -78,6 +79,10 @@ def get_all_teachers() -> List[dict]:
 
 
 class TeacherServices:
+    @staticmethod
+    def _build_error(code: str, **params: int | str) -> TeacherFileError:
+        return TeacherFileError(code=code, params=params)
+
     @staticmethod
     def get_all(
         *,
@@ -571,20 +576,20 @@ class TeacherServices:
                         email=email,
                         phone=phone,
                         address=address,
-                        errors=[str(exc)],
+                        errors=[TeacherServices._build_error("teachers.import.errorReasons.invalidDateOfBirth")],
                     )
                 )
                 continue
 
-            row_errors: list[str] = []
+            row_errors: list[TeacherFileError] = []
             if not teacher_code:
-                row_errors.append("Teacher Code is required.")
+                row_errors.append(TeacherServices._build_error("teachers.import.errorReasons.teacherCodeRequired"))
             if not teacher_name:
-                row_errors.append("Teacher Name is required.")
+                row_errors.append(TeacherServices._build_error("teachers.import.errorReasons.teacherNameRequired"))
             if not gender:
-                row_errors.append("Gender is required.")
+                row_errors.append(TeacherServices._build_error("teachers.import.errorReasons.genderRequired"))
             if not email:
-                row_errors.append("Email is required.")
+                row_errors.append(TeacherServices._build_error("teachers.import.errorReasons.emailRequired"))
 
             if row_errors:
                 invalid_rows.append(

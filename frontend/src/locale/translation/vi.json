@@ -164,6 +164,7 @@
     "relativeSections": {
       "father": "THÔNG TIN CỦA BỐ",
       "mother": "THÔNG TIN CỦA MẸ",
+      "relative": "THÔNG TIN CỦA NGƯỜI THÂN",
       "spouse": "THÔNG TIN CỦA VỢ/CHỒNG"
     },
     "password": {
@@ -409,11 +410,18 @@
       }
     },
     "import": {
-      "title": "Import Teacher Preview",
+      "title": "Xem trước import giảng viên",
       "editTitle": "Chỉnh sửa giảng viên import",
       "noData": "Không có dữ liệu import.",
-      "fileName": "File name",
-      "invalidRows": "Còn {{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "fileName": "Tên file",
+      "invalidRows": "Có {{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "errorReasons": {
+        "invalidDateOfBirth": "Định dạng ngày sinh không hợp lệ.",
+        "teacherCodeRequired": "Mã giảng viên là bắt buộc.",
+        "teacherNameRequired": "Họ và tên là bắt buộc.",
+        "genderRequired": "Giới tính là bắt buộc.",
+        "emailRequired": "Email là bắt buộc."
+      },
       "confirmExit": "Bạn có chắc muốn thoát form import?",
       "table": {
         "teacherCode": "Mã giảng viên",
@@ -562,13 +570,19 @@
       "confirmSave": "Bạn có chắc muốn lưu các thay đổi?"
     },
     "import": {
-      "title": "Import Training Program Preview",
+      "title": "Xem trước import chương trình đào tạo",
       "editTitle": "Chỉnh sửa môn học import",
       "noData": "Không có dữ liệu import.",
-      "fileName": "File name",
+      "fileName": "Tên file",
       "program": "CTĐT",
       "academicYear": "Niên khoá",
-      "invalidRows": "Còn {{count}} dòng lỗi trong file.",
+      "invalidRows": "Có {{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "errorReasons": {
+        "subjectCodeRequired": "Mã môn học là bắt buộc.",
+        "subjectNameRequired": "Tên môn học là bắt buộc.",
+        "termRequired": "Học kỳ là bắt buộc.",
+        "termInvalid": "Học kỳ phải là số nguyên dương."
+      },
       "confirmExit": "Bạn có chắc muốn thoát form import?",
       "table": {
         "subjectCode": "Mã môn",
@@ -922,11 +936,48 @@
     },
     "periodNumber": "Tiết {{period}}",
     "import": {
-      "title": "Import Teaching Schedule Preview",
+      "title": "Xem trước import lịch thi",
       "noData": "Không có dữ liệu import.",
-      "fileName": "File name",
+      "fileName": "Tên file",
       "noValidRows": "Không có dòng hợp lệ để import.",
-      "invalidRows": "{{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "errors": {
+        "classNotFound": "Mã lớp {{classCode}} không tồn tại.",
+        "periodOverflow": "Có {{count}} dòng vượt quá khoảng thời gian học đã chọn.",
+        "periodCoverage": "Khoảng thời gian chỉ đủ {{weekCount}} tuần nhưng file cần đến tuần {{maxStudyWeek}}.",
+        "termCoverage": "Học kỳ không đủ 22 tuần."
+      },
+      "invalidRows": "Có {{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "errorReasons": {
+        "classNotFound": "Mã lớp {{classCode}} không tồn tại.",
+        "missingSubjectCode": "Thiếu mã môn thi.",
+        "missingClassCode": "Thiếu mã lớp.",
+        "missingRoom": "Thiếu phòng thi.",
+        "missingExamDate": "Thiếu ngày thi.",
+        "missingStartTime": "Thiếu giờ bắt đầu.",
+        "missingEndTime": "Thiếu giờ kết thúc.",
+        "roomMustBeNumber": "Phòng thi phải là số.",
+        "invalidExamDateFormat": "Định dạng ngày thi không hợp lệ.",
+        "invalidStartTimeFormat": "Định dạng giờ bắt đầu không hợp lệ.",
+        "invalidEndTimeFormat": "Định dạng giờ kết thúc không hợp lệ.",
+        "endTimeMustBeGreater": "Giờ kết thúc phải lớn hơn giờ bắt đầu.",
+        "subjectNotFound": "Không tìm thấy môn thi {{subjectCode}}.",
+        "classNotFound": "Không tìm thấy lớp {{classCode}}.",
+        "teacherNotFound": "Không tìm thấy giảng viên {{teacherCode}}.",
+        "roomNotFound": "Không tìm thấy phòng thi {{roomNumber}}.",
+        "classIdNotFound": "Không tìm thấy lớp {{classId}}.",
+        "subjectIdNotFound": "Không tìm thấy môn thi {{subjectId}}.",
+        "missingClassId": "Thiếu lớp ở dòng {{row}}.",
+        "missingDateTime": "Thiếu ngày hoặc giờ ở dòng {{row}}.",
+        "overlap": "Lịch thi bị trùng với lớp {{classCode}} môn {{subjectCode}} vào ngày {{date}}.",
+        "missingSubjectId": "Dòng {{row}} thiếu môn học.",
+        "missingTeacherId": "Dòng {{row}} thiếu giảng viên.",
+        "missingRoomId": "Dòng {{row}} thiếu phòng học.",
+        "xlsxOnly": "Chỉ hỗ trợ file .xlsx.",
+        "emptyUpload": "File upload rỗng.",
+        "emptySheet": "Sheet Excel rỗng.",
+        "missingClassCode": "Thiếu mã lớp ở ô C5.",
+        "missingStudyPeriod": "Thiếu khoảng thời gian học ở ô C7."
+      },
       "classCode": "Mã lớp",
       "startDate": "Ngày bắt đầu",
       "endDate": "Ngày kết thúc",
@@ -1192,11 +1243,37 @@
       }
     },
     "import": {
-      "title": "Import preview lịch thi",
+      "title": "Xem trước import lịch thi",
       "noData": "Không có dữ liệu import.",
-      "fileName": "File name",
+      "fileName": "Tên file",
       "noValidRows": "Không có dòng hợp lệ để import.",
       "invalidRows": "{{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "errorReasons": {
+        "classNotFound": "Không tìm thấy lớp {{classCode}}.",
+        "subjectNotFound": "Không tìm thấy môn thi {{subjectCode}}.",
+        "classIdNotFound": "Không tìm thấy lớp {{classId}}.",
+        "subjectIdNotFound": "Không tìm thấy môn thi {{subjectId}}.",
+        "missingSubjectCode": "Thiếu mã môn thi.",
+        "missingClassCode": "Thiếu mã lớp.",
+        "missingRoom": "Thiếu phòng thi.",
+        "missingExamDate": "Thiếu ngày thi.",
+        "missingStartTime": "Thiếu giờ bắt đầu.",
+        "missingEndTime": "Thiếu giờ kết thúc.",
+        "roomMustBeNumber": "Phòng thi phải là số.",
+        "invalidExamDateFormat": "Định dạng ngày thi không hợp lệ.",
+        "invalidStartTimeFormat": "Định dạng giờ bắt đầu không hợp lệ.",
+        "invalidEndTimeFormat": "Định dạng giờ kết thúc không hợp lệ.",
+        "endTimeMustBeGreater": "Giờ kết thúc phải lớn hơn giờ bắt đầu.",
+        "missingClassId": "Thiếu lớp ở dòng {{row}}.",
+        "missingDateTime": "Thiếu ngày hoặc giờ ở dòng {{row}}.",
+        "overlap": "Lịch thi bị trùng với lớp {{classCode}} môn {{subjectCode}} vào ngày {{date}}.",
+        "missingSubjectId": "Dòng {{row}} thiếu môn thi.",
+        "missingTeacherId": "Dòng {{row}} thiếu giảng viên.",
+        "missingRoomId": "Dòng {{row}} thiếu phòng thi.",
+        "xlsxOnly": "Chỉ hỗ trợ file .xlsx.",
+        "emptyUpload": "File upload rỗng.",
+        "emptySheet": "Sheet Excel rỗng."
+      },
       "importing": "Importing...",
       "importButton": "Import",
       "table": {
@@ -1324,6 +1401,9 @@
       "bankAccountNumber": "Số tài khoản"
     },
     "relativeSections": {
+      "father": "THÔNG TIN CỦA CHA",
+      "mother": "THÔNG TIN CỦA MẸ",
+      "relative": "THÔNG TIN CỦA NGƯỜI THÂN",
       "0": "THÔNG TIN CỦA CHA",
       "1": "THÔNG TIN CỦA MẸ",
       "2": "THÔNG TIN CỦA NGƯỜI THÂN"
@@ -1339,10 +1419,18 @@
       "nationality": "Quốc tịch"
     },
     "import": {
-      "title": "Import preview sinh viên",
+      "title": "Xem trước import sinh viên",
       "noData": "Không có dữ liệu import.",
-      "fileName": "File name",
-      "invalidRows": "{{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "fileName": "Tên file",
+      "invalidRows": "Có {{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "errorReasons": {
+        "invalidDateOfBirth": "Định dạng ngày sinh không hợp lệ.",
+        "studentCodeRequired": "Mã sinh viên là bắt buộc.",
+        "studentNameRequired": "Họ và tên là bắt buộc.",
+        "genderRequired": "Giới tính là bắt buộc.",
+        "emailRequired": "Email là bắt buộc.",
+        "classCodeRequired": "Mã lớp là bắt buộc."
+      },
       "editTitle": "Chỉnh sửa môn học import",
       "importing": "Importing...",
       "importButton": "Import",

@@ -131,9 +131,14 @@ class UploadTeachingCalenderItem(SQLModel):
     study_weeks: str
 
 
+class UploadTeachingCalenderError(SQLModel):
+    code: str
+    params: dict[str, str | int] = Field(default_factory=dict)
+
+
 class UploadTeachingCalenderInvalidRow(UploadTeachingCalenderItem):
     row: int
-    errors: list[str] = Field(default_factory=list)
+    errors: list[UploadTeachingCalenderError] = Field(default_factory=list)
 
 
 class UploadTeachingCalenderFileInfo(SQLModel):

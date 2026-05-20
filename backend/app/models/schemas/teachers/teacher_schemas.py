@@ -151,9 +151,14 @@ class TeacherFileData(SQLModel):
     address: str | None = Field(default=None)
 
 
+class TeacherFileError(SQLModel):
+    code: str
+    params: dict[str, str | int] = Field(default_factory=dict)
+
+
 class TeacherFileInvalidRow(TeacherFileData):
     row: int
-    errors: list[str] = Field(default_factory=list)
+    errors: list[TeacherFileError] = Field(default_factory=list)
 
 
 class TeacherFileInfo(SQLModel):

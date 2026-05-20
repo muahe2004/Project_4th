@@ -107,9 +107,14 @@ class UploadExaminationScheduleItem(SQLModel):
     schedule_type: str | None = None
 
 
+class UploadExaminationScheduleError(SQLModel):
+    code: str
+    params: dict[str, str | int] = Field(default_factory=dict)
+
+
 class UploadExaminationScheduleInvalidRow(UploadExaminationScheduleItem):
     row: int
-    errors: list[str] = Field(default_factory=list)
+    errors: list[UploadExaminationScheduleError] = Field(default_factory=list)
 
 
 class UploadExaminationScheduleFileInfo(SQLModel):

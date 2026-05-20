@@ -138,12 +138,17 @@ export interface ITeacherFileData {
   date_of_birth?: string | null;
   email?: string | null;
   phone?: string | null;
-  address?: string | null;
+    address?: string | null;
+}
+
+export interface ITeacherFileError {
+    code: string;
+    params?: Record<string, string | number>;
 }
 
 export interface ITeacherFileInvalidRow extends ITeacherFileData {
-  row: number;
-  errors: string[];
+    row: number;
+    errors: ITeacherFileError[];
 }
 
 export interface ITeacherFileInfo {

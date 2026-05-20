@@ -27,6 +27,7 @@ from app.models.schemas.teaching_schedules.teaching_schedule_schemas import (
     ImportTeachingCalenderInput,
     ImportTeachingCalenderImportedItem,
     ImportTeachingCalenderResponse,
+    UploadTeachingCalenderError,
     TeachingScheduleClassInfo,
     TeachingScheduleRoomInfo,
     TeachingScheduleResponse,
@@ -48,6 +49,10 @@ from app.services.common import build_date_conditions, to_clean_text
 
 
 class TeachingScheduleServices:
+    @staticmethod
+    def _build_error(code: str, **params: int | str) -> UploadTeachingCalenderError:
+        return UploadTeachingCalenderError(code=code, params=params)
+
     @staticmethod
     def _parse_date_text(date_text: str) -> datetime:
         normalized_date_text = re.sub(r"/+", "/", date_text.strip())
@@ -640,46 +645,63 @@ class TeachingScheduleServices:
             ):
                 continue
 
-            row_errors: list[str] = []
+            row_errors: list[UploadTeachingCalenderError] = []
             weekday_number: int | None = None
             room_number: int | None = None
 
             if not subject_code:
-                row_errors.append("Subject Code is required.")
+                row_errors.append(TeachingScheduleServices._build_error("teachingSchedules.import.errorReasons.missingSubjectCode"))
             if not teacher_code:
-                row_errors.append("Teacher Code is required.")
+                row_errors.append(TeachingScheduleServices._build_error("teachingSchedules.import.errorReasons.missingTeacherCode"))
             if not weekday_raw:
-                row_errors.append("Weekday is required.")
+                row_errors.append(TeachingScheduleServices._build_error("teachingSchedules.import.errorReasons.missingWeekday"))
             if not lesson_periods:
-                row_errors.append("Lesson periods are required.")
+                row_errors.append(TeachingScheduleServices._build_error("teachingSchedules.import.errorReasons.missingLessonPeriods"))
             if not study_weeks:
-                row_errors.append("Study weeks are required.")
+                row_errors.append(TeachingScheduleServices._build_error("teachingSchedules.import.errorReasons.missingStudyWeeks"))
             if not room_raw:
-                row_errors.append("Room is required.")
+                row_errors.append(TeachingScheduleServices._build_error("teachingSchedules.import.errorReasons.missingRoom"))
 
             if weekday_raw:
                 try:
                     weekday_number = int(weekday_raw)
                     TeachingScheduleServices._validate_weekday_number(weekday_number)
                 except (ValueError, HTTPException):
-                    row_errors.append("Weekday must be one of: 2, 3, 4, 5, 6, 7, 8.")
+                    row_errors.append(
+                        TeachingScheduleServices._build_error("teachingSchedules.import.errorReasons.invalidWeekday")
+                    )
 
             if room_raw:
                 if str(room_raw).isdigit():
                     room_number = int(room_raw)
                 else:
-                    row_errors.append("Room must be a number.")
+                    row_errors.append(TeachingScheduleServices._build_error("teachingSchedules.import.errorReasons.roomMustBeNumber"))
 
             subject_record = subject_map.get(subject_code) if subject_code else None
             teacher_record = teacher_map.get(teacher_code) if teacher_code else None
             room_record = room_map.get(room_number) if room_number is not None else None
 
             if subject_code and subject_record is None:
-                row_errors.append(f"Subject not found with subject_code={subject_code}")
+                row_errors.append(
+                    TeachingScheduleServices._build_error(
+                        "teachingSchedules.import.errorReasons.subjectNotFound",
+                        subjectCode=subject_code,
+                    )
+                )
             if teacher_code and teacher_record is None:
-                row_errors.append(f"Teacher not found with teacher_code={teacher_code}")
+                row_errors.append(
+                    TeachingScheduleServices._build_error(
+                        "teachingSchedules.import.errorReasons.teacherNotFound",
+                        teacherCode=teacher_code,
+                    )
+                )
             if room_number is not None and room_record is None:
-                row_errors.append(f"Room not found with room_number={room_number}")
+                row_errors.append(
+                    TeachingScheduleServices._build_error(
+                        "teachingSchedules.import.errorReasons.roomNotFound",
+                        roomNumber=room_number,
+                    )
+                )
 
             item = UploadTeachingCalenderItem(
                 subject_id=subject_record.id if subject_record else None,

@@ -82,23 +82,6 @@ function GradeControls({
         </Select>
       </FormControl>
 
-      <FormControl className="grades-controller" disabled>
-        <InputLabel className="select-primary__label" id="grades-major-label">
-          {t("grades.filters.major")}
-        </InputLabel>
-        <Select
-          className="select-primary"
-          labelId="grades-major-label"
-          label={t("grades.filters.major")}
-          value=""
-          MenuProps={{ disableScrollLock: true }}
-        >
-          <MenuItem value="">
-            <em>{t("grades.common.notSupported")}</em>
-          </MenuItem>
-        </Select>
-      </FormControl>
-
       <FormControl className="grades-controller">
         <InputLabel className="select-primary__label" id="grades-subject-label">
           {t("grades.filters.subject")}

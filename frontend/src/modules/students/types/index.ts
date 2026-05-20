@@ -121,9 +121,14 @@ export interface IStudentFileData {
     class_name?: string | null;
 }
 
+export interface IStudentFileError {
+    code: string;
+    params?: Record<string, string | number>;
+}
+
 export interface IStudentFileInvalidRow extends IStudentFileData {
     row: number;
-    errors: string[];
+    errors: IStudentFileError[];
 }
 
 export interface IStudentFileInfo {

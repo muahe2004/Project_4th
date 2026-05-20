@@ -6,10 +6,30 @@
 .grades-flex {
     margin-top: 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
     margin-bottom: 20px;
 }
 
 .grades-controller {
-    width: 24%;
+    width: min(240px, 100%);
+    flex: 0 0 240px;
+}
+
+.grades-controller .select-primary {
+    width: 100%;
+}
+
+.grades-controller .select-primary__label,
+.grades-controller .MuiSelect-select {
+    font-size: 14px !important;
+}
+
+@media (max-width: 960px) {
+    .grades-controller {
+        flex: 1 1 100%;
+        width: 100%;
+    }
 }

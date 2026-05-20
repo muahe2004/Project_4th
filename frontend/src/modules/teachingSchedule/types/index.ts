@@ -192,9 +192,14 @@ export interface IUploadTeachingCalenderItem {
   study_weeks: string;
 }
 
+export interface IUploadTeachingCalenderError {
+  code: string;
+  params?: Record<string, string | number>;
+}
+
 export interface IUploadTeachingCalenderInvalidRow extends IUploadTeachingCalenderItem {
   row: number;
-  errors: string[];
+  errors: IUploadTeachingCalenderError[];
 }
 
 export interface IUploadTeachingCalenderFileInfo {

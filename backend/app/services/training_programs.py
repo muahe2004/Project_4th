@@ -33,6 +33,7 @@ from app.models.schemas.training_program.training_program_create_schemas import 
     TrainingProgramWithSubjectsPublic,
 )
 from app.models.schemas.training_program.training_program_file_schemas import (
+    TrainingProgramFileError,
     TrainingProgramFileData,
     TrainingProgramFileDataResponse,
     TrainingProgramFileInfo,
@@ -41,6 +42,10 @@ from app.models.schemas.training_program.training_program_file_schemas import (
 )
 
 class TrainingProgramServices:
+    @staticmethod
+    def _build_error(code: str, **params: int | str) -> TrainingProgramFileError:
+        return TrainingProgramFileError(code=code, params=params)
+
     @staticmethod
     def get_dropdown(
         *, session: Session, query: TrainingProgramQueryParams
@@ -335,13 +340,13 @@ class TrainingProgramServices:
             if not any([subject_code, subject_name, term_raw]):
                 continue
 
-            errors: list[str] = []
+            errors: list[TrainingProgramFileError] = []
             if not subject_code:
-                errors.append("Subject code is required.")
+                errors.append(TrainingProgramServices._build_error("trainingProgram.import.errorReasons.subjectCodeRequired"))
             if not subject_name:
-                errors.append("Subject name is required.")
+                errors.append(TrainingProgramServices._build_error("trainingProgram.import.errorReasons.subjectNameRequired"))
             if term_raw in (None, ""):
-                errors.append("Term is required.")
+                errors.append(TrainingProgramServices._build_error("trainingProgram.import.errorReasons.termRequired"))
 
             term_value: int | None = None
             if term_raw not in (None, ""):
@@ -350,7 +355,7 @@ class TrainingProgramServices:
                     if term_value < 1:
                         raise ValueError
                 except Exception:
-                    errors.append("Term must be a positive integer.")
+                    errors.append(TrainingProgramServices._build_error("trainingProgram.import.errorReasons.termInvalid"))
 
             if errors:
                 invalid_subjects.append(

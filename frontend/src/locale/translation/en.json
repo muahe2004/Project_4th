@@ -164,6 +164,7 @@
     "relativeSections": {
       "father": "FATHER INFORMATION",
       "mother": "MOTHER INFORMATION",
+      "relative": "RELATIVE INFORMATION",
       "spouse": "SPOUSE INFORMATION"
     },
     "password": {
@@ -409,11 +410,18 @@
       }
     },
     "import": {
-      "title": "Import Teacher Preview",
+      "title": "Teacher import preview",
       "editTitle": "Edit Imported Teacher",
       "noData": "No import data available.",
-      "fileName": "File Name",
-      "invalidRows": "{{count}} invalid rows remain, please fix them before importing.",
+      "fileName": "File name",
+      "invalidRows": "There are {{count}} rows with errors, please fix them before importing.",
+      "errorReasons": {
+        "invalidDateOfBirth": "Invalid date of birth format.",
+        "teacherCodeRequired": "Teacher code is required.",
+        "teacherNameRequired": "Teacher name is required.",
+        "genderRequired": "Gender is required.",
+        "emailRequired": "Email is required."
+      },
       "confirmExit": "Are you sure you want to exit the import form?",
       "table": {
         "teacherCode": "Teacher Code",
@@ -562,13 +570,19 @@
       "confirmSave": "Are you sure you want to save the changes?"
     },
     "import": {
-      "title": "Import Training Program Preview",
+      "title": "Training program import preview",
       "editTitle": "Edit Imported Subject",
       "noData": "No import data available.",
-      "fileName": "File Name",
+      "fileName": "File name",
       "program": "Training Program",
       "academicYear": "Academic Year",
-      "invalidRows": "{{count}} invalid rows remain in the file.",
+      "invalidRows": "There are {{count}} rows with errors, please fix them before importing.",
+      "errorReasons": {
+        "subjectCodeRequired": "Subject code is required.",
+        "subjectNameRequired": "Subject name is required.",
+        "termRequired": "Term is required.",
+        "termInvalid": "Term must be a positive integer."
+      },
       "confirmExit": "Are you sure you want to exit the import form?",
       "table": {
         "subjectCode": "Subject Code",
@@ -922,11 +936,48 @@
     },
     "periodNumber": "Period {{period}}",
     "import": {
-      "title": "Import Teaching Schedule Preview",
+      "title": "Exam schedule import preview",
       "noData": "No import data.",
       "fileName": "File name",
       "noValidRows": "No valid rows to import.",
-      "invalidRows": "{{count}} rows have errors, please fix them before importing.",
+      "errors": {
+        "classNotFound": "Class code {{classCode}} does not exist.",
+        "periodOverflow": "{{count}} rows exceed the selected study period.",
+        "periodCoverage": "The selected period covers only {{weekCount}} weeks, but the file requires week {{maxStudyWeek}}.",
+        "termCoverage": "The semester is shorter than 22 weeks."
+      },
+      "invalidRows": "There are {{count}} rows with errors, please fix them before importing.",
+      "errorReasons": {
+        "classNotFound": "Class code {{classCode}} does not exist.",
+        "missingSubjectCode": "Exam subject code is missing.",
+        "missingClassCode": "Class code is missing.",
+        "missingRoom": "Exam room is missing.",
+        "missingExamDate": "Exam date is missing.",
+        "missingStartTime": "Start time is missing.",
+        "missingEndTime": "End time is missing.",
+        "roomMustBeNumber": "Exam room must be a number.",
+        "invalidExamDateFormat": "Invalid exam date format.",
+        "invalidStartTimeFormat": "Invalid start time format.",
+        "invalidEndTimeFormat": "Invalid end time format.",
+        "endTimeMustBeGreater": "End time must be greater than start time.",
+        "subjectNotFound": "Exam subject {{subjectCode}} was not found.",
+        "classNotFound": "Class {{classCode}} was not found.",
+        "teacherNotFound": "Teacher {{teacherCode}} was not found.",
+        "roomNotFound": "Exam room {{roomNumber}} was not found.",
+        "classIdNotFound": "Class {{classId}} was not found.",
+        "subjectIdNotFound": "Exam subject {{subjectId}} was not found.",
+        "missingClassId": "Class is missing at row {{row}}.",
+        "missingDateTime": "Date or time is missing at row {{row}}.",
+        "overlap": "Exam schedule overlaps with class {{classCode}} and subject {{subjectCode}} on {{date}}.",
+        "missingSubjectId": "Row {{row}} is missing a subject.",
+        "missingTeacherId": "Row {{row}} is missing a teacher.",
+        "missingRoomId": "Row {{row}} is missing a room.",
+        "xlsxOnly": "Only .xlsx files are supported.",
+        "emptyUpload": "Uploaded file is empty.",
+        "emptySheet": "Excel sheet is empty.",
+        "missingClassCode": "Class code is missing in cell C5.",
+        "missingStudyPeriod": "Study period is missing in cell C7."
+      },
       "classCode": "Class Code",
       "startDate": "Start Date",
       "endDate": "End Date",
@@ -1187,11 +1238,37 @@
       }
     },
     "import": {
-      "title": "Import Examination Schedule Preview",
+      "title": "Exam schedule import preview",
       "noData": "No import data.",
       "fileName": "File name",
       "noValidRows": "No valid rows to import.",
       "invalidRows": "{{count}} rows have errors, please fix them before importing.",
+      "errorReasons": {
+        "classNotFound": "Class {{classCode}} was not found.",
+        "subjectNotFound": "Exam subject {{subjectCode}} was not found.",
+        "classIdNotFound": "Class {{classId}} was not found.",
+        "subjectIdNotFound": "Exam subject {{subjectId}} was not found.",
+        "missingSubjectCode": "Exam subject code is missing.",
+        "missingClassCode": "Class code is missing.",
+        "missingRoom": "Exam room is missing.",
+        "missingExamDate": "Exam date is missing.",
+        "missingStartTime": "Start time is missing.",
+        "missingEndTime": "End time is missing.",
+        "roomMustBeNumber": "Exam room must be a number.",
+        "invalidExamDateFormat": "Invalid exam date format.",
+        "invalidStartTimeFormat": "Invalid start time format.",
+        "invalidEndTimeFormat": "Invalid end time format.",
+        "endTimeMustBeGreater": "End time must be greater than start time.",
+        "missingClassId": "Class is missing at row {{row}}.",
+        "missingDateTime": "Date or time is missing at row {{row}}.",
+        "overlap": "Exam schedule overlaps with class {{classCode}} and subject {{subjectCode}} on {{date}}.",
+        "missingSubjectId": "Row {{row}} is missing an exam subject.",
+        "missingTeacherId": "Row {{row}} is missing a teacher.",
+        "missingRoomId": "Row {{row}} is missing a room.",
+        "xlsxOnly": "Only .xlsx files are supported.",
+        "emptyUpload": "Uploaded file is empty.",
+        "emptySheet": "Excel sheet is empty."
+      },
       "importing": "Importing...",
       "importButton": "Import",
       "table": {
@@ -1319,6 +1396,9 @@
       "bankAccountNumber": "Bank Account Number"
     },
     "relativeSections": {
+      "father": "FATHER INFORMATION",
+      "mother": "MOTHER INFORMATION",
+      "relative": "RELATIVE INFORMATION",
       "0": "FATHER INFORMATION",
       "1": "MOTHER INFORMATION",
       "2": "RELATIVE INFORMATION"
@@ -1334,10 +1414,18 @@
       "nationality": "Nationality"
     },
     "import": {
-      "title": "Import Student Preview",
+      "title": "Student import preview",
       "noData": "No import data.",
       "fileName": "File name",
-      "invalidRows": "{{count}} rows have errors, please fix them before importing.",
+      "invalidRows": "There are {{count}} rows with errors, please fix them before importing.",
+      "errorReasons": {
+        "invalidDateOfBirth": "Invalid date of birth format.",
+        "studentCodeRequired": "Student code is required.",
+        "studentNameRequired": "Student name is required.",
+        "genderRequired": "Gender is required.",
+        "emailRequired": "Email is required.",
+        "classCodeRequired": "Class code is required."
+      },
       "editTitle": "Edit Imported Subject",
       "importing": "Importing...",
       "importButton": "Import",

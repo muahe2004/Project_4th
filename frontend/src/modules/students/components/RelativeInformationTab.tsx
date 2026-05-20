@@ -1,158 +1,158 @@
-import { Grid, TextField, Typography, Select, MenuItem } from "@mui/material";
+import { Box, Grid, TextField, Typography } from "@mui/material";
 import React from "react";
-import LabelPrimary from "../../../components/Label/Label";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import type { IStudentRelative } from "../types";
 import { useTranslation } from "react-i18next";
 
+import LabelPrimary from "../../../components/Label/Label";
+import type { IStudentRelative } from "../types";
+
 interface RelativeInformationTabProps {
-    relatives: IStudentRelative[];
-    onRelativeChange: (index: number, fields: Partial<IStudentRelative>) => void;
+  relatives: IStudentRelative[];
+  onRelativeChange: (index: number, fields: Partial<IStudentRelative>) => void;
 }
 
-const SECTION_TITLES = ["THÔNG TIN CỦA CHA", "THÔNG TIN CỦA MẸ", "THÔNG TIN CỦA NGƯỜI THÂN"];
+const RELATIVE_SECTION_KEYS = ["father", "mother", "relative"] as const;
 
 const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relatives, onRelativeChange }) => {
-    const { t } = useTranslation();
-    const handleFieldChange = (
-        index: number,
-        field: keyof IStudentRelative,
-        value: string | null,
-    ) => {
-        onRelativeChange(index, { [field]: value });
-    };
+  const { t } = useTranslation();
 
-    return (
-        <Grid container spacing={2} className="myprofile-form">
-            {relatives.map((relative, index) => {
-                const relativeDob = relative.date_of_birth ? new Date(relative.date_of_birth) : null;
-                return (
-                    <React.Fragment key={`relative-${index}`}>
-                        <Grid size={12}>
-                            <Typography className="myprofile-panel__title">
-                                {t(`students.relativeSections.${index}`, {
-                                    defaultValue: `Relative Information ${index + 1}`,
-                                })}
-                            </Typography>
-                        </Grid>
+  const handleFieldChange = (
+    index: number,
+    field: keyof IStudentRelative,
+    value: string | null
+  ) => {
+    onRelativeChange(index, { [field]: value });
+  };
 
-                        <Grid size={4} className="">
-                            <LabelPrimary value={t("students.relative.name")} />
-                            <TextField
-                                value={relative.name ?? ""}
-                                onChange={(e) => handleFieldChange(index, "name", e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                className="main-text__field"
-                            />
-                        </Grid>
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      {relatives.map((relative, index) => {
+        const relativeDob = relative.date_of_birth ? new Date(relative.date_of_birth) : null;
+        const sectionKey = RELATIVE_SECTION_KEYS[index] ?? `relative_${index}`;
+        const sectionTitle =
+          sectionKey === "father"
+            ? t("students.relativeSections.father")
+            : sectionKey === "mother"
+              ? t("students.relativeSections.mother")
+              : t("students.relativeSections.relative");
 
-                        <Grid size={4} className="">
-                            {/* <LabelPrimary value="Quan hệ" />
-                            <Select
-                                value={relative.relationship ?? ""}
-                                onChange={(e) => handleFieldChange(index, "relationship", e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                className="main-text__field"
-                            >
-                                {RELATIONSHIP_OPTIONS.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>
-                                        {option.label}
-                                    </MenuItem>
-                                ))}
-                            </Select> */}
-                        </Grid>
+        return (
+          <Box
+            key={`relative-${index}`}
+            sx={{
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 2,
+              p: 2.5,
+              backgroundColor: "background.paper",
+            }}
+          >
+            <Typography className="myprofile-panel__title" sx={{ mb: 2 }}>
+              {sectionTitle}
+            </Typography>
 
-                        <Grid size={4} className="">
-                            <LabelPrimary value={t("students.relative.birthYear")} />
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <DatePicker
-                                    value={relativeDob}
-                                    onChange={(newValue) =>
-                                        handleFieldChange(
-                                            index,
-                                            "date_of_birth",
-                                            newValue ? newValue.toISOString() : null,
-                                        )
-                                    }
-                                    slotProps={{ textField: { fullWidth: true } }}
-                                />
-                            </LocalizationProvider>
-                        </Grid>
+            <Grid container spacing={2.25}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <LabelPrimary value={t("students.relative.name")} />
+                <TextField
+                  value={relative.name ?? ""}
+                  onChange={(e) => handleFieldChange(index, "name", e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  className="main-text__field"
+                />
+              </Grid>
 
-                        <Grid size={4} className="">
-                            <LabelPrimary value={t("students.relative.occupation")} />
-                            <TextField
-                                value={relative.occupation ?? ""}
-                                onChange={(e) => handleFieldChange(index, "occupation", e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                className="main-text__field"
-                            />
-                        </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <LabelPrimary value={t("students.relative.birthYear")} />
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    value={relativeDob}
+                    onChange={(newValue) =>
+                      handleFieldChange(
+                        index,
+                        "date_of_birth",
+                        newValue ? newValue.toISOString() : null
+                      )
+                    }
+                    slotProps={{ textField: { fullWidth: true } }}
+                  />
+                </LocalizationProvider>
+              </Grid>
 
-                        <Grid size={4} className="">
-                            <LabelPrimary value={t("students.relative.phone")} />
-                            <TextField
-                                value={relative.phone ?? ""}
-                                onChange={(e) => handleFieldChange(index, "phone", e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                className="main-text__field"
-                            />
-                        </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <LabelPrimary value={t("students.relative.occupation")} />
+                <TextField
+                  value={relative.occupation ?? ""}
+                  onChange={(e) => handleFieldChange(index, "occupation", e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  className="main-text__field"
+                />
+              </Grid>
 
-                        <Grid size={4} className="">
-                            <LabelPrimary value={t("students.relative.address")} />
-                            <TextField
-                                value={relative.address ?? ""}
-                                onChange={(e) => handleFieldChange(index, "address", e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                className="main-text__field"
-                            />
-                        </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <LabelPrimary value={t("students.relative.phone")} />
+                <TextField
+                  value={relative.phone ?? ""}
+                  onChange={(e) => handleFieldChange(index, "phone", e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  className="main-text__field"
+                />
+              </Grid>
 
-                        <Grid size={4} className="">
-                            <LabelPrimary value={t("students.relative.ethnicity")} />
-                            <TextField
-                                value={relative.ethnicity ?? ""}
-                                onChange={(e) => handleFieldChange(index, "ethnicity", e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                className="main-text__field"
-                            />
-                        </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <LabelPrimary value={t("students.relative.nationality")} />
+                <TextField
+                  value={relative.nationality ?? ""}
+                  onChange={(e) => handleFieldChange(index, "nationality", e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  className="main-text__field"
+                />
+              </Grid>
 
-                        <Grid size={4} className="">
-                            <LabelPrimary value={t("students.relative.religion")} />
-                            <TextField
-                                value={relative.religion ?? ""}
-                                onChange={(e) => handleFieldChange(index, "religion", e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                className="main-text__field"
-                            />
-                        </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <LabelPrimary value={t("students.relative.address")} />
+                <TextField
+                  value={relative.address ?? ""}
+                  onChange={(e) => handleFieldChange(index, "address", e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  className="main-text__field"
+                />
+              </Grid>
 
-                        <Grid size={4} className="">
-                            <LabelPrimary value={t("students.relative.nationality")} />
-                            <TextField
-                                value={relative.nationality ?? ""}
-                                onChange={(e) => handleFieldChange(index, "nationality", e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                className="main-text__field"
-                            />
-                        </Grid>
-                    </React.Fragment>
-                );
-            })}
-        </Grid>
-    );
+              <Grid size={{ xs: 12, md: 4 }}>
+                <LabelPrimary value={t("students.relative.ethnicity")} />
+                <TextField
+                  value={relative.ethnicity ?? ""}
+                  onChange={(e) => handleFieldChange(index, "ethnicity", e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  className="main-text__field"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 4 }}>
+                <LabelPrimary value={t("students.relative.religion")} />
+                <TextField
+                  value={relative.religion ?? ""}
+                  onChange={(e) => handleFieldChange(index, "religion", e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  className="main-text__field"
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        );
+      })}
+    </Box>
+  );
 };
 
 export default RelativeInformationTab;

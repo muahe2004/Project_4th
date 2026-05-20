@@ -38,6 +38,7 @@ from app.models.schemas.examination_schedules.examination_schedule_schemas impor
     ImportExaminationScheduleInput,
     ImportExaminationScheduleResponse,
     ImportExaminationScheduleImportedItem,
+    UploadExaminationScheduleError,
 )
 from app.models.schemas.common.query import DateRange
 from app.services.common import build_date_conditions_for_column
@@ -46,6 +47,17 @@ from app.services.common import parse_excel_datetime, to_clean_text
 
 class ExaminationScheduleServices:
     @staticmethod
+    def _build_error(code: str, **params: int | str) -> UploadExaminationScheduleError:
+        return UploadExaminationScheduleError(code=code, params=params)
+
+    @staticmethod
+    def _raise_http_error(status_code: int, code: str, **params: int | str) -> None:
+        raise HTTPException(
+            status_code=status_code,
+            detail={"code": code, "params": params},
+        )
+
+    @staticmethod
     async def upload_file_examination_schedule(
         *,
         session: Session,
@@ -53,25 +65,25 @@ class ExaminationScheduleServices:
     ) -> UploadExaminationScheduleResponse:
         filename = file.filename or ""
         if not filename.lower().endswith(".xlsx"):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Only .xlsx files are supported.",
+            ExaminationScheduleServices._raise_http_error(
+                status.HTTP_400_BAD_REQUEST,
+                "examinationSchedules.import.errorReasons.xlsxOnly",
             )
 
         content = await file.read()
         if not content:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Uploaded file is empty.",
+            ExaminationScheduleServices._raise_http_error(
+                status.HTTP_400_BAD_REQUEST,
+                "examinationSchedules.import.errorReasons.emptyUpload",
             )
 
         workbook = load_workbook(BytesIO(content), data_only=True)
         worksheet = workbook.active
         rows = list(worksheet.iter_rows(values_only=True))
         if len(rows) < 6:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="File does not contain the expected header row.",
+            ExaminationScheduleServices._raise_http_error(
+                status.HTTP_400_BAD_REQUEST,
+                "examinationSchedules.import.errorReasons.emptySheet",
             )
 
         expected_headers = [
@@ -178,48 +190,48 @@ class ExaminationScheduleServices:
             ):
                 continue
 
-            row_errors: list[str] = []
+            row_errors: list[UploadExaminationScheduleError] = []
             room_number: int | None = None
             date_value: datetime | None = None
             start_time_value: datetime | None = None
             end_time_value: datetime | None = None
 
             if not subject_code:
-                row_errors.append("Subject Code is required.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.missingSubjectCode"))
             if not class_code:
-                row_errors.append("Class Code is required.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.missingClassCode"))
             if not room_raw:
-                row_errors.append("Room is required.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.missingRoom"))
             if not date_raw:
-                row_errors.append("Exam date is required.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.missingExamDate"))
             if not start_time_raw:
-                row_errors.append("Start time is required.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.missingStartTime"))
             if not end_time_raw:
-                row_errors.append("End time is required.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.missingEndTime"))
 
             if room_raw:
                 if str(room_raw).isdigit():
                     room_number = int(room_raw)
                 else:
-                    row_errors.append("Room must be a number.")
+                    row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.roomMustBeNumber"))
 
             try:
                 date_value = parse_excel_datetime(date_raw)
             except ValueError:
-                row_errors.append("Invalid exam date format.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.invalidExamDateFormat"))
 
             try:
                 start_time_value = parse_excel_datetime(start_time_raw)
             except ValueError:
-                row_errors.append("Invalid start time format.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.invalidStartTimeFormat"))
 
             try:
                 end_time_value = parse_excel_datetime(end_time_raw)
             except ValueError:
-                row_errors.append("Invalid end time format.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.invalidEndTimeFormat"))
 
             if date_value and start_time_value and end_time_value and end_time_value <= start_time_value:
-                row_errors.append("End time must be greater than start time.")
+                row_errors.append(ExaminationScheduleServices._build_error("examinationSchedules.import.errorReasons.endTimeMustBeGreater"))
 
             subject_record = subject_map.get(subject_code) if subject_code else None
             class_record = class_map.get(class_code) if class_code else None
@@ -228,15 +240,40 @@ class ExaminationScheduleServices:
             room_record = room_map.get(room_number) if room_number is not None else None
 
             if subject_code and subject_record is None:
-                row_errors.append(f"Subject not found with subject_code={subject_code}")
+                row_errors.append(
+                    ExaminationScheduleServices._build_error(
+                        "examinationSchedules.import.errorReasons.subjectNotFound",
+                        subjectCode=subject_code,
+                    )
+                )
             if class_code and class_record is None:
-                row_errors.append(f"Class not found with class_code={class_code}")
+                row_errors.append(
+                    ExaminationScheduleServices._build_error(
+                        "examinationSchedules.import.errorReasons.classNotFound",
+                        classCode=class_code,
+                    )
+                )
             if invigilator_1_code and invigilator_1_record is None:
-                row_errors.append(f"Teacher not found with teacher_code={invigilator_1_code}")
+                row_errors.append(
+                    ExaminationScheduleServices._build_error(
+                        "examinationSchedules.import.errorReasons.teacherNotFound",
+                        teacherCode=invigilator_1_code,
+                    )
+                )
             if invigilator_2_code and invigilator_2_record is None:
-                row_errors.append(f"Teacher not found with teacher_code={invigilator_2_code}")
+                row_errors.append(
+                    ExaminationScheduleServices._build_error(
+                        "examinationSchedules.import.errorReasons.teacherNotFound",
+                        teacherCode=invigilator_2_code,
+                    )
+                )
             if room_number is not None and room_record is None:
-                row_errors.append(f"Room not found with room_number={room_number}")
+                row_errors.append(
+                    ExaminationScheduleServices._build_error(
+                        "examinationSchedules.import.errorReasons.roomNotFound",
+                        roomNumber=room_number,
+                    )
+                )
 
             item = UploadExaminationScheduleItem(
                 subject_id=subject_record.id if subject_record else None,
@@ -296,25 +333,29 @@ class ExaminationScheduleServices:
         try:
             for row_index, schedule in enumerate(calender.schedules, start=1):
                 if not schedule.subject_id:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail=f"Missing subject_id at row {row_index}. Please upload/resolve file before import.",
+                    ExaminationScheduleServices._raise_http_error(
+                        status.HTTP_400_BAD_REQUEST,
+                        "examinationSchedules.import.errorReasons.missingSubjectId",
+                        row=row_index,
                     )
                 if not schedule.class_id:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail=f"Missing class_id at row {row_index}. Please upload/resolve file before import.",
+                    ExaminationScheduleServices._raise_http_error(
+                        status.HTTP_400_BAD_REQUEST,
+                        "examinationSchedules.import.errorReasons.missingClassId",
+                        row=row_index,
                     )
                 if not schedule.date or not schedule.start_time or not schedule.end_time:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail=f"Missing date/time at row {row_index}. Please upload/resolve file before import.",
+                    ExaminationScheduleServices._raise_http_error(
+                        status.HTTP_400_BAD_REQUEST,
+                        "examinationSchedules.import.errorReasons.missingDateTime",
+                        row=row_index,
                     )
 
                 if schedule.end_time <= schedule.start_time:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail=f"End time must be greater than start time at row {row_index}.",
+                    ExaminationScheduleServices._raise_http_error(
+                        status.HTTP_400_BAD_REQUEST,
+                        "examinationSchedules.import.errorReasons.endTimeMustBeGreater",
+                        row=row_index,
                     )
 
                 pending_schedules.append(
@@ -362,14 +403,16 @@ class ExaminationScheduleServices:
                     class_record = session.get(Classes, pending_item["class_id"])
                     subject_record = session.get(Subjects, pending_item["subject_id"])
                     if not class_record:
-                        raise HTTPException(
-                            status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Class not found with class_id={pending_item['class_id']}",
+                        ExaminationScheduleServices._raise_http_error(
+                            status.HTTP_404_NOT_FOUND,
+                            "examinationSchedules.import.errorReasons.classIdNotFound",
+                            classId=str(pending_item["class_id"]),
                         )
                     if not subject_record:
-                        raise HTTPException(
-                            status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Subject not found with subject_id={pending_item['subject_id']}",
+                        ExaminationScheduleServices._raise_http_error(
+                            status.HTTP_404_NOT_FOUND,
+                            "examinationSchedules.import.errorReasons.subjectIdNotFound",
+                            subjectId=str(pending_item["subject_id"]),
                         )
 
                     group_key = (pending_item["class_id"], pending_item["subject_id"], pending_item["date"])
@@ -378,13 +421,12 @@ class ExaminationScheduleServices:
                             existing_item.start_time <= pending_item["end_time"]
                             and existing_item.end_time >= pending_item["start_time"]
                         ):
-                            raise HTTPException(
-                                status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=(
-                                    f"Examination schedule overlaps with existing schedule for class "
-                                    f"{class_record.class_code} and subject {subject_record.subject_code} "
-                                    f"on {pending_item['date'].strftime('%d/%m/%Y')}."
-                                ),
+                            ExaminationScheduleServices._raise_http_error(
+                                status.HTTP_400_BAD_REQUEST,
+                                "examinationSchedules.import.errorReasons.overlap",
+                                classCode=class_record.class_code,
+                                subjectCode=subject_record.subject_code,
+                                date=pending_item["date"].strftime("%d/%m/%Y"),
                             )
 
             for item in pending_schedules:
