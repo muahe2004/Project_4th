@@ -531,6 +531,7 @@
     "messages": {
       "addSuccess": "Thêm chương trình đào tạo thành công!",
       "updateSuccess": "Cập nhật chương trình đào tạo thành công!",
+      "importSuccess": "Import chương trình đào tạo thành công!",
       "genericError": "Có lỗi xảy ra, vui lòng thử lại!",
       "missingSubjectId": "Thiếu subject_id để cập nhật chương trình đào tạo."
     },
@@ -580,6 +581,7 @@
       "errorReasons": {
         "subjectCodeRequired": "Mã môn học là bắt buộc.",
         "subjectNameRequired": "Tên môn học là bắt buộc.",
+        "subjectNotFound": "Không tìm thấy môn học {{subjectCode}}.",
         "termRequired": "Học kỳ là bắt buộc.",
         "termInvalid": "Học kỳ phải là số nguyên dương."
       },

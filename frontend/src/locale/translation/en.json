@@ -531,6 +531,7 @@
     "messages": {
       "addSuccess": "Training program added successfully!",
       "updateSuccess": "Training program updated successfully!",
+      "importSuccess": "Training program imported successfully!",
       "genericError": "An error occurred, please try again!",
       "missingSubjectId": "Missing subject_id for training program update."
     },
@@ -580,6 +581,7 @@
       "errorReasons": {
         "subjectCodeRequired": "Subject code is required.",
         "subjectNameRequired": "Subject name is required.",
+        "subjectNotFound": "Subject {{subjectCode}} was not found.",
         "termRequired": "Term is required.",
         "termInvalid": "Term must be a positive integer."
       },

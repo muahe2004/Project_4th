@@ -9,6 +9,7 @@ import Loading from "../../../components/Loading/Loading";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { STATUS_OPTIONS } from "../../../constants/status";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useGetTrainingPrograms } from "../apis/getTrainingPrograms";
@@ -27,6 +28,7 @@ import type {
 
 export function TrainingPrograms() {
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState("");
@@ -98,6 +100,7 @@ export function TrainingPrograms() {
     };
 
     await importMutation.mutateAsync(payload);
+    showSnackbar(t("trainingProgram.messages.importSuccess"), "success");
     setOpenImport(false);
     setImportData(null);
   };

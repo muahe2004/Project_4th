@@ -357,6 +357,19 @@ class TrainingProgramServices:
                 except Exception:
                     errors.append(TrainingProgramServices._build_error("trainingProgram.import.errorReasons.termInvalid"))
 
+            subject = None
+            if subject_code:
+                subject = session.exec(
+                    select(Subjects).where(Subjects.subject_code == subject_code)
+                ).first()
+                if not subject:
+                    errors.append(
+                        TrainingProgramServices._build_error(
+                            "trainingProgram.import.errorReasons.subjectNotFound",
+                            subjectCode=subject_code,
+                        )
+                    )
+
             if errors:
                 invalid_subjects.append(
                     TrainingProgramFileInvalidSubject(
