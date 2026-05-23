@@ -52,7 +52,7 @@ export default function ChatBot() {
 
   const handleSubmit = async () => {
     const question = text.trim();
-    if (!question || !user?.id || !role) {
+    if (!question) {
       return;
     }
 
@@ -60,14 +60,12 @@ export default function ChatBot() {
 
     const result = await mutation.mutateAsync({
       payload: {
-        text: question,
-        role,
-        user_id: user?.id,
-        history: nextHistory,
+        message: question,
       },
     });
 
-    const assistantSummary = `intent: ${result.intent}${result.time_scope ? `, time_scope: ${result.time_scope}` : ""}`;
+    const resolvedTimeScope = result.time_scope ?? "today";
+    const assistantSummary = `intent: ${result.intent}, time_scope: ${resolvedTimeScope}`;
     const updatedHistory = [
       ...nextHistory,
       { role: "assistant", content: assistantSummary },
@@ -131,7 +129,7 @@ export default function ChatBot() {
                   Intent: {response.intent}
                 </Typography>
                 <Typography>
-                  Time scope: {response.time_scope ?? "null"}
+                  Time scope: {response.time_scope ?? "today"}
                 </Typography>
                 <Typography>
                   Confidence: {response.confidence.toFixed(4)}

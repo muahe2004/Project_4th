@@ -2,16 +2,8 @@ import axios, { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { BASE_UNICORE_API_URL, UNICORE_PREFIX } from "../../../constants/config";
 
-export interface ChatHistoryItem {
-  role: string;
-  content: string;
-}
-
 export interface PredictIntentRequest {
-  text: string;
-  role?: string;
-  user_id?: string;
-  history?: ChatHistoryItem[];
+  message: string;
 }
 
 export interface PredictIntentResponse {

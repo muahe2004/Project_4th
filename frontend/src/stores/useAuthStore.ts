@@ -67,6 +67,7 @@ export const useAuthStore = create<AuthState>()(
           console.error("Logout failed:", e);
         }
         localStorage.removeItem("access_token");
+        localStorage.removeItem("ums_chatbot_history");
         set({ user: null });
       },
     }),

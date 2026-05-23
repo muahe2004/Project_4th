@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import logo from "../../../assets/images/logoUTEHY.png";
 
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { usePredictIntent } from "../apis/predictIntent";
@@ -86,8 +86,9 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
                 sx={{
                   p: 1,
                   borderRadius: 1.5,
-                  bgcolor: "#fff",
-                  border: "1px solid #ece7f8",
+                  bgcolor: "var(--color-white)",
+                  border: "1px solid",
+                  borderColor: "var(--primary-color)",
                 }}
               >
                 <Typography variant="body2" fontWeight={600}>
@@ -126,8 +127,9 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
                   sx={{
                     p: 1,
                     borderRadius: 1.5,
-                    bgcolor: "#fff",
-                    border: "1px solid #ece7f8",
+                    bgcolor: "var(--color-white)",
+                    border: "1px solid",
+                    borderColor: "var(--primary-color)",
                   }}
                 >
                   <Typography variant="body2" fontWeight={600}>
@@ -164,8 +166,9 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
                 sx={{
                   p: 1,
                   borderRadius: 1.5,
-                  bgcolor: "#fff",
-                  border: "1px solid #ece7f8",
+                  bgcolor: "var(--color-white)",
+                  border: "1px solid",
+                  borderColor: "var(--primary-color)",
                 }}
               >
                 <Typography variant="body2" fontWeight={600}>
@@ -191,8 +194,9 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
           m: 0,
           p: 1.25,
           borderRadius: 1.5,
-          bgcolor: "#fff",
-          border: "1px solid #ece7f8",
+          bgcolor: "var(--color-white)",
+          border: "1px solid",
+          borderColor: "var(--primary-color)",
           fontSize: 12,
           overflowX: "auto",
           whiteSpace: "pre-wrap",
@@ -248,7 +252,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
 
   const handleSend = async () => {
     const question = text.trim();
-    if (!question || !role || !user?.id) {
+    if (!question) {
       return;
     }
 
@@ -259,18 +263,16 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
     try {
       const result = await mutation.mutateAsync({
         payload: {
-          text: question,
-          role,
-          user_id: user.id,
-          history: nextHistory,
+          message: question,
         },
       });
+      const resolvedTimeScope = result.time_scope ?? "today";
 
       persistHistory([
         ...nextHistory,
         {
           role: "assistant",
-          content: `${result.intent}${result.time_scope ? ` · ${result.time_scope}` : ""}`,
+          content: `${result.intent} · ${resolvedTimeScope}`,
         },
       ]);
     } catch {
@@ -303,7 +305,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
         sx={{
           px: 2,
           py: 1.5,
-          background: "linear-gradient(135deg, #b564d9 0%, #9b59ca 100%)",
+          bgcolor: "var(--primary-color)",
           color: "#fff",
           display: "flex",
           alignItems: "center",
@@ -316,27 +318,30 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
               width: 38,
               height: 38,
               borderRadius: "50%",
-              bgcolor: "rgba(255,255,255,0.18)",
-              display: "grid",
-              placeItems: "center",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <SmartToyOutlinedIcon fontSize="small" />
+            <Box
+              component="img"
+              src={logo}
+              alt="UMS logo"
+              sx={{
+                width: 28,
+                height: 28,
+                objectFit: "contain",
+              }}
+            />
           </Box>
           <Box>
             <Typography fontWeight={700} lineHeight={1.1}>
               UMS ChatBot
             </Typography>
-            <Typography variant="caption" sx={{ opacity: 0.9 }}>
-              Online Now
-            </Typography>
           </Box>
         </Stack>
 
         <Stack direction="row" spacing={0.5} alignItems="center">
-          <IconButton size="small" sx={{ color: "#fff" }}>
-            <MoreHorizIcon fontSize="small" />
-          </IconButton>
           <IconButton size="small" sx={{ color: "#fff" }} onClick={onClose}>
             <CloseIcon fontSize="small" />
           </IconButton>
@@ -348,7 +353,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
         ref={viewportRef}
         sx={{
           p: 2,
-          bgcolor: "#fff",
+          bgcolor: "var(--color-white)",
           display: "flex",
           flexDirection: "column",
           gap: 1.5,
@@ -363,8 +368,8 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
             <Box
               sx={{
                 alignSelf: "flex-start",
-                bgcolor: "#f4f0ff",
-                color: "#352b58",
+                bgcolor: "rgba(52, 61, 96, 0.08)",
+                color: "var(--primary-color)",
                 px: 1.5,
                 py: 1,
                 borderRadius: "18px 18px 18px 6px",
@@ -379,8 +384,8 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
                 key={`${message.role}-${index}-${message.content}`}
                 sx={{
                   alignSelf: message.role === "user" ? "flex-end" : "flex-start",
-                  bgcolor: message.role === "user" ? "#b46adf" : "#f3f3f5",
-                  color: message.role === "user" ? "#fff" : "#1f1f1f",
+                  bgcolor: message.role === "user" ? "var(--primary-color)" : "rgba(52, 61, 96, 0.08)",
+                  color: message.role === "user" ? "var(--color-white)" : "var(--color-black)",
                   px: 1.5,
                   py: 1.05,
                   borderRadius:
@@ -408,11 +413,11 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
               sx={{
                 borderRadius: 999,
                 textTransform: "none",
-                borderColor: "#b46adf",
-                color: "#9b59ca",
+                borderColor: "var(--primary-color)",
+                color: "var(--primary-color)",
                 "&:hover": {
-                  borderColor: "#9b59ca",
-                  bgcolor: "rgba(155, 89, 202, 0.08)",
+                  borderColor: "var(--primary-color)",
+                  bgcolor: "rgba(52, 61, 96, 0.08)",
                 },
               }}
             >
@@ -427,14 +432,15 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
               mt: 0.5,
               p: 1.5,
               borderRadius: 2,
-              bgcolor: "#faf7ff",
-              border: "1px solid #eadcf6",
+              bgcolor: "rgba(52, 61, 96, 0.08)",
+              border: "1px solid",
+              borderColor: "var(--primary-color)",
             }}
           >
             <Stack spacing={1}>
               <Typography variant="caption" color="text.secondary">
                 AI: {response.intent}
-                {response.time_scope ? ` · ${response.time_scope}` : ""}
+                {` · ${response.time_scope ?? "today"}`}
               </Typography>
               <Typography variant="body2" fontWeight={700}>
                 Service: {response.service_name ?? "unknown"}
@@ -451,11 +457,12 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
       <Box
         sx={{
           p: 1.5,
-          borderTop: "1px solid #eee",
+          borderTop: "1px solid",
+          borderColor: "var(--border-base)",
           display: "flex",
           gap: 1,
           alignItems: "center",
-          bgcolor: "#fff",
+          bgcolor: "var(--color-white)",
         }}
       >
         <TextField
@@ -469,7 +476,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
           sx={{
             "& .MuiOutlinedInput-root": {
               borderRadius: 999,
-              bgcolor: "#fafafa",
+              bgcolor: "rgba(52, 61, 96, 0.04)",
             },
           }}
           onKeyDown={(event) => {
@@ -483,10 +490,10 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
           onClick={() => void handleSend()}
           disabled={mutation.isPending || !text.trim() || !role}
           sx={{
-            bgcolor: "#b46adf",
-            color: "#fff",
-            "&:hover": { bgcolor: "#9b59ca" },
-            "&.Mui-disabled": { bgcolor: "#e7d7f3", color: "#fff" },
+            bgcolor: "var(--primary-color)",
+            color: "var(--color-white)",
+            "&:hover": { bgcolor: "var(--primary-color)" },
+            "&.Mui-disabled": { bgcolor: "rgba(52, 61, 96, 0.45)", color: "var(--color-white)" },
           }}
         >
           <SendRoundedIcon />

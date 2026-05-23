@@ -1,7 +1,7 @@
 import re
 import unicodedata
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional
 
 from app.ai.text_utils import normalize_text
 
@@ -13,69 +13,6 @@ def strip_accents(text: str) -> str:
 
 def normalize_for_rules(text: str) -> str:
     return strip_accents(normalize_text(text))
-
-
-TIME_SCOPE_KEYWORDS: Dict[str, Tuple[str, ...]] = {
-    "today": (
-        "hom nay",
-        "ngay hom nay",
-        "toi nay",
-        "hien tai",
-        "bay gio",
-    ),
-    "tomorrow": (
-        "ngay mai",
-        "mai",
-    ),
-    "this_week": (
-        "tuan nay",
-        "trong tuan nay",
-        "trong tuan",
-    ),
-    "next_week": (
-        "tuan sau",
-        "tuan toi",
-        "tuan toi day",
-    ),
-    "this_month": (
-        "thang nay",
-        "trong thang nay",
-    ),
-    "current_term": (
-        "hoc ky nay",
-        "hoc ki nay",
-        "ki nay",
-        "ky nay",
-        "hoc ky hien tai",
-        "hoc ki hien tai",
-    ),
-}
-
-CUSTOM_RANGE_PATTERNS: Tuple[re.Pattern[str], ...] = (
-    re.compile(r"\btu\s+ngay\b.*\bden\s+ngay\b"),
-    re.compile(r"\btu\b.*\bden\b"),
-    re.compile(r"\btu\s+\d{1,2}[/-]\d{1,2}([/-]\d{2,4})?\b.*\bden\b"),
-    re.compile(r"\b\d{1,2}[/-]\d{1,2}([/-]\d{2,4})?\b.*\b\d{1,2}[/-]\d{1,2}([/-]\d{2,4})?\b"),
-)
-
-SCHEDULE_INTENTS = {
-    "learning_schedule",
-    "teaching_schedule",
-    "examination_schedule",
-    "class_learning_schedule",
-    "room_learning_schedule",
-    "class_teaching",
-}
-
-DEFAULT_TIME_SCOPE_BY_INTENT = {
-    "learning_schedule": "today",
-    "teaching_schedule": "today",
-    "examination_schedule": "today",
-    "class_learning_schedule": "today",
-    "room_learning_schedule": "today",
-    "class_teaching": "today",
-    "tuition_fee": "current_term",
-}
 
 AMBIGUOUS_PHRASES = (
     "cai do",
@@ -166,30 +103,6 @@ def _contains_any(text: str, phrases: Iterable[str]) -> bool:
     return any(phrase in text for phrase in phrases)
 
 
-def _has_custom_range(text: str) -> bool:
-    return any(pattern.search(text) for pattern in CUSTOM_RANGE_PATTERNS)
-
-
-def extract_time_scope(text: str, history_text: str = "", intent: str | None = None) -> Optional[str]:
-    combined = normalize_for_rules(f"{text} {history_text}")
-    current = normalize_for_rules(text)
-
-    if _has_custom_range(current) or _has_custom_range(combined):
-        return "custom_range"
-
-    for scope, keywords in TIME_SCOPE_KEYWORDS.items():
-        if _contains_any(current, keywords) or _contains_any(combined, keywords):
-            return scope
-
-    if intent in SCHEDULE_INTENTS and current:
-        return DEFAULT_TIME_SCOPE_BY_INTENT.get(intent, "today")
-
-    if intent == "tuition_fee" and current:
-        return "current_term"
-
-    return None
-
-
 def _history_text(history: List[Dict[str, Any]] | None) -> str:
     if not history or not isinstance(history, list):
         return ""
@@ -239,10 +152,6 @@ def is_ambiguous_text(text: str, history_text: str = "") -> bool:
     if current in {"dung roi", "dung", "co", "khong", "ok", "oke", "yes"}:
         return True
 
-    # Pure time references often need the previous turn to resolve the intent.
-    if extract_time_scope(current) and not _contains_any(combined, sum(INTENT_HINT_KEYWORDS.values(), ())):
-        return True
-
     return False
 
 
@@ -270,7 +179,6 @@ def build_routing_decision(
     history: List[Dict[str, Any]] | None,
     metadata: Dict[str, Dict[str, Any]],
 ) -> RoutingDecision:
-    history_text = _history_text(history)
     current_text = normalize_for_rules(text)
     predicted_intent = model_intent
     history_intent = infer_intent_from_history(history)
@@ -294,13 +202,7 @@ def build_routing_decision(
     if not is_role_supported(role, predicted_intent, metadata):
         return RoutingDecision(intent="role_unsupported", time_scope=None, confidence=max(model_confidence, 0.80))
 
-    time_scope = extract_time_scope(current_text, history_text, predicted_intent)
-    if predicted_intent in SCHEDULE_INTENTS and time_scope is None:
-        time_scope = DEFAULT_TIME_SCOPE_BY_INTENT.get(predicted_intent, "today")
-    elif predicted_intent == "tuition_fee" and time_scope is None:
-        time_scope = "current_term"
-
     if predicted_intent in {"greeting", "role_unsupported", "clarification_needed", "out_of_scope"}:
-        time_scope = None
+        return RoutingDecision(intent=predicted_intent, time_scope=None, confidence=model_confidence)
 
-    return RoutingDecision(intent=predicted_intent, time_scope=time_scope, confidence=model_confidence)
+    return RoutingDecision(intent=predicted_intent, time_scope="today", confidence=model_confidence)

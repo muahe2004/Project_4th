@@ -1,31 +1,62 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from typing import Any
 
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from app.ai.predictor import predict_intent
-from app.ai.time_scope_predict import predict_time_scope
-from app.models.models import AcademicTerms
 from app.models.schemas.ai.intent_schemas import PredictIntentRequest
 from app.models.schemas.common.query import BaseQueryParams, DateRange
+from app.models.schemas.classes.class_schemas import ClassQueryParams
 from app.models.schemas.examination_schedules.examination_schedule_schemas import (
     ExaminationScheduleQueryParams,
 )
+from app.models.schemas.majors.major_schemas import MajorQueryParams
+from app.models.schemas.specializations.specialization_schemas import (
+    SpecializationQueryParams,
+)
 from app.models.schemas.tuition_fees.tuition_fee_schemas import TuitionFeeQueryParams
 from app.models.schemas.teaching_schedules.teaching_schedule_schemas import TeachingScheduleSearchParams
+from app.models.schemas.training_program.training_program_create_schemas import (
+    TrainingProgramQueryParams,
+)
+from app.services.classes import ClassServices
+from app.services.departments import DepartmentServices
 from app.services.examination_schedules import ExaminationScheduleServices
+from app.services.majors import MajorServices
+from app.services.rooms import RoomServices
 from app.services.scores import ScoresServices
+from app.services.specializations import SpecializationServices
+from app.services.subjects import SubjectServices
 from app.services.teaching_schedules import TeachingScheduleServices
+from app.services.training_programs import TrainingProgramServices
 from app.services.tuition_fees import TuitionFeeServices
 
 
 class AIService:
+    INTENT_I18N_META: dict[str, dict[str, str]] = {
+        "role_unsupported": {
+            "message_key": "chatbot.intent.role_unsupported",
+            "title_key": "chatbot.intent.role_unsupported.title",
+        },
+        "out_of_scope": {
+            "message_key": "chatbot.intent.out_of_scope",
+            "title_key": "chatbot.intent.out_of_scope.title",
+        },
+    }
+
     INTENT_SERVICE_MAP: dict[str, str] = {
+        "department_info": "DepartmentServices",
+        "major_info": "MajorServices",
+        "specialization_info": "SpecializationServices",
+        "class_info": "ClassServices",
         "learning_schedule": "TeachingScheduleServices",
         "class_learning_schedule": "ClassServices",
+        "room_info": "RoomServices",
         "room_learning_schedule": "RoomServices",
+        "subject_info": "SubjectServices",
+        "training_program_info": "TrainingProgramServices",
         "teaching_schedule": "TeachingScheduleServices",
         "class_teaching": "TeacherServices",
         "examination_schedule": "ExaminationScheduleServices",
@@ -42,15 +73,8 @@ class AIService:
 
     @staticmethod
     def predict_intent(payload: PredictIntentRequest) -> dict[str, Any]:
-        history = [item.model_dump() for item in payload.history]
-        result = predict_intent(text=payload.text, role=payload.role, history=history)
-        time_scope = predict_time_scope(
-            text=payload.text,
-            role=payload.role,
-            history=history,
-            intent=result["intent"],
-        )
-        result["time_scope"] = time_scope
+        result = predict_intent(text=payload.message)
+        result["time_scope"] = "today"
         return result
 
     @staticmethod
@@ -74,6 +98,12 @@ class AIService:
         role: str | None = None,
         user_id: str | None = None,
     ) -> dict[str, Any]:
+        intent = str(result.get("intent") or "").strip().lower()
+        if intent in AIService.INTENT_I18N_META:
+            result["service_name"] = "unknown"
+            result["service_data"] = [AIService.INTENT_I18N_META[intent]]
+            return result
+
         service_context = AIService.call_services_by_intent(
             result.get("intent"),
             role=role,
@@ -95,80 +125,7 @@ class AIService:
         reference_date: date | None = None,
     ) -> DateRange:
         today = reference_date or datetime.today().date()
-
-        if not scope:
-            return DateRange(start_date=today, end_date=today)
-
-        normalized_scope = scope.strip().lower()
-
-        if normalized_scope == "today":
-            return DateRange(start_date=today, end_date=today)
-
-        if normalized_scope == "tomorrow":
-            next_day = today + timedelta(days=1)
-            return DateRange(start_date=next_day, end_date=next_day)
-
-        if normalized_scope == "this_week":
-            start_of_week = today - timedelta(days=today.weekday())
-            end_of_week = start_of_week + timedelta(days=6)
-            return DateRange(start_date=start_of_week, end_date=end_of_week)
-
-        if normalized_scope == "next_week":
-            start_of_next_week = today - timedelta(days=today.weekday()) + timedelta(days=7)
-            end_of_next_week = start_of_next_week + timedelta(days=6)
-            return DateRange(start_date=start_of_next_week, end_date=end_of_next_week)
-
-        if normalized_scope == "this_month":
-            start_of_month = today.replace(day=1)
-            if today.month == 12:
-                next_month = today.replace(year=today.year + 1, month=1, day=1)
-            else:
-                next_month = today.replace(month=today.month + 1, day=1)
-            end_of_month = next_month - timedelta(days=1)
-            return DateRange(start_date=start_of_month, end_date=end_of_month)
-
-        if normalized_scope == "current_term":
-            return AIService._get_current_term_range(session=session, reference_date=today)
-
-        if normalized_scope == "custom_range":
-            return DateRange()
-
         return DateRange(start_date=today, end_date=today)
-
-    @staticmethod
-    def _get_current_term_range(
-        *,
-        session: Session | None,
-        reference_date: date,
-    ) -> DateRange:
-        if session is None:
-            return DateRange()
-
-        current_date = datetime.combine(reference_date, datetime.min.time())
-        statement = (
-            select(AcademicTerms)
-            .where(
-                AcademicTerms.start_date <= current_date,
-                AcademicTerms.end_date >= current_date,
-            )
-            .order_by(AcademicTerms.start_date.desc())
-        )
-        current_term = session.exec(statement).first()
-        if current_term is not None:
-            return DateRange(
-                start_date=current_term.start_date.date(),
-                end_date=current_term.end_date.date(),
-            )
-
-        latest_statement = select(AcademicTerms).order_by(AcademicTerms.start_date.desc())
-        latest_term = session.exec(latest_statement).first()
-        if latest_term is not None:
-            return DateRange(
-                start_date=latest_term.start_date.date(),
-                end_date=latest_term.end_date.date(),
-            )
-
-        return DateRange()
 
     @staticmethod
     def call_services_by_intent(
@@ -187,7 +144,12 @@ class AIService:
         normalized_intent = intent.strip().lower()
         service_name = AIService.INTENT_SERVICE_MAP.get(normalized_intent, "unknown")
         normalized_role = (role or "").strip().lower()
+        if "." in normalized_role:
+            normalized_role = normalized_role.split(".")[-1]
+
         user_id_field = AIService.ROLE_ID_FIELD_MAP.get(normalized_role, "")
+        if normalized_intent == "examination_schedule" and normalized_role == "teacher":
+            user_id_field = "invigilator_id"
 
         if service_name == "unknown":
             return {
@@ -235,6 +197,65 @@ class AIService:
                 for item in teaching_schedules
             ]
 
+        if service_name == "DepartmentServices":
+            query = BaseQueryParams(skip=0, limit=1000, status="active")
+            departments, _ = DepartmentServices.get_all(session=session, query=query)
+            return [
+                item.model_dump(mode="json") if hasattr(item, "model_dump") else dict(item)
+                for item in departments
+            ]
+
+        if service_name == "MajorServices":
+            query = MajorQueryParams(skip=0, limit=1000, status="active")
+            majors, _ = MajorServices.get_all(session=session, query=query)
+            return [
+                item.model_dump(mode="json") if hasattr(item, "model_dump") else dict(item)
+                for item in majors
+            ]
+
+        if service_name == "SpecializationServices":
+            query = SpecializationQueryParams(skip=0, limit=1000, status="active")
+            specializations, _ = SpecializationServices.get_all(session=session, query=query)
+            return [
+                item.model_dump(mode="json") if hasattr(item, "model_dump") else dict(item)
+                for item in specializations
+            ]
+
+        if service_name == "ClassServices":
+            query = ClassQueryParams(skip=0, limit=1000, status="active")
+            classes, _ = ClassServices.get_all(session=session, query=query)
+            return [
+                item.model_dump(mode="json") if hasattr(item, "model_dump") else dict(item)
+                for item in classes
+            ]
+
+        if service_name == "RoomServices":
+            query = BaseQueryParams(skip=0, limit=1000, status="active")
+            rooms, _ = RoomServices.get_all(session=session, query=query)
+            return [
+                item.model_dump(mode="json") if hasattr(item, "model_dump") else dict(item)
+                for item in rooms
+            ]
+
+        if service_name == "SubjectServices":
+            query = BaseQueryParams(skip=0, limit=1000, status="active")
+            subjects, _ = SubjectServices.get_all(session=session, query=query)
+            return [
+                item.model_dump(mode="json") if hasattr(item, "model_dump") else dict(item)
+                for item in subjects
+            ]
+
+        if service_name == "TrainingProgramServices":
+            query = TrainingProgramQueryParams(skip=0, limit=1000, status="active")
+            training_programs = TrainingProgramServices.get_training_programs(
+                session=session,
+                query=query,
+            )
+            return [
+                item.model_dump(mode="json") if hasattr(item, "model_dump") else dict(item)
+                for item in training_programs.data
+            ]
+
         if service_name == "ExaminationScheduleServices":
             query_kwargs: dict[str, Any] = {
                 "skip": 0,
@@ -260,13 +281,13 @@ class AIService:
                 limit=1000,
                 status="active",
             )
-            tuition_fees, _ = TuitionFeeServices.get_all(
+            tuition_fee_response = TuitionFeeServices.get_all(
                 session=session,
                 query=query,
             )
             return [
                 item.model_dump(mode="json") if hasattr(item, "model_dump") else dict(item)
-                for item in tuition_fees
+                for item in tuition_fee_response.data
             ]
 
         if service_name == "ScoresServices":
