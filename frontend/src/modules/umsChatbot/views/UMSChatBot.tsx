@@ -1,21 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import ChatHistory from "../components/ChatHistory";
+import ChatInput from "../components/ChatInput";
+import ChatResponData from "../components/ChatResponData";
 import {
   Box,
   Button,
   Dialog,
   DialogContent,
   IconButton,
+  List,
+  ListItemButton,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import logo from "../../../assets/images/logoUTEHY.png";
+import "./styles/UMSChatBot.css";
 
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { usePredictIntent } from "../apis/predictIntent";
+import type { PredictIntentResponse } from "../apis/predictIntent";
+import { chatResponse } from "../utils/chatResponse";
+import { capitalizeFirstLetter } from "../utils/textFormat";
 
 const CHATBOT_HISTORY_KEY = "ums_chatbot_history";
 
@@ -24,187 +30,101 @@ type ChatRole = "user" | "assistant";
 interface ChatMessage {
   role: ChatRole;
   content: string;
+  meta?: PredictIntentResponse;
 }
 
-type ServiceData = Record<string, unknown>;
+interface ChatConversation {
+  id: string;
+  title: string;
+  updatedAt: string;
+  messages: ChatMessage[];
+}
 
 interface UMSChatBotProps {
   open: boolean;
   onClose: () => void;
 }
 
+function resolveIntentForResponse(meta: PredictIntentResponse): string {
+  const normalizedIntent = String(meta.intent ?? "").trim().toLowerCase();
+  const supportedIntents = new Set([
+    "department_info",
+    "major_info",
+    "specialization_info",
+    "training_program_info",
+    "subject_info",
+    "class_info",
+    "teacher_info",
+    "student_info",
+    "room_info",
+    "tuition_fee_info",
+    "score_lookup",
+    "learning_schedule",
+    "examination_schedule",
+  ]);
+
+  if (supportedIntents.has(normalizedIntent)) {
+    return normalizedIntent;
+  }
+
+  if (meta.service_name === "ScoresServices") {
+    return "score_lookup";
+  }
+  if (meta.service_name === "TeachingScheduleServices") {
+    return "learning_schedule";
+  }
+  if (meta.service_name === "ExaminationScheduleServices") {
+    return "examination_schedule";
+  }
+  return "";
+}
+
 export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
   const user = useAuthStore((state) => state.user);
   const [text, setText] = useState("");
-  const [history, setHistory] = useState<ChatMessage[]>([]);
+  const [conversations, setConversations] = useState<ChatConversation[]>([]);
+  const [activeConversationId, setActiveConversationId] = useState<string>("");
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const mutation = usePredictIntent();
   const response = mutation.data;
+  const activeConversation = useMemo(
+    () => conversations.find((item) => item.id === activeConversationId) ?? null,
+    [conversations, activeConversationId]
+  );
+  const history = activeConversation?.messages ?? [];
+  const upsertConversation = (conversationId: string, nextMessages: ChatMessage[]) => {
+    const nowIso = new Date().toISOString();
+    const firstUserTextRaw = nextMessages.find((item) => item.role === "user")?.content?.trim() || "New chat";
+    const firstUserText = capitalizeFirstLetter(firstUserTextRaw);
+    setConversations((prev) => {
+      const existingIndex = prev.findIndex((item) => item.id === conversationId);
+      const nextConversation: ChatConversation = {
+        id: conversationId,
+        title: firstUserText.slice(0, 60),
+        updatedAt: nowIso,
+        messages: nextMessages,
+      };
+      let next = prev;
+      if (existingIndex >= 0) {
+        next = [...prev];
+        next[existingIndex] = nextConversation;
+      } else {
+        next = [nextConversation, ...prev];
+      }
+      next = [...next].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+      localStorage.setItem(CHATBOT_HISTORY_KEY, JSON.stringify(next));
+      return next;
+    });
+    setActiveConversationId(conversationId);
+  };
 
   const role = useMemo(() => {
     const normalized = (user?.role ?? "").trim().toLowerCase();
     return normalized === "student" || normalized === "teacher" ? normalized : "";
   }, [user?.role]);
 
-  const serviceData = useMemo(() => {
-    if (!response?.service_data || !Array.isArray(response.service_data)) {
-      return [];
-    }
-    return response.service_data as ServiceData[];
-  }, [response?.service_data]);
-
-  const renderDateRange = (value?: { start_date: string | null; end_date: string | null } | null) => {
-    if (!value?.start_date && !value?.end_date) {
-      return "unknown";
-    }
-    return `${value.start_date ?? "?"} → ${value.end_date ?? "?"}`;
-  };
-
-  const renderServiceData = () => {
-    if (!response?.service_name || !serviceData.length) {
-      return null;
-    }
-
-    if (response.service_name === "ScoresServices") {
-      const payload = serviceData[0] as {
-        student_info?: { student_code?: string; name?: string };
-        scores?: { items?: Array<Record<string, unknown>>; total?: number };
-      };
-
-      return (
-        <Stack spacing={1}>
-          <Typography variant="subtitle2" fontWeight={700}>
-            {payload.student_info?.name ?? "Student"} - {payload.student_info?.student_code ?? ""}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Total records: {payload.scores?.total ?? 0}
-          </Typography>
-          <Stack spacing={0.75}>
-            {(payload.scores?.items ?? []).slice(0, 4).map((item, index) => (
-              <Box
-                key={`${String(item.id ?? index)}-${index}`}
-                sx={{
-                  p: 1,
-                  borderRadius: 1.5,
-                  bgcolor: "var(--color-white)",
-                  border: "1px solid",
-                  borderColor: "var(--primary-color)",
-                }}
-              >
-                <Typography variant="body2" fontWeight={600}>
-                  {String(item.subject_name ?? "Subject")}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" display="block">
-                  {String(item.academic_year ?? "")}
-                  {item.semester ? ` · HK ${String(item.semester)}` : ""}
-                </Typography>
-                <Typography variant="body2">
-                  Score: {String(item.score ?? "-")} · Type: {String(item.score_type ?? "-")}
-                </Typography>
-              </Box>
-            ))}
-          </Stack>
-        </Stack>
-      );
-    }
-
-    if (response.service_name === "TeachingScheduleServices") {
-      const items = serviceData as Array<Record<string, unknown>>;
-      return (
-        <Stack spacing={1}>
-          <Typography variant="subtitle2" fontWeight={700}>
-            {items.length} schedule record(s)
-          </Typography>
-          <Stack spacing={0.75}>
-            {items.slice(0, 4).map((item, index) => {
-              const learningSchedule = (item.learning_schedule as Record<string, unknown>) ?? {};
-              const subject = (item.subject as Record<string, unknown>) ?? {};
-              const room = (item.room as Record<string, unknown>) ?? {};
-              const classInfo = (item.class as Record<string, unknown>) ?? {};
-              return (
-                <Box
-                  key={`${String(item.id ?? index)}-${index}`}
-                  sx={{
-                    p: 1,
-                    borderRadius: 1.5,
-                    bgcolor: "var(--color-white)",
-                    border: "1px solid",
-                    borderColor: "var(--primary-color)",
-                  }}
-                >
-                  <Typography variant="body2" fontWeight={600}>
-                    {String(subject.subject_name ?? "Schedule")}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" display="block">
-                    {String(learningSchedule.date ?? "")}
-                  </Typography>
-                  <Typography variant="body2">
-                    Period: {String(learningSchedule.start_period ?? "-")} - {String(learningSchedule.end_period ?? "-")}
-                  </Typography>
-                  <Typography variant="body2">
-                    Room: {String(room.room_number ?? "-")} · Class: {String(classInfo.class_name ?? "-")}
-                  </Typography>
-                </Box>
-              );
-            })}
-          </Stack>
-        </Stack>
-      );
-    }
-
-    if (response.service_name === "ExaminationScheduleServices") {
-      const items = serviceData as Array<Record<string, unknown>>;
-      return (
-        <Stack spacing={1}>
-          <Typography variant="subtitle2" fontWeight={700}>
-            {items.length} exam record(s)
-          </Typography>
-          <Stack spacing={0.75}>
-            {items.slice(0, 4).map((item, index) => (
-              <Box
-                key={`${String(item.id ?? index)}-${index}`}
-                sx={{
-                  p: 1,
-                  borderRadius: 1.5,
-                  bgcolor: "var(--color-white)",
-                  border: "1px solid",
-                  borderColor: "var(--primary-color)",
-                }}
-              >
-                <Typography variant="body2" fontWeight={600}>
-                  {String(item.subject_info && typeof item.subject_info === "object" ? (item.subject_info as Record<string, unknown>).subject_name ?? "Exam" : "Exam")}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" display="block">
-                  {String(item.date ?? "")}
-                </Typography>
-                <Typography variant="body2">
-                  Time: {String(item.start_time ?? "-")} - {String(item.end_time ?? "-")}
-                </Typography>
-              </Box>
-            ))}
-          </Stack>
-        </Stack>
-      );
-    }
-
-    return (
-      <Box
-        component="pre"
-        sx={{
-          m: 0,
-          p: 1.25,
-          borderRadius: 1.5,
-          bgcolor: "var(--color-white)",
-          border: "1px solid",
-          borderColor: "var(--primary-color)",
-          fontSize: 12,
-          overflowX: "auto",
-          whiteSpace: "pre-wrap",
-        }}
-      >
-        {JSON.stringify(serviceData, null, 2)}
-      </Box>
-    );
+  const renderServiceData = (meta?: PredictIntentResponse) => {
+    return <ChatResponData meta={meta} />;
   };
 
   useEffect(() => {
@@ -214,28 +134,65 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
 
     const raw = localStorage.getItem(CHATBOT_HISTORY_KEY);
     if (!raw) {
-      setHistory([]);
+      setConversations([]);
+      setActiveConversationId("");
       return;
     }
 
     try {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
-        setHistory(
-          parsed.filter(
-            (item): item is ChatMessage =>
-              item &&
-              (item.role === "user" || item.role === "assistant") &&
-              typeof item.content === "string"
-          )
+        const isLegacyMessages = parsed.every(
+          (item) =>
+            item &&
+            (item.role === "user" || item.role === "assistant") &&
+            typeof item.content === "string"
         );
+
+        if (isLegacyMessages) {
+          const migrated: ChatConversation[] = [
+            {
+              id: `conv-${Date.now()}`,
+              title:
+                capitalizeFirstLetter(parsed.find((item) => item.role === "user")?.content?.slice(0, 60) || "New chat"),
+              updatedAt: new Date().toISOString(),
+              messages: parsed as ChatMessage[],
+            },
+          ];
+          setConversations(migrated);
+          setActiveConversationId(migrated[0].id);
+          localStorage.setItem(CHATBOT_HISTORY_KEY, JSON.stringify(migrated));
+          return;
+        }
+
+        const normalized = parsed
+          .filter(
+            (item) =>
+              item &&
+              typeof item.id === "string" &&
+              Array.isArray(item.messages)
+          )
+          .map((item) => ({
+            id: String(item.id),
+            title: capitalizeFirstLetter(String(item.title || "New chat")),
+            updatedAt: String(item.updatedAt || new Date().toISOString()),
+            messages: item.messages.filter(
+              (msg: ChatMessage) =>
+                msg &&
+                (msg.role === "user" || msg.role === "assistant") &&
+                typeof msg.content === "string"
+            ),
+          }));
+        setConversations(normalized);
+        setActiveConversationId(normalized[0]?.id ?? "");
         return;
       }
     } catch {
       // ignore invalid cache
     }
 
-    setHistory([]);
+    setConversations([]);
+    setActiveConversationId("");
   }, [open]);
 
   useEffect(() => {
@@ -245,19 +202,15 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
     viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
   }, [history, response, open]);
 
-  const persistHistory = (nextHistory: ChatMessage[]) => {
-    setHistory(nextHistory);
-    localStorage.setItem(CHATBOT_HISTORY_KEY, JSON.stringify(nextHistory));
-  };
-
   const handleSend = async () => {
     const question = text.trim();
     if (!question) {
       return;
     }
 
+    const currentConversationId = activeConversationId || `conv-${Date.now()}`;
     const nextHistory: ChatMessage[] = [...history, { role: "user", content: question }];
-    persistHistory(nextHistory);
+    upsertConversation(currentConversationId, nextHistory);
     setText("");
 
     try {
@@ -267,72 +220,65 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
         },
       });
       const resolvedTimeScope = result.time_scope ?? "today";
+      const resolvedIntent = resolveIntentForResponse(result);
+      const assistantResponse = chatResponse({
+        intent: resolvedIntent,
+        timeScope: resolvedTimeScope,
+        language: "vi",
+        mode:
+          Array.isArray(result.service_data) && result.service_data.length > 0
+            ? "default"
+            : "no_data",
+      });
+      const hasServiceData = Array.isArray(result.service_data) && result.service_data.length > 0;
 
-      persistHistory([
+      upsertConversation(currentConversationId, [
         ...nextHistory,
         {
           role: "assistant",
-          content: `${result.intent} · ${resolvedTimeScope}`,
+          content: assistantResponse.message,
+          meta: hasServiceData ? result : undefined,
         },
       ]);
     } catch {
-      persistHistory(nextHistory);
+      upsertConversation(currentConversationId, nextHistory);
     }
   };
 
   const quickActions = [
-    "Cho em xem lịch học hôm nay",
-    "Cho em xem lịch thi tuần này",
+    "Cho tôi xem lịch học hôm nay",
     "Xem kết quả học tập",
   ];
+  const startNewChat = () => {
+    const conversationId = `conv-${Date.now()}`;
+    const conversation: ChatConversation = {
+      id: conversationId,
+      title: "New chat",
+      updatedAt: new Date().toISOString(),
+      messages: [],
+    };
+    setConversations((prev) => {
+      const next = [conversation, ...prev];
+      localStorage.setItem(CHATBOT_HISTORY_KEY, JSON.stringify(next));
+      return next;
+    });
+    setActiveConversationId(conversationId);
+  };
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="xs"
+      maxWidth="lg"
       fullWidth
       PaperProps={{
-        sx: {
-          borderRadius: 4,
-          overflow: "hidden",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.18)",
-          maxHeight: "82vh",
-        },
+        className: "ums-chatbot__paper",
       }}
     >
-      <Box
-        sx={{
-          px: 2,
-          py: 1.5,
-          bgcolor: "var(--primary-color)",
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <Box className="ums-chatbot__header">
         <Stack direction="row" spacing={1.2} alignItems="center">
-          <Box
-            sx={{
-              width: 38,
-              height: 38,
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Box
-              component="img"
-              src={logo}
-              alt="UMS logo"
-              sx={{
-                width: 28,
-                height: 28,
-                objectFit: "contain",
-              }}
-            />
+          <Box className="ums-chatbot__logo-wrap">
+            <Box component="img" src={logo} alt="UMS logo" className="ums-chatbot__logo" />
           </Box>
           <Box>
             <Typography fontWeight={700} lineHeight={1.1}>
@@ -342,163 +288,80 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
         </Stack>
 
         <Stack direction="row" spacing={0.5} alignItems="center">
-          <IconButton size="small" sx={{ color: "#fff" }} onClick={onClose}>
+          <IconButton size="small" className="ums-chatbot__close" onClick={onClose}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </Stack>
       </Box>
 
-      <DialogContent
-        dividers
-        ref={viewportRef}
-        sx={{
-          p: 2,
-          bgcolor: "var(--color-white)",
-          display: "flex",
-          flexDirection: "column",
-          gap: 1.5,
-        }}
-      >
-        <Typography variant="body2" fontWeight={600} color="text.secondary">
-          {user?.role ?? "unknown"}
-        </Typography>
-
-        <Stack spacing={1.2}>
-          {history.length === 0 ? (
-            <Box
-              sx={{
-                alignSelf: "flex-start",
-                bgcolor: "rgba(52, 61, 96, 0.08)",
-                color: "var(--primary-color)",
-                px: 1.5,
-                py: 1,
-                borderRadius: "18px 18px 18px 6px",
-                maxWidth: "85%",
-              }}
-            >
-              <Typography variant="body2">Nice! Ask me anything.</Typography>
-            </Box>
-          ) : (
-            history.map((message, index) => (
-              <Box
-                key={`${message.role}-${index}-${message.content}`}
-                sx={{
-                  alignSelf: message.role === "user" ? "flex-end" : "flex-start",
-                  bgcolor: message.role === "user" ? "var(--primary-color)" : "rgba(52, 61, 96, 0.08)",
-                  color: message.role === "user" ? "var(--color-white)" : "var(--color-black)",
-                  px: 1.5,
-                  py: 1.05,
-                  borderRadius:
-                    message.role === "user"
-                      ? "18px 18px 6px 18px"
-                      : "18px 18px 18px 6px",
-                  maxWidth: "85%",
-                }}
-              >
-                <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
-                  {message.content}
-                </Typography>
-              </Box>
-            ))
-          )}
-        </Stack>
-
-        <Stack direction="row" flexWrap="wrap" gap={1} sx={{ pt: 0.5 }}>
-          {quickActions.map((item) => (
-            <Button
-              key={item}
-              variant="outlined"
-              size="small"
-              onClick={() => setText(item)}
-              sx={{
-                borderRadius: 999,
-                textTransform: "none",
-                borderColor: "var(--primary-color)",
-                color: "var(--primary-color)",
-                "&:hover": {
-                  borderColor: "var(--primary-color)",
-                  bgcolor: "rgba(52, 61, 96, 0.08)",
-                },
-              }}
-            >
-              {item}
-            </Button>
-          ))}
-        </Stack>
-
-        {response ? (
-          <Box
-            sx={{
-              mt: 0.5,
-              p: 1.5,
-              borderRadius: 2,
-              bgcolor: "rgba(52, 61, 96, 0.08)",
-              border: "1px solid",
-              borderColor: "var(--primary-color)",
-            }}
+      <DialogContent dividers className="ums-chatbot__content">
+        <Box className="ums-chatbot__sidebar">
+          <Button
+            className="ums-chatbot__new-btn"
+            variant="contained"
+            onClick={startNewChat}
           >
-            <Stack spacing={1}>
-              <Typography variant="caption" color="text.secondary">
-                AI: {response.intent}
-                {` · ${response.time_scope ?? "today"}`}
+            New chat
+          </Button>
+          <Typography variant="caption" className="ums-chatbot__recent-title">
+            Recent chats
+          </Typography>
+          <List className="ums-chatbot__list">
+            {conversations.length === 0 ? (
+              <Typography variant="body2" className="ums-chatbot__empty-history">
+                No history yet
               </Typography>
-              <Typography variant="body2" fontWeight={700}>
-                Service: {response.service_name ?? "unknown"}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Date range: {renderDateRange(response.date_range)}
-              </Typography>
-              {renderServiceData()}
-            </Stack>
-          </Box>
-        ) : null}
-      </DialogContent>
+            ) : (
+              conversations.map((conversation) => (
+                <ListItemButton
+                  key={conversation.id}
+                  className={`ums-chatbot__item ${conversation.id === activeConversationId ? "ums-chatbot__item--active" : ""}`}
+                  selected={conversation.id === activeConversationId}
+                  onClick={() => setActiveConversationId(conversation.id)}
+                >
+                  <Typography variant="body2" className="ums-chatbot__item-text">
+                    {conversation.title}
+                  </Typography>
+                </ListItemButton>
+              ))
+            )}
+          </List>
+        </Box>
 
-      <Box
-        sx={{
-          p: 1.5,
-          borderTop: "1px solid",
-          borderColor: "var(--border-base)",
-          display: "flex",
-          gap: 1,
-          alignItems: "center",
-          bgcolor: "var(--color-white)",
-        }}
-      >
-        <TextField
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Reply to UMS ChatBot..."
-          fullWidth
-          size="small"
-          multiline
-          maxRows={4}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 999,
-              bgcolor: "rgba(52, 61, 96, 0.04)",
-            },
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-              void handleSend();
-            }
-          }}
-        />
-        <IconButton
-          onClick={() => void handleSend()}
-          disabled={mutation.isPending || !text.trim() || !role}
-          sx={{
-            bgcolor: "var(--primary-color)",
-            color: "var(--color-white)",
-            "&:hover": { bgcolor: "var(--primary-color)" },
-            "&.Mui-disabled": { bgcolor: "rgba(52, 61, 96, 0.45)", color: "var(--color-white)" },
-          }}
-        >
-          <SendRoundedIcon />
-        </IconButton>
-      </Box>
+        <Box className="ums-chatbot__main">
+          <Box ref={viewportRef} className="ums-chatbot__viewport">
+            <Typography variant="body2" fontWeight={600} color="text.secondary">
+              {user?.role ?? "unknown"}
+            </Typography>
+
+            <ChatHistory
+              history={history}
+              renderServiceData={renderServiceData}
+            />
+
+          </Box>
+          <Stack direction="row" flexWrap="wrap" gap={1} className="ums-chatbot__quick-actions">
+            {quickActions.map((item) => (
+              <Button
+                key={item}
+                className="ums-chatbot__quick-action"
+                variant="outlined"
+                size="small"
+                onClick={() => setText(item)}
+              >
+                {item}
+              </Button>
+            ))}
+          </Stack>
+
+          <ChatInput
+            text={text}
+            onChangeText={setText}
+            onSend={() => void handleSend()}
+            disabled={mutation.isPending || !text.trim() || !role}
+          />
+        </Box>
+      </DialogContent>
     </Dialog>
   );
 }

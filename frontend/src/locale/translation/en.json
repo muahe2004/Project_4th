@@ -1459,5 +1459,53 @@
     "currentWeek": "Current week",
     "previousWeek": "Previous week",
     "nextWeek": "Next week"
+  },
+  "chatbot": {
+    "timeScope": {
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "this_week": "this week",
+      "next_week": "next week",
+      "this_month": "this month",
+      "next_month": "next month"
+    },
+    "response": {
+      "department_info": {
+        "no_time_scope": "The list of departments is:",
+        "with_time_scope": "The list of departments is:",
+        "no_data_no_time_scope": "No department data found.",
+        "no_data_with_time_scope": "No department data found."
+      },
+      "major_info": {
+        "no_time_scope": "Here is major information:",
+        "with_time_scope": "Here is major information:",
+        "no_data_no_time_scope": "No major data found.",
+        "no_data_with_time_scope": "No major data found."
+      },
+      "learning_schedule": {
+        "no_time_scope": "Your learning schedule is:",
+        "with_time_scope": "Your learning schedule for {{timeScope}} is:",
+        "no_data_no_time_scope": "You have no learning schedule.",
+        "no_data_with_time_scope": "You have no learning schedule for {{timeScope}}."
+      },
+      "examination_schedule": {
+        "no_time_scope": "Your exam schedule is:",
+        "with_time_scope": "Your exam schedule for {{timeScope}} is:",
+        "no_data_no_time_scope": "You have no exam schedule.",
+        "no_data_with_time_scope": "You have no exam schedule for {{timeScope}}."
+      },
+      "score_lookup": {
+        "no_time_scope": "Your study results are:",
+        "with_time_scope": "Your study results for {{timeScope}} are:",
+        "no_data_no_time_scope": "No study result data found.",
+        "no_data_with_time_scope": "No study result data found for {{timeScope}}."
+      },
+      "fallback": {
+        "no_time_scope": "Here is your information:",
+        "with_time_scope": "Here is your information for {{timeScope}}:",
+        "no_data_no_time_scope": "No data found.",
+        "no_data_with_time_scope": "No data found for {{timeScope}}."
+      }
+    }
   }
 }

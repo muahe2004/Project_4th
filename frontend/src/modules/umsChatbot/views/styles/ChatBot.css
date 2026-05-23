@@ -1,0 +1,43 @@
+.chatbot-test__container {
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.chatbot-test__paper {
+  padding: 24px;
+  border-radius: 12px !important;
+}
+
+.chatbot-test__action-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.chatbot-test__role {
+  color: var(--text-color-second);
+  font-size: 14px;
+}
+
+.chatbot-test__submit {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #111827;
+  color: #fff;
+  cursor: pointer;
+}
+
+.chatbot-test__response {
+  padding: 16px;
+  border-radius: 8px;
+  background: #f7f7f7;
+  min-height: 120px;
+  white-space: pre-wrap;
+}
+
+.chatbot-test__json {
+  margin: 0;
+  font-size: 12px;
+  overflow-x: auto;
+}

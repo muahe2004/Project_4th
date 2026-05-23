@@ -8,8 +8,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import "./styles/ChatBot.css";
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { usePredictIntent } from "../apis/predictIntent";
+import type { PredictIntentResponse } from "../apis/predictIntent";
 
 const CHATBOT_HISTORY_KEY = "ums_chatbot_history";
 
@@ -23,7 +25,7 @@ export default function ChatBot() {
     }
     return "";
   }, [user?.role]);
-  const [history, setHistory] = useState<Array<{ role: string; content: string }>>([]);
+  const [history, setHistory] = useState<Array<{ role: string; content: string; meta?: PredictIntentResponse }>>([]);
 
   const mutation = usePredictIntent();
   const response = mutation.data;
@@ -68,7 +70,7 @@ export default function ChatBot() {
     const assistantSummary = `intent: ${result.intent}, time_scope: ${resolvedTimeScope}`;
     const updatedHistory = [
       ...nextHistory,
-      { role: "assistant", content: assistantSummary },
+      { role: "assistant", content: assistantSummary, meta: result },
     ];
     localStorage.setItem(CHATBOT_HISTORY_KEY, JSON.stringify(updatedHistory));
     setHistory(updatedHistory);
@@ -76,8 +78,8 @@ export default function ChatBot() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Paper sx={{ p: 3, borderRadius: 3 }}>
+    <Container maxWidth="md" className="chatbot-test__container">
+      <Paper className="chatbot-test__paper">
         <Stack spacing={2}>
           <Typography variant="h5" fontWeight={700}>
             UMS Chatbot Test
@@ -92,8 +94,8 @@ export default function ChatBot() {
             minRows={2}
           />
 
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            <Box component="span" sx={{ color: "text.secondary", fontSize: 14 }}>
+          <Box className="chatbot-test__action-row">
+            <Box component="span" className="chatbot-test__role">
               Role: {role || "unknown"}
             </Box>
             <Box
@@ -101,28 +103,13 @@ export default function ChatBot() {
               type="button"
               onClick={handleSubmit}
               disabled={mutation.isPending || !text.trim() || !role}
-              style={{
-                padding: "10px 16px",
-                borderRadius: 10,
-                border: "none",
-                background: "#111827",
-                color: "#fff",
-                cursor: "pointer",
-              }}
+              className="chatbot-test__submit"
             >
               Predict intent
             </Box>
           </Box>
 
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              bgcolor: "#f7f7f7",
-              minHeight: 120,
-              whiteSpace: "pre-wrap",
-            }}
-          >
+          <Box className="chatbot-test__response">
             {response ? (
               <Stack spacing={1}>
                 <Typography fontWeight={700}>
@@ -138,10 +125,7 @@ export default function ChatBot() {
                   Normalized: {response.normalized_text}
                 </Typography>
                 <Divider />
-                <Typography
-                  component="pre"
-                  sx={{ m: 0, fontSize: 12, overflowX: "auto" }}
-                >
+                <Typography component="pre" className="chatbot-test__json">
                   {JSON.stringify(response, null, 2)}
                 </Typography>
               </Stack>

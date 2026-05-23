@@ -1,0 +1,27 @@
+.chat-input {
+  padding: 0 12px 12px 12px;
+  border-top: 1px solid var(--border-base);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--color-white);
+}
+
+.chat-input__field .MuiOutlinedInput-root {
+  border-radius: 999px;
+  background: rgba(52, 61, 96, 0.04);
+}
+
+.chat-input__send {
+  background: var(--primary-color) !important;
+  color: var(--color-white) !important;
+}
+
+.chat-input__send:hover {
+  background: var(--primary-color) !important;
+}
+
+.chat-input__send.Mui-disabled {
+  background: rgba(52, 61, 96, 0.45) !important;
+  color: var(--color-white) !important;
+}

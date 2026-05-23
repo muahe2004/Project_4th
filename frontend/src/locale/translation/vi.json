@@ -1464,5 +1464,65 @@
     "currentWeek": "Tuần hiện tại",
     "previousWeek": "Tuần trước",
     "nextWeek": "Tuần sau"
+  },
+  "chatbot": {
+    "timeScope": {
+      "today": "hôm nay",
+      "tomorrow": "ngày mai",
+      "this_week": "tuần này",
+      "next_week": "tuần sau",
+      "this_month": "tháng này",
+      "next_month": "tháng sau"
+    },
+    "response": {
+      "department_info": {
+        "no_time_scope": "Danh sách khoa là:",
+        "with_time_scope": "Danh sách khoa là:",
+        "no_data_no_time_scope": "Không có dữ liệu khoa.",
+        "no_data_with_time_scope": "Không có dữ liệu khoa."
+      },
+      "major_info": {
+        "no_time_scope": "Đây là thông tin các ngành:",
+        "with_time_scope": "Đây là thông tin các ngành:",
+        "no_data_no_time_scope": "Không có dữ liệu ngành.",
+        "no_data_with_time_scope": "Không có dữ liệu ngành."
+      },
+      "specialization_info": {
+        "no_time_scope": "Đây là thông tin của bạn:",
+        "with_time_scope": "Đây là thông tin của bạn:",
+        "no_data_no_time_scope": "Không có dữ liệu chuyên ngành.",
+        "no_data_with_time_scope": "Không có dữ liệu chuyên ngành."
+      },
+      "training_program_info": {
+        "no_time_scope": "Đây là thông tin CTDT:",
+        "with_time_scope": "Đây là thông tin CTDT:",
+        "no_data_no_time_scope": "Không có dữ liệu CTDT.",
+        "no_data_with_time_scope": "Không có dữ liệu CTDT."
+      },
+      "learning_schedule": {
+        "no_time_scope": "Lịch học của bạn là:",
+        "with_time_scope": "Lịch học {{timeScope}} của bạn là:",
+        "no_data_no_time_scope": "Bạn không có lịch học.",
+        "no_data_with_time_scope": "{{timeScope}} bạn không có lịch học."
+      },
+      "examination_schedule": {
+        "no_time_scope": "Lịch thi của bạn là:",
+        "with_time_scope": "Lịch thi {{timeScope}} của bạn là:",
+        "no_data_no_time_scope": "Bạn không có lịch thi.",
+        "no_data_with_time_scope": "{{timeScope}} bạn không có lịch thi."
+      },
+      "score_lookup": {
+        "no_time_scope": "Kết quả học tập của bạn là:",
+        "with_time_scope": "Kết quả học tập {{timeScope}} của bạn là:",
+        "no_data_no_time_scope": "Không có dữ liệu kết quả học tập.",
+        "no_data_with_time_scope": "Không có dữ liệu kết quả học tập {{timeScope}}."
+      },
+      "fallback": {
+        "no_time_scope": "Đây là thông tin của bạn:",
+        "with_time_scope": "Đây là thông tin {{timeScope}} của bạn:",
+        "no_data_no_time_scope": "Không có dữ liệu.",
+        "no_data_with_time_scope": "Không có dữ liệu cho {{timeScope}}."
+      }
+    }
   }
 }
