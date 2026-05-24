@@ -102,6 +102,22 @@
       "title2": ""
     }
   },
+  "about": {
+    "sections": {
+      "intro": {
+        "title": "Introduction",
+        "content": "Hung Yen University of Technology and Education (UTEHY) is a public higher education institution under the Ministry of Education and Training, oriented toward applied and practice-based education aligned with workforce needs. With steady long-term development, the university has affirmed its role as a reputable center for engineering and technology education in the Red River Delta and nationwide. UTEHY emphasizes practical learning so students not only master core knowledge but also gain the ability to perform effectively after graduation. Through broad enterprise partnerships, students receive more internship opportunities, real project exposure, and access to modern technologies during their studies. Alongside teaching, the university continuously promotes scientific research, technology transfer, community service, and direct contributions to local socio-economic development."
+      },
+      "vision": {
+        "title": "Vision",
+        "content": "UTEHY aims to become a reputable university in Vietnam's higher education system with an applied, innovative, and internationally integrated orientation. Its vision goes beyond expanding enrollment, focusing instead on comprehensive quality enhancement: updated curricula aligned with labor market demands, modern teaching methods, strong applied research capacity, and greater learner competitiveness in a global environment. In the digital transformation era, UTEHY targets the development of a smart university model with richer digital learning resources, standardized governance data, and optimized student learning experiences. At the same time, the university continues to strengthen international connections, expand academic collaborations, and promote student-faculty exchange toward regional and global standards in engineering, technology, and vocational education."
+      },
+      "coreValues": {
+        "title": "Core Values",
+        "content": "UTEHY's core values include quality and responsibility in education; creativity in teaching and research; effective collaboration with enterprises, local authorities, and communities; a strong service mindset for learners; and a disciplined, humane, and professional culture. These values are reflected in daily operations: lecturers innovate teaching methods, students build professional work ethics, and academic units coordinate transparently with outcome quality as a key benchmark. The university also fosters an academic ecosystem that encourages critical thinking, entrepreneurial spirit, and lifelong learning so graduates can adapt to a rapidly changing labor market. On this foundation, UTEHY remains committed to sustainable development and to creating long-term value for learners, partner enterprises, and society."
+      }
+    }
+  },
   "myprofile": {
     "title": "MY PROFILE",
     "tabs": {

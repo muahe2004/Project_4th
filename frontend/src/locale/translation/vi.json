@@ -102,6 +102,22 @@
       "title2": ""
     }
   },
+  "about": {
+    "sections": {
+      "intro": {
+        "title": "Giới thiệu",
+        "content": "Trường Đại học Sư phạm Kỹ thuật Hưng Yên (UTEHY) là cơ sở giáo dục đại học công lập trực thuộc Bộ Giáo dục và Đào tạo, định hướng ứng dụng và thực hành, gắn đào tạo với nhu cầu nhân lực của doanh nghiệp và xã hội. Với lịch sử phát triển bền bỉ, nhà trường từng bước khẳng định vai trò là trung tâm đào tạo kỹ thuật - công nghệ có uy tín tại khu vực Đồng bằng sông Hồng và trên cả nước. Môi trường học tập tại UTEHY chú trọng tính thực tiễn, giúp sinh viên không chỉ nắm vững kiến thức nền tảng mà còn có năng lực triển khai công việc ngay sau khi tốt nghiệp. Thông qua mạng lưới hợp tác doanh nghiệp rộng, sinh viên được tăng cường trải nghiệm thực tập, tham gia dự án thực tế và tiếp cận công nghệ mới trong quá trình học. Bên cạnh hoạt động đào tạo, trường liên tục thúc đẩy nghiên cứu khoa học, chuyển giao công nghệ, phục vụ cộng đồng và đóng góp trực tiếp cho phát triển kinh tế - xã hội địa phương."
+      },
+      "vision": {
+        "title": "Tầm nhìn",
+        "content": "UTEHY hướng tới trở thành trường đại học có uy tín trong hệ thống giáo dục đại học Việt Nam theo định hướng ứng dụng, đổi mới sáng tạo và hội nhập quốc tế. Tầm nhìn của nhà trường không dừng ở việc mở rộng quy mô đào tạo, mà tập trung nâng cao chất lượng toàn diện: chương trình học cập nhật theo nhu cầu thị trường lao động, phương pháp dạy học hiện đại, năng lực nghiên cứu ứng dụng và khả năng cạnh tranh của người học trong môi trường toàn cầu hóa. Trong giai đoạn chuyển đổi số, UTEHY đặt mục tiêu phát triển mô hình đại học thông minh, tăng cường học liệu số, chuẩn hóa dữ liệu quản trị và tối ưu hóa trải nghiệm học tập của sinh viên. Cùng với đó, nhà trường đẩy mạnh kết nối quốc tế, mở rộng hợp tác học thuật, trao đổi sinh viên - giảng viên, từng bước tiếp cận các chuẩn mực khu vực và quốc tế trong đào tạo kỹ thuật, công nghệ và giáo dục nghề nghiệp."
+      },
+      "coreValues": {
+        "title": "Giá trị cốt lõi",
+        "content": "Giá trị cốt lõi UTEHY theo đuổi gồm: chất lượng và trách nhiệm trong đào tạo; sáng tạo trong giảng dạy và nghiên cứu; hợp tác hiệu quả với doanh nghiệp, địa phương và cộng đồng; tinh thần phục vụ người học; cùng văn hóa kỷ cương - nhân văn - chuyên nghiệp. Mỗi giá trị được cụ thể hóa trong hoạt động hằng ngày: giảng viên đổi mới phương pháp giảng dạy, sinh viên rèn luyện tác phong nghề nghiệp, các đơn vị chuyên môn phối hợp minh bạch và lấy hiệu quả đầu ra làm thước đo chất lượng. Nhà trường đồng thời xây dựng hệ sinh thái học thuật khuyến khích tư duy phản biện, tinh thần khởi nghiệp và năng lực học tập suốt đời để người học thích ứng với thị trường lao động biến đổi nhanh. Trên nền tảng đó, UTEHY kiên định mục tiêu phát triển bền vững, tạo ra giá trị dài hạn cho người học, cho doanh nghiệp đồng hành và cho xã hội."
+      }
+    }
+  },
   "myprofile": {
     "title": "HỒ SƠ CÁ NHÂN",
     "tabs": {
