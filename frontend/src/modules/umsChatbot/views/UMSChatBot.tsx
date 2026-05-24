@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ChatHistory from "../components/ChatHistory";
 import ChatInput from "../components/ChatInput";
 import ChatResponData from "../components/ChatResponData";
@@ -80,6 +81,7 @@ function resolveIntentForResponse(meta: PredictIntentResponse): string {
 }
 
 export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const [text, setText] = useState("");
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
@@ -94,7 +96,8 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
   const history = activeConversation?.messages ?? [];
   const upsertConversation = (conversationId: string, nextMessages: ChatMessage[]) => {
     const nowIso = new Date().toISOString();
-    const firstUserTextRaw = nextMessages.find((item) => item.role === "user")?.content?.trim() || "New chat";
+    const firstUserTextRaw =
+      nextMessages.find((item) => item.role === "user")?.content?.trim() || t("umsChatbot.newChat");
     const firstUserText = capitalizeFirstLetter(firstUserTextRaw);
     setConversations((prev) => {
       const existingIndex = prev.findIndex((item) => item.id === conversationId);
@@ -154,7 +157,9 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
             {
               id: `conv-${Date.now()}`,
               title:
-                capitalizeFirstLetter(parsed.find((item) => item.role === "user")?.content?.slice(0, 60) || "New chat"),
+                capitalizeFirstLetter(
+                  parsed.find((item) => item.role === "user")?.content?.slice(0, 60) || t("umsChatbot.newChat")
+                ),
               updatedAt: new Date().toISOString(),
               messages: parsed as ChatMessage[],
             },
@@ -174,7 +179,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
           )
           .map((item) => ({
             id: String(item.id),
-            title: capitalizeFirstLetter(String(item.title || "New chat")),
+            title: capitalizeFirstLetter(String(item.title || t("umsChatbot.newChat"))),
             updatedAt: String(item.updatedAt || new Date().toISOString()),
             messages: item.messages.filter(
               (msg: ChatMessage) =>
@@ -224,7 +229,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
       const assistantResponse = chatResponse({
         intent: resolvedIntent,
         timeScope: resolvedTimeScope,
-        language: "vi",
+        language: i18n.language === "en" ? "en" : "vi",
         mode:
           Array.isArray(result.service_data) && result.service_data.length > 0
             ? "default"
@@ -246,14 +251,14 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
   };
 
   const quickActions = [
-    "Cho tôi xem lịch học hôm nay",
-    "Xem kết quả học tập",
+    t("umsChatbot.quickActions.todaySchedule"),
+    t("umsChatbot.quickActions.studyResults"),
   ];
   const startNewChat = () => {
     const conversationId = `conv-${Date.now()}`;
     const conversation: ChatConversation = {
       id: conversationId,
-      title: "New chat",
+      title: t("umsChatbot.newChat"),
       updatedAt: new Date().toISOString(),
       messages: [],
     };
@@ -278,11 +283,11 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
       <Box className="ums-chatbot__header">
         <Stack direction="row" spacing={1.2} alignItems="center">
           <Box className="ums-chatbot__logo-wrap">
-            <Box component="img" src={logo} alt="UMS logo" className="ums-chatbot__logo" />
+            <Box component="img" src={logo} alt={t("umsChatbot.logoAlt")} className="ums-chatbot__logo" />
           </Box>
           <Box>
             <Typography fontWeight={700} lineHeight={1.1}>
-              UMS ChatBot
+              {t("umsChatbot.title")}
             </Typography>
           </Box>
         </Stack>
@@ -301,15 +306,15 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
             variant="contained"
             onClick={startNewChat}
           >
-            New chat
+            {t("umsChatbot.newChat")}
           </Button>
           <Typography variant="caption" className="ums-chatbot__recent-title">
-            Recent chats
+            {t("umsChatbot.recentChats")}
           </Typography>
           <List className="ums-chatbot__list">
             {conversations.length === 0 ? (
               <Typography variant="body2" className="ums-chatbot__empty-history">
-                No history yet
+                {t("umsChatbot.noHistory")}
               </Typography>
             ) : (
               conversations.map((conversation) => (
@@ -330,10 +335,6 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
 
         <Box className="ums-chatbot__main">
           <Box ref={viewportRef} className="ums-chatbot__viewport">
-            <Typography variant="body2" fontWeight={600} color="text.secondary">
-              {user?.role ?? "unknown"}
-            </Typography>
-
             <ChatHistory
               history={history}
               renderServiceData={renderServiceData}

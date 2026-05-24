@@ -5,6 +5,8 @@
     "admission": "Admission",
     "scholarship": "Scholarship",
     "register": "Registration",
+    "aboutUTEHY": "About UTEHY",
+    "newsEvents": "News and Events",
     "onlineLearning": "Online Learning"
   },
   "header_menu": {
@@ -1506,6 +1508,34 @@
         "no_data_no_time_scope": "No data found.",
         "no_data_with_time_scope": "No data found for {{timeScope}}."
       }
+    }
+  },
+  "umsChatbot": {
+    "title": "UMS ChatBot",
+    "logoAlt": "UMS logo",
+    "newChat": "New chat",
+    "recentChats": "Recent chats",
+    "noHistory": "No history yet",
+    "emptyPrompt": "Ask me about schedule, scores...",
+    "askPlaceholder": "Ask UMS ChatBot...",
+    "quickActions": {
+      "todaySchedule": "Show my schedule today",
+      "studyResults": "Show study results"
+    },
+    "labels": {
+      "student": "Student",
+      "totalRecords": "Total records: {{count}}",
+      "subject": "Subject",
+      "semesterShort": "Sem",
+      "score": "Score",
+      "type": "Type",
+      "schedule": "Schedule",
+      "period": "Period",
+      "room": "Room",
+      "class": "Class",
+      "examRecords": "{{count}} exam record(s)",
+      "exam": "Exam",
+      "time": "Time"
     }
   }
 }

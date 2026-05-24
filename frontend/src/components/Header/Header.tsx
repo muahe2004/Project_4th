@@ -11,8 +11,9 @@ import {
   Stack,
   Typography
 } from '@mui/material';
+import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from "../../stores/useAuthStore";
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import {
@@ -27,7 +28,6 @@ import {
   teacherTeachingSchedules,
   teacherExaminationSchedules,
   courseRegistrationUrl,
-  testAIUrl,
 } from "../../routes/urls"
 import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
@@ -37,9 +37,11 @@ import UMSChatBot from '../../modules/umsChatbot/views/UMSChatBot';
 const Header: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout); 
   const isTeacher = user?.role === ROLES.TEACHER;
+  const isStudent = user?.role === ROLES.STUDENT;
   const scheduleUrl = isTeacher ? teacherTeachingSchedules : studentLearningSchedules;
   const learningScheduleLabel = isTeacher
     ? t('header_menu.teachingSchedule')
@@ -73,6 +75,7 @@ const Header: React.FC = () => {
     handleCloseUserMenu();     
     navigate(signinUrl);     
   };
+  const isHomeActive = location.pathname === homeUrl;
 
   return (
     <AppBar position="static" className="header">
@@ -84,36 +87,30 @@ const Header: React.FC = () => {
 
         <Stack className="header-navbar" direction="row">
           <Button
-            className="header-navbar__item"
+            className={`header-navbar__item ${isHomeActive ? "header-navbar__item--active" : ""}`}
             disableRipple
             color="inherit"
             onClick={() => handleNavigate(homeUrl)}
           >
             {t('header_navbar.home')}
           </Button>
-          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.trainingProgram')}</Button>
+          {/* <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.trainingProgram')}</Button> */}
           <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.admission')}</Button>
-          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.scholarship')}</Button>
-          <Button
-            className="header-navbar__item"
-            disableRipple
-            color="inherit"
-            onClick={() => handleNavigate(courseRegistrationUrl)}
-          >
-            {t('header_navbar.register')}
-          </Button>
-          <Button
-            className="header-navbar__item"
-            disableRipple
-            color="inherit"
-            onClick={() => setOpenChatBot(true)}
-          >
-            AI Chat
-          </Button>
-          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.onlineLearning')}</Button>
+          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.aboutUTEHY')}</Button>
+          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.newsEvents')}</Button>
+          {/* <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.scholarship')}</Button> */}
+          {/* <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.onlineLearning')}</Button> */}
         </Stack>
 
         <Box className="header-flex">
+          <IconButton
+            className="header-navbar__item"
+            color="inherit"
+            onClick={() => setOpenChatBot(true)}
+            aria-label="Open AI chat"
+          >
+            <SmartToyOutlinedIcon />
+          </IconButton>
           <LanguageSwitcher />
 
           <IconButton onClick={handleOpenUserMenu}>
@@ -135,6 +132,11 @@ const Header: React.FC = () => {
             <MenuItem onClick={() => handleNavigate(isTeacher ? teacherExaminationSchedules : studentExaminationSchedules)}>
               {examScheduleLabel}
             </MenuItem>
+            {isStudent && (
+              <MenuItem onClick={() => handleNavigate(courseRegistrationUrl)}>
+                {t('header_navbar.register')}
+              </MenuItem>
+            )}
             {!isTeacher && (
               <MenuItem onClick={() => handleNavigate(studentTuitionFeesUrl)}>
                 {t('header_menu.tuition')}

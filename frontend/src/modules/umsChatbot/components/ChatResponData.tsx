@@ -10,6 +10,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import type { PredictIntentResponse } from "../apis/predictIntent";
 import "./styles/ChatResponData.css";
 
@@ -88,6 +89,8 @@ function hasValueForColumn(rows: Array<Record<string, unknown>>, column: string)
 }
 
 export default function ChatResponData({ meta }: ChatResponDataProps) {
+  const { t } = useTranslation();
+
   if (!meta?.service_name || !Array.isArray(meta.service_data) || meta.service_data.length === 0) {
     return null;
   }
@@ -103,10 +106,10 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
     return (
       <Stack spacing={1}>
         <Typography variant="subtitle2" fontWeight={700}>
-          {payload.student_info?.name ?? "Student"} - {payload.student_info?.student_code ?? ""}
+          {payload.student_info?.name ?? t("umsChatbot.labels.student")} - {payload.student_info?.student_code ?? ""}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Total records: {payload.scores?.total ?? 0}
+          {t("umsChatbot.labels.totalRecords", { count: payload.scores?.total ?? 0 })}
         </Typography>
         <Stack spacing={0.75}>
           {(payload.scores?.items ?? []).slice(0, 4).map((item, index) => (
@@ -115,15 +118,15 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
               className="chat-response-data__card"
             >
               <Typography variant="body2" fontWeight={600}>
-                {String(item.subject_name ?? "Subject")}
+                {String(item.subject_name ?? t("umsChatbot.labels.subject"))}
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block">
                 {String(item.academic_year ?? "")}
-                {item.semester ? ` · HK ${String(item.semester)}` : ""}
-              </Typography>
-              <Typography variant="body2">
-                Score: {String(item.score ?? "-")} · Type: {String(item.score_type ?? "-")}
-              </Typography>
+                  {item.semester ? ` · ${t("umsChatbot.labels.semesterShort")} ${String(item.semester)}` : ""}
+                </Typography>
+                <Typography variant="body2">
+                  {t("umsChatbot.labels.score")}: {String(item.score ?? "-")} · {t("umsChatbot.labels.type")}: {String(item.score_type ?? "-")}
+                </Typography>
             </Box>
           ))}
         </Stack>
@@ -147,16 +150,16 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
                 className="chat-response-data__card"
               >
                 <Typography variant="body2" fontWeight={600}>
-                  {String(subject.subject_name ?? "Schedule")}
+                  {String(subject.subject_name ?? t("umsChatbot.labels.schedule"))}
                 </Typography>
                 <Typography variant="caption" color="text.secondary" display="block">
                   {String(learningSchedule.date ?? "")}
                 </Typography>
                 <Typography variant="body2">
-                  Period: {String(learningSchedule.start_period ?? "-")} - {String(learningSchedule.end_period ?? "-")}
+                  {t("umsChatbot.labels.period")}: {String(learningSchedule.start_period ?? "-")} - {String(learningSchedule.end_period ?? "-")}
                 </Typography>
                 <Typography variant="body2">
-                  Room: {String(room.room_number ?? "-")} · Class: {String(classInfo.class_name ?? "-")}
+                  {t("umsChatbot.labels.room")}: {String(room.room_number ?? "-")} · {t("umsChatbot.labels.class")}: {String(classInfo.class_name ?? "-")}
                 </Typography>
               </Box>
             );
@@ -171,7 +174,7 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
     return (
       <Stack spacing={1}>
         <Typography variant="subtitle2" fontWeight={700}>
-          {items.length} exam record(s)
+          {t("umsChatbot.labels.examRecords", { count: items.length })}
         </Typography>
         <Stack spacing={0.75}>
           {items.slice(0, 4).map((item, index) => (
@@ -180,14 +183,14 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
               className="chat-response-data__card"
             >
               <Typography variant="body2" fontWeight={600}>
-                {String(item.subject_info && typeof item.subject_info === "object" ? (item.subject_info as Record<string, unknown>).subject_name ?? "Exam" : "Exam")}
+                {String(item.subject_info && typeof item.subject_info === "object" ? (item.subject_info as Record<string, unknown>).subject_name ?? t("umsChatbot.labels.exam") : t("umsChatbot.labels.exam"))}
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block">
                 {String(item.date ?? "")}
               </Typography>
               <Typography variant="body2">
-                Time: {String(item.start_time ?? "-")} - {String(item.end_time ?? "-")}
-              </Typography>
+                {t("umsChatbot.labels.time")}: {String(item.start_time ?? "-")} - {String(item.end_time ?? "-")}
+                </Typography>
             </Box>
           ))}
         </Stack>

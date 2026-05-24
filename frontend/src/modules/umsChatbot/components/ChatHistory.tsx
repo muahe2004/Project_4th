@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import type { PredictIntentResponse } from "../apis/predictIntent";
 import { capitalizeFirstLetter } from "../utils/textFormat";
 import "./styles/ChatHistory.css";
@@ -21,12 +22,14 @@ export default function ChatHistory({
   history,
   renderServiceData,
 }: ChatHistoryProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       <Stack spacing={1.2} className="chat-history">
         {history.length === 0 ? (
           <Box className="chat-history__empty">
-            <Typography variant="body2">Nice! Ask me anything.</Typography>
+            <Typography variant="body2">{t("umsChatbot.emptyPrompt")}</Typography>
           </Box>
         ) : (
           history.map((message, index) => (

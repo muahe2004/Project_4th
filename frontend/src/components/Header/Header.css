@@ -45,6 +45,10 @@
     cursor: pointer;
 }
 
+.header-navbar__item--active {
+    border-color: var(--secondary-color) !important;
+}
+
 .header-avatar {
     background: var(--secondary-color) !important;
 }

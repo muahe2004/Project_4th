@@ -1,5 +1,6 @@
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import { Box, IconButton, TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import "./styles/ChatInput.css";
 
 interface ChatInputProps {
@@ -10,13 +11,15 @@ interface ChatInputProps {
 }
 
 export default function ChatInput({ text, onChangeText, onSend, disabled }: ChatInputProps) {
+  const { t } = useTranslation();
+
   return (
     <Box className="chat-input">
       <TextField
         className="chat-input__field"
         value={text}
         onChange={(e) => onChangeText(e.target.value)}
-        placeholder="Reply to UMS ChatBot..."
+        placeholder={t("umsChatbot.askPlaceholder")}
         fullWidth
         size="small"
         multiline

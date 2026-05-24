@@ -5,6 +5,8 @@
     "admission": "Tuyển sinh",
     "scholarship": "Học bổng",
     "register": "Đăng ký",
+    "aboutUTEHY": "Về UTEHY",
+    "newsEvents": "Tin tức và sự kiện",
     "onlineLearning": "Học trực tuyến"
   },
   "header_menu": {
@@ -1523,6 +1525,34 @@
         "no_data_no_time_scope": "Không có dữ liệu.",
         "no_data_with_time_scope": "Không có dữ liệu cho {{timeScope}}."
       }
+    }
+  },
+  "umsChatbot": {
+    "title": "UMS ChatBot",
+    "logoAlt": "Logo UMS",
+    "newChat": "Đoạn chat mới",
+    "recentChats": "Đoạn chat gần đây",
+    "noHistory": "Chưa có lịch sử chat",
+    "emptyPrompt": "Hãy hỏi tôi về lịch học, điểm số...",
+    "askPlaceholder": "Hỏi UMS ChatBot...",
+    "quickActions": {
+      "todaySchedule": "Cho tôi xem lịch học hôm nay",
+      "studyResults": "Xem kết quả học tập"
+    },
+    "labels": {
+      "student": "Sinh viên",
+      "totalRecords": "Tổng bản ghi: {{count}}",
+      "subject": "Môn học",
+      "semesterShort": "HK",
+      "score": "Điểm",
+      "type": "Loại",
+      "schedule": "Lịch học",
+      "period": "Tiết",
+      "room": "Phòng",
+      "class": "Lớp",
+      "examRecords": "{{count}} bản ghi lịch thi",
+      "exam": "Lịch thi",
+      "time": "Giờ"
     }
   }
 }
