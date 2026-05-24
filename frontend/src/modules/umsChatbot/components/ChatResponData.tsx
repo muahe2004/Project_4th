@@ -164,12 +164,6 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
 
     return (
       <Stack spacing={1}>
-        <Typography variant="subtitle2" fontWeight={700}>
-          {payload.student_info?.name ?? t("umsChatbot.labels.student")} - {payload.student_info?.student_code ?? ""}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {t("umsChatbot.labels.totalRecords", { count: payload.scores?.total ?? 0 })}
-        </Typography>
         <TableContainer component={Paper} className="sticky-table-container chat-response-data__table-wrap">
           <Table stickyHeader size="small" className="sticky-table">
             <TableHead className="primary-thead">

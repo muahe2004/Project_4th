@@ -60,6 +60,29 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
   const { showSnackbar } = useSnackbar();
   const id = initialValues?.id;
   const isEdit = mode === "edit";
+  const parseScheduleDate = (dateValue?: string | null): Date => {
+    if (!dateValue) return new Date();
+    const isoDatePart = dateValue.slice(0, 10);
+    const [yearStr, monthStr, dayStr] = isoDatePart.split("-");
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+    const day = Number(dayStr);
+    if (
+      !Number.isFinite(year) ||
+      !Number.isFinite(month) ||
+      !Number.isFinite(day)
+    ) {
+      return new Date(dateValue);
+    }
+    return new Date(year, month - 1, day);
+  };
+
+  const toLocalIsoStartOfDay = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}T00:00:00`;
+  };
 
   const [formValues, setFormValues] = useState({
     classId: "",
@@ -191,7 +214,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
         subjectCode: "",
         subjectName: initialValues.subject?.subject_name || "",
         date: initialValues.learning_schedule.date
-          ? new Date(initialValues.learning_schedule.date)
+          ? parseScheduleDate(initialValues.learning_schedule.date)
           : new Date(),
         startPeriod: initialValues.learning_schedule.start_period || 1,
         endPeriod: initialValues.learning_schedule.end_period || 1,
@@ -329,7 +352,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
         learning_schedule: {
           class_id: formValues.classId,
           subject_id: formValues.subjectId,
-          date: dayjs(formValues.date).toISOString(),
+          date: toLocalIsoStartOfDay(formValues.date),
           start_period: formValues.startPeriod,
           end_period: formValues.endPeriod,
           room_id: formValues.roomId || null,
@@ -354,7 +377,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
       learning_schedule: {
         class_id: formValues.classId,
         subject_id: formValues.subjectId,
-        date: dayjs(formValues.date).toISOString(),
+        date: toLocalIsoStartOfDay(formValues.date),
         start_period: formValues.startPeriod,
         end_period: formValues.endPeriod,
         room_id: formValues.roomId || null,

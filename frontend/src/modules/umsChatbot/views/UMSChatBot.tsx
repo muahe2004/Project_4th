@@ -150,6 +150,22 @@ function resolveIntentForResponse(meta: PredictIntentResponse): string {
   return "";
 }
 
+function hasExplicitTimeInMessage(message: string): boolean {
+  const normalized = message.trim().toLowerCase();
+  return (
+    normalized.includes("hôm nay") ||
+    normalized.includes("ngày mai") ||
+    normalized.includes("tuần này") ||
+    normalized.includes("tuần sau") ||
+    normalized.includes("tháng này") ||
+    normalized.includes("today") ||
+    normalized.includes("tomorrow") ||
+    normalized.includes("this week") ||
+    normalized.includes("next week") ||
+    normalized.includes("this month")
+  );
+}
+
 export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
   const { t, i18n } = useTranslation();
   const user = useAuthStore((state) => state.user);
@@ -350,10 +366,14 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
     setText("");
 
     try {
+      const shouldUseSelectedScope =
+        Boolean(selectedTimeScope) && !hasExplicitTimeInMessage(question);
       const result = await mutation.mutateAsync({
         payload: {
           message: question,
-          ...(selectedTimeScope ? { time_scope: selectedTimeScope } : {}),
+          ...(shouldUseSelectedScope && selectedTimeScope
+            ? { time_scope: selectedTimeScope }
+            : {}),
         },
       });
       const resolvedTimeScope = result.time_scope ?? "today";
@@ -377,8 +397,10 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
           meta: shouldKeepMeta ? result : undefined,
         },
       ]);
+      setSelectedTimeScope(null);
     } catch {
       upsertConversation(currentConversationId, nextHistory);
+      setSelectedTimeScope(null);
     }
   };
 
@@ -400,6 +422,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
       return next;
     });
     setActiveConversationId(conversationId);
+    setSelectedTimeScope(null);
   };
 
   return (
