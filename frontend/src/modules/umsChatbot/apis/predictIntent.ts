@@ -4,6 +4,8 @@ import { BASE_UNICORE_API_URL, UNICORE_PREFIX } from "../../../constants/config"
 
 export interface PredictIntentRequest {
   message: string;
+  time_scope?: string;
+  intent?: string;
 }
 
 export interface PredictIntentResponse {

@@ -1502,6 +1502,12 @@
         "no_data_no_time_scope": "No study result data found.",
         "no_data_with_time_scope": "No study result data found for {{timeScope}}."
       },
+      "unknown": {
+        "no_time_scope": "What would you like to ask? Try asking me about your schedule, exams, or scores.",
+        "with_time_scope": "What would you like to ask? Try asking me about your schedule, exams, or scores.",
+        "no_data_no_time_scope": "What would you like to ask? Try asking me about your schedule, exams, or scores.",
+        "no_data_with_time_scope": "What would you like to ask? Try asking me about your schedule, exams, or scores."
+      },
       "fallback": {
         "no_time_scope": "Here is your information:",
         "with_time_scope": "Here is your information for {{timeScope}}:",

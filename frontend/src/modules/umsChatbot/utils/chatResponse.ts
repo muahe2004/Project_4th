@@ -16,6 +16,7 @@ interface ChatResponseResult {
 }
 
 const NO_TIME_SCOPE_INTENTS = new Set([
+  "unknown",
   "department_info",
   "major_info",
   "specialization_info",

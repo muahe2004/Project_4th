@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { PredictIntentResponse } from "../apis/predictIntent";
+import { COMPONENT_TYPE_FINAL_ALIASES, COMPONENT_TYPE_MIDDLE_ALIASES } from "../../grades/types";
 import "./styles/ChatResponData.css";
 
 interface ChatResponDataProps {
@@ -90,8 +91,12 @@ function hasValueForColumn(rows: Array<Record<string, unknown>>, column: string)
 
 export default function ChatResponData({ meta }: ChatResponDataProps) {
   const { t } = useTranslation();
+  const normalizedIntent = String(meta?.intent ?? "").trim().toLowerCase();
 
   if (!meta?.service_name || !Array.isArray(meta.service_data) || meta.service_data.length === 0) {
+    return null;
+  }
+  if (normalizedIntent === "out_of_scope") {
     return null;
   }
 
@@ -102,6 +107,60 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
       student_info?: { student_code?: string; name?: string };
       scores?: { items?: Array<Record<string, unknown>>; total?: number };
     };
+    const scoreItems = payload.scores?.items ?? [];
+    const rowsMap = new Map<
+      string,
+      {
+        subjectName: string;
+        term: string;
+        d1: string;
+        d2: string;
+        thi: string;
+      }
+    >();
+    const middleAliases = new Set(COMPONENT_TYPE_MIDDLE_ALIASES.map((item) => item.toUpperCase().trim()));
+    const finalAliases = new Set(COMPONENT_TYPE_FINAL_ALIASES.map((item) => item.toUpperCase().trim()));
+    const middleCandidates = new Map<string, Array<{ createdAt: number; score: string }>>();
+
+    scoreItems.forEach((item) => {
+      const subjectId = String(item.subject_id ?? "");
+      const termText = `${String(item.academic_year ?? "")}${item.semester ? ` - ${t("umsChatbot.labels.semesterShort")} ${String(item.semester)}` : ""}`;
+      const key = `${subjectId}-${termText}`;
+      if (!rowsMap.has(key)) {
+        rowsMap.set(key, {
+          subjectName: String(item.subject_name ?? t("umsChatbot.labels.subject")),
+          term: termText,
+          d1: "-",
+          d2: "-",
+          thi: "-",
+        });
+        middleCandidates.set(key, []);
+      }
+      const row = rowsMap.get(key);
+      if (!row) return;
+      const componentType = String(
+        item.score_component && typeof item.score_component === "object"
+          ? (item.score_component as Record<string, unknown>).component_type ?? ""
+          : ""
+      )
+        .trim()
+        .toUpperCase();
+      const scoreValue = String(item.score ?? "-");
+      if (finalAliases.has(componentType)) {
+        row.thi = scoreValue;
+      } else if (middleAliases.has(componentType)) {
+        const createdAt = new Date(String(item.created_at ?? "")).getTime();
+        middleCandidates.get(key)?.push({ createdAt, score: scoreValue });
+      }
+    });
+    middleCandidates.forEach((values, key) => {
+      const row = rowsMap.get(key);
+      if (!row || values.length === 0) return;
+      const sorted = [...values].sort((a, b) => a.createdAt - b.createdAt);
+      row.d1 = sorted[0]?.score ?? "-";
+      row.d2 = sorted[1]?.score ?? "-";
+    });
+    const scoreRows = Array.from(rowsMap.values());
 
     return (
       <Stack spacing={1}>
@@ -111,25 +170,36 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
         <Typography variant="body2" color="text.secondary">
           {t("umsChatbot.labels.totalRecords", { count: payload.scores?.total ?? 0 })}
         </Typography>
-        <Stack spacing={0.75}>
-          {(payload.scores?.items ?? []).slice(0, 4).map((item, index) => (
-            <Box
-              key={`${String(item.id ?? index)}-${index}`}
-              className="chat-response-data__card"
-            >
-              <Typography variant="body2" fontWeight={600}>
-                {String(item.subject_name ?? t("umsChatbot.labels.subject"))}
-              </Typography>
-              <Typography variant="caption" color="text.secondary" display="block">
-                {String(item.academic_year ?? "")}
-                  {item.semester ? ` · ${t("umsChatbot.labels.semesterShort")} ${String(item.semester)}` : ""}
-                </Typography>
-                <Typography variant="body2">
-                  {t("umsChatbot.labels.score")}: {String(item.score ?? "-")} · {t("umsChatbot.labels.type")}: {String(item.score_type ?? "-")}
-                </Typography>
-            </Box>
-          ))}
-        </Stack>
+        <TableContainer component={Paper} className="sticky-table-container chat-response-data__table-wrap">
+          <Table stickyHeader size="small" className="sticky-table">
+            <TableHead className="primary-thead">
+              <TableRow className="primary-trow">
+                <TableCell className="primary-thead__cell" align="center">{t("umsChatbot.labels.subject")}</TableCell>
+                <TableCell className="primary-thead__cell" align="center">D1</TableCell>
+                <TableCell className="primary-thead__cell" align="center">D2</TableCell>
+                <TableCell className="primary-thead__cell" align="center">Thi</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody className="sticky-tbody">
+              {scoreRows.slice(0, 8).map((row, index) => (
+                <TableRow key={`${row.subjectName}-${row.term}-${index}`} className="sticky-trow">
+                  <TableCell className="sticky-tcell chat-response-data__td" align="left">
+                    {row.subjectName}
+                  </TableCell>
+                  <TableCell className="sticky-tcell chat-response-data__td" align="center">
+                    {row.d1}
+                  </TableCell>
+                  <TableCell className="sticky-tcell chat-response-data__td" align="center">
+                    {row.d2}
+                  </TableCell>
+                  <TableCell className="sticky-tcell chat-response-data__td" align="center">
+                    {row.thi}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Stack>
     );
   }
@@ -202,7 +272,6 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
     (item) => item && typeof item === "object" && !Array.isArray(item)
   ) as Array<Record<string, unknown>>;
   if (tableRows.length > 0) {
-    const normalizedIntent = String(meta.intent ?? "").trim().toLowerCase();
     const rowKeys = Object.keys(tableRows[0] ?? {});
     const mappedColumns = (BASIC_COLUMNS_BY_INTENT[normalizedIntent] ?? []).filter((key) =>
       hasValueForColumn(tableRows, key)

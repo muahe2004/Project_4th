@@ -880,6 +880,8 @@ class ScoresServices:
 
         if query.subject_id:
             statement = statement.where(Scores.subject_id == query.subject_id)
+        if query.status:
+            statement = statement.where(Scores.status == query.status)
 
         rows = session.exec(statement.order_by(Scores.created_at.desc())).all()
 
@@ -1086,6 +1088,7 @@ class ScoresServices:
         existing = session.exec(
             select(Scores).where(
                 Scores.student_id == score.student_id,
+                Scores.subject_id == score.subject_id,
                 Scores.score_component_id == resolved_score_component_id,
                 Scores.attempt == score.attempt,
             )
@@ -1116,7 +1119,7 @@ class ScoresServices:
                 detail="scores must not be empty.",
             )
 
-        seen_keys: set[tuple[uuid.UUID, uuid.UUID, int]] = set()
+        seen_keys: set[tuple[uuid.UUID, uuid.UUID, uuid.UUID, int]] = set()
         for item in payload.scores:
             resolved_score_component_id = item.score_component_id
             if resolved_score_component_id is None:
@@ -1125,7 +1128,12 @@ class ScoresServices:
                     component_type=getattr(item, "component_type", None),
                 )
 
-            key = (item.student_id, resolved_score_component_id, item.attempt)
+            key = (
+                item.student_id,
+                item.subject_id,
+                resolved_score_component_id,
+                item.attempt,
+            )
             if key in seen_keys:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -1136,6 +1144,7 @@ class ScoresServices:
             existing = session.exec(
                 select(Scores).where(
                     Scores.student_id == item.student_id,
+                    Scores.subject_id == item.subject_id,
                     Scores.score_component_id == resolved_score_component_id,
                     Scores.attempt == item.attempt,
                 )

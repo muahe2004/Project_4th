@@ -69,6 +69,13 @@ function formatDate(dateValue: string): Date {
   return new Date(dateValue);
 }
 
+function toLocalDateParam(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 interface TeachingSchedulesTableProps {
   selectedDate: Date;
   search?: string;
@@ -97,8 +104,8 @@ export function TeachingSchedulesTable({
       skip: 0,
       ...(search && { search }),
       ...{
-        start_date: monday.toISOString().slice(0, 10),
-        end_date: addDays(monday, 6).toISOString().slice(0, 10),
+        start_date: toLocalDateParam(monday),
+        end_date: toLocalDateParam(addDays(monday, 6)),
       },
     }),
     [monday, search]

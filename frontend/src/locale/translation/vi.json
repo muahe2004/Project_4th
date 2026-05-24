@@ -1519,6 +1519,12 @@
         "no_data_no_time_scope": "Không có dữ liệu kết quả học tập.",
         "no_data_with_time_scope": "Không có dữ liệu kết quả học tập {{timeScope}}."
       },
+      "unknown": {
+        "no_time_scope": "Bạn muốn hỏi gì? Hãy hỏi tôi về lịch học, lịch thi, điểm số...",
+        "with_time_scope": "Bạn muốn hỏi gì? Hãy hỏi tôi về lịch học, lịch thi, điểm số...",
+        "no_data_no_time_scope": "Bạn muốn hỏi gì? Hãy hỏi tôi về lịch học, lịch thi, điểm số...",
+        "no_data_with_time_scope": "Bạn muốn hỏi gì? Hãy hỏi tôi về lịch học, lịch thi, điểm số..."
+      },
       "fallback": {
         "no_time_scope": "Đây là thông tin của bạn:",
         "with_time_scope": "Đây là thông tin {{timeScope}} của bạn:",

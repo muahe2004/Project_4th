@@ -93,6 +93,7 @@ class ScoreBulkStatusUpdateResponse(SQLModel):
 class StudentScoreFilterParams(SQLModel):
     academic_term_id: Optional[UUID] = Field(default=None)
     subject_id: Optional[UUID] = Field(default=None)
+    status: Optional[str] = Field(default=None)
 
 
 class StudentInfoScoreResponse(SQLModel):

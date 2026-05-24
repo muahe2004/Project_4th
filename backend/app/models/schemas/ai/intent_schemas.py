@@ -4,6 +4,8 @@ from app.models.schemas.common.query import DateRange
 
 class PredictIntentRequest(SQLModel):
     message: str
+    time_scope: str | None = None
+    intent: str | None = None
 
 
 class PredictIntentResponse(SQLModel):

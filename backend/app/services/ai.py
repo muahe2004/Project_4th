@@ -35,6 +35,14 @@ from app.services.tuition_fees import TuitionFeeServices
 
 
 class AIService:
+    SUPPORTED_TIME_SCOPES: set[str] = {
+        "today",
+        "tomorrow",
+        "this_week",
+        "next_week",
+        "this_month",
+        "next_month",
+    }
     INTENT_I18N_META: dict[str, dict[str, str]] = {
         "role_unsupported": {
             "message_key": "chatbot.intent.role_unsupported",
@@ -74,7 +82,15 @@ class AIService:
     @staticmethod
     def predict_intent(payload: PredictIntentRequest) -> dict[str, Any]:
         result = predict_intent(text=payload.message)
-        result["time_scope"] = "today"
+        requested_scope = str(payload.time_scope or "").strip().lower()
+        if requested_scope in AIService.SUPPORTED_TIME_SCOPES:
+            result["time_scope"] = requested_scope
+        else:
+            result["time_scope"] = "today"
+
+        requested_intent = str(payload.intent or "").strip().lower()
+        if requested_intent:
+            result["intent"] = requested_intent
         return result
 
     @staticmethod
@@ -125,6 +141,35 @@ class AIService:
         reference_date: date | None = None,
     ) -> DateRange:
         today = reference_date or datetime.today().date()
+        normalized_scope = str(scope or "").strip().lower()
+
+        if normalized_scope == "tomorrow":
+            target = today.fromordinal(today.toordinal() + 1)
+            return DateRange(start_date=target, end_date=target)
+
+        if normalized_scope in {"this_week", "next_week"}:
+            monday = today.fromordinal(today.toordinal() - today.weekday())
+            if normalized_scope == "next_week":
+                monday = monday.fromordinal(monday.toordinal() + 7)
+            sunday = monday.fromordinal(monday.toordinal() + 6)
+            return DateRange(start_date=monday, end_date=sunday)
+
+        if normalized_scope in {"this_month", "next_month"}:
+            year = today.year
+            month = today.month
+            if normalized_scope == "next_month":
+                month += 1
+                if month > 12:
+                    month = 1
+                    year += 1
+            start = date(year, month, 1)
+            if month == 12:
+                next_month_start = date(year + 1, 1, 1)
+            else:
+                next_month_start = date(year, month + 1, 1)
+            end = next_month_start.fromordinal(next_month_start.toordinal() - 1)
+            return DateRange(start_date=start, end_date=end)
+
         return DateRange(start_date=today, end_date=today)
 
     @staticmethod
@@ -305,7 +350,7 @@ class AIService:
             score_response = ScoresServices.get_by_student(
                 session=session,
                 student_id=student_uuid,
-                query=StudentScoreFilterParams(),
+                query=StudentScoreFilterParams(status="active"),
             )
             return [score_response.model_dump(mode="json")]
 

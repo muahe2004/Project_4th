@@ -16,11 +16,13 @@ interface ChatMessage {
 interface ChatHistoryProps {
   history: ChatMessage[];
   renderServiceData: (meta?: PredictIntentResponse) => ReactNode;
+  renderTimePicker?: (meta: PredictIntentResponse, index: number) => ReactNode;
 }
 
 export default function ChatHistory({
   history,
   renderServiceData,
+  renderTimePicker,
 }: ChatHistoryProps) {
   const { t } = useTranslation();
 
@@ -32,25 +34,39 @@ export default function ChatHistory({
             <Typography variant="body2">{t("umsChatbot.emptyPrompt")}</Typography>
           </Box>
         ) : (
-          history.map((message, index) => (
-            <Box
-              key={`${message.role}-${index}-${message.content}`}
-              className={`chat-history__message ${
-                message.role === "user" ? "chat-history__message--user" : "chat-history__message--assistant"
-              }`}
-            >
-              <Box className={`chat-history__bubble ${message.role === "user" ? "chat-history__bubble--user" : "chat-history__bubble--assistant"}`}>
-                <Typography variant="body2" className="chat-history__text">
-                  {message.role === "assistant" ? capitalizeFirstLetter(message.content) : message.content}
-                </Typography>
-              </Box>
-              {message.role === "assistant" && message.meta ? (
-                <Box className="chat-history__meta">
-                  {renderServiceData(message.meta)}
+          history.map((message, index) => {
+            const hasServiceData =
+              Array.isArray(message.meta?.service_data) && message.meta.service_data.length > 0;
+            const serviceDataNode =
+              message.role === "assistant" && message.meta && hasServiceData
+                ? renderServiceData(message.meta)
+                : null;
+            const timePickerNode =
+              message.role === "assistant" && message.meta && renderTimePicker
+                ? renderTimePicker(message.meta, index)
+                : null;
+
+            return (
+              <Box
+                key={`${message.role}-${index}-${message.content}`}
+                className={`chat-history__message ${
+                  message.role === "user" ? "chat-history__message--user" : "chat-history__message--assistant"
+                }`}
+              >
+                <Box className={`chat-history__bubble ${message.role === "user" ? "chat-history__bubble--user" : "chat-history__bubble--assistant"}`}>
+                  <Typography variant="body2" className="chat-history__text">
+                    {message.role === "assistant" ? capitalizeFirstLetter(message.content) : message.content}
+                  </Typography>
                 </Box>
-              ) : null}
-            </Box>
-          ))
+                {serviceDataNode ? (
+                  <Box className="chat-history__meta">
+                    {serviceDataNode}
+                  </Box>
+                ) : null}
+                {timePickerNode}
+              </Box>
+            );
+          })
         )}
       </Stack>
 
