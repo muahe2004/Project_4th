@@ -18,6 +18,7 @@ import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete"
 import { useMajorsDropDown } from "../../majors/apis/getMajorsDropDown";
 import { useMajorsDropDownByIds } from "../../majors/apis/getMajorsDropDownByIds";
 import { useTranslation } from "react-i18next";
+import { getRequiredError } from "../../../utils/validation/fieldErrors";
 
 interface SpecializationsFormProps {
     open: boolean;
@@ -40,6 +41,9 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
     const [isChanged, setIsChanged] = useState(false);
     const [pendingPayload, setPendingPayload] = useState<ISpecializations | null>(null);
     const [searchMajor, setSearchMajor] = useState("");
+    const [specializationCodeError, setSpecializationCodeError] = useState("");
+    const [specializationNameError, setSpecializationNameError] = useState("");
+    const [majorError, setMajorError] = useState("");
 
     const currentValues: ISpecializations = {
         specialization_code: specializationCode.trim(),
@@ -89,7 +93,31 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
             setDescription("");
             setMajorId("");
         }
+        setSpecializationCodeError("");
+        setSpecializationNameError("");
+        setMajorError("");
     }, [mode, initialValues, open]);
+
+    const validateRequiredFields = () => {
+        const codeError = getRequiredError(
+            specializationCode,
+            t("specializations.form.errors.specializationCodeRequired")
+        );
+        const nameError = getRequiredError(
+            specializationName,
+            t("specializations.form.errors.specializationNameRequired")
+        );
+        const majorRequiredError = getRequiredError(
+            majorId,
+            t("specializations.form.errors.majorRequired")
+        );
+
+        setSpecializationCodeError(codeError);
+        setSpecializationNameError(nameError);
+        setMajorError(majorRequiredError);
+
+        return !codeError && !nameError && !majorRequiredError;
+    };
 
     useEffect(() => {
         if (mode === "edit" && initialValues) {
@@ -119,6 +147,10 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
     }, [specializationCode, specializationName, establishedDate, description, majorId, mode, initialValues]);
 
     const handleSubmitClick = () => {
+        if (!validateRequiredFields()) {
+            return;
+        }
+
         const payload = currentValues;
 
         if (mode === "edit" && initialValues) {
@@ -165,7 +197,23 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                 <LabelPrimary value={t("specializations.form.labels.specializationCode")} required />
                 <TextField
                     value={specializationCode}
-                    onChange={(e) => setSpecializationCode(e.target.value)}
+                    onChange={(e) => {
+                        setSpecializationCode(e.target.value);
+                        if (specializationCodeError) {
+                            setSpecializationCodeError("");
+                        }
+                    }}
+                    onBlur={() =>
+                        setSpecializationCodeError(
+                            getRequiredError(
+                                specializationCode,
+                                t("specializations.form.errors.specializationCodeRequired")
+                            )
+                        )
+                    }
+                    onFocus={() => setSpecializationCodeError("")}
+                    error={Boolean(specializationCodeError)}
+                    helperText={specializationCodeError}
                     fullWidth
                     variant="outlined"
                     className="main-text__field primary-dialog-input"
@@ -174,7 +222,23 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                 <LabelPrimary value={t("specializations.form.labels.specializationName")} required />
                 <TextField
                     value={specializationName}
-                    onChange={(e) => setSpecializationName(e.target.value)}
+                    onChange={(e) => {
+                        setSpecializationName(e.target.value);
+                        if (specializationNameError) {
+                            setSpecializationNameError("");
+                        }
+                    }}
+                    onBlur={() =>
+                        setSpecializationNameError(
+                            getRequiredError(
+                                specializationName,
+                                t("specializations.form.errors.specializationNameRequired")
+                            )
+                        )
+                    }
+                    onFocus={() => setSpecializationNameError("")}
+                    error={Boolean(specializationNameError)}
+                    helperText={specializationNameError}
                     fullWidth
                     variant="outlined"
                     className="main-text__field primary-dialog-input"
@@ -200,6 +264,14 @@ const SpecializationForm: React.FC<SpecializationsFormProps> = ({ open, mode, in
                     getOptionId={(option) => option.id.toString()}
                     placeholder={t("specializations.form.majorPlaceholder")}
                     className="primary-dialog-auto-complete"
+                    error={Boolean(majorError)}
+                    helperText={majorError}
+                    onBlur={() =>
+                        setMajorError(
+                            getRequiredError(majorId, t("specializations.form.errors.majorRequired"))
+                        )
+                    }
+                    onFocus={() => setMajorError("")}
                 />
 
                 <LabelPrimary value={t("specializations.form.labels.description")} />

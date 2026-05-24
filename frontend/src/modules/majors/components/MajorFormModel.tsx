@@ -18,6 +18,7 @@ import { useCreateMajor } from "../apis/addMajor";
 import { useEditMajor } from "../apis/editMajor";
 import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import { useTranslation } from "react-i18next";
+import { getRequiredError } from "../../../utils/validation/fieldErrors";
 
 interface MajorFormProps {
     open: boolean;
@@ -40,6 +41,9 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
     const [isChanged, setIsChanged] = useState(false);
     const [pendingPayload, setPendingPayload] = useState<IMajors | null>(null);
     const [searchDepartment, setSearchDepartment] = useState("");
+    const [majorCodeError, setMajorCodeError] = useState("");
+    const [majorNameError, setMajorNameError] = useState("");
+    const [departmentError, setDepartmentError] = useState("");
 
     const currentValues: IMajors = {
         major_code: majorCode.trim(),
@@ -89,7 +93,22 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
             setDescription("");
             setDepartmentId("");
         }
+        setMajorCodeError("");
+        setMajorNameError("");
+        setDepartmentError("");
     }, [mode, initialValues, open]);
+
+    const validateRequiredFields = () => {
+        const codeError = getRequiredError(majorCode, t("majors.form.errors.majorCodeRequired"));
+        const nameError = getRequiredError(majorName, t("majors.form.errors.majorNameRequired"));
+        const deptError = getRequiredError(departmentId, t("majors.form.errors.departmentRequired"));
+
+        setMajorCodeError(codeError);
+        setMajorNameError(nameError);
+        setDepartmentError(deptError);
+
+        return !codeError && !nameError && !deptError;
+    };
 
     useEffect(() => {
         if (mode === "edit" && initialValues) {
@@ -119,6 +138,10 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
     }, [majorCode, majorName, establishedDate, description, departmentId, mode, initialValues]);
 
     const handleSubmitClick = () => {
+        if (!validateRequiredFields()) {
+            return;
+        }
+
         const payload = currentValues;
 
         if (mode === "edit" && initialValues) {
@@ -163,7 +186,20 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                 <LabelPrimary value={t("majors.form.labels.majorCode")} required />
                 <TextField
                     value={majorCode}
-                    onChange={(e) => setMajorCode(e.target.value)}
+                    onChange={(e) => {
+                        setMajorCode(e.target.value);
+                        if (majorCodeError) {
+                            setMajorCodeError("");
+                        }
+                    }}
+                    onBlur={() =>
+                        setMajorCodeError(
+                            getRequiredError(majorCode, t("majors.form.errors.majorCodeRequired"))
+                        )
+                    }
+                    onFocus={() => setMajorCodeError("")}
+                    error={Boolean(majorCodeError)}
+                    helperText={majorCodeError}
                     fullWidth
                     variant="outlined"
                     className="main-text__field primary-dialog-input"
@@ -172,7 +208,20 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                 <LabelPrimary value={t("majors.form.labels.majorName")} required />
                 <TextField
                     value={majorName}
-                    onChange={(e) => setMajorName(e.target.value)}
+                    onChange={(e) => {
+                        setMajorName(e.target.value);
+                        if (majorNameError) {
+                            setMajorNameError("");
+                        }
+                    }}
+                    onBlur={() =>
+                        setMajorNameError(
+                            getRequiredError(majorName, t("majors.form.errors.majorNameRequired"))
+                        )
+                    }
+                    onFocus={() => setMajorNameError("")}
+                    error={Boolean(majorNameError)}
+                    helperText={majorNameError}
                     fullWidth
                     variant="outlined"
                     className="main-text__field primary-dialog-input"
@@ -198,6 +247,14 @@ const MajorForm: React.FC<MajorFormProps> = ({ open, mode, initialValues, onClos
                     getOptionId={(option) => option.id.toString()}
                     placeholder={t("majors.form.departmentPlaceholder")}
                     className="primary-dialog-auto-complete"
+                    error={Boolean(departmentError)}
+                    helperText={departmentError}
+                    onBlur={() =>
+                        setDepartmentError(
+                            getRequiredError(departmentId, t("majors.form.errors.departmentRequired"))
+                        )
+                    }
+                    onFocus={() => setDepartmentError("")}
                 />
 
                 <LabelPrimary value={t("majors.form.labels.description")} />

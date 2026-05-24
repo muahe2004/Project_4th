@@ -725,6 +725,10 @@
         "departmentName": "Tên khoa",
         "establishedDate": "Ngày thành lập",
         "description": "Mô tả"
+      },
+      "errors": {
+        "departmentCodeRequired": "Vui lòng nhập mã khoa",
+        "departmentNameRequired": "Vui lòng nhập tên khoa"
       }
     },
     "confirm": {
@@ -773,7 +777,12 @@
         "department": "Khoa",
         "description": "Mô tả"
       },
-      "departmentPlaceholder": "Chọn khoa"
+      "departmentPlaceholder": "Chọn khoa",
+      "errors": {
+        "majorCodeRequired": "Vui lòng nhập mã ngành",
+        "majorNameRequired": "Vui lòng nhập tên ngành",
+        "departmentRequired": "Vui lòng chọn khoa"
+      }
     },
     "confirm": {
       "exitTitle": "Xác nhận thoát",
@@ -821,7 +830,12 @@
         "major": "Ngành",
         "description": "Mô tả"
       },
-      "majorPlaceholder": "Chọn ngành"
+      "majorPlaceholder": "Chọn ngành",
+      "errors": {
+        "specializationCodeRequired": "Vui lòng nhập mã chuyên ngành",
+        "specializationNameRequired": "Vui lòng nhập tên chuyên ngành",
+        "majorRequired": "Vui lòng chọn ngành"
+      }
     },
     "confirm": {
       "exitTitle": "Xác nhận thoát",

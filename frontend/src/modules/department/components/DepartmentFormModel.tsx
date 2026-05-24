@@ -14,6 +14,7 @@ import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
 import { useTranslation } from "react-i18next";
+import { getRequiredError } from "../../../utils/validation/fieldErrors";
 
 interface DepartmentFormProps {
     open: boolean;
@@ -31,6 +32,8 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
     const [departmentName, setDepartmentName] = useState("");
     const [establishedDate, setEstablishedDate] = useState<Date | null>(new Date());
     const [description, setDescription] = useState("");
+    const [departmentCodeError, setDepartmentCodeError] = useState("");
+    const [departmentNameError, setDepartmentNameError] = useState("");
 
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
 
@@ -53,7 +56,25 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
             setEstablishedDate(new Date());
             setDescription("");
         }
+        setDepartmentCodeError("");
+        setDepartmentNameError("");
     }, [mode, initialValues, open]);
+
+    const validateRequiredFields = () => {
+        const codeError = getRequiredError(
+            departmentCode,
+            t("departments.form.errors.departmentCodeRequired")
+        );
+        const nameError = getRequiredError(
+            departmentName,
+            t("departments.form.errors.departmentNameRequired")
+        );
+
+        setDepartmentCodeError(codeError);
+        setDepartmentNameError(nameError);
+
+        return !codeError && !nameError;
+    };
 
     const currentValues = {
         department_code: departmentCode,
@@ -70,6 +91,10 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
     });
 
     const handleSubmitClick = () => {
+        if (!validateRequiredFields()) {
+            return;
+        }
+
         if (mode === "add") {
             void handleConfirmSave();
             return;
@@ -135,7 +160,23 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                 <LabelPrimary value={t("departments.form.labels.departmentCode")} required />
                 <TextField
                     value={departmentCode}
-                    onChange={(e) => setDepartmentCode(e.target.value)}
+                    onChange={(e) => {
+                        setDepartmentCode(e.target.value);
+                        if (departmentCodeError) {
+                            setDepartmentCodeError("");
+                        }
+                    }}
+                    onBlur={() =>
+                        setDepartmentCodeError(
+                            getRequiredError(
+                                departmentCode,
+                                t("departments.form.errors.departmentCodeRequired")
+                            )
+                        )
+                    }
+                    onFocus={() => setDepartmentCodeError("")}
+                    error={Boolean(departmentCodeError)}
+                    helperText={departmentCodeError}
                     fullWidth
                     variant="outlined"
                     className="main-text__field primary-dialog-input"
@@ -144,7 +185,23 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                 <LabelPrimary value={t("departments.form.labels.departmentName")} required />
                 <TextField
                     value={departmentName}
-                    onChange={(e) => setDepartmentName(e.target.value)}
+                    onChange={(e) => {
+                        setDepartmentName(e.target.value);
+                        if (departmentNameError) {
+                            setDepartmentNameError("");
+                        }
+                    }}
+                    onBlur={() =>
+                        setDepartmentNameError(
+                            getRequiredError(
+                                departmentName,
+                                t("departments.form.errors.departmentNameRequired")
+                            )
+                        )
+                    }
+                    onFocus={() => setDepartmentNameError("")}
+                    error={Boolean(departmentNameError)}
+                    helperText={departmentNameError}
                     fullWidth
                     variant="outlined"
                     className="main-text__field primary-dialog-input"

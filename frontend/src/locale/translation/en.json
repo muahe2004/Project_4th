@@ -725,6 +725,10 @@
         "departmentName": "Department Name",
         "establishedDate": "Established Date",
         "description": "Description"
+      },
+      "errors": {
+        "departmentCodeRequired": "Please enter department code",
+        "departmentNameRequired": "Please enter department name"
       }
     },
     "confirm": {
@@ -773,7 +777,12 @@
         "department": "Department",
         "description": "Description"
       },
-      "departmentPlaceholder": "Select department"
+      "departmentPlaceholder": "Select department",
+      "errors": {
+        "majorCodeRequired": "Please enter major code",
+        "majorNameRequired": "Please enter major name",
+        "departmentRequired": "Please select department"
+      }
     },
     "confirm": {
       "exitTitle": "Confirm Exit",
@@ -821,7 +830,12 @@
         "major": "Major",
         "description": "Description"
       },
-      "majorPlaceholder": "Select major"
+      "majorPlaceholder": "Select major",
+      "errors": {
+        "specializationCodeRequired": "Please enter specialization code",
+        "specializationNameRequired": "Please enter specialization name",
+        "majorRequired": "Please select major"
+      }
     },
     "confirm": {
       "exitTitle": "Confirm Exit",

@@ -14,6 +14,8 @@ interface MainAutocompleteProps<T> {
     error?: boolean;
     helperText?: string;
     disabled?: boolean;
+    onBlur?: () => void;
+    onFocus?: () => void;
 }
 
 function MainAutocomplete<T>({
@@ -29,6 +31,8 @@ function MainAutocomplete<T>({
     error = false,
     helperText = "",
     disabled = false,
+    onBlur,
+    onFocus,
 }: MainAutocompleteProps<T>) {
     const safeOptions = Array.isArray(options) ? options : [];
 
@@ -74,9 +78,11 @@ function MainAutocomplete<T>({
                     error={error}
                     helperText={helperText}
                     disabled={disabled}
+                    onBlur={onBlur}
                     onFocus={() => {
                         onSearchChange?.("");
                         onResetPage?.();
+                        onFocus?.();
                     }}
                 />
             )}
