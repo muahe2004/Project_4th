@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 
 import Information from "../components/Information";
 import Relatives from "../components/Relatives";
-import ChangePassword from "../components/ChangePassword";
 
 export function MyProfile() {
   const { t } = useTranslation();
@@ -22,13 +21,13 @@ export function MyProfile() {
       <Tabs className="myprofile-tabs" value={value} onChange={handleChange}>
         <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.information")} />
         <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.relatives")} />
-        <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.password")} />
+        {/* <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.password")} /> */}
       </Tabs>
 
       <Box sx={{ mt: 3 }}>
         {value === 0 ? <Information /> : null}
         {value === 1 ? <Relatives /> : null}
-        {value === 2 ? <ChangePassword /> : null}
+        {/* {value === 2 ? <ChangePassword /> : null} */}
       </Box>
     </Box>
   );

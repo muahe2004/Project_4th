@@ -137,7 +137,11 @@
     "messages": {
       "updateSuccess": "Cập nhật thông tin thành công!",
       "updateRelativesSuccess": "Cập nhật người thân thành công!",
+      "validationError": "Vui lòng kiểm tra lại thông tin bắt buộc.",
       "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
+    },
+    "validation": {
+      "required": "Trường này là bắt buộc."
     },
     "fields": {
       "nationality": "Quốc tịch",

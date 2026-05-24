@@ -137,7 +137,11 @@
     "messages": {
       "updateSuccess": "Information updated successfully!",
       "updateRelativesSuccess": "Relatives information updated successfully!",
+      "validationError": "Please review the required fields.",
       "genericError": "An error occurred, please try again!"
+    },
+    "validation": {
+      "required": "This field is required."
     },
     "fields": {
       "nationality": "Nationality",

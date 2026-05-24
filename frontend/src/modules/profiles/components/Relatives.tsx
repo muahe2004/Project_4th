@@ -62,10 +62,16 @@ function RelativeSection({
   title,
   state,
   setState,
+  nameError,
+  onNameBlur,
+  onNameFocus,
 }: {
   title: string;
   state: RelativeFormState;
   setState: Dispatch<SetStateAction<RelativeFormState>>;
+  nameError: string;
+  onNameBlur: () => void;
+  onNameFocus: () => void;
 }) {
   const { t } = useTranslation();
   return (
@@ -82,6 +88,10 @@ function RelativeSection({
           className="main-text__field"
           value={state.name}
           onChange={(e) => setState((prev) => ({ ...prev, name: e.target.value }))}
+          onBlur={onNameBlur}
+          onFocus={onNameFocus}
+          error={Boolean(nameError)}
+          helperText={nameError}
         />
       </Grid>
 
@@ -103,7 +113,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value={t("myprofile.relative.nationality")} required />
+        <LabelPrimary value={t("myprofile.relative.nationality")} />
         <TextField
           fullWidth
           variant="outlined"
@@ -114,7 +124,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value={t("myprofile.relative.ethnicity")} required />
+        <LabelPrimary value={t("myprofile.relative.ethnicity")} />
         <TextField
           fullWidth
           variant="outlined"
@@ -125,7 +135,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value={t("myprofile.relative.religion")} required />
+        <LabelPrimary value={t("myprofile.relative.religion")} />
         <TextField
           fullWidth
           variant="outlined"
@@ -136,7 +146,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={4} className="myprofile-form__group">
-        <LabelPrimary value={t("myprofile.relative.phone")} required />
+        <LabelPrimary value={t("myprofile.relative.phone")} />
         <TextField
           fullWidth
           variant="outlined"
@@ -147,7 +157,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={6} className="myprofile-form__group">
-        <LabelPrimary value={t("myprofile.relative.address")} required />
+        <LabelPrimary value={t("myprofile.relative.address")} />
         <TextField
           fullWidth
           variant="outlined"
@@ -158,7 +168,7 @@ function RelativeSection({
       </Grid>
 
       <Grid size={6} className="myprofile-form__group">
-        <LabelPrimary value={t("myprofile.relative.occupation")} required />
+        <LabelPrimary value={t("myprofile.relative.occupation")} />
         <TextField
           fullWidth
           variant="outlined"
@@ -187,6 +197,11 @@ export default function Relatives() {
   const [father, setFather] = useState<RelativeFormState>(emptyRelative);
   const [mother, setMother] = useState<RelativeFormState>(emptyRelative);
   const [spouse, setSpouse] = useState<RelativeFormState>(emptyRelative);
+  const [nameTouched, setNameTouched] = useState({
+    father: false,
+    mother: false,
+    spouse: false,
+  });
 
   const relativeBuckets = useMemo(() => {
     const bucket = {
@@ -230,6 +245,30 @@ export default function Relatives() {
 
   const handleSaveRelatives = async () => {
     const tasks: Promise<unknown>[] = [];
+    const hasValueExceptName = (state: RelativeFormState) =>
+      [
+        state.date_of_birth,
+        state.nationality,
+        state.ethnicity,
+        state.religion,
+        state.phone,
+        state.address,
+        state.occupation,
+      ].some((value) => value.trim() !== "");
+
+    const fatherInvalid = hasValueExceptName(father) && !father.name.trim();
+    const motherInvalid = hasValueExceptName(mother) && !mother.name.trim();
+    const spouseInvalid = hasValueExceptName(spouse) && !spouse.name.trim();
+
+    if (fatherInvalid || motherInvalid || spouseInvalid) {
+      setNameTouched({
+        father: fatherInvalid,
+        mother: motherInvalid,
+        spouse: spouseInvalid,
+      });
+      showSnackbar(t("myprofile.messages.validationError"), "error");
+      return;
+    }
 
     const buildRelative = (state: RelativeFormState, relationship: string) => {
       const hasValue = Object.values(state).some((value) => value.trim() !== "");
@@ -295,12 +334,29 @@ export default function Relatives() {
 
   return (
     <Grid container spacing={2} className="myprofile-form">
-      <RelativeSection title={t("myprofile.relativeSections.father")} state={father} setState={setFather} />
-      <RelativeSection title={t("myprofile.relativeSections.mother")} state={mother} setState={setMother} />
+      <RelativeSection
+        title={t("myprofile.relativeSections.father")}
+        state={father}
+        setState={setFather}
+        nameError={nameTouched.father && !father.name.trim() ? t("myprofile.validation.required") : ""}
+        onNameBlur={() => setNameTouched((prev) => ({ ...prev, father: true }))}
+        onNameFocus={() => setNameTouched((prev) => ({ ...prev, father: false }))}
+      />
+      <RelativeSection
+        title={t("myprofile.relativeSections.mother")}
+        state={mother}
+        setState={setMother}
+        nameError={nameTouched.mother && !mother.name.trim() ? t("myprofile.validation.required") : ""}
+        onNameBlur={() => setNameTouched((prev) => ({ ...prev, mother: true }))}
+        onNameFocus={() => setNameTouched((prev) => ({ ...prev, mother: false }))}
+      />
       <RelativeSection
         title={t("myprofile.relativeSections.spouse")}
         state={spouse}
         setState={setSpouse}
+        nameError={nameTouched.spouse && !spouse.name.trim() ? t("myprofile.validation.required") : ""}
+        onNameBlur={() => setNameTouched((prev) => ({ ...prev, spouse: true }))}
+        onNameFocus={() => setNameTouched((prev) => ({ ...prev, spouse: false }))}
       />
 
       <Grid size={12} className="myprofile-form__actions">

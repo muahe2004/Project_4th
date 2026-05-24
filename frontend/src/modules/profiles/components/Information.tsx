@@ -238,7 +238,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value={t("myprofile.fields.religion")} required />
+          <LabelPrimary value={t("myprofile.fields.religion")} />
           <TextField
             value={religion}
             onChange={(e) => setReligion(e.target.value)}
@@ -311,7 +311,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value={t("myprofile.fields.phone")} required />
+          <LabelPrimary value={t("myprofile.fields.phone")} />
           <TextField
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -323,7 +323,7 @@ export default function Information() {
 
         {isStudent && (
           <Grid size={4} className="myprofile-form__group">
-            <LabelPrimary value={t("myprofile.fields.trainingProgram")} required />
+            <LabelPrimary value={t("myprofile.fields.trainingProgram")} />
             <TextField
               value={trainingProgram}
               onChange={(e) => setTrainingProgram(e.target.value)}
@@ -336,7 +336,7 @@ export default function Information() {
 
         {isStudent && (
           <Grid size={4} className="myprofile-form__group">
-            <LabelPrimary value={t("myprofile.fields.course")} required />
+            <LabelPrimary value={t("myprofile.fields.course")} />
             <TextField
               value={course}
               onChange={(e) => setCourse(e.target.value)}
@@ -395,7 +395,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value={t("myprofile.fields.citizenId")} required />
+          <LabelPrimary value={t("myprofile.fields.citizenId")} />
           <TextField
             value={citizenId}
             onChange={(e) => setCitizenId(e.target.value)}
@@ -418,7 +418,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value={t("myprofile.fields.issuePlace")} required />
+          <LabelPrimary value={t("myprofile.fields.issuePlace")} />
           <TextField
             value={issuePlace}
             onChange={(e) => setIssuePlace(e.target.value)}
@@ -429,7 +429,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value={t("myprofile.fields.insuranceNumber")} required />
+          <LabelPrimary value={t("myprofile.fields.insuranceNumber")} />
           <TextField
             value={insuranceNumber}
             onChange={(e) => setInsuranceNumber(e.target.value)}
@@ -440,7 +440,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value={t("myprofile.fields.bankName")} required />
+          <LabelPrimary value={t("myprofile.fields.bankName")} />
           <TextField
             value={bankName}
             onChange={(e) => setBankName(e.target.value)}
@@ -451,7 +451,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value={t("myprofile.fields.bankAccountNumber")} required />
+          <LabelPrimary value={t("myprofile.fields.bankAccountNumber")} />
           <TextField
             value={bankAccountNumber}
             onChange={(e) => setBankAccountNumber(e.target.value)}
@@ -462,7 +462,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value={t("myprofile.fields.exemptedGroup")} required />
+          <LabelPrimary value={t("myprofile.fields.exemptedGroup")} />
           <TextField
             value={exemptedGroup}
             onChange={(e) => setExemptedGroup(e.target.value)}
@@ -473,7 +473,7 @@ export default function Information() {
         </Grid>
 
         <Grid size={4} className="myprofile-form__group">
-          <LabelPrimary value={t("myprofile.fields.priorityGroup")} required />
+          <LabelPrimary value={t("myprofile.fields.priorityGroup")} />
           <TextField
             value={priorityGroup}
             onChange={(e) => setPriorityGroup(e.target.value)}
