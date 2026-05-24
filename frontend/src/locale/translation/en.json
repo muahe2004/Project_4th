@@ -421,9 +421,11 @@
       "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
       "errors": {
         "teacherCodeRequired": "Teacher code is required",
+        "teacherCodeInvalid": "Teacher code must start with 01 and be followed by 4 digits",
         "teacherNameRequired": "Teacher name is required",
         "emailRequired": "Email is required",
-        "emailInvalid": "Email format is invalid"
+        "emailInvalid": "Email format is invalid",
+        "phoneInvalid": "Invalid phone number format"
       },
       "relativeSections": {
         "father": "FATHER INFORMATION",

@@ -28,6 +28,12 @@ import { useGetDepartment } from "../../department/apis/getDepartments";
 import { useTranslation } from "react-i18next";
 import { useCreateTeacher } from "../apis/addTeacher";
 import { useUpdateTeacher } from "../apis/updateTeacher";
+import {
+  getEmailError,
+  getPhoneNumberError,
+  getRequiredError,
+  getTeacherCodeError,
+} from "../../../utils/validation/fieldErrors";
 import type {
   ITeacherCreate,
   ITeacherInformation,
@@ -173,6 +179,11 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
   const [teacher, setTeacher] = useState<ITeacherResponse>({ ...DEFAULT_TEACHER });
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [value, setValue] = useState<number>(0);
+  const [teacherCodeError, setTeacherCodeError] = useState("");
+  const [teacherNameError, setTeacherNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [relativePhoneErrors, setRelativePhoneErrors] = useState<Record<number, string>>({});
 
   const { showSnackbar } = useSnackbar();
 
@@ -208,6 +219,11 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
       setTeacher({ ...DEFAULT_TEACHER, teacher_relative: buildRelatives() });
       setDateOfBirth(null);
     }
+    setTeacherCodeError("");
+    setTeacherNameError("");
+    setEmailError("");
+    setPhoneError("");
+    setRelativePhoneErrors({});
   }, [initialValues, mode, open]);
 
   const handleDateChange = (newValue: Date | null) => {
@@ -221,28 +237,92 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
   const { mutateAsync: createTeacher } = useCreateTeacher({});
   const { mutateAsync: updateTeacher } = useUpdateTeacher();
 
+  const validateTeacherCodeField = () => {
+    const message = getTeacherCodeError(
+      teacher.teacher_code,
+      t("teachers.form.errors.teacherCodeRequired"),
+      t("teachers.form.errors.teacherCodeInvalid")
+    );
+    setTeacherCodeError(message);
+    return { valid: !message, message };
+  };
+
+  const validateTeacherNameField = () => {
+    const message = getRequiredError(teacher.name, t("teachers.form.errors.teacherNameRequired"));
+    setTeacherNameError(message);
+    return { valid: !message, message };
+  };
+
+  const validateEmailField = () => {
+    const message = getEmailError(
+      teacher.email,
+      t("teachers.form.errors.emailRequired"),
+      t("teachers.form.errors.emailInvalid")
+    );
+    setEmailError(message);
+    return { valid: !message, message };
+  };
+
+  const validatePhoneField = () => {
+    const message = getPhoneNumberError(teacher.phone, t("teachers.form.errors.phoneInvalid"));
+    setPhoneError(message);
+    return { valid: !message, message };
+  };
+
+  const validateRelativePhoneField = (index: number) => {
+    const relative = (teacher.teacher_relative ?? [])[index];
+    const message = getPhoneNumberError(relative?.phone, t("teachers.form.errors.phoneInvalid"));
+    setRelativePhoneErrors((prev) => ({ ...prev, [index]: message }));
+    return { valid: !message, message };
+  };
+
+  const validateAllRelativePhones = (): boolean => {
+    const relatives = teacher.teacher_relative ?? [];
+    const nextErrors: Record<number, string> = {};
+    let firstInvalidIndex = -1;
+
+    relatives.forEach((relative, index) => {
+      const message = getPhoneNumberError(relative.phone, t("teachers.form.errors.phoneInvalid"));
+      nextErrors[index] = message;
+      if (message && firstInvalidIndex === -1) {
+        firstInvalidIndex = index;
+      }
+    });
+
+    setRelativePhoneErrors(nextErrors);
+    if (firstInvalidIndex !== -1) {
+      setValue(2);
+      showSnackbar(nextErrors[firstInvalidIndex], "error");
+      return false;
+    }
+    return true;
+  };
+
   const validateBasicInfo = (): boolean => {
-    if (!teacher.teacher_code.trim()) {
-      showSnackbar(t("teachers.form.errors.teacherCodeRequired"), "error");
+    const teacherCodeValidation = validateTeacherCodeField();
+    if (!teacherCodeValidation.valid) {
+      showSnackbar(teacherCodeValidation.message, "error");
       setValue(0);
       return false;
     }
 
-    if (!teacher.name.trim()) {
-      showSnackbar(t("teachers.form.errors.teacherNameRequired"), "error");
+    const teacherNameValidation = validateTeacherNameField();
+    if (!teacherNameValidation.valid) {
+      showSnackbar(teacherNameValidation.message, "error");
       setValue(0);
       return false;
     }
 
-    if (!teacher.email.trim()) {
-      showSnackbar(t("teachers.form.errors.emailRequired"), "error");
+    const emailValidation = validateEmailField();
+    if (!emailValidation.valid) {
+      showSnackbar(emailValidation.message, "error");
       setValue(0);
       return false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(teacher.email.trim())) {
-      showSnackbar(t("teachers.form.errors.emailInvalid"), "error");
+    const phoneValidation = validatePhoneField();
+    if (!phoneValidation.valid) {
+      showSnackbar(phoneValidation.message, "error");
       setValue(0);
       return false;
     }
@@ -252,6 +332,9 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
 
   const handleSubmitClick = async () => {
     if (!validateBasicInfo()) {
+      return;
+    }
+    if (!validateAllRelativePhones()) {
       return;
     }
 
@@ -395,6 +478,12 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                 onChange={(event) =>
                   setTeacher((prev) => ({ ...prev, teacher_code: event.target.value }))
                 }
+                onFocus={() => setTeacherCodeError("")}
+                onBlur={() => {
+                  validateTeacherCodeField();
+                }}
+                error={Boolean(teacherCodeError)}
+                helperText={teacherCodeError}
                 fullWidth
                 variant="outlined"
                 className="main-text__field"
@@ -408,6 +497,12 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                 onChange={(event) =>
                   setTeacher((prev) => ({ ...prev, name: event.target.value }))
                 }
+                onFocus={() => setTeacherNameError("")}
+                onBlur={() => {
+                  validateTeacherNameField();
+                }}
+                error={Boolean(teacherNameError)}
+                helperText={teacherNameError}
                 fullWidth
                 variant="outlined"
                 className="main-text__field"
@@ -449,6 +544,12 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                 onChange={(event) =>
                   setTeacher((prev) => ({ ...prev, email: event.target.value }))
                 }
+                onFocus={() => setEmailError("")}
+                onBlur={() => {
+                  validateEmailField();
+                }}
+                error={Boolean(emailError)}
+                helperText={emailError}
                 fullWidth
                 variant="outlined"
                 className="main-text__field"
@@ -462,6 +563,12 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                 onChange={(event) =>
                   setTeacher((prev) => ({ ...prev, phone: event.target.value }))
                 }
+                onFocus={() => setPhoneError("")}
+                onBlur={() => {
+                  validatePhoneField();
+                }}
+                error={Boolean(phoneError)}
+                helperText={phoneError}
                 fullWidth
                 variant="outlined"
                 className="main-text__field"
@@ -738,6 +845,14 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
                     <TextField
                       value={relative.phone ?? ""}
                       onChange={(event) => handleRelativeUpdate(index, { phone: event.target.value })}
+                      onFocus={() =>
+                        setRelativePhoneErrors((prev) => ({ ...prev, [index]: "" }))
+                      }
+                      onBlur={() => {
+                        validateRelativePhoneField(index);
+                      }}
+                      error={Boolean(relativePhoneErrors[index])}
+                      helperText={relativePhoneErrors[index] ?? ""}
                       fullWidth
                       variant="outlined"
                       className="main-text__field"

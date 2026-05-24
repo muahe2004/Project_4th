@@ -421,9 +421,11 @@
       "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
       "errors": {
         "teacherCodeRequired": "Mã giảng viên là bắt buộc",
+        "teacherCodeInvalid": "Mã giảng viên phải bắt đầu bằng 01 và theo sau là 4 chữ số",
         "teacherNameRequired": "Tên giảng viên là bắt buộc",
         "emailRequired": "Email là bắt buộc",
-        "emailInvalid": "Email không đúng định dạng"
+        "emailInvalid": "Email không đúng định dạng",
+        "phoneInvalid": "Số điện thoại không đúng định dạng"
       },
       "relativeSections": {
         "father": "THÔNG TIN CỦA CHA",

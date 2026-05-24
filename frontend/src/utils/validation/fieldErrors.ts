@@ -1,4 +1,4 @@
-import { isEmail, isPhoneNumber, isRequired, isStudentCode } from "./validations";
+import { isEmail, isPhoneNumber, isRequired, isStudentCode, isTeacherCode } from "./validations";
 
 export const getRequiredError = (
   value: string | null | undefined,
@@ -42,4 +42,17 @@ export const getStudentCodeError = (
   }
 
   return isStudentCode(value) ? "" : invalidMessage;
+};
+
+export const getTeacherCodeError = (
+  value: string | null | undefined,
+  requiredMessage: string,
+  invalidMessage: string
+): string => {
+  const requiredError = getRequiredError(value, requiredMessage);
+  if (requiredError) {
+    return requiredError;
+  }
+
+  return isTeacherCode(value) ? "" : invalidMessage;
 };

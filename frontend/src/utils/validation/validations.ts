@@ -1,4 +1,4 @@
-import { EMAIL_REGEX, PHONE_NUMBER_REGEX, STUDENT_CODE_REGEX } from './regex';
+import { EMAIL_REGEX, PHONE_NUMBER_REGEX, STUDENT_CODE_REGEX, TEACHER_CODE_REGEX } from './regex';
 
 export const isRequired = (value: string | null | undefined): boolean => {
     return value !== null && value !== undefined && value.toString().trim() !== '';
@@ -17,6 +17,11 @@ export const isPhoneNumber = (value: string | null | undefined): boolean => {
 export const isStudentCode = (value: string | null | undefined): boolean => {
   if (!value) return false;
   return STUDENT_CODE_REGEX.test(value.trim());
+};
+
+export const isTeacherCode = (value: string | null | undefined): boolean => {
+  if (!value) return false;
+  return TEACHER_CODE_REGEX.test(value.trim());
 };
 
 export const positiveIntegerSlotProps = {input: { inputProps: { min: 0 }}}
