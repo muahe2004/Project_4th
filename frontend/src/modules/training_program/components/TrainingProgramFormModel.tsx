@@ -4,6 +4,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  FormHelperText,
   IconButton,
   Paper,
   MenuItem,
@@ -33,6 +35,7 @@ import { useSpecializationsDropDownByIds } from "../../specializations/apis/getS
 import { useAddTrainingProgram } from "../apis/addTrainingProgram";
 import { useUpdateTrainingProgram } from "../apis/updateTrainingProgram";
 import ImportFormModelDialog from "./ImportFormModelDialog";
+import { getRequiredError } from "../../../utils/validation/fieldErrors";
 import type {
   ITrainingProgram,
   ITrainingProgramCreate,
@@ -98,6 +101,9 @@ const TrainingProgramFormModel = ({
   const [openSubjectDialog, setOpenSubjectDialog] = useState(false);
   const [editingSubjectIndex, setEditingSubjectIndex] = useState<number>(-1);
   const [editingSubject, setEditingSubject] = useState<ITrainingProgramFileSubjectData | null>(null);
+  const [programTypeError, setProgramTypeError] = useState("");
+  const [academicYearError, setAcademicYearError] = useState("");
+  const [specializationError, setSpecializationError] = useState("");
 
   const params = {
     limit: 20,
@@ -139,6 +145,9 @@ const TrainingProgramFormModel = ({
     setAcademicYear("");
     setSpecializationId("");
     setSubjects([]);
+    setProgramTypeError("");
+    setAcademicYearError("");
+    setSpecializationError("");
   }, [mode, initialValues, open]);
 
   const currentValues: ITrainingProgramCreate = {
@@ -157,6 +166,27 @@ const TrainingProgramFormModel = ({
   });
 
   const handleSubmitClick = () => {
+    const nextProgramTypeError = getRequiredError(
+      programType,
+      t("trainingProgram.form.errors.programTypeRequired")
+    );
+    const nextAcademicYearError = getRequiredError(
+      academicYear,
+      t("trainingProgram.form.errors.academicYearRequired")
+    );
+    const nextSpecializationError = getRequiredError(
+      specializationId,
+      t("trainingProgram.form.errors.specializationRequired")
+    );
+
+    setProgramTypeError(nextProgramTypeError);
+    setAcademicYearError(nextAcademicYearError);
+    setSpecializationError(nextSpecializationError);
+
+    if (nextProgramTypeError || nextAcademicYearError || nextSpecializationError) {
+      return;
+    }
+
     if (mode === "edit") {
       setOpenConfirmSave(true);
       return;
@@ -220,23 +250,34 @@ const TrainingProgramFormModel = ({
       </DialogTitle>
       <DialogContent className="primary-dialog-content">
         <LabelPrimary value={t("trainingProgram.form.programType")} required />
-        <Select
-          value={programType}
-          onChange={(e) => setProgramType(String(e.target.value))}
-          fullWidth
-          displayEmpty
-          className="main-text__field primary-dialog-input"
-          renderValue={(value) => {
-            const normalizedValue = normalizeTrainingProgramType(String(value));
-            return TRAINING_PROGRAM_TYPE_LABELS[normalizedValue] || t("trainingProgram.form.selectProgramType");
-          }}
-        >
-          {TRAINING_PROGRAM_TYPE_OPTIONS.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl fullWidth error={Boolean(programTypeError)} className="primary-dialog-input">
+          <Select
+            value={programType}
+            onChange={(e) => {
+              setProgramType(String(e.target.value));
+              if (programTypeError) setProgramTypeError("");
+            }}
+            onBlur={() =>
+              setProgramTypeError(
+                getRequiredError(programType, t("trainingProgram.form.errors.programTypeRequired"))
+              )
+            }
+            onFocus={() => setProgramTypeError("")}
+            displayEmpty
+            className="main-text__field"
+            renderValue={(value) => {
+              const normalizedValue = normalizeTrainingProgramType(String(value));
+              return TRAINING_PROGRAM_TYPE_LABELS[normalizedValue] || t("trainingProgram.form.selectProgramType");
+            }}
+          >
+            {TRAINING_PROGRAM_TYPE_OPTIONS.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+          {programTypeError && <FormHelperText sx={{ mt: 0.5, mb: 0 }}>{programTypeError}</FormHelperText>}
+        </FormControl>
 
         <LabelPrimary value={t("trainingProgram.form.programName")} />
         <TextField
@@ -248,23 +289,34 @@ const TrainingProgramFormModel = ({
         />
 
         <LabelPrimary value={t("trainingProgram.form.academicYear")} required />
-        <Select
-          value={academicYear}
-          onChange={(e) => setAcademicYear(String(e.target.value))}
-          fullWidth
-          displayEmpty
-          className="main-text__field primary-dialog-input"
-          renderValue={(value) => {
-            const selected = ACADEMIC_YEAR_OPTIONS.find((option) => option.value === value);
-            return selected?.label || t("trainingProgram.form.selectAcademicYear");
-          }}
-        >
-          {ACADEMIC_YEAR_OPTIONS.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl fullWidth error={Boolean(academicYearError)} className="primary-dialog-input">
+          <Select
+            value={academicYear}
+            onChange={(e) => {
+              setAcademicYear(String(e.target.value));
+              if (academicYearError) setAcademicYearError("");
+            }}
+            onBlur={() =>
+              setAcademicYearError(
+                getRequiredError(academicYear, t("trainingProgram.form.errors.academicYearRequired"))
+              )
+            }
+            onFocus={() => setAcademicYearError("")}
+            displayEmpty
+            className="main-text__field"
+            renderValue={(value) => {
+              const selected = ACADEMIC_YEAR_OPTIONS.find((option) => option.value === value);
+              return selected?.label || t("trainingProgram.form.selectAcademicYear");
+            }}
+          >
+            {ACADEMIC_YEAR_OPTIONS.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+          {academicYearError && <FormHelperText sx={{ mt: 0.5, mb: 0 }}>{academicYearError}</FormHelperText>}
+        </FormControl>
 
         <LabelPrimary value={t("trainingProgram.form.specialization")} required />
         <MainAutocomplete
@@ -275,6 +327,14 @@ const TrainingProgramFormModel = ({
           getOptionLabel={(option) => option.name}
           getOptionId={(option) => option.id}
           placeholder={t("trainingProgram.form.selectSpecialization")}
+          error={Boolean(specializationError)}
+          helperText={specializationError}
+          onBlur={() =>
+            setSpecializationError(
+              getRequiredError(specializationId, t("trainingProgram.form.errors.specializationRequired"))
+            )
+          }
+          onFocus={() => setSpecializationError("")}
         />
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 12 }}>

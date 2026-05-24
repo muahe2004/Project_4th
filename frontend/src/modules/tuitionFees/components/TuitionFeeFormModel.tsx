@@ -27,6 +27,7 @@ import { useDepartmentsDropDown } from "../../department/apis/getDepartmentsDrop
 import type { IDepartmentsDropDown } from "../../department/types";
 import { useCreateTuitionFee } from "../apis/addTuitionFee";
 import { useUpdateTuitionFee } from "../apis/updateTuitionFee";
+import { getRequiredError } from "../../../utils/validation/fieldErrors";
 import type {
   ITuitionFee,
   TuitionFeeCreatePayload,
@@ -70,6 +71,8 @@ export function TuitionFeeFormModel({
   const [pendingPayload, setPendingPayload] = useState<
     TuitionFeeCreatePayload | TuitionFeeUpdatePayload | null
   >(null);
+  const [pricePerCreditError, setPricePerCreditError] = useState("");
+  const [departmentError, setDepartmentError] = useState("");
 
   const trainingProgramParams = {
     limit: 20,
@@ -118,6 +121,8 @@ export function TuitionFeeFormModel({
       setStatus(STATUS.ACTIVE);
     }
     setIsChanged(false);
+    setPricePerCreditError("");
+    setDepartmentError("");
   }, [mode, initialValues, open]);
 
   useEffect(() => {
@@ -163,15 +168,23 @@ export function TuitionFeeFormModel({
   });
 
   const validateForm = (): boolean => {
-    if (!pricePerCredit.trim() || Number.isNaN(Number(pricePerCredit)) || Number(pricePerCredit) < 0) {
-      showSnackbar(t("tuitionFees.form.errors.pricePerCredit"), "error");
-      return false;
-    }
-    if (mode === "add" && !departmentId.trim()) {
-      showSnackbar(t("tuitionFees.form.errors.departmentRequired"), "error");
-      return false;
-    }
-    return true;
+    const priceRequiredError = getRequiredError(
+      pricePerCredit,
+      t("tuitionFees.form.errors.pricePerCreditRequired")
+    );
+    const priceInvalidError =
+      priceRequiredError || (!Number.isNaN(Number(pricePerCredit)) && Number(pricePerCredit) >= 0)
+        ? ""
+        : t("tuitionFees.form.errors.pricePerCredit");
+    const deptRequiredError =
+      mode === "add"
+        ? getRequiredError(departmentId, t("tuitionFees.form.errors.departmentRequired"))
+        : "";
+
+    setPricePerCreditError(priceRequiredError || priceInvalidError);
+    setDepartmentError(deptRequiredError);
+
+    return !(priceRequiredError || priceInvalidError || deptRequiredError);
   };
 
   const handleSubmitClick = () => {
@@ -260,7 +273,27 @@ export function TuitionFeeFormModel({
         <LabelPrimary value={t("tuitionFees.form.labels.pricePerCredit")} required />
         <TextField
           value={pricePerCredit}
-          onChange={(event) => setPricePerCredit(event.target.value)}
+          onChange={(event) => {
+            setPricePerCredit(event.target.value);
+            if (pricePerCreditError) setPricePerCreditError("");
+          }}
+          onBlur={() => {
+            const requiredError = getRequiredError(
+              pricePerCredit,
+              t("tuitionFees.form.errors.pricePerCreditRequired")
+            );
+            if (requiredError) {
+              setPricePerCreditError(requiredError);
+              return;
+            }
+            const value = Number(pricePerCredit);
+            setPricePerCreditError(
+              !Number.isNaN(value) && value >= 0 ? "" : t("tuitionFees.form.errors.pricePerCredit")
+            );
+          }}
+          onFocus={() => setPricePerCreditError("")}
+          error={Boolean(pricePerCreditError)}
+          helperText={pricePerCreditError}
           fullWidth
           variant="outlined"
           type="number"
@@ -281,6 +314,14 @@ export function TuitionFeeFormModel({
               getOptionId={(option: IDepartmentsDropDown) => option.id}
               placeholder={t("tuitionFees.form.placeholders.department")}
               className="primary-dialog-auto-complete"
+              error={Boolean(departmentError)}
+              helperText={departmentError}
+              onBlur={() =>
+                setDepartmentError(
+                  getRequiredError(departmentId, t("tuitionFees.form.errors.departmentRequired"))
+                )
+              }
+              onFocus={() => setDepartmentError("")}
             />
           </>
         ) : (

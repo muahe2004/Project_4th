@@ -19,6 +19,7 @@ import { useCreateSubject } from "../apis/addSubject";
 import { useUpdateSubject } from "../apis/updateSubject";
 import type { ISubject, ISubjectCreate, ISubjectUpdate } from "../types";
 import { useTranslation } from "react-i18next";
+import { getRequiredError } from "../../../utils/validation/fieldErrors";
 
 interface SubjectFormModelProps {
   open: boolean;
@@ -43,6 +44,9 @@ export function SubjectFormModel({
   const [description, setDescription] = useState("");
   const [isChanged, setIsChanged] = useState(false);
   const [openConfirmSave, setOpenConfirmSave] = useState(false);
+  const [subjectCodeError, setSubjectCodeError] = useState("");
+  const [subjectNameError, setSubjectNameError] = useState("");
+  const [creditError, setCreditError] = useState("");
 
   const { mutateAsync: createSubject } = useCreateSubject({});
   const { mutateAsync: updateSubject } = useUpdateSubject();
@@ -60,6 +64,9 @@ export function SubjectFormModel({
       setDescription("");
     }
     setIsChanged(false);
+    setSubjectCodeError("");
+    setSubjectNameError("");
+    setCreditError("");
   }, [mode, initialValues, open]);
 
   const currentValues = {
@@ -111,22 +118,21 @@ export function SubjectFormModel({
   });
 
   const validateForm = (): boolean => {
-    if (!subjectCode.trim()) {
-      showSnackbar(t("subjects.form.errors.subjectCodeRequired"), "error");
-      return false;
-    }
-    if (!subjectName.trim()) {
-      showSnackbar(t("subjects.form.errors.subjectNameRequired"), "error");
-      return false;
-    }
+    const codeError = getRequiredError(subjectCode, t("subjects.form.errors.subjectCodeRequired"));
+    const nameError = getRequiredError(subjectName, t("subjects.form.errors.subjectNameRequired"));
 
     const creditValue = Number(credit);
-    if (!Number.isInteger(creditValue) || creditValue <= 0) {
-      showSnackbar(t("subjects.form.errors.creditInvalid"), "error");
-      return false;
-    }
+    const creditRequiredError = getRequiredError(credit, t("subjects.form.errors.creditRequired"));
+    const creditInvalidError =
+      creditRequiredError || Number.isInteger(creditValue) && creditValue > 0
+        ? ""
+        : t("subjects.form.errors.creditInvalid");
 
-    return true;
+    setSubjectCodeError(codeError);
+    setSubjectNameError(nameError);
+    setCreditError(creditRequiredError || creditInvalidError);
+
+    return !codeError && !nameError && !(creditRequiredError || creditInvalidError);
   };
 
   const handleSubmitClick = () => {
@@ -204,7 +210,18 @@ export function SubjectFormModel({
         <LabelPrimary value={t("subjects.form.labels.subjectCode")} required />
         <TextField
           value={subjectCode}
-          onChange={(event) => setSubjectCode(event.target.value)}
+          onChange={(event) => {
+            setSubjectCode(event.target.value);
+            if (subjectCodeError) setSubjectCodeError("");
+          }}
+          onBlur={() =>
+            setSubjectCodeError(
+              getRequiredError(subjectCode, t("subjects.form.errors.subjectCodeRequired"))
+            )
+          }
+          onFocus={() => setSubjectCodeError("")}
+          error={Boolean(subjectCodeError)}
+          helperText={subjectCodeError}
           fullWidth
           variant="outlined"
           className="main-text__field primary-dialog-input"
@@ -213,7 +230,18 @@ export function SubjectFormModel({
         <LabelPrimary value={t("subjects.form.labels.subjectName")} required />
         <TextField
           value={subjectName}
-          onChange={(event) => setSubjectName(event.target.value)}
+          onChange={(event) => {
+            setSubjectName(event.target.value);
+            if (subjectNameError) setSubjectNameError("");
+          }}
+          onBlur={() =>
+            setSubjectNameError(
+              getRequiredError(subjectName, t("subjects.form.errors.subjectNameRequired"))
+            )
+          }
+          onFocus={() => setSubjectNameError("")}
+          error={Boolean(subjectNameError)}
+          helperText={subjectNameError}
           fullWidth
           variant="outlined"
           className="main-text__field primary-dialog-input"
@@ -222,7 +250,30 @@ export function SubjectFormModel({
         <LabelPrimary value={t("subjects.form.labels.credit")} required />
         <TextField
           value={credit}
-          onChange={(event) => setCredit(event.target.value)}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            if (!/^\d*$/.test(nextValue)) {
+              return;
+            }
+            setCredit(nextValue);
+            if (creditError) setCreditError("");
+          }}
+          onBlur={() => {
+            const requiredError = getRequiredError(credit, t("subjects.form.errors.creditRequired"));
+            if (requiredError) {
+              setCreditError(requiredError);
+              return;
+            }
+            const creditValue = Number(credit);
+            setCreditError(
+              Number.isInteger(creditValue) && creditValue > 0
+                ? ""
+                : t("subjects.form.errors.creditInvalid")
+            );
+          }}
+          onFocus={() => setCreditError("")}
+          error={Boolean(creditError)}
+          helperText={creditError}
           fullWidth
           variant="outlined"
           type="number"

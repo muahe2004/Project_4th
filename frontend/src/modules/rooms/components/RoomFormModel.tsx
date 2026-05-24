@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  MenuItem,
   TextField,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -19,6 +20,7 @@ import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import { useCreateRoom } from "../apis/addRoom";
 import { useUpdateRoom } from "../apis/updateRoom";
 import type { IRoom, RoomCreatePayload, RoomUpdatePayload } from "../types";
+import { getRequiredError } from "../../../utils/validation/fieldErrors";
 
 interface RoomFormModelProps {
   open: boolean;
@@ -42,6 +44,9 @@ export function RoomFormModel({
   const [seats, setSeats] = useState("");
   const [isChanged, setIsChanged] = useState(false);
   const [openConfirmSave, setOpenConfirmSave] = useState(false);
+  const [roomNumberError, setRoomNumberError] = useState("");
+  const [roomTypeError, setRoomTypeError] = useState("");
+  const [seatsError, setSeatsError] = useState("");
 
   const { mutateAsync: createRoom } = useCreateRoom({});
   const { mutateAsync: updateRoom } = useUpdateRoom();
@@ -57,6 +62,9 @@ export function RoomFormModel({
       setSeats("");
     }
     setIsChanged(false);
+    setRoomNumberError("");
+    setRoomTypeError("");
+    setSeatsError("");
   }, [mode, initialValues, open]);
 
   const currentValues = {
@@ -94,21 +102,26 @@ export function RoomFormModel({
   });
 
   const validateForm = (): boolean => {
+    const roomNumberRequiredError = getRequiredError(roomNumber, t("rooms.form.errors.roomNumberRequired"));
+    const roomTypeRequiredError = getRequiredError(roomType, t("rooms.form.errors.roomType"));
+    const seatsRequiredError = getRequiredError(seats, t("rooms.form.errors.seatsRequired"));
+
     const roomNumberValue = Number(roomNumber);
-    if (!Number.isInteger(roomNumberValue) || roomNumberValue <= 0) {
-      showSnackbar(t("rooms.form.errors.roomNumber"), "error");
-      return false;
-    }
-    if (!roomType.trim()) {
-      showSnackbar(t("rooms.form.errors.roomType"), "error");
-      return false;
-    }
     const seatsValue = Number(seats);
-    if (!Number.isInteger(seatsValue) || seatsValue <= 0) {
-      showSnackbar(t("rooms.form.errors.seats"), "error");
-      return false;
-    }
-    return true;
+    const roomNumberInvalidError =
+      roomNumberRequiredError || (Number.isInteger(roomNumberValue) && roomNumberValue > 0)
+        ? ""
+        : t("rooms.form.errors.roomNumber");
+    const seatsInvalidError =
+      seatsRequiredError || (Number.isInteger(seatsValue) && seatsValue > 0)
+        ? ""
+        : t("rooms.form.errors.seats");
+
+    setRoomNumberError(roomNumberRequiredError || roomNumberInvalidError);
+    setRoomTypeError(roomTypeRequiredError);
+    setSeatsError(seatsRequiredError || seatsInvalidError);
+
+    return !roomNumberRequiredError && !roomTypeRequiredError && !seatsRequiredError && !roomNumberInvalidError && !seatsInvalidError;
   };
 
   const handleSubmitClick = () => {
@@ -184,7 +197,22 @@ export function RoomFormModel({
         <LabelPrimary value={t("rooms.form.labels.roomNumber")} required />
         <TextField
           value={roomNumber}
-          onChange={(event) => setRoomNumber(event.target.value)}
+          onChange={(event) => {
+            setRoomNumber(event.target.value);
+            if (roomNumberError) setRoomNumberError("");
+          }}
+          onBlur={() => {
+            const requiredError = getRequiredError(roomNumber, t("rooms.form.errors.roomNumberRequired"));
+            if (requiredError) {
+              setRoomNumberError(requiredError);
+              return;
+            }
+            const value = Number(roomNumber);
+            setRoomNumberError(Number.isInteger(value) && value > 0 ? "" : t("rooms.form.errors.roomNumber"));
+          }}
+          onFocus={() => setRoomNumberError("")}
+          error={Boolean(roomNumberError)}
+          helperText={roomNumberError}
           fullWidth
           variant="outlined"
           type="number"
@@ -193,17 +221,43 @@ export function RoomFormModel({
 
         <LabelPrimary value={t("rooms.form.labels.roomType")} required />
         <TextField
+          select
           value={roomType}
-          onChange={(event) => setRoomType(event.target.value)}
+          onChange={(event) => {
+            setRoomType(event.target.value);
+            if (roomTypeError) setRoomTypeError("");
+          }}
+          onBlur={() => setRoomTypeError(getRequiredError(roomType, t("rooms.form.errors.roomType")))}
+          onFocus={() => setRoomTypeError("")}
+          error={Boolean(roomTypeError)}
+          helperText={roomTypeError}
           fullWidth
           variant="outlined"
           className="main-text__field primary-dialog-input"
-        />
+        >
+          <MenuItem value="theory">{t("rooms.form.roomTypeOptions.theory")}</MenuItem>
+          <MenuItem value="practice">{t("rooms.form.roomTypeOptions.practice")}</MenuItem>
+        </TextField>
 
         <LabelPrimary value={t("rooms.form.labels.seats")} required />
         <TextField
           value={seats}
-          onChange={(event) => setSeats(event.target.value)}
+          onChange={(event) => {
+            setSeats(event.target.value);
+            if (seatsError) setSeatsError("");
+          }}
+          onBlur={() => {
+            const requiredError = getRequiredError(seats, t("rooms.form.errors.seatsRequired"));
+            if (requiredError) {
+              setSeatsError(requiredError);
+              return;
+            }
+            const value = Number(seats);
+            setSeatsError(Number.isInteger(value) && value > 0 ? "" : t("rooms.form.errors.seats"));
+          }}
+          onFocus={() => setSeatsError("")}
+          error={Boolean(seatsError)}
+          helperText={seatsError}
           fullWidth
           variant="outlined"
           type="number"

@@ -535,9 +535,15 @@
         "roomType": "Loại phòng",
         "seats": "Số chỗ ngồi"
       },
+      "roomTypeOptions": {
+        "theory": "Lý thuyết",
+        "practice": "Thực hành"
+      },
       "errors": {
+        "roomNumberRequired": "Số phòng là bắt buộc",
         "roomNumber": "Số phòng phải là số nguyên dương",
         "roomType": "Loại phòng là bắt buộc",
+        "seatsRequired": "Số chỗ ngồi là bắt buộc",
         "seats": "Số chỗ ngồi phải là số nguyên dương"
       },
       "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
@@ -589,6 +595,11 @@
         "subjectCode": "Mã môn",
         "subjectName": "Tên môn",
         "term": "Học kỳ"
+      },
+      "errors": {
+        "programTypeRequired": "Loại CTĐT là bắt buộc",
+        "academicYearRequired": "Niên khoá là bắt buộc",
+        "specializationRequired": "Chuyên ngành là bắt buộc"
       },
       "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
       "confirmSaveTitle": "Xác nhận lưu",
@@ -673,6 +684,7 @@
         "trainingProgram": "Chọn CTĐT"
       },
       "errors": {
+        "pricePerCreditRequired": "Giá / tín chỉ là bắt buộc",
         "pricePerCredit": "Giá / tín chỉ không hợp lệ",
         "departmentRequired": "Khoa là bắt buộc"
       },
@@ -884,6 +896,7 @@
       "errors": {
         "subjectCodeRequired": "Mã học phần là bắt buộc",
         "subjectNameRequired": "Tên học phần là bắt buộc",
+        "creditRequired": "Số tín chỉ là bắt buộc",
         "creditInvalid": "Số tín chỉ phải là số nguyên dương"
       }
     },

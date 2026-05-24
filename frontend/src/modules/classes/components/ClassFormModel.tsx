@@ -219,6 +219,10 @@ const ClassForm: React.FC<ClassFormProps> = ({
         setErrors((prev) => ({ ...prev, [field]: error }));
     };
 
+    const handleFocus = (field: keyof typeof errors) => {
+        setErrors((prev) => ({ ...prev, [field]: "" }));
+    };
+
     const validateForm = (): boolean => {
         let valid = true;
         const newErrors: typeof errors = { ...errors };
@@ -432,6 +436,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
                                 setFormValues((prev) => ({ ...prev, classCode: e.target.value }))
                             }
                             onBlur={() => handleBlur("classCode")}
+                            onFocus={() => handleFocus("classCode")}
                             fullWidth
                             variant="outlined"
                             className="main-text__field primary-dialog-input"
@@ -517,6 +522,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
                             className="primary-dialog-input"
                             error={Boolean(errors.specializationId)}
                             helperText={errors.specializationId}
+                            onBlur={() => handleBlur("specializationId")}
+                            onFocus={() => handleFocus("specializationId")}
                         />
                     </Grid>
 
@@ -546,6 +553,8 @@ const ClassForm: React.FC<ClassFormProps> = ({
                             className="primary-dialog-input"
                             error={Boolean(errors.teacherId)}
                             helperText={errors.teacherId}
+                            onBlur={() => handleBlur("teacherId")}
+                            onFocus={() => handleFocus("teacherId")}
                         />
                     </Grid>
 

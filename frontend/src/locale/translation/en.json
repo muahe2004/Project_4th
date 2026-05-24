@@ -535,9 +535,15 @@
         "roomType": "Room Type",
         "seats": "Seats"
       },
+      "roomTypeOptions": {
+        "theory": "Theory",
+        "practice": "Practice"
+      },
       "errors": {
+        "roomNumberRequired": "Room number is required",
         "roomNumber": "Room number must be a positive integer",
         "roomType": "Room type is required",
+        "seatsRequired": "Seats is required",
         "seats": "Seat count must be a positive integer"
       },
       "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
@@ -589,6 +595,11 @@
         "subjectCode": "Subject Code",
         "subjectName": "Subject Name",
         "term": "Term"
+      },
+      "errors": {
+        "programTypeRequired": "Training program type is required",
+        "academicYearRequired": "Academic year is required",
+        "specializationRequired": "Specialization is required"
       },
       "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
       "confirmSaveTitle": "Confirm Save",
@@ -673,6 +684,7 @@
         "trainingProgram": "Choose training program"
       },
       "errors": {
+        "pricePerCreditRequired": "Price / credit is required",
         "pricePerCredit": "Price / credit is invalid",
         "departmentRequired": "Department is required"
       },
@@ -884,6 +896,7 @@
       "errors": {
         "subjectCodeRequired": "Subject code is required",
         "subjectNameRequired": "Subject name is required",
+        "creditRequired": "Credits is required",
         "creditInvalid": "Credits must be a positive integer"
       }
     },
