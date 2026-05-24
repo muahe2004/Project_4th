@@ -97,6 +97,10 @@
       "tag": "TIN TỨC",
       "buttonMore": "XEM THÊM"
     },
+    "newsAndEvents": {
+      "latestTitle": "Tin tức mới nhất",
+      "allPostsTitle": "Tất cả bài viết"
+    },
     "homeMain": {
       "title1": "Trường Đại học Sư phạm Kỹ thuật Hưng Yên",
       "title2": ""

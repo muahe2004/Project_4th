@@ -97,6 +97,10 @@
       "tag": "NEWS",
       "buttonMore": "VIEW MORE"
     },
+    "newsAndEvents": {
+      "latestTitle": "Latest news",
+      "allPostsTitle": "All posts"
+    },
     "homeMain": {
       "title1": "Hung Yen University of Technology and Education",
       "title2": ""

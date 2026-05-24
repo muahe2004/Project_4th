@@ -30,6 +30,7 @@ import {
   admissionUrl,
   teacherExaminationSchedules,
   courseRegistrationUrl,
+  newsAndEventsUrl,
 } from "../../routes/urls"
 import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
@@ -113,7 +114,14 @@ const Header: React.FC = () => {
           >
             {t('header_navbar.aboutUTEHY')}
           </Button>
-          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.newsEvents')}</Button>
+          <Button
+            className="header-navbar__item"
+            disableRipple
+            color="inherit"
+            onClick={() => handleNavigate(newsAndEventsUrl)}
+          >
+            {t('header_navbar.newsEvents')}
+          </Button>
           {/* <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.scholarship')}</Button> */}
           {/* <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.onlineLearning')}</Button> */}
         </Stack>

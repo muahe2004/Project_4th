@@ -1,0 +1,128 @@
+@import url("../../../../assets/styles/theme.css");
+
+.news-events {
+  min-height: calc(100vh - 65px);
+  padding: 40px 15% 60px;
+  background: #f2f2f2;
+}
+
+.news-events__headline {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 28px;
+  margin-bottom: 40px;
+}
+
+.news-events__featured-image {
+  width: 100%;
+  height: 440px;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 14px;
+}
+
+.news-events__featured-title {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  color: #2b2f33;
+  margin-bottom: 8px !important;
+}
+
+.news-events__featured-desc {
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+  color: #3a3f44;
+}
+
+.news-events__latest-title {
+  color: var(--primary-color);
+  font-size: 21px !important;
+  font-weight: 700 !important;
+  margin-bottom: 10px !important;
+  text-transform: uppercase;
+}
+
+.news-events__latest-item {
+  border-bottom: 1px solid #c4c4c4;
+  padding: 14px 0;
+}
+
+.news-events__latest-item-text {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  color: #2f3337;
+}
+
+.news-events__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.news-events__section-title {
+  grid-column: 1 / -1;
+  color: var(--primary-color);
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+}
+
+@media (max-width: 1280px) {
+  .news-events__headline {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .news-events__featured-image {
+    height: 360px;
+  }
+
+  .news-events__featured-title {
+    font-size: 25px !important;
+  }
+
+  .news-events__latest-title {
+    font-size: 19px !important;
+  }
+
+  .news-events__latest-item-text {
+    font-size: 15px !important;
+  }
+
+  .news-events__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .news-events {
+    padding: 32px 16px 48px;
+  }
+
+  .news-events__featured-image {
+    height: 220px;
+  }
+
+  .news-events__featured-title {
+    font-size: 20px !important;
+  }
+
+  .news-events__featured-desc {
+    font-size: 14px !important;
+  }
+
+  .news-events__latest-title {
+    font-size: 17px !important;
+  }
+
+  .news-events__latest-item-text {
+    font-size: 14px !important;
+  }
+
+  .news-events__grid {
+    grid-template-columns: 1fr;
+  }
+}
