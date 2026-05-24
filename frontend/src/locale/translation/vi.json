@@ -1408,7 +1408,15 @@
       "class": "Lớp",
       "selectClass": "Chọn lớp",
       "trainingProgram": "Chương trình đào tạo",
-      "course": "Niên khoá"
+      "course": "Niên khoá",
+      "errors": {
+        "studentCodeRequired": "Vui lòng nhập mã sinh viên",
+        "studentCodeInvalid": "Mã sinh viên phải bắt đầu bằng 02 và theo sau là các chữ số",
+        "studentNameRequired": "Vui lòng nhập tên sinh viên",
+        "emailRequired": "Vui lòng nhập email",
+        "emailInvalid": "Email không đúng định dạng",
+        "phoneInvalid": "Số điện thoại không đúng định dạng"
+      }
     },
     "other": {
       "placeOfOrigin": "Nơi sinh",

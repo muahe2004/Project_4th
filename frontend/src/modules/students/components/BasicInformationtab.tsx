@@ -17,6 +17,18 @@ interface BasicInformationTabProps {
     onDateChange: (value: Date | null) => void;
     onClassSearchChange: (search: string) => void;
     onClassResetPage: () => void;
+    studentCodeError?: string;
+    onStudentCodeFocus?: () => void;
+    onStudentCodeBlur?: () => void;
+    studentNameError?: string;
+    onStudentNameFocus?: () => void;
+    onStudentNameBlur?: () => void;
+    emailError?: string;
+    onEmailBlur?: () => void;
+    onEmailFocus?: () => void;
+    phoneError?: string;
+    onPhoneBlur?: () => void;
+    onPhoneFocus?: () => void;
 }
 
 const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
@@ -27,6 +39,18 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
     onDateChange,
     onClassSearchChange,
     onClassResetPage,
+    studentCodeError,
+    onStudentCodeFocus,
+    onStudentCodeBlur,
+    studentNameError,
+    onStudentNameFocus,
+    onStudentNameBlur,
+    emailError,
+    onEmailBlur,
+    onEmailFocus,
+    phoneError,
+    onPhoneBlur,
+    onPhoneFocus,
 }) => (
     <BasicInformationTabContent
         student={student}
@@ -36,6 +60,18 @@ const BasicInformationTab: React.FC<BasicInformationTabProps> = ({
         onDateChange={onDateChange}
         onClassSearchChange={onClassSearchChange}
         onClassResetPage={onClassResetPage}
+        studentCodeError={studentCodeError}
+        onStudentCodeFocus={onStudentCodeFocus}
+        onStudentCodeBlur={onStudentCodeBlur}
+        studentNameError={studentNameError}
+        onStudentNameFocus={onStudentNameFocus}
+        onStudentNameBlur={onStudentNameBlur}
+        emailError={emailError}
+        onEmailBlur={onEmailBlur}
+        onEmailFocus={onEmailFocus}
+        phoneError={phoneError}
+        onPhoneBlur={onPhoneBlur}
+        onPhoneFocus={onPhoneFocus}
     />
 );
 
@@ -47,6 +83,18 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
     onDateChange,
     onClassSearchChange,
     onClassResetPage,
+    studentCodeError,
+    onStudentCodeFocus,
+    onStudentCodeBlur,
+    studentNameError,
+    onStudentNameFocus,
+    onStudentNameBlur,
+    emailError,
+    onEmailBlur,
+    onEmailFocus,
+    phoneError,
+    onPhoneBlur,
+    onPhoneFocus,
 }) => {
     const { t } = useTranslation();
 
@@ -57,6 +105,10 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
             <TextField
                 value={student.student_code}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, student_code: e.target.value }))}
+                onFocus={onStudentCodeFocus}
+                onBlur={onStudentCodeBlur}
+                error={Boolean(studentCodeError)}
+                helperText={studentCodeError}
                 fullWidth
                 variant="outlined"
                 className="main-text__field"
@@ -68,6 +120,10 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
             <TextField
                 value={student.name}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, name: e.target.value }))}
+                onFocus={onStudentNameFocus}
+                onBlur={onStudentNameBlur}
+                error={Boolean(studentNameError)}
+                helperText={studentNameError}
                 fullWidth
                 variant="outlined"
                 className="main-text__field"
@@ -105,6 +161,10 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
             <TextField
                 value={student.email}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, email: e.target.value }))}
+                onFocus={onEmailFocus}
+                onBlur={onEmailBlur}
+                error={Boolean(emailError)}
+                helperText={emailError}
                 fullWidth
                 variant="outlined"
                 className="main-text__field"
@@ -116,6 +176,10 @@ const BasicInformationTabContent: React.FC<BasicInformationTabProps> = ({
             <TextField
                 value={student.phone}
                 onChange={(e) => onStudentChange((prev) => ({ ...prev, phone: e.target.value }))}
+                onFocus={onPhoneFocus}
+                onBlur={onPhoneBlur}
+                error={Boolean(phoneError)}
+                helperText={phoneError}
                 fullWidth
                 variant="outlined"
                 className="main-text__field"

@@ -15,6 +15,8 @@ import { useUpdateStudent } from "../apis/updateStudent";
 import { useClassesDropDown } from "../../classes/apis/getClassDropDown";
 import { useClassesDropDownByIds } from "../../classes/apis/getClassDropDownByIds";
 import { useTranslation } from "react-i18next";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
+import { getEmailError, getPhoneNumberError, getRequiredError, getStudentCodeError } from "../../../utils/validation/fieldErrors";
 
 interface TabPanelProps {
     children?: ReactNode;
@@ -148,6 +150,7 @@ const DEFAULT_STUDENT: IStudentsResponse = {
 
 const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initialValues, onClose }) => {
     const { t } = useTranslation();
+    const { showSnackbar } = useSnackbar();
     const [student, setStudent] = useState<IStudentsResponse>({ ...DEFAULT_STUDENT });
     const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
 
@@ -193,6 +196,11 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
             setStudent({ ...DEFAULT_STUDENT, student_relative: buildRelatives() });
             setDateOfBirth(null);
         }
+        setEmailError("");
+        setPhoneError("");
+        setStudentCodeError("");
+        setStudentNameError("");
+        setRelativePhoneErrors({});
     }, [initialValues, mode, open]);
 
     const handleDateChange = (newValue: Date | null) => {
@@ -206,7 +214,118 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
     const { mutateAsync: createStudent } = useCreateStudent({});
     const { mutateAsync: updateStudent } = useUpdateStudent({});
 
+    const validateEmailField = (): { valid: boolean; message: string } => {
+        const message = getEmailError(
+            student.email,
+            t("students.form.errors.emailRequired"),
+            t("students.form.errors.emailInvalid")
+        );
+        setEmailError(message);
+        return { valid: !message, message };
+    };
+
+    const validatePhoneField = (): { valid: boolean; message: string } => {
+        const message = getPhoneNumberError(
+            student.phone,
+            t("students.form.errors.phoneInvalid")
+        );
+        setPhoneError(message);
+        return { valid: !message, message };
+    };
+
+    const validateStudentCodeField = (): { valid: boolean; message: string } => {
+        const message = getStudentCodeError(
+            student.student_code,
+            t("students.form.errors.studentCodeRequired"),
+            t("students.form.errors.studentCodeInvalid")
+        );
+        setStudentCodeError(message);
+        return { valid: !message, message };
+    };
+
+    const validateStudentNameField = (): { valid: boolean; message: string } => {
+        const message = getRequiredError(
+            student.name,
+            t("students.form.errors.studentNameRequired")
+        );
+        setStudentNameError(message);
+        return { valid: !message, message };
+    };
+
+    const validateBasicInfo = (): boolean => {
+        const studentCodeValidation = validateStudentCodeField();
+        if (!studentCodeValidation.valid) {
+            showSnackbar(studentCodeValidation.message, "error");
+            setValue(0);
+            return false;
+        }
+
+        const studentNameValidation = validateStudentNameField();
+        if (!studentNameValidation.valid) {
+            showSnackbar(studentNameValidation.message, "error");
+            setValue(0);
+            return false;
+        }
+
+        const emailValidation = validateEmailField();
+        if (!emailValidation.valid) {
+            showSnackbar(emailValidation.message, "error");
+            setValue(0);
+            return false;
+        }
+
+        const phoneValidation = validatePhoneField();
+        if (!phoneValidation.valid) {
+            showSnackbar(phoneValidation.message, "error");
+            setValue(0);
+            return false;
+        }
+
+        return true;
+    };
+
+    const validateRelativePhoneField = (index: number): { valid: boolean; message: string } => {
+        const relative = (student.student_relative ?? [])[index];
+        const message = getPhoneNumberError(
+            relative?.phone,
+            t("students.form.errors.phoneInvalid", "Số điện thoại không đúng định dạng")
+        );
+        setRelativePhoneErrors((prev) => ({ ...prev, [index]: message }));
+        return { valid: !message, message };
+    };
+
+    const validateAllRelativePhones = (): boolean => {
+        const relatives = student.student_relative ?? [];
+        const nextErrors: Record<number, string> = {};
+        let firstInvalidIndex = -1;
+
+        relatives.forEach((relative, index) => {
+            const message = getPhoneNumberError(
+                relative.phone,
+                t("students.form.errors.phoneInvalid")
+            );
+            nextErrors[index] = message;
+            if (message && firstInvalidIndex === -1) {
+                firstInvalidIndex = index;
+            }
+        });
+
+        setRelativePhoneErrors(nextErrors);
+        if (firstInvalidIndex !== -1) {
+            setValue(2);
+            showSnackbar(nextErrors[firstInvalidIndex], "error");
+            return false;
+        }
+        return true;
+    };
+
     const handleSubmitClick = async () => {
+        if (!validateBasicInfo()) {
+            return;
+        }
+        if (!validateAllRelativePhones()) {
+            return;
+        }
 
         const student_information: IStudentInformationCreate = {
             citizen_id: normalizeNullableText(student.student_information?.citizen_id),
@@ -297,6 +416,11 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
     });
 
     const [value, setValue] = useState<number>(0);
+    const [studentCodeError, setStudentCodeError] = useState<string>("");
+    const [studentNameError, setStudentNameError] = useState<string>("");
+    const [emailError, setEmailError] = useState<string>("");
+    const [phoneError, setPhoneError] = useState<string>("");
+    const [relativePhoneErrors, setRelativePhoneErrors] = useState<Record<number, string>>({});
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -330,6 +454,26 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
                     onDateChange={handleDateChange}
                     onClassSearchChange={handleClassSearchChange}
                     onClassResetPage={handleClassResetPage}
+                    studentCodeError={studentCodeError}
+                    onStudentCodeFocus={() => setStudentCodeError("")}
+                    onStudentCodeBlur={() => {
+                        validateStudentCodeField();
+                    }}
+                    studentNameError={studentNameError}
+                    onStudentNameFocus={() => setStudentNameError("")}
+                    onStudentNameBlur={() => {
+                        validateStudentNameField();
+                    }}
+                    emailError={emailError}
+                    onEmailFocus={() => setEmailError("")}
+                    onEmailBlur={() => {
+                        validateEmailField();
+                    }}
+                    phoneError={phoneError}
+                    onPhoneFocus={() => setPhoneError("")}
+                    onPhoneBlur={() => {
+                        validatePhoneField();
+                    }}
                 />
                 </TabPanel>
 
@@ -343,6 +487,13 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
                     <RelativeInformationTab
                         relatives={student.student_relative ?? buildRelatives()}
                         onRelativeChange={handleRelativeUpdate}
+                        phoneErrors={relativePhoneErrors}
+                        onPhoneFocus={(index) =>
+                            setRelativePhoneErrors((prev) => ({ ...prev, [index]: "" }))
+                        }
+                        onPhoneBlur={(index) => {
+                            validateRelativePhoneField(index);
+                        }}
                     />
                 </TabPanel>
             </DialogContent>

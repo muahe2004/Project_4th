@@ -11,11 +11,20 @@ import type { IStudentRelative } from "../types";
 interface RelativeInformationTabProps {
   relatives: IStudentRelative[];
   onRelativeChange: (index: number, fields: Partial<IStudentRelative>) => void;
+  phoneErrors?: Record<number, string>;
+  onPhoneBlur?: (index: number) => void;
+  onPhoneFocus?: (index: number) => void;
 }
 
 const RELATIVE_SECTION_KEYS = ["father", "mother", "relative"] as const;
 
-const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relatives, onRelativeChange }) => {
+const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({
+  relatives,
+  onRelativeChange,
+  phoneErrors = {},
+  onPhoneBlur,
+  onPhoneFocus,
+}) => {
   const { t } = useTranslation();
 
   const handleFieldChange = (
@@ -98,6 +107,10 @@ const RelativeInformationTab: React.FC<RelativeInformationTabProps> = ({ relativ
                 <TextField
                   value={relative.phone ?? ""}
                   onChange={(e) => handleFieldChange(index, "phone", e.target.value)}
+                  onFocus={() => onPhoneFocus?.(index)}
+                  onBlur={() => onPhoneBlur?.(index)}
+                  error={Boolean(phoneErrors[index])}
+                  helperText={phoneErrors[index] ?? ""}
                   fullWidth
                   variant="outlined"
                   className="main-text__field"

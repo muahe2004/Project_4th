@@ -1403,7 +1403,15 @@
       "class": "Class",
       "selectClass": "Select class",
       "trainingProgram": "Training Program",
-      "course": "Course"
+      "course": "Course",
+      "errors": {
+        "studentCodeRequired": "Please enter student code",
+        "studentCodeInvalid": "Student code must start with 02 and contain digits after that",
+        "studentNameRequired": "Please enter student name",
+        "emailRequired": "Please enter email",
+        "emailInvalid": "Invalid email format",
+        "phoneInvalid": "Invalid phone number format"
+      }
     },
     "other": {
       "placeOfOrigin": "Place of Origin",
