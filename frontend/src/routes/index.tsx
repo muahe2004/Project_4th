@@ -1,9 +1,10 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, teacherExaminationSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl, studentTuitionFeeUrl, managementScoreUrl, scoreDetailsUrl, teacherManagementScoreUrl, teacherManagementListStudentScoreUrl, advisorClassScoreUrl, teacherScoreDetailsUrl, testAIUrl, studentTuitionFeesUrl, studentExaminationSchedules, aboutUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, teacherExaminationSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl, studentTuitionFeeUrl, managementScoreUrl, scoreDetailsUrl, teacherManagementScoreUrl, teacherManagementListStudentScoreUrl, advisorClassScoreUrl, teacherScoreDetailsUrl, testAIUrl, studentTuitionFeesUrl, studentExaminationSchedules, aboutUrl, admissionUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
 import About from "../modules/home/views/About"
+import { Admission } from "../modules/home/views/Admission";
 import { NotFound } from "../modules/NotFound/NotFound"
 import Layout from "../modules/app/Layout";
 import LayoutAdmin from "../modules/app/Layout-Admin"
@@ -86,6 +87,10 @@ export const createRouterConfig = () => {
         {
           path: aboutUrl,
           element: <About />,
+        },
+        {
+          path: admissionUrl,
+          element: <Admission />,
         },
         {
           path: profileUrl,

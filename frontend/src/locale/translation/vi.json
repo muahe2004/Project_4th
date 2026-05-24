@@ -1549,6 +1549,30 @@
       }
     }
   },
+  "admission": {
+    "heroAlt": "Ảnh tuyển sinh UTEHY",
+    "campusAlt": "Khuôn viên UTEHY",
+    "title": "CHÀO MỪNG BẠN ĐẾN VỚI TUYỂN SINH UTEHY",
+    "intro": "Trân trọng mời bạn tìm hiểu thêm về UTEHY bằng cách khám phá website và tham dự các buổi tư vấn tuyển sinh, dự kiến được tổ chức tại trường hoặc bằng hình thức trực tuyến.",
+    "experienceTitle": "Sinh viên chia sẻ trải nghiệm tại UTEHY",
+    "paragraph1": "UTEHY là môi trường đào tạo đại học năng động tại Việt Nam, theo đuổi ba giá trị cốt lõi: chất lượng giáo dục xuất sắc, hợp tác quốc tế sâu rộng và trải nghiệm sinh viên toàn diện trong học tập, nghiên cứu, phát triển cá nhân.",
+    "paragraph2": "Nhà trường định hướng quốc tế rõ rệt với đội ngũ giảng viên có kinh nghiệm học tập và làm việc trong môi trường toàn cầu. Chương trình đào tạo chú trọng chuẩn đầu ra, ngoại ngữ và năng lực thực hành, giúp sinh viên tự tin phát triển sự nghiệp tại Việt Nam và hội nhập thị trường lao động quốc tế.",
+    "paragraph3": "Khuôn viên UTEHY tại Hưng Yên mang đến không gian học tập xanh, hiện đại và thân thiện, tạo điều kiện thuận lợi cho sinh viên, giảng viên và cán bộ phát huy tối đa năng lực mỗi ngày.",
+    "paragraph4": "Quy trình tuyển sinh tại UTEHY được thiết kế minh bạch, rõ ràng và định hướng người học. Trong suốt quá trình ứng tuyển, nhà trường luôn đồng hành để giúp bạn hiểu đúng ngành học, nhận diện điểm mạnh bản thân và xây dựng lộ trình phát triển phù hợp.",
+    "paragraph5": "Khi hoàn thành hồ sơ, bạn không chỉ tiến gần hơn tới cánh cửa đại học mà còn có cơ hội khám phá năng lực, cá tính và mục tiêu nghề nghiệp của chính mình.",
+    "formTitle": "Đăng ký nhận thông tin tuyển sinh",
+    "formDescription": "Để tìm hiểu thêm về chương trình đào tạo và lịch tư vấn tại UTEHY, vui lòng để lại thông tin. Phòng Tuyển sinh sẽ liên hệ với bạn trong thời gian sớm nhất.",
+    "placeholders": {
+      "fullName": "Họ và tên",
+      "email": "Email",
+      "phone": "Số điện thoại"
+    },
+    "submit": "Gửi thông tin",
+    "visitCampus": "Bạn cũng có thể ghé thăm khuôn viên UTEHY để trải nghiệm trực tiếp môi trường học tập và đời sống sinh viên.",
+    "closing": "Chúng tôi tin rằng những năm tháng đại học tại UTEHY sẽ là những năm tháng đẹp nhất trong cuộc đời bạn!",
+    "signature": "Thân mến,",
+    "office": "Phòng Tuyển sinh."
+  },
   "umsChatbot": {
     "title": "UMS ChatBot",
     "logoAlt": "Logo UMS",

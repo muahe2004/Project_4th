@@ -27,6 +27,7 @@ import {
   studentExaminationSchedules,
   teacherTeachingSchedules,
   aboutUrl,
+  admissionUrl,
   teacherExaminationSchedules,
   courseRegistrationUrl,
 } from "../../routes/urls"
@@ -96,7 +97,14 @@ const Header: React.FC = () => {
             {t('header_navbar.home')}
           </Button>
           {/* <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.trainingProgram')}</Button> */}
-          <Button className="header-navbar__item" disableRipple color="inherit">{t('header_navbar.admission')}</Button>
+          <Button
+            className="header-navbar__item"
+            disableRipple
+            color="inherit"
+            onClick={() => handleNavigate(admissionUrl)}
+          >
+            {t('header_navbar.admission')}
+          </Button>
           <Button
             className="header-navbar__item"
             disableRipple

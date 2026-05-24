@@ -2,6 +2,7 @@ export const layoutUrl = "/";
 export const homeUrl = "/";
 export const notFoundUrl = "/not-found";
 export const aboutUrl = "/about";
+export const admissionUrl = "/admission";
 
 export const signinUrl = "/sign-in";
 export const profileUrl = "/my-profile";

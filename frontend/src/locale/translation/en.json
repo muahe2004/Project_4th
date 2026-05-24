@@ -1532,6 +1532,30 @@
       }
     }
   },
+  "admission": {
+    "heroAlt": "UTEHY admission banner",
+    "campusAlt": "UTEHY campus",
+    "title": "WELCOME TO UTEHY ADMISSION",
+    "intro": "We warmly invite you to learn more about UTEHY by exploring our website and joining admission counseling sessions, held on campus or online.",
+    "experienceTitle": "Student Experience at UTEHY",
+    "paragraph1": "UTEHY offers a dynamic higher-education environment in Vietnam, built on three core values: educational excellence, strong international collaboration, and a holistic student experience in learning, research, and personal growth.",
+    "paragraph2": "The university follows a clear international orientation with lecturers experienced in global academic and professional environments. Our programs emphasize graduate outcomes, language competence, and practical skills to help students build careers in Vietnam and integrate into the global workforce.",
+    "paragraph3": "UTEHY's campus in Hung Yen provides a green, modern, and friendly learning environment where students, lecturers, and staff can develop their full potential every day.",
+    "paragraph4": "UTEHY's admission process is transparent, structured, and learner-centered. Throughout the application journey, the university supports you in understanding suitable majors, identifying your strengths, and building a meaningful development path.",
+    "paragraph5": "By completing your application, you move closer to university life while gaining a clearer view of your abilities, personality, and career goals.",
+    "formTitle": "Register for Admission Information",
+    "formDescription": "To receive more details about UTEHY programs and counseling schedules, please leave your contact information. Our Admission Office will contact you as soon as possible.",
+    "placeholders": {
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone number"
+    },
+    "submit": "Submit",
+    "visitCampus": "You are also welcome to visit UTEHY campus and experience student life directly.",
+    "closing": "We believe your years at UTEHY can become some of the most memorable years of your life.",
+    "signature": "Sincerely,",
+    "office": "Admission Office."
+  },
   "umsChatbot": {
     "title": "UMS ChatBot",
     "logoAlt": "UMS logo",
