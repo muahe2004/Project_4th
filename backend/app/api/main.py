@@ -24,6 +24,7 @@ from app.api.routes import (
     export_file,
     academic_terms,
     ai,
+    vnpay,
 )
 
 api_router = APIRouter()
@@ -76,3 +77,4 @@ api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(export_file.router, prefix="/export-file", tags=["export-file"])
 api_router.include_router(academic_terms.router, prefix="/academic_terms", tags=["academic_terms"])
 api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
+api_router.include_router(vnpay.router, prefix="/vnpay", tags=["vnpay"])

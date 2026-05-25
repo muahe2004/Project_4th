@@ -1,6 +1,9 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { useState } from "react";
+import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { formatVndAmount } from "../../../utils/formatCurrency";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
+import { useCreateVnpayPaymentUrl } from "../apis/createVnpayPaymentUrl";
 import type { IStudentTuitionFeeListResponse } from "../types/studentTuitionFee";
 
 interface StudentTuitionFeeTableProps {
@@ -11,6 +14,32 @@ export default function StudentTuitionFeeTable({
   studentsWithTuitionFees,
 }: StudentTuitionFeeTableProps) {
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
+  const [processingId, setProcessingId] = useState<string | null>(null);
+  const { mutateAsync: createPaymentUrl, isPending } = useCreateVnpayPaymentUrl();
+
+  const handlePay = async (studentTuitionFeeId: string) => {
+    try {
+      setProcessingId(studentTuitionFeeId);
+      const response = await createPaymentUrl({
+        student_tuition_fee_id: studentTuitionFeeId,
+        bank_code: "NCB",
+        order_info: "Thanh toan hoc phi",
+      });
+
+      if (!response?.payment_url) {
+        showSnackbar("Không tạo được link thanh toán", "error");
+        return;
+      }
+
+      window.location.href = response.payment_url;
+    } catch (error) {
+      showSnackbar("Không thể tạo link thanh toán VNPAY", "error");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   return (
     <TableContainer className="sticky-table-container" component={Paper}>
       <Table stickyHeader className="sticky-table" aria-label="student tuition fees table">
@@ -39,6 +68,9 @@ export default function StudentTuitionFeeTable({
             </TableCell>
             <TableCell className="primary-thead__cell" align="center">
               {t("tuitionFees.studentTable.debtAmount")}
+            </TableCell>
+            <TableCell className="primary-thead__cell" align="center">
+              {t("common.actions")}
             </TableCell>
           </TableRow>
         </TableHead>
@@ -71,6 +103,24 @@ export default function StudentTuitionFeeTable({
                 </TableCell>
                 <TableCell className="sticky-tcell" align="center">
                     {formatVndAmount(firstTuitionFee?.debt_amount)}
+                </TableCell>
+                <TableCell className="sticky-tcell" align="center">
+                  <Button
+                    variant="contained"
+                    size="small"
+                    disabled={
+                      !firstTuitionFee?.id ||
+                      (firstTuitionFee?.debt_amount ?? 0) <= 0 ||
+                      isPending
+                    }
+                    onClick={() => firstTuitionFee?.id && handlePay(firstTuitionFee.id)}
+                    sx={{
+                      backgroundColor: "var(--primary-color)",
+                      textTransform: "none",
+                    }}
+                  >
+                    {processingId === firstTuitionFee?.id ? "Đang xử lý..." : "Thanh toán"}
+                  </Button>
                 </TableCell>
               </TableRow>
             );

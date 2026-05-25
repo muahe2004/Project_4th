@@ -1,0 +1,5 @@
+UNPAID = "unpaid"
+PARTIALLY_PAID = "partially_paid"
+PAID = "paid"
+
+PAYMENT_STATUSES = {UNPAID, PARTIALLY_PAID, PAID}

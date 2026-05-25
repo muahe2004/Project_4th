@@ -73,7 +73,6 @@
     "scholarship": "Học bổng",
     "registration": "Đăng ký",
     "onlineLearning": "Học trực tuyến",
-    
     "contactUs": "LIÊN HỆ",
     "contact": {
       "branch1Phone": "CS1: 0221.3689.888",
@@ -82,14 +81,12 @@
       "email": "Email: dhspkt@utehy.edu.vn",
       "website": "Website: http://utehy.edu.vn"
     },
-    
     "address": "ĐỊA CHỈ",
     "addresses": {
       "branch1Address": "CS1: Khoái Châu - Hưng Yên",
       "branch2Address": "CS2: Mỹ Hào - Hưng Yên",
       "branch3Address": "CS3: TP Hải Dương - Hải Dương"
     },
-
     "copyright": "© 2025 Trường Đại học Sư phạm Kỹ thuật Hưng Yên"
   },
   "home": {
@@ -271,37 +268,7 @@
       "gpaAccum10": "TBC TL H10"
     },
     "import": {
-      "title": "Import Score Preview",
-      "editTitle": "Chỉnh sửa dòng điểm import",
-      "loading": "Đang đọc file điểm...",
-      "noData": "Không có dữ liệu import.",
-      "fileName": "File name",
-      "class": "Lớp",
-      "subject": "Học phần",
-      "academicYear": "Năm học",
-      "invalidRows": "Còn {{count}} dòng lỗi, vui lòng sửa trước khi import.",
-      "confirmExit": "Bạn có chắc muốn thoát form import?",
-      "table": {
-        "classCode": "Mã lớp",
-        "studentCode": "MSV",
-        "familyName": "Họ và đệm",
-        "givenName": "Tên",
-        "d1": "D1",
-        "d2": "D2",
-        "thi": "Thi",
-        "tbm": "TBM",
-        "errorReason": "Lý do lỗi"
-      },
-      "form": {
-        "classCode": "Mã lớp",
-        "studentCode": "Mã sinh viên",
-        "familyName": "Họ và đệm",
-        "givenName": "Tên",
-        "d1": "D1",
-        "d2": "D2",
-        "thi": "Thi",
-        "tbm": "TBM"
-      }
+      "missingFileContext": "Thiếu academic_term_id hoặc subject_id từ file upload."
     },
     "edit": {
       "title": "Sửa điểm",
@@ -351,9 +318,6 @@
       "title": "Xác nhận khoá điểm",
       "message": "Bạn có chắc muốn khoá tất cả các điểm đang ở trạng thái pending không?",
       "confirm": "Xác nhận"
-    },
-    "import": {
-      "missingFileContext": "Thiếu academic_term_id hoặc subject_id từ file upload."
     }
   },
   "teachers": {
@@ -559,7 +523,29 @@
     "title": "Chương trình đào tạo",
     "searchPlaceholder": "Tìm theo tên CTĐT, niên khoá, loại CTĐT...",
     "add": "Thêm chương trình đào tạo",
-    "import": "Import",
+    "import": {
+      "title": "Xem trước import chương trình đào tạo",
+      "editTitle": "Chỉnh sửa môn học import",
+      "noData": "Không có dữ liệu import.",
+      "fileName": "Tên file",
+      "program": "CTĐT",
+      "academicYear": "Niên khoá",
+      "invalidRows": "Có {{count}} dòng lỗi, vui lòng sửa trước khi import.",
+      "errorReasons": {
+        "subjectCodeRequired": "Mã môn học là bắt buộc.",
+        "subjectNameRequired": "Tên môn học là bắt buộc.",
+        "subjectNotFound": "Không tìm thấy môn học {{subjectCode}}.",
+        "termRequired": "Học kỳ là bắt buộc.",
+        "termInvalid": "Học kỳ phải là số nguyên dương."
+      },
+      "confirmExit": "Bạn có chắc muốn thoát form import?",
+      "table": {
+        "subjectCode": "Mã môn",
+        "subjectName": "Tên môn",
+        "term": "Học kỳ",
+        "errorReason": "Lý do lỗi"
+      }
+    },
     "confirmDeleteTitle": "Xác nhận xoá",
     "confirmDelete": "CTĐT sẽ được chuyển sang trạng thái inactive. Bạn có chắc muốn tiếp tục?",
     "messages": {
@@ -608,29 +594,6 @@
       "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
       "confirmSaveTitle": "Xác nhận lưu",
       "confirmSave": "Bạn có chắc muốn lưu các thay đổi?"
-    },
-    "import": {
-      "title": "Xem trước import chương trình đào tạo",
-      "editTitle": "Chỉnh sửa môn học import",
-      "noData": "Không có dữ liệu import.",
-      "fileName": "Tên file",
-      "program": "CTĐT",
-      "academicYear": "Niên khoá",
-      "invalidRows": "Có {{count}} dòng lỗi, vui lòng sửa trước khi import.",
-      "errorReasons": {
-        "subjectCodeRequired": "Mã môn học là bắt buộc.",
-        "subjectNameRequired": "Tên môn học là bắt buộc.",
-        "subjectNotFound": "Không tìm thấy môn học {{subjectCode}}.",
-        "termRequired": "Học kỳ là bắt buộc.",
-        "termInvalid": "Học kỳ phải là số nguyên dương."
-      },
-      "confirmExit": "Bạn có chắc muốn thoát form import?",
-      "table": {
-        "subjectCode": "Mã môn",
-        "subjectName": "Tên môn",
-        "term": "Học kỳ",
-        "errorReason": "Lý do lỗi"
-      }
     }
   },
   "tuitionFees": {
@@ -969,9 +932,7 @@
       }
     },
     "roomFilter": {
-      "searchPlaceholder": "Tìm phòng...",
-      "allRooms": "Tất cả phòng",
-      "loading": "Đang tải..."
+      "searchPlaceholder": "Tìm phòng..."
     },
     "tooltip": {
       "class": "Lớp",
@@ -982,16 +943,16 @@
     },
     "roomGrid": {
       "days": {
-        "0": "Chủ Nhật",
-        "1": "Thứ Hai",
-        "2": "Thứ Ba",
-        "3": "Thứ Tư",
-        "4": "Thứ Năm",
-        "5": "Thứ Sáu",
-        "6": "Thứ Bảy"
+        "0": "Thứ 2",
+        "1": "Thứ 3",
+        "2": "Thứ 4",
+        "3": "Thứ 5",
+        "4": "Thứ 6",
+        "5": "Thứ 7",
+        "6": "Chủ nhật"
       }
     },
-    "periodNumber": "Tiết {{period}}",
+    "periodNumber": "{{period}}",
     "import": {
       "title": "Xem trước import lịch thi",
       "noData": "Không có dữ liệu import.",
@@ -1005,9 +966,9 @@
       },
       "invalidRows": "Có {{count}} dòng lỗi, vui lòng sửa trước khi import.",
       "errorReasons": {
-        "classNotFound": "Mã lớp {{classCode}} không tồn tại.",
+        "classNotFound": "Không tìm thấy lớp {{classCode}}.",
         "missingSubjectCode": "Thiếu mã môn thi.",
-        "missingClassCode": "Thiếu mã lớp.",
+        "missingClassCode": "Thiếu mã lớp ở ô C5.",
         "missingRoom": "Thiếu phòng thi.",
         "missingExamDate": "Thiếu ngày thi.",
         "missingStartTime": "Thiếu giờ bắt đầu.",
@@ -1018,7 +979,6 @@
         "invalidEndTimeFormat": "Định dạng giờ kết thúc không hợp lệ.",
         "endTimeMustBeGreater": "Giờ kết thúc phải lớn hơn giờ bắt đầu.",
         "subjectNotFound": "Không tìm thấy môn thi {{subjectCode}}.",
-        "classNotFound": "Không tìm thấy lớp {{classCode}}.",
         "teacherNotFound": "Không tìm thấy giảng viên {{teacherCode}}.",
         "roomNotFound": "Không tìm thấy phòng thi {{roomNumber}}.",
         "classIdNotFound": "Không tìm thấy lớp {{classId}}.",
@@ -1032,7 +992,6 @@
         "xlsxOnly": "Chỉ hỗ trợ file .xlsx.",
         "emptyUpload": "File upload rỗng.",
         "emptySheet": "Sheet Excel rỗng.",
-        "missingClassCode": "Thiếu mã lớp ở ô C5.",
         "missingStudyPeriod": "Thiếu khoảng thời gian học ở ô C7."
       },
       "classCode": "Mã lớp",
@@ -1079,28 +1038,8 @@
       "6": "Chủ Nhật"
     },
     "periodLabel": "Tiết {{period}}",
-    "periodNumber": "{{period}}",
     "periodRange": "Tiết {{start}} - {{end}}",
     "roomLabel": "Phòng {{room}}"
-    ,
-    "roomFilter": {
-      "searchPlaceholder": "Tìm phòng..."
-    },
-    "roomGrid": {
-      "days": {
-        "0": "Thứ 2",
-        "1": "Thứ 3",
-        "2": "Thứ 4",
-        "3": "Thứ 5",
-        "4": "Thứ 6",
-        "5": "Thứ 7",
-        "6": "Chủ nhật"
-      }
-    },
-    "table": {
-      "loading": "Đang tải...",
-      "subjectFallback": "Môn học"
-    }
   },
   "courseRegistration": {
     "searchPlaceholder": "Tìm theo mã lớp, tên lớp, môn học, giảng viên, chuyên ngành...",
@@ -1645,5 +1584,12 @@
       "exam": "Lịch thi",
       "time": "Giờ"
     }
+  },
+  "paymentResult": {
+    "successTitle": "Thanh toán thành công",
+    "failedTitle": "Thanh toán thất bại",
+    "successDescription": "Giao dịch của bạn đã được xử lý thành công.",
+    "failedDescription": "Giao dịch chưa hoàn tất. Vui lòng thử lại.",
+    "backToTuition": "Về trang học phí"
   }
 }

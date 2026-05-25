@@ -73,7 +73,6 @@
     "scholarship": "Scholarship",
     "registration": "Registration",
     "onlineLearning": "Online Learning",
-    
     "contactUs": "CONTACT US",
     "contact": {
       "branch1Phone": "BR1: 0221.3689.888",
@@ -82,14 +81,12 @@
       "email": "Email: dhspkt@utehy.edu.vn",
       "website": "Website: http://utehy.edu.vn"
     },
-    
     "address": "ADDRESS",
     "addresses": {
       "branch1Address": "BR1: Khoai Chau - Hung Yen",
       "branch2Address": "BR2: My Hao - Hung Yen",
       "branch3Address": "BR3: Hai Duong City - Hai Duong"
     },
-
     "copyright": "© 2025 Hung Yen University Of Technology And Education"
   },
   "home": {
@@ -271,37 +268,7 @@
       "gpaAccum10": "Accum. GPA H10"
     },
     "import": {
-      "title": "Import Score Preview",
-      "editTitle": "Edit Imported Score Row",
-      "loading": "Reading score file...",
-      "noData": "No import data available.",
-      "fileName": "File Name",
-      "class": "Class",
-      "subject": "Subject",
-      "academicYear": "Academic Year",
-      "invalidRows": "{{count}} invalid rows remain, please fix them before importing.",
-      "confirmExit": "Are you sure you want to exit the import form?",
-      "table": {
-        "classCode": "Class Code",
-        "studentCode": "Student Code",
-        "familyName": "Family Name",
-        "givenName": "Given Name",
-        "d1": "D1",
-        "d2": "D2",
-        "thi": "Final",
-        "tbm": "Average",
-        "errorReason": "Error Reason"
-      },
-      "form": {
-        "classCode": "Class Code",
-        "studentCode": "Student Code",
-        "familyName": "Family Name",
-        "givenName": "Given Name",
-        "d1": "D1",
-        "d2": "D2",
-        "thi": "Final",
-        "tbm": "Average"
-      }
+      "missingFileContext": "Missing academic_term_id or subject_id from uploaded file."
     },
     "edit": {
       "title": "Edit Score",
@@ -351,9 +318,6 @@
       "title": "Confirm Lock",
       "message": "Are you sure you want to lock all scores currently in pending status?",
       "confirm": "Confirm"
-    },
-    "import": {
-      "missingFileContext": "Missing academic_term_id or subject_id from uploaded file."
     }
   },
   "teachers": {
@@ -559,7 +523,29 @@
     "title": "Training Programs",
     "searchPlaceholder": "Search by training program name, academic year, program type...",
     "add": "Add Training Program",
-    "import": "Import",
+    "import": {
+      "title": "Training program import preview",
+      "editTitle": "Edit Imported Subject",
+      "noData": "No import data available.",
+      "fileName": "File name",
+      "program": "Training Program",
+      "academicYear": "Academic Year",
+      "invalidRows": "There are {{count}} rows with errors, please fix them before importing.",
+      "errorReasons": {
+        "subjectCodeRequired": "Subject code is required.",
+        "subjectNameRequired": "Subject name is required.",
+        "subjectNotFound": "Subject {{subjectCode}} was not found.",
+        "termRequired": "Term is required.",
+        "termInvalid": "Term must be a positive integer."
+      },
+      "confirmExit": "Are you sure you want to exit the import form?",
+      "table": {
+        "subjectCode": "Subject Code",
+        "subjectName": "Subject Name",
+        "term": "Term",
+        "errorReason": "Error Reason"
+      }
+    },
     "confirmDeleteTitle": "Confirm Delete",
     "confirmDelete": "The training program will be moved to inactive status. Are you sure you want to continue?",
     "messages": {
@@ -608,29 +594,6 @@
       "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
       "confirmSaveTitle": "Confirm Save",
       "confirmSave": "Are you sure you want to save the changes?"
-    },
-    "import": {
-      "title": "Training program import preview",
-      "editTitle": "Edit Imported Subject",
-      "noData": "No import data available.",
-      "fileName": "File name",
-      "program": "Training Program",
-      "academicYear": "Academic Year",
-      "invalidRows": "There are {{count}} rows with errors, please fix them before importing.",
-      "errorReasons": {
-        "subjectCodeRequired": "Subject code is required.",
-        "subjectNameRequired": "Subject name is required.",
-        "subjectNotFound": "Subject {{subjectCode}} was not found.",
-        "termRequired": "Term is required.",
-        "termInvalid": "Term must be a positive integer."
-      },
-      "confirmExit": "Are you sure you want to exit the import form?",
-      "table": {
-        "subjectCode": "Subject Code",
-        "subjectName": "Subject Name",
-        "term": "Term",
-        "errorReason": "Error Reason"
-      }
     }
   },
   "tuitionFees": {
@@ -969,9 +932,7 @@
       }
     },
     "roomFilter": {
-      "searchPlaceholder": "Search room...",
-      "allRooms": "All rooms",
-      "loading": "Loading..."
+      "searchPlaceholder": "Search rooms..."
     },
     "tooltip": {
       "class": "Class",
@@ -982,16 +943,16 @@
     },
     "roomGrid": {
       "days": {
-        "0": "Sunday",
-        "1": "Monday",
-        "2": "Tuesday",
-        "3": "Wednesday",
-        "4": "Thursday",
-        "5": "Friday",
-        "6": "Saturday"
+        "0": "Monday",
+        "1": "Tuesday",
+        "2": "Wednesday",
+        "3": "Thursday",
+        "4": "Friday",
+        "5": "Saturday",
+        "6": "Sunday"
       }
     },
-    "periodNumber": "Period {{period}}",
+    "periodNumber": "{{period}}",
     "import": {
       "title": "Exam schedule import preview",
       "noData": "No import data.",
@@ -1005,9 +966,9 @@
       },
       "invalidRows": "There are {{count}} rows with errors, please fix them before importing.",
       "errorReasons": {
-        "classNotFound": "Class code {{classCode}} does not exist.",
+        "classNotFound": "Class {{classCode}} was not found.",
         "missingSubjectCode": "Exam subject code is missing.",
-        "missingClassCode": "Class code is missing.",
+        "missingClassCode": "Class code is missing in cell C5.",
         "missingRoom": "Exam room is missing.",
         "missingExamDate": "Exam date is missing.",
         "missingStartTime": "Start time is missing.",
@@ -1018,7 +979,6 @@
         "invalidEndTimeFormat": "Invalid end time format.",
         "endTimeMustBeGreater": "End time must be greater than start time.",
         "subjectNotFound": "Exam subject {{subjectCode}} was not found.",
-        "classNotFound": "Class {{classCode}} was not found.",
         "teacherNotFound": "Teacher {{teacherCode}} was not found.",
         "roomNotFound": "Exam room {{roomNumber}} was not found.",
         "classIdNotFound": "Class {{classId}} was not found.",
@@ -1032,7 +992,6 @@
         "xlsxOnly": "Only .xlsx files are supported.",
         "emptyUpload": "Uploaded file is empty.",
         "emptySheet": "Excel sheet is empty.",
-        "missingClassCode": "Class code is missing in cell C5.",
         "missingStudyPeriod": "Study period is missing in cell C7."
       },
       "classCode": "Class Code",
@@ -1075,23 +1034,8 @@
       "6": "Sunday"
     },
     "periodLabel": "Period {{period}}",
-    "periodNumber": "{{period}}",
     "periodRange": "Period {{start}} - {{end}}",
     "roomLabel": "Room {{room}}",
-    "roomFilter": {
-      "searchPlaceholder": "Search rooms..."
-    },
-    "roomGrid": {
-      "days": {
-        "0": "Monday",
-        "1": "Tuesday",
-        "2": "Wednesday",
-        "3": "Thursday",
-        "4": "Friday",
-        "5": "Saturday",
-        "6": "Sunday"
-      }
-    },
     "table": {
       "loading": "Loading...",
       "subjectFallback": "Subject"
@@ -1628,5 +1572,12 @@
       "exam": "Exam",
       "time": "Time"
     }
+  },
+  "paymentResult": {
+    "successTitle": "Payment Successful",
+    "failedTitle": "Payment Failed",
+    "successDescription": "Your payment has been successfully processed.",
+    "failedDescription": "Your payment could not be completed. Please try again.",
+    "backToTuition": "Back to Tuition Page"
   }
 }

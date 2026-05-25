@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from fastapi import HTTPException
 from sqlmodel import Session, select, func
 from sqlalchemy import or_
@@ -27,9 +28,18 @@ from app.models.schemas.tuition_fees.student_tuition_fee_schemas import (
 from app.models.schemas.tuition_fees.tuition_fee_schemas import TuitionFeePublic
 from app.enums.status import StatusEnum
 from app.services.students import StudentServices
+from app.constants.payment_status import PAID, PARTIALLY_PAID, UNPAID
 
 
 class StudentTuitionFeeServices:
+    @staticmethod
+    def _derive_payment_status(*, payable_amount: float, debt_amount: float, paid_amount: float) -> str:
+        if paid_amount <= 0:
+            return UNPAID
+        if debt_amount <= 0 and paid_amount >= payable_amount:
+            return PAID
+        return PARTIALLY_PAID
+
     @staticmethod
     def _calculate_amounts(
         *, tuition_amount: float, reduction: float | None, paid_amount: float | None
@@ -42,6 +52,36 @@ class StudentTuitionFeeServices:
             return payable_amount, 0, paid_value - payable_amount
 
         return payable_amount, payable_amount - paid_value, 0
+
+    @staticmethod
+    def apply_successful_payment(*, session: Session, student_tuition_fee: StudentTuitionFees, paid_amount: float) -> StudentTuitionFees:
+        if paid_amount <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Paid amount must be greater than 0",
+            )
+
+        total_paid = (student_tuition_fee.paid_amount or 0) + paid_amount
+        payable_amount, debt_amount, surplus = StudentTuitionFeeServices._calculate_amounts(
+            tuition_amount=student_tuition_fee.payable_amount,
+            reduction=0,
+            paid_amount=total_paid,
+        )
+        student_tuition_fee.payable_amount = payable_amount
+        student_tuition_fee.paid_amount = total_paid
+        student_tuition_fee.debt_amount = debt_amount
+        student_tuition_fee.surplus = surplus
+        student_tuition_fee.status = StudentTuitionFeeServices._derive_payment_status(
+            payable_amount=payable_amount,
+            debt_amount=debt_amount,
+            paid_amount=total_paid,
+        )
+        student_tuition_fee.updated_at = datetime.now()
+
+        session.add(student_tuition_fee)
+        session.commit()
+        session.refresh(student_tuition_fee)
+        return student_tuition_fee
 
     @staticmethod
     def create(
@@ -83,6 +123,11 @@ class StudentTuitionFeeServices:
         payload["payable_amount"] = payable_amount
         payload["debt_amount"] = debt_amount
         payload["surplus"] = surplus
+        payload["status"] = StudentTuitionFeeServices._derive_payment_status(
+            payable_amount=payable_amount,
+            debt_amount=debt_amount,
+            paid_amount=payload.get("paid_amount") or 0,
+        )
 
         record = StudentTuitionFees(**payload)
         session.add(record)
@@ -219,6 +264,11 @@ class StudentTuitionFeeServices:
                 paid_amount=payload.paid_amount,
                 debt_amount=debt_amount,
                 surplus=surplus,
+                status=StudentTuitionFeeServices._derive_payment_status(
+                    payable_amount=payable_amount,
+                    debt_amount=debt_amount,
+                    paid_amount=payload.paid_amount or 0,
+                ),
             )
             session.add(record)
             new_records.append(record)

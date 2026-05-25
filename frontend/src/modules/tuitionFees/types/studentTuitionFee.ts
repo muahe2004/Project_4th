@@ -67,6 +67,7 @@ export interface IStudentTuitionFeeRow {
     paid_amount?: number | null;
     debt_amount?: number | null;
     surplus?: number | null;
+    status?: string | null;
     created_at: string;
     updated_at: string;
     tuition_fee: IStudentTuitionFeeTuitionFee;

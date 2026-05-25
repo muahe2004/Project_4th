@@ -45,6 +45,17 @@ class Settings(BaseSettings):
     ] = []
     FRONTEND_HOST: str = "http://localhost:2004"
 
+    # VNPAY (sandbox / production)
+    VNPAY_TMN_CODE: str | None = None
+    VNPAY_HASH_SECRET: str | None = None
+    VNPAY_PAYMENT_URL: str = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+    VNPAY_RETURN_URL: str = "http://localhost:8000/unicore/api/student_tuition_fees/vnpay/return"
+    VNPAY_IPN_URL: str = "http://localhost:8000/unicore/api/student_tuition_fees/vnpay/ipn"
+    VNPAY_VERSION: str = "2.1.0"
+    VNPAY_COMMAND: str = "pay"
+    VNPAY_CURRENCY_CODE: str = "VND"
+    VNPAY_LOCALE: str = "vn"
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def all_cors_origins(self) -> list[str]:

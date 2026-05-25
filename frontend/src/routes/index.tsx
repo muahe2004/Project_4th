@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, teacherExaminationSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl, studentTuitionFeeUrl, managementScoreUrl, scoreDetailsUrl, teacherManagementScoreUrl, teacherManagementListStudentScoreUrl, advisorClassScoreUrl, teacherScoreDetailsUrl, testAIUrl, studentTuitionFeesUrl, studentExaminationSchedules, aboutUrl, admissionUrl, newsAndEventsUrl } from "./urls";
+import { homeUrl, layoutUrl, signinUrl, profileUrl, gradesUrl, learningScheduleUrl, layOutAdminUrl, dashBoardUrl, departmentUrl, majorUrl, onlineCourse, specializationsUrl, classesUrl, studentUrl, teacherUrl, subjectUrl, teachingScheduleUrl, studentLearningSchedules, teacherTeachingSchedules, teacherExaminationSchedules, roomUrl, examinationScheduleUrl, courseRegistrationUrl, trainingProgramUrl, tuitionFeeUrl, studentTuitionFeeUrl, managementScoreUrl, scoreDetailsUrl, teacherManagementScoreUrl, teacherManagementListStudentScoreUrl, advisorClassScoreUrl, teacherScoreDetailsUrl, testAIUrl, studentTuitionFeesUrl, studentExaminationSchedules, aboutUrl, admissionUrl, newsAndEventsUrl, paymentResultUrl } from "./urls";
 import { MyProfile } from "../modules/profiles/views/MyProfile";
 import { SignIn } from "../modules/auth/views/SignIn";
 import { HomePage } from "../modules/home/views/HomePage"
@@ -40,6 +40,7 @@ import { TeacherScoreDetails } from "../modules/managementScore/views/TeacherSco
 import ChatBot from "../modules/umsChatbot/views/ChatBot";
 import { StudentExaminationSchedules } from "../modules/examinationSchedule/views/StudentExaminationSchedules";
 import TeacherExaminationSchedules from "../modules/examinationSchedule/views/TeacherExaminationSchedules";
+import VnpayPaymentResult from "../modules/payments/views/VnpayPaymentResult";
 
 const ProtectedRoute = ({
   children,
@@ -72,6 +73,10 @@ export const createRouterConfig = () => {
     {
       path: signinUrl,
       element: <SignIn />,
+    },
+    {
+      path: paymentResultUrl,
+      element: <VnpayPaymentResult />,
     },
     {
       path: layoutUrl,

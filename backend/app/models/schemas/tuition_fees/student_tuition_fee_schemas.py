@@ -15,6 +15,7 @@ class StudentTuitionFeeBase(SQLModel):
     paid_amount: float | None = Field(default=None, sa_column=Column(Float, nullable=True))
     debt_amount: float | None = Field(default=None, sa_column=Column(Float, nullable=True))
     surplus: float | None = Field(default=None, sa_column=Column(Float, nullable=True))
+    status: str | None = Field(default=None, nullable=True)
     created_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
@@ -32,6 +33,7 @@ class StudentTuitionFeeUpdate(SQLModel):
     paid_amount: Optional[float] | None = Field(default=None, sa_column=Column(Float, nullable=True))
     debt_amount: Optional[float] | None = Field(default=None, sa_column=Column(Float, nullable=True))
     surplus: Optional[float] | None = Field(default=None, sa_column=Column(Float, nullable=True))
+    status: Optional[str] = Field(default=None, nullable=True)
     updated_at: datetime = Field(default_factory=datetime.now, sa_column=Column(DateTime, nullable=False))
 
 class StudentTuitionFeeDeleteResponse(SQLModel):

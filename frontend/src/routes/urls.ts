@@ -14,6 +14,7 @@ export const teacherTeachingSchedules = "teacher-teaching-schedules"
 export const teacherExaminationSchedules = "teacher-examination-schedules"
 export const courseRegistrationUrl = "/course-registration"
 export const studentTuitionFeesUrl = "/student-tuition-fees"
+export const paymentResultUrl = "/payment-result"
 
 // ADMIN
 export const layOutAdminUrl = "/admin"
