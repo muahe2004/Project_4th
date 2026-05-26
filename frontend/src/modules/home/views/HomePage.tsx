@@ -1,4 +1,5 @@
 import { Box, Toolbar } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
@@ -13,6 +14,7 @@ import cardImage3 from "../../../assets/images/card-image3.jpg";
 import cardImage4 from "../../../assets/images/card-image4.jpg";
 import home1 from "../../../assets/images/home1.jpg";
 import home4 from "../../../assets/images/home4.jpg";
+import { MEDIA_QUERY } from "../../../constants/breakpoints";
 
 const heroSlides = [homeThumb, home4, home1];
 
@@ -52,6 +54,9 @@ export function HomePage() {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isHoldingMouse, setIsHoldingMouse] = useState(false);
+  const isMobile = useMediaQuery(MEDIA_QUERY.mobile);
+  const isTabletAndDown = useMediaQuery(MEDIA_QUERY.tabletAndDown);
+  const isDesktopUp = useMediaQuery(MEDIA_QUERY.desktopUp);
   const dragStartXRef = useRef<number | null>(null);
   const hasDraggedRef = useRef(false);
 
@@ -69,12 +74,14 @@ export function HomePage() {
   const goToNextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
 
   const onMouseDownSlide = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDesktopUp) return;
     setIsHoldingMouse(true);
     dragStartXRef.current = event.clientX;
     hasDraggedRef.current = false;
   };
 
   const onMouseMoveSlide = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDesktopUp) return;
     if (!isHoldingMouse || dragStartXRef.current === null || hasDraggedRef.current) return;
 
     const deltaX = event.clientX - dragStartXRef.current;
@@ -106,7 +113,14 @@ export function HomePage() {
   
   return (
     <main className="home">
-      <Box className="home-box" onMouseDown={onMouseDownSlide} onMouseMove={onMouseMoveSlide} onMouseUp={stopMouseHold} onMouseLeave={stopMouseHold}>
+      <Box
+        className="home-box"
+        sx={{ height: isMobile ? 300 : isTabletAndDown ? 420 : "calc(100vh - 65px)" }}
+        onMouseDown={onMouseDownSlide}
+        onMouseMove={onMouseMoveSlide}
+        onMouseUp={stopMouseHold}
+        onMouseLeave={stopMouseHold}
+      >
         <Box className="home-slider-track" sx={{ transform: `translateX(-${currentSlide * 100}%)` }}>
           {heroSlides.map((slide) => (
             <img
@@ -132,7 +146,7 @@ export function HomePage() {
         </Box>
       </Box>
 
-      <Box className="home-flex">
+      <Box className={`home-flex ${isMobile ? "home-flex--mobile" : isTabletAndDown ? "home-flex--tablet" : "home-flex--desktop"}`}>
         {mockCards.map(card => (
             <HomeCard
               key={card.id}

@@ -94,3 +94,35 @@
   background: var(--primary-color);
   color: #ffffff;
 }
+
+@media (max-width: 767px) {
+  .room-filter {
+    max-width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .room-filter__header {
+    margin-bottom: 8px;
+  }
+
+  .room-filter__search-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  .room-filter__search {
+    font-size: 0.95rem;
+  }
+
+  .room-filter__list {
+    gap: 8px;
+  }
+
+  .room-filter__item {
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+}

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import {
+  Box,
   IconButton,
   Paper,
   Table,
@@ -9,11 +10,13 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useTranslation } from "react-i18next";
 
 import type { ITeachingClassItem } from "../apis/getTeachingClasses";
 import { teacherManagementListStudentScoreUrl } from "../../../routes/urls";
+import { MEDIA_QUERY } from "../../../constants/breakpoints";
 
 import "../../grades/components/styles/studentTableScore.css";
 
@@ -26,6 +29,7 @@ interface TeachingClassTableProps {
 export function TeachingClassTable({ rows, onViewClass, academicTermId }: TeachingClassTableProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery(MEDIA_QUERY.mobile);
 
   const handleViewClass = (row: ITeachingClassItem) => {
     onViewClass?.(row);
@@ -42,6 +46,40 @@ export function TeachingClassTable({ rows, onViewClass, academicTermId }: Teachi
       },
     });
   };
+
+  if (isMobile) {
+    return (
+      <Box className="teaching-class-mobile">
+        {(rows ?? []).length === 0 ? (
+          <Box className="teaching-class-mobile__empty">{t("teacherManagementScore.table.empty")}</Box>
+        ) : (
+          (rows ?? []).map((row) => (
+            <Box key={`${row.id}-${row.subject_id}`} className="teaching-class-mobile__card">
+              <Box className="teaching-class-mobile__row">
+                <span>{t("teacherManagementScore.table.classCode")}</span>
+                <strong>{row.class_code}</strong>
+              </Box>
+              <Box className="teaching-class-mobile__row">
+                <span>{t("teacherManagementScore.table.className")}</span>
+                <strong>{row.class_name}</strong>
+              </Box>
+              <Box className="teaching-class-mobile__row">
+                <span>{t("teacherManagementScore.table.subject")}</span>
+                <strong>{row.subject_name} ({row.subject_code})</strong>
+              </Box>
+              <IconButton
+                className="teaching-class-mobile__view"
+                aria-label="view class details"
+                onClick={() => handleViewClass(row)}
+              >
+                <VisibilityOutlinedIcon />
+              </IconButton>
+            </Box>
+          ))
+        )}
+      </Box>
+    );
+  }
 
   return (
     <TableContainer className="primary-table-container" component={Paper}>

@@ -15,7 +15,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import CloseIcon from "@mui/icons-material/Close";
+import HistoryIcon from "@mui/icons-material/History";
 import logo from "../../../assets/images/logoUTEHY.png";
 import "./styles/UMSChatBot.css";
 
@@ -24,6 +26,7 @@ import { usePredictIntent } from "../apis/predictIntent";
 import type { PredictIntentResponse } from "../apis/predictIntent";
 import { chatResponse } from "../utils/chatResponse";
 import { capitalizeFirstLetter } from "../utils/textFormat";
+import { MEDIA_QUERY } from "../../../constants/breakpoints";
 
 const CHATBOT_HISTORY_KEY = "ums_chatbot_history";
 
@@ -173,9 +176,11 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
   const [selectedTimeScope, setSelectedTimeScope] = useState<ChatTimeScope | null>(null);
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string>("");
+  const [openHistory, setOpenHistory] = useState(false);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const mutation = usePredictIntent();
   const response = mutation.data;
+  const isTabletAndDown = useMediaQuery(MEDIA_QUERY.tabletAndDown);
   const activeConversation = useMemo(
     () => conversations.find((item) => item.id === activeConversationId) ?? null,
     [conversations, activeConversationId]
@@ -448,6 +453,11 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
         </Stack>
 
         <Stack direction="row" spacing={0.5} alignItems="center">
+          {isTabletAndDown && (
+            <IconButton size="small" className="ums-chatbot__close" onClick={() => setOpenHistory(true)}>
+              <HistoryIcon fontSize="small" />
+            </IconButton>
+          )}
           <IconButton size="small" className="ums-chatbot__close" onClick={onClose}>
             <CloseIcon fontSize="small" />
           </IconButton>
@@ -455,7 +465,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
       </Box>
 
       <DialogContent dividers className="ums-chatbot__content">
-        <Box className="ums-chatbot__sidebar">
+        <Box className={`ums-chatbot__sidebar ${isTabletAndDown ? "ums-chatbot__sidebar--hidden" : ""}`}>
           <Button
             className="ums-chatbot__new-btn"
             variant="contained"
@@ -478,6 +488,50 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
                   className={`ums-chatbot__item ${conversation.id === activeConversationId ? "ums-chatbot__item--active" : ""}`}
                   selected={conversation.id === activeConversationId}
                   onClick={() => setActiveConversationId(conversation.id)}
+                >
+                  <Typography variant="body2" className="ums-chatbot__item-text">
+                    {conversation.title}
+                  </Typography>
+                </ListItemButton>
+              ))
+            )}
+          </List>
+        </Box>
+
+        {isTabletAndDown && openHistory && (
+          <Box className="ums-chatbot__history-overlay" onClick={() => setOpenHistory(false)} />
+        )}
+
+        <Box
+          className={`ums-chatbot__sidebar ums-chatbot__sidebar--mobile-panel ${
+            isTabletAndDown && openHistory ? "ums-chatbot__sidebar--mobile-open" : ""
+          }`}
+        >
+          <Button
+            className="ums-chatbot__new-btn"
+            variant="contained"
+            onClick={startNewChat}
+          >
+            {t("umsChatbot.newChat")}
+          </Button>
+          <Typography variant="caption" className="ums-chatbot__recent-title">
+            {t("umsChatbot.recentChats")}
+          </Typography>
+          <List className="ums-chatbot__list">
+            {conversations.length === 0 ? (
+              <Typography variant="body2" className="ums-chatbot__empty-history">
+                {t("umsChatbot.noHistory")}
+              </Typography>
+            ) : (
+              conversations.map((conversation) => (
+                <ListItemButton
+                  key={conversation.id}
+                  className={`ums-chatbot__item ${conversation.id === activeConversationId ? "ums-chatbot__item--active" : ""}`}
+                  selected={conversation.id === activeConversationId}
+                  onClick={() => {
+                    setActiveConversationId(conversation.id);
+                    setOpenHistory(false);
+                  }}
                 >
                   <Typography variant="body2" className="ums-chatbot__item-text">
                     {conversation.title}

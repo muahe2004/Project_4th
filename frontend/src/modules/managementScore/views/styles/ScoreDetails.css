@@ -10,3 +10,52 @@
 .score-details__table {
   margin-top: 8px;
 }
+
+.teacher-list-score__header {
+  margin-bottom: 12px;
+}
+
+.teacher-list-score__title {
+  font-size: 1.35rem !important;
+  line-height: 1.35 !important;
+}
+
+.teacher-list-score__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+  .teacher-list-score__title {
+    text-align: left !important;
+    font-size: 1.05rem !important;
+  }
+
+  .teacher-list-score__actions {
+    justify-content: stretch !important;
+    gap: 8px;
+  }
+
+  .teacher-list-score__actions .button,
+  .teacher-list-score__actions .button-primary,
+  .teacher-list-score__actions .home-flex__button,
+  .teacher-list-score__actions .MuiButton-root {
+    width: 100%;
+  }
+
+  .teacher-list-score__actions > * {
+    flex: 1 1 100%;
+  }
+
+  .teacher-list-score__actions input[type="file"] {
+    display: none;
+  }
+
+  .primary-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

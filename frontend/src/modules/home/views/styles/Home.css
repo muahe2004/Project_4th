@@ -2,7 +2,6 @@
 
 .home-box {
     width: 100%;
-    height: calc(100vh - 65px);
     position: relative;
     overflow: hidden;
     cursor: grab;
@@ -72,14 +71,26 @@
     width: 200px;
 }
 
-@media (max-width: 1280px) {
-    .home-flex {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.home-flex--desktop {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-@media (max-width: 768px) {
-    .home-flex {
-        grid-template-columns: 1fr;
-    }
+.home-flex--tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 72px;
+}
+
+.home-flex--mobile {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 40px 4% 32px;
+}
+
+.home-flex--mobile .home-flex__toolbar {
+    margin-top: 8px;
+}
+
+.home-flex--mobile .home-flex__button {
+    width: 100%;
+    max-width: 220px;
 }

@@ -181,3 +181,47 @@
   text-align: center;
   padding: 0 3px;
 }
+
+@media (max-width: 767px) {
+  .teaching-schedule-by-room {
+    margin: 8px 0;
+    max-height: min(58vh, calc(100vh - 260px));
+  }
+
+  .teaching-room-row {
+    grid-template-columns: 62px repeat(7, minmax(110px, 1fr));
+    min-width: 840px;
+  }
+
+  .teaching-room-row--teacher {
+    grid-template-columns: 128px repeat(7, minmax(110px, 1fr));
+    min-width: 920px;
+  }
+
+  .teaching-room-row--class {
+    grid-template-columns: 128px repeat(7, minmax(110px, 1fr));
+    min-width: 920px;
+  }
+
+  .teaching-room-label--header,
+  .teaching-room-day-title--header {
+    min-height: 42px;
+    padding: 8px 6px;
+    font-size: 13px;
+  }
+
+  .teaching-room-label {
+    font-size: 12px;
+  }
+
+  .teaching-room-day-grid {
+    grid-template-columns: repeat(6, 18px);
+    grid-template-rows: repeat(2, 18px);
+    gap: 2px;
+  }
+
+  .teaching-room-cell {
+    min-height: 18px;
+    font-size: 9px;
+  }
+}

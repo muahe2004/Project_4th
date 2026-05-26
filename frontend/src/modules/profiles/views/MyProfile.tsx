@@ -1,7 +1,9 @@
 import { Box, Tabs, Tab } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import "./styles/MyProfile.css";
 import { useState, type SyntheticEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { MEDIA_QUERY } from "../../../constants/breakpoints";
 
 import Information from "../components/Information";
 import Relatives from "../components/Relatives";
@@ -9,6 +11,7 @@ import Relatives from "../components/Relatives";
 export function MyProfile() {
   const { t } = useTranslation();
   const [value, setValue] = useState<number>(0);
+  const isMobile = useMediaQuery(MEDIA_QUERY.mobile);
 
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -18,7 +21,13 @@ export function MyProfile() {
     <Box className="myprofile">
       <h1 className="primary-title">{t("myprofile.title")}</h1>
 
-      <Tabs className="myprofile-tabs" value={value} onChange={handleChange}>
+      <Tabs
+        className="myprofile-tabs"
+        value={value}
+        onChange={handleChange}
+        variant={isMobile ? "scrollable" : "standard"}
+        scrollButtons="auto"
+      >
         <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.information")} />
         <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.relatives")} />
         {/* <Tab classes={{ selected: "active-tab" }} label={t("myprofile.tabs.password")} /> */}

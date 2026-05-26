@@ -24,6 +24,20 @@
 .course-registration__table-section {
     flex: 1 1 auto;
     min-width: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.course-registration__table-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.course-registration__table {
+    min-width: 980px;
 }
 
 .course-registration__calendar-section {
@@ -48,5 +62,36 @@
     .course-registration__toolbar {
         flex-direction: column;
         align-items: stretch;
+    }
+}
+
+@media (max-width: 767px) {
+    .course-registration__content {
+        gap: 12px;
+    }
+
+    .course-registration__toolbar {
+        gap: 8px;
+    }
+
+    .course-registration__toolbar > * {
+        width: 100%;
+    }
+
+    .course-registration__calendar-section {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .course-registration__table {
+        min-width: 1040px;
+    }
+
+    .course-registration__checkbox-cell {
+        min-width: 52px;
+    }
+
+    .course-registration__table-section .pagination {
+        overflow-x: auto;
     }
 }

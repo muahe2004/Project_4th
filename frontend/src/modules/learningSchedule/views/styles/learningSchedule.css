@@ -2,3 +2,10 @@
     margin: 0 1%;
     padding: 10px;
 }
+
+@media (max-width: 767px) {
+    .learningSchedule {
+        margin: 0;
+        padding: 8px 6px;
+    }
+}

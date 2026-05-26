@@ -33,3 +33,21 @@
         width: 100%;
     }
 }
+
+@media (max-width: 767px) {
+    .grades {
+        margin: 0;
+        padding: 14px 10px;
+    }
+
+    .grades-flex {
+        margin-top: 12px;
+        margin-bottom: 14px;
+        gap: 10px;
+    }
+
+    .grades-controller {
+        width: 100%;
+        flex: 1 1 100%;
+    }
+}

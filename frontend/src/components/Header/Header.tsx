@@ -9,9 +9,12 @@ import {
   Box,
   Button,
   Stack,
-  Typography
+  Typography,
+  Drawer,
 } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from "../../stores/useAuthStore";
@@ -36,6 +39,7 @@ import logo from '../../assets/images/logoUTEHY.png';
 import "./Header.css"
 import { ROLES } from '../../constants/roles';
 import UMSChatBot from '../../modules/umsChatbot/views/UMSChatBot';
+import { MEDIA_QUERY } from '../../constants/breakpoints';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -54,7 +58,9 @@ const Header: React.FC = () => {
     : t('header_menu.examSchedule');
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [openMobileMenu, setOpenMobileMenu] = useState(false);
   const [openChatBot, setOpenChatBot] = useState(false);
+  const isTabletAndDown = useMediaQuery(MEDIA_QUERY.tabletAndDown);
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -63,6 +69,7 @@ const Header: React.FC = () => {
   const handleNavigate = (url: string) => {
     navigate(url);
     handleCloseUserMenu();
+    setOpenMobileMenu(false);
   };
 
   const handleAcademicResultNavigate = () => {
@@ -83,7 +90,18 @@ const Header: React.FC = () => {
   return (
     <AppBar position="static" className="header">
       <Toolbar className="header-toolbar">
-        <Box onClick={() => handleNavigate(homeUrl)} className="header-flex">
+        {isTabletAndDown && (
+          <IconButton
+            color="inherit"
+            onClick={() => setOpenMobileMenu(true)}
+            aria-label="Open navigation menu"
+            className="header-mobile-toggle"
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+
+        <Box onClick={() => handleNavigate(homeUrl)} className={`header-flex ${isTabletAndDown ? "header-brand--hidden-mobile" : ""}`}>
           <img src={logo} alt="Logo" className="header-logo"/>
           <Typography variant="h1" className="header-title">UniCore</Typography>
         </Box>
@@ -172,6 +190,22 @@ const Header: React.FC = () => {
           </Menu>
         </Box>
       </Toolbar>
+      <Drawer
+        anchor="left"
+        open={openMobileMenu}
+        onClose={() => setOpenMobileMenu(false)}
+      >
+        <Box className="header-mobile-menu" role="presentation">
+          <Box className="header-mobile-menu__brand" onClick={() => handleNavigate(homeUrl)}>
+            <img src={logo} alt="Logo" className="header-logo"/>
+            <Typography variant="h1" className="header-title">UniCore</Typography>
+          </Box>
+          <Button className="header-mobile-menu__item" onClick={() => handleNavigate(homeUrl)}>{t('header_navbar.home')}</Button>
+          <Button className="header-mobile-menu__item" onClick={() => handleNavigate(admissionUrl)}>{t('header_navbar.admission')}</Button>
+          <Button className="header-mobile-menu__item" onClick={() => handleNavigate(aboutUrl)}>{t('header_navbar.aboutUTEHY')}</Button>
+          <Button className="header-mobile-menu__item" onClick={() => handleNavigate(newsAndEventsUrl)}>{t('header_navbar.newsEvents')}</Button>
+        </Box>
+      </Drawer>
       <UMSChatBot
         open={openChatBot}
         onClose={() => setOpenChatBot(false)}

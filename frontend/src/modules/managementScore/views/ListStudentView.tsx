@@ -25,6 +25,7 @@ import type {
   IScoreUploadResponse,
   IScoreUploadRow,
 } from "../types";
+import "./styles/ScoreDetails.css";
 
 function ListStudentScoreSubjectContent({
   data,
@@ -411,7 +412,7 @@ export function ListStudentScoreSubject() {
   return (
     <main className="admin-main-container">
       <Box
-        className="admin-main-box"
+        className="admin-main-box teacher-list-score__header"
         sx={{
           display: "flex",
           alignItems: "center",
@@ -420,11 +421,12 @@ export function ListStudentScoreSubject() {
           flexWrap: "wrap",
         }}
       >
-        <Typography className="primary-title" sx={{ mb: 0, textAlign: "center", width: "100%" }}>
+        <Typography className="primary-title teacher-list-score__title" sx={{ mb: 0, textAlign: "center", width: "100%" }}>
           Lớp: {state?.className ?? "-"} ({state?.classCode ?? "-"}) - Môn: {state?.subjectName ?? "-"} ({state?.subjectCode ?? "-"})
         </Typography>
 
         <Box
+          className="teacher-list-score__actions"
           sx={{
             display: "flex",
             alignItems: "center",

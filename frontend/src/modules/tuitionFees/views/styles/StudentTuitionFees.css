@@ -1,3 +1,25 @@
 .student-tuition-fees-breadcrumb {
   margin-bottom: 12px;
 }
+
+.student-tuition-fees__table-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.student-tuition-fees__table-container .sticky-table {
+  min-width: 920px;
+}
+
+@media (max-width: 767px) {
+  .student-tuition-fees__table-container .sticky-table {
+    min-width: 980px;
+  }
+
+  .admin-main-container > .pagination {
+    overflow-x: auto;
+  }
+}

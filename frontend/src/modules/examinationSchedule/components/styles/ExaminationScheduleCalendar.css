@@ -187,3 +187,33 @@
     font-size: 11px;
   }
 }
+
+@media (max-width: 767px) {
+  .examination-calendar__wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .examination-calendar__grid {
+    width: max-content;
+    min-width: 980px;
+    grid-template-columns: 110px repeat(7, minmax(124px, 1fr));
+  }
+
+  .examination-calendar__head {
+    min-height: 72px;
+  }
+
+  .examination-calendar__head strong {
+    font-size: 16px;
+  }
+
+  .examination-calendar__head span {
+    font-size: 16px;
+  }
+
+  .examination-calendar__time-label {
+    font-size: 12px;
+  }
+}

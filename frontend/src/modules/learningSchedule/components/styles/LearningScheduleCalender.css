@@ -119,3 +119,33 @@
     font-size: 11px;
   }
 }
+
+@media (max-width: 767px) {
+  .learning-calender__wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .learning-calender__grid {
+    width: max-content;
+    min-width: 980px;
+    grid-template-columns: 110px repeat(7, minmax(124px, 1fr));
+  }
+
+  .learning-calender__head {
+    min-height: 72px;
+  }
+
+  .learning-calender__head strong {
+    font-size: 16px;
+  }
+
+  .learning-calender__head span {
+    font-size: 16px;
+  }
+
+  .learning-calender__time-label {
+    font-size: 12px;
+  }
+}

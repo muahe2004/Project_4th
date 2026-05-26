@@ -44,7 +44,7 @@ export default function StudentTuitionFeeTable({
   };
 
   return (
-    <TableContainer className="sticky-table-container" component={Paper}>
+    <TableContainer className="sticky-table-container student-tuition-fees__table-container" component={Paper}>
       <Table stickyHeader className="sticky-table" aria-label="student tuition fees table">
         <TableHead className="primary-thead">
           <TableRow className="primary-trow">
