@@ -18,9 +18,12 @@ import { useImportStudents } from "../apis/importStudents";
 import { useUploadStudent } from "../apis/uploadStudent";
 import type { IStudentUploadResponse, IStudentsResponse } from "../types";
 import { useTranslation } from "react-i18next";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
+import type { AxiosError } from "axios";
 
 export function Students() {
     const { t } = useTranslation();
+    const { showSnackbar } = useSnackbar();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("");
@@ -173,9 +176,27 @@ export function Students() {
                 data={importPreview}
                 isImporting={isImportingStudents}
                 onImport={async (studentsPayload) => {
-                    await importStudents(studentsPayload);
-                    setOpenImportFormModel(false);
-                    setImportPreview(null);
+                    try {
+                        await importStudents(studentsPayload);
+                        showSnackbar(t("students.import.success"), "success");
+                        setOpenImportFormModel(false);
+                        setImportPreview(null);
+                    } catch (error) {
+                        const err = error as AxiosError<{
+                            detail?: string | { code?: string; params?: Record<string, string | number> };
+                        }>;
+                        const detail = err.response?.data?.detail;
+
+                        if (detail && typeof detail === "object" && detail.code) {
+                            showSnackbar(t(detail.code, detail.params), "error");
+                            return;
+                        }
+
+                        showSnackbar(
+                            (typeof detail === "string" && detail) || t("students.import.failed"),
+                            "error"
+                        );
+                    }
                 }}
             />
         </main>

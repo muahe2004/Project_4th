@@ -1433,7 +1433,10 @@
         "studentNameRequired": "Student name is required.",
         "genderRequired": "Gender is required.",
         "emailRequired": "Email is required.",
-        "classCodeRequired": "Class code is required."
+        "classCodeRequired": "Class code is required.",
+        "requiredFields": "Student code, name, gender, and email are required.",
+        "genderInvalid": "Gender must be one of: 1, 2, 3.",
+        "studentExists": "Student already exists: {{student_code}} / {{email}}"
       },
       "editTitle": "Edit Imported Subject",
       "importing": "Importing...",
@@ -1448,7 +1451,9 @@
         "classCode": "Class Code",
         "errorReason": "Error Reason",
         "actions": "Actions"
-      }
+      },
+      "success": "Students imported successfully.",
+      "failed": "Student import failed."
     },
     "importEdit": {
       "title": "Edit Imported Student",

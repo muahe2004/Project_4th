@@ -72,6 +72,13 @@ def _normalize_gender(raw_value: object) -> str | None:
 
 class StudentServices:
     @staticmethod
+    def _raise_http_error(status_code: int, code: str, **params: int | str) -> None:
+        raise HTTPException(
+            status_code=status_code,
+            detail={"code": code, "params": params},
+        )
+
+    @staticmethod
     def _build_error(code: str, **params: int | str) -> StudentFileError:
         return StudentFileError(code=code, params=params)
 
@@ -772,14 +779,14 @@ class StudentServices:
             gender = (student_item.gender or "").strip()
 
             if not student_code or not student_name or not email or not gender:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="student_code, name, gender, email are required.",
+                StudentServices._raise_http_error(
+                    status.HTTP_400_BAD_REQUEST,
+                    "students.import.errorReasons.requiredFields",
                 )
             if gender not in {"1", "2", "3"}:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="gender must be one of: 1, 2, 3.",
+                StudentServices._raise_http_error(
+                    status.HTTP_400_BAD_REQUEST,
+                    "students.import.errorReasons.genderInvalid",
                 )
 
             existed_student = session.exec(
@@ -791,9 +798,11 @@ class StudentServices:
                 )
             ).first()
             if existed_student:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Student already exists: {student_code} / {email}",
+                StudentServices._raise_http_error(
+                    status.HTTP_400_BAD_REQUEST,
+                    "students.import.errorReasons.studentExists",
+                    student_code=student_code,
+                    email=email,
                 )
 
             new_student = Students(

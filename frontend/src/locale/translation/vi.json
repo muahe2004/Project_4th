@@ -1433,7 +1433,10 @@
         "studentNameRequired": "Họ và tên là bắt buộc.",
         "genderRequired": "Giới tính là bắt buộc.",
         "emailRequired": "Email là bắt buộc.",
-        "classCodeRequired": "Mã lớp là bắt buộc."
+        "classCodeRequired": "Mã lớp là bắt buộc.",
+        "requiredFields": "Mã sinh viên, họ tên, giới tính và email là bắt buộc.",
+        "genderInvalid": "Giới tính phải là một trong các giá trị: 1, 2, 3.",
+        "studentExists": "Sinh viên đã tồn tại: {{student_code}} / {{email}}"
       },
       "editTitle": "Chỉnh sửa môn học import",
       "importing": "Importing...",
@@ -1448,7 +1451,9 @@
         "classCode": "Mã lớp",
         "errorReason": "Lý do lỗi",
         "actions": "Thao tác"
-      }
+      },
+      "success": "Import sinh viên thành công.",
+      "failed": "Import sinh viên thất bại."
     },
     "importEdit": {
       "title": "Sửa sinh viên import",
