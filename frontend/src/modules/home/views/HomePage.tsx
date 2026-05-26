@@ -1,13 +1,20 @@
-import { Box, Toolbar, Typography } from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from "react-router-dom";
 import homeThumb from "../../../assets/images/utehy2.jpg"
 import { HomeCard } from "../components/HomeCard"
 import "./styles/Home.css";
 import Button from "../../../components/Button/Button";
-import cardImage1 from "../../../assets/images/card-image1.jpg"
-import cardImage2 from "../../../assets/images/card-image2.jpg"
-import cardImage3 from "../../../assets/images/card-image3.jpg"
-import cardImage4 from "../../../assets/images/card-image4.jpg"
+import { newsAndEventsUrl } from "../../../routes/urls";
+import cardImage1 from "../../../assets/images/card-image1.jpg";
+import cardImage2 from "../../../assets/images/card-image2.jpg";
+import cardImage3 from "../../../assets/images/card-image3.jpg";
+import cardImage4 from "../../../assets/images/card-image4.jpg";
+import home1 from "../../../assets/images/home1.jpg";
+import home4 from "../../../assets/images/home4.jpg";
+
+const heroSlides = [homeThumb, home4, home1];
 
 const mockCards = [
   {
@@ -42,6 +49,54 @@ const mockCards = [
 
 export function HomePage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isHoldingMouse, setIsHoldingMouse] = useState(false);
+  const dragStartXRef = useRef<number | null>(null);
+  const hasDraggedRef = useRef(false);
+
+  useEffect(() => {
+    if (isHoldingMouse) return;
+
+    const intervalId = window.setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [isHoldingMouse]);
+
+  const goToPreviousSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  const goToNextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+
+  const onMouseDownSlide = (event: React.MouseEvent<HTMLDivElement>) => {
+    setIsHoldingMouse(true);
+    dragStartXRef.current = event.clientX;
+    hasDraggedRef.current = false;
+  };
+
+  const onMouseMoveSlide = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isHoldingMouse || dragStartXRef.current === null || hasDraggedRef.current) return;
+
+    const deltaX = event.clientX - dragStartXRef.current;
+    const dragThreshold = 60;
+
+    if (Math.abs(deltaX) < dragThreshold) return;
+
+    if (deltaX > 0) {
+      goToPreviousSlide();
+    } else {
+      goToNextSlide();
+    }
+
+    hasDraggedRef.current = true;
+  };
+
+  const stopMouseHold = () => {
+    setIsHoldingMouse(false);
+    dragStartXRef.current = null;
+    hasDraggedRef.current = false;
+  };
+
   const formatDate = (value: string) =>
     new Intl.DateTimeFormat("vi-VN", {
       day: "2-digit",
@@ -51,14 +106,29 @@ export function HomePage() {
   
   return (
     <main className="home">
-      <Box className="home-box">
-        <img className="home-image" src={homeThumb}></img>
+      <Box className="home-box" onMouseDown={onMouseDownSlide} onMouseMove={onMouseMoveSlide} onMouseUp={stopMouseHold} onMouseLeave={stopMouseHold}>
+        <Box className="home-slider-track" sx={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+          {heroSlides.map((slide) => (
+            <img
+              key={slide}
+              className="home-image"
+              src={slide}
+              alt="UTEHY hero"
+              draggable={false}
+            />
+          ))}
+        </Box>
 
-        <Box className="home-overlay"></Box>
-
-        <Box className="home-box__absolute">
-          <Typography className="home-box__typography">{t('home.homeMain.title1')}</Typography>
-          <Typography className="home-box__typography">{t('home.homeMain.title2')}</Typography>
+        <Box className="home-slider-dots">
+          {heroSlides.map((_, index) => (
+            <button
+              key={`dot-${index}`}
+              type="button"
+              className={`home-slider-dot ${index === currentSlide ? "is-active" : ""}`}
+              onClick={() => setCurrentSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </Box>
       </Box>
 
@@ -74,7 +144,9 @@ export function HomePage() {
         ))}
 
         <Toolbar className="home-flex__toolbar">
-          <Button className="home-flex__button">{t('home.homeNews.buttonMore')}</Button>
+          <Button className="home-flex__button" onClick={() => navigate(newsAndEventsUrl)}>
+            {t('home.homeNews.buttonMore')}
+          </Button>
         </Toolbar>
       </Box>
     </main>
