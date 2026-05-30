@@ -23,8 +23,7 @@ import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete"
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 
 import { getStatusColor } from "../../../utils/status/status-color";
-import { getStatusDisplay } from "../../../utils/status/status-display";
-import { STATUS_OPTIONS } from "../../../constants/status";
+import { getStatusDisplay, getStatusOptions } from "../../../utils/status/status-i18n";
 
 import { useGetMajor } from "../apis/getMajors";
 import { useGetDepartment } from "../../department/apis/getDepartments";
@@ -40,6 +39,7 @@ import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 
 export function Majors() {
     const { t } = useTranslation();
+    const statusOptions = getStatusOptions();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [searchDepartment, setSearchDepartment] = useState("");
@@ -120,7 +120,7 @@ export function Majors() {
                 <StatusFilter
                     value={status}
                     onChange={setStatus}
-                    options={STATUS_OPTIONS}
+                    options={statusOptions}
                 />
 
                 <MainAutocomplete

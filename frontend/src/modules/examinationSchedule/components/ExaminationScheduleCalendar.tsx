@@ -92,7 +92,9 @@ export function ExaminationScheduleCalendar({
     () => Array.from({ length: 7 }, (_, index) => addDays(monday, index)),
     [monday]
   );
-  const weekLabel = `W${String(getIsoWeek(monday)).padStart(2, "0")}`;
+  const weekLabel = t("examinationSchedules.weekCode", {
+    week: String(getIsoWeek(monday)).padStart(2, "0"),
+  });
   const bodyHeight = HOURS.length * HOUR_HEIGHT;
 
   const params = useMemo(

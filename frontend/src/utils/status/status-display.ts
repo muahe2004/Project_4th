@@ -1,12 +1,5 @@
-import { STATUS } from "../../constants/status";
+import { getStatusDisplay as getStatusDisplayI18n } from "./status-i18n";
 
 export const getStatusDisplay = ( status: string): string => {
-    switch (status) {
-        case STATUS.ACTIVE:
-            return "Active";
-        case STATUS.INACTIVE:
-            return "Inactive";
-        default:
-            return "Unknown";
-    }
+    return getStatusDisplayI18n(status);
 };

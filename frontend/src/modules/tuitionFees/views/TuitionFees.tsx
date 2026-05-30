@@ -10,7 +10,7 @@ import Loading from "../../../components/Loading/Loading";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
-import { STATUS_OPTIONS } from "../../../constants/status";
+import { getStatusOptions } from "../../../utils/status/status-i18n";
 import { dashBoardUrl, layOutAdminUrl, studentTuitionFeeUrl } from "../../../routes/urls";
 import { useGetTuitionFees } from "../apis/getTuitionFees";
 import AllocateTuitionFeeFormModel from "../components/AllocateTuitionFeeFormModel";
@@ -66,7 +66,7 @@ export function TuitionFees() {
             setStatus(value);
             setPage(1);
           }}
-          options={STATUS_OPTIONS}
+          options={getStatusOptions()}
         />
 
         <SearchEngine

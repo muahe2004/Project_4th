@@ -8,7 +8,7 @@ import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
-import { STATUS_OPTIONS } from "../../../constants/status";
+import { getStatusOptions } from "../../../utils/status/status-i18n";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useDeleteSubject } from "../apis/deleteSubject";
 import { useGetSubjects } from "../apis/getSubjects";
@@ -109,7 +109,7 @@ export function Subjects() {
             setStatus(value);
             setPage(1);
           }}
-          options={STATUS_OPTIONS}
+          options={getStatusOptions()}
         />
 
         <SearchEngine

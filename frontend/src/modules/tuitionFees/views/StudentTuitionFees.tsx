@@ -48,8 +48,8 @@ export function StudentTuitionFees() {
         <BreadCrumb
           className="student-tuition-fees-breadcrumb"
           items={[
-            { label: "Dashboard", to: dashBoardUrl },
-            { label: "Học phí theo sinh viên" },
+            { label: t("tuitionFees.breadcrumb.dashboard"), to: dashBoardUrl },
+            { label: t("tuitionFees.breadcrumb.studentTuitionFees") },
           ]}
         />
       )}
@@ -68,7 +68,7 @@ export function StudentTuitionFees() {
             ]}
           />
           <SearchEngine
-            placeholder="Tìm theo mã sinh viên, tên sinh viên..."
+            placeholder={t("tuitionFees.studentSearchPlaceholder")}
             onSearch={(value) => {
               setSearch(value);
               setPage(1);

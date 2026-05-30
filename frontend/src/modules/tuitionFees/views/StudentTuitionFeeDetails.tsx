@@ -1,13 +1,15 @@
 import { useMemo } from "react";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useGetStudentsWithTuitionFees } from "../apis/getStudentsWithTuitionFees";
 import { formatVndAmount } from "../../../utils/formatCurrency";
-import { layOutAdminUrl, studentTuitionFeeUrl } from "../../../routes/urls";
+import { dashBoardUrl, layOutAdminUrl, studentTuitionFeeUrl } from "../../../routes/urls";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 
 export function StudentTuitionFeeDetails() {
+  const { t } = useTranslation();
   const location = useLocation();
   const state = (location.state as {
     studentId?: string;
@@ -33,9 +35,9 @@ export function StudentTuitionFeeDetails() {
       <BreadCrumb
         className="student-tuition-fees-breadcrumb"
         items={[
-          { label: "Dashboard", to: "/admin" },
-          { label: "Học phí theo sinh viên", to: `${layOutAdminUrl}/${studentTuitionFeeUrl}` },
-          { label: "Chi tiết học phí" },
+          { label: t("tuitionFees.breadcrumb.dashboard"), to: dashBoardUrl },
+          { label: t("tuitionFees.breadcrumb.studentTuitionFees"), to: `${layOutAdminUrl}/${studentTuitionFeeUrl}` },
+          { label: t("tuitionFees.breadcrumb.studentTuitionFeeDetails") },
         ]}
       />
 
@@ -47,28 +49,28 @@ export function StudentTuitionFeeDetails() {
         <Table stickyHeader className="sticky-table" aria-label="student tuition fee details table">
           <TableHead className="primary-thead">
             <TableRow className="primary-trow">
-              <TableCell className="primary-thead__cell" align="left">Học phí</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Kỳ</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Phải đóng</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Đã đóng</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Còn nợ</TableCell>
-              <TableCell className="primary-thead__cell" align="center">Trạng thái</TableCell>
+              <TableCell className="primary-thead__cell" align="left">{t("tuitionFees.studentTable.tuitionFee")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("tuitionFees.studentTable.term")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("tuitionFees.studentTable.payableAmount")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("tuitionFees.studentTable.paidAmount")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("tuitionFees.studentTable.debtAmount")}</TableCell>
+              <TableCell className="primary-thead__cell" align="center">{t("tuitionFees.table.status")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody className="sticky-tbody">
             {!studentId && (
               <TableRow className="sticky-trow">
-                <TableCell className="sticky-tcell" align="center" colSpan={6}>Thiếu thông tin sinh viên</TableCell>
+                <TableCell className="sticky-tcell" align="center" colSpan={6}>{t("tuitionFees.details.missingStudentInfo")}</TableCell>
               </TableRow>
             )}
             {studentId && isLoading && (
               <TableRow className="sticky-trow">
-                <TableCell className="sticky-tcell" align="center" colSpan={6}>Đang tải...</TableCell>
+                <TableCell className="sticky-tcell" align="center" colSpan={6}>{t("dashboard.loading")}</TableCell>
               </TableRow>
             )}
             {studentId && !isLoading && tuitionRows.length === 0 && (
               <TableRow className="sticky-trow">
-                <TableCell className="sticky-tcell" align="center" colSpan={6}>Sinh viên chưa có khoản học phí nào</TableCell>
+                <TableCell className="sticky-tcell" align="center" colSpan={6}>{t("tuitionFees.details.noTuitionFees")}</TableCell>
               </TableRow>
             )}
             {tuitionRows.map((item) => (
@@ -78,7 +80,7 @@ export function StudentTuitionFeeDetails() {
                 <TableCell className="sticky-tcell" align="center">{formatVndAmount(item.payable_amount)}</TableCell>
                 <TableCell className="sticky-tcell" align="center">{formatVndAmount(item.paid_amount)}</TableCell>
                 <TableCell className="sticky-tcell" align="center">{formatVndAmount(item.debt_amount)}</TableCell>
-                <TableCell className="sticky-tcell" align="center">{item.status || ((item.debt_amount ?? 0) <= 0 ? "paid" : "unpaid")}</TableCell>
+                <TableCell className="sticky-tcell" align="center">{item.status || ((item.debt_amount ?? 0) <= 0 ? t("tuitionFees.statusFilter.paid") : t("tuitionFees.statusFilter.unpaid"))}</TableCell>
               </TableRow>
             ))}
           </TableBody>

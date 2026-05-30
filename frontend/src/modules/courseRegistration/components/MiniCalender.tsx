@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { Box, Stack, Typography, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -65,6 +66,7 @@ export function MiniCalender({
     onChangeDate,
     className,
 }: MiniCalenderProps) {
+    const { t } = useTranslation();
     const [uncontrolledSelectedDate, setUncontrolledSelectedDate] = useState<Date | null>(new Date());
 
     const parsedDates = useMemo(
@@ -96,14 +98,11 @@ export function MiniCalender({
                     <Box>
                         <Typography className="mini-calender__range">
                             {selectedDate
-                                ? `Tuan ${format(
-                                      startOfWeek(selectedDate, { weekStartsOn: 1 }),
-                                      "dd/MM"
-                                  )} - ${format(
-                                      endOfWeek(selectedDate, { weekStartsOn: 1 }),
-                                      "dd/MM"
-                                  )}`
-                                : "Chưa chọn ngày"}
+                                ? t("teachingSchedules.weekRange", {
+                                      start: format(startOfWeek(selectedDate, { weekStartsOn: 1 }), "dd/MM"),
+                                      end: format(endOfWeek(selectedDate, { weekStartsOn: 1 }), "dd/MM"),
+                                  })
+                                : t("teachingSchedules.noDateSelected")}
                         </Typography>
                     </Box>
 

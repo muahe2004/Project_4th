@@ -10,7 +10,7 @@ import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
-import { STATUS_OPTIONS } from "../../../constants/status";
+import { getStatusOptions } from "../../../utils/status/status-i18n";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useDeleteTeacher } from "../apis/deleteTeacher";
 import { useExportExampleFile } from "../apis/exportExampleFile";
@@ -128,7 +128,7 @@ export function Teachers() {
             setStatus(value);
             setPage(1);
           }}
-          options={STATUS_OPTIONS}
+          options={getStatusOptions()}
         />
 
         <SearchEngine

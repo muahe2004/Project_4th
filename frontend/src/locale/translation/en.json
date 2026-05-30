@@ -64,7 +64,12 @@
     "male": "Male",
     "female": "Female",
     "other": "Other",
-    "confirmExitTitle": "Confirm Exit"
+    "confirmExitTitle": "Confirm Exit",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "unknown": "Unknown"
+    }
   },
   "footer": {
     "unicores": "UNICORE",
@@ -669,6 +674,15 @@
       "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
       "confirmSaveTitle": "Confirm Save",
       "confirmSave": "Are you sure you want to save the changes?"
+    },
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "studentTuitionFees": "Students with Tuition Fees",
+      "studentTuitionFeeDetails": "Tuition Fee Details"
+    },
+    "details": {
+      "missingStudentInfo": "Missing student information",
+      "noTuitionFees": "This student has no tuition fees"
     }
   },
   "pagination": {
@@ -1050,7 +1064,10 @@
     "table": {
       "loading": "Loading...",
       "subjectFallback": "Subject"
-    }
+    },
+    "weekRange": "Week {{start}} - {{end}}",
+    "weekCode": "W{{week}}",
+    "noDateSelected": "No date selected"
   },
   "courseRegistration": {
     "searchPlaceholder": "Search by class code, class name, subject, teacher, specialization...",
@@ -1332,7 +1349,8 @@
     },
     "roomLabel": "Room {{room}}",
     "subjectFallback": "Exam subject",
-    "periodRange": "{{start}} - {{end}}"
+    "periodRange": "{{start}} - {{end}}",
+    "weekCode": "W{{week}}"
   },
   "students": {
     "breadcrumb": {
@@ -1422,12 +1440,12 @@
       "bankAccountNumber": "Bank Account Number"
     },
     "relativeSections": {
-      "father": "FATHER INFORMATION",
-      "mother": "MOTHER INFORMATION",
-      "relative": "RELATIVE INFORMATION",
       "0": "FATHER INFORMATION",
       "1": "MOTHER INFORMATION",
-      "2": "RELATIVE INFORMATION"
+      "2": "RELATIVE INFORMATION",
+      "father": "FATHER INFORMATION",
+      "mother": "MOTHER INFORMATION",
+      "relative": "RELATIVE INFORMATION"
     },
     "relative": {
       "name": "Relative Name",

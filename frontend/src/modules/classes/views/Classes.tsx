@@ -27,7 +27,7 @@ import type { IClassesResponse } from "../types";
 
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
-import { STATUS_OPTIONS } from "../../../constants/status";
+import { getStatusOptions } from "../../../utils/status/status-i18n";
 
 import "./styles/Classes.css";
 import { useSpecializationsDropDown } from "../../specializations/apis/getSpecializationDropDown";
@@ -89,7 +89,7 @@ export function Classes() {
                 <StatusFilter
                     value={status}
                     onChange={setStatus}
-                    options={STATUS_OPTIONS}
+                    options={getStatusOptions()}
                 />
 
                 <MainAutocomplete

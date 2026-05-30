@@ -8,7 +8,7 @@ import PaginationUniCore from "../../../components/Pagination/Pagination";
 import { Box } from "@mui/material";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
-import { STATUS_OPTIONS } from "../../../constants/status";
+import { getStatusOptions } from "../../../utils/status/status-i18n";
 import Button from "../../../components/Button/Button";
 import StudentFormModel from "../components/StudentFormModel";
 import ImportFormModel from "../components/ImportFormModel";
@@ -94,7 +94,7 @@ export function Students() {
                 <StatusFilter
                     value={status}
                     onChange={setStatus}
-                    options={STATUS_OPTIONS}
+                    options={getStatusOptions()}
                 />
                 
                 <SearchEngine

@@ -64,7 +64,12 @@
     "male": "Nam",
     "female": "Nữ",
     "other": "Khác",
-    "confirmExitTitle": "Xác nhận thoát"
+    "confirmExitTitle": "Xác nhận thoát",
+    "status": {
+      "active": "Hoạt động",
+      "inactive": "Ngừng hoạt động",
+      "unknown": "Không xác định"
+    }
   },
   "footer": {
     "unicores": "UNICORE",
@@ -669,6 +674,15 @@
       "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
       "confirmSaveTitle": "Xác nhận lưu",
       "confirmSave": "Bạn có chắc muốn lưu các thay đổi?"
+    },
+    "breadcrumb": {
+      "dashboard": "Trang chủ",
+      "studentTuitionFees": "Học phí theo sinh viên",
+      "studentTuitionFeeDetails": "Chi tiết học phí"
+    },
+    "details": {
+      "missingStudentInfo": "Thiếu thông tin sinh viên",
+      "noTuitionFees": "Sinh viên chưa có khoản học phí nào"
     }
   },
   "pagination": {
@@ -887,7 +901,7 @@
   },
   "teachingSchedules": {
     "breadcrumb": {
-      "dashboard": "Dashboard",
+      "dashboard": "Trang chủ",
       "title": "Lịch dạy"
     },
     "searchPlaceholder": "Tìm theo lớp, giảng viên, môn học, email, phòng...",
@@ -1050,7 +1064,10 @@
     },
     "periodLabel": "Tiết {{period}}",
     "periodRange": "Tiết {{start}} - {{end}}",
-    "roomLabel": "Phòng {{room}}"
+    "roomLabel": "Phòng {{room}}",
+    "weekRange": "Tuần {{start}} - {{end}}",
+    "weekCode": "T{{week}}",
+    "noDateSelected": "Chưa chọn ngày"
   },
   "courseRegistration": {
     "searchPlaceholder": "Tìm theo mã lớp, tên lớp, môn học, giảng viên, chuyên ngành...",
@@ -1332,7 +1349,8 @@
     },
     "roomLabel": "Phòng {{room}}",
     "subjectFallback": "Môn thi",
-    "periodRange": "{{start}} - {{end}}"
+    "periodRange": "{{start}} - {{end}}",
+    "weekCode": "T{{week}}"
   },
   "students": {
     "breadcrumb": {
@@ -1422,12 +1440,12 @@
       "bankAccountNumber": "Số tài khoản"
     },
     "relativeSections": {
-      "father": "THÔNG TIN CỦA CHA",
-      "mother": "THÔNG TIN CỦA MẸ",
-      "relative": "THÔNG TIN CỦA NGƯỜI THÂN",
       "0": "THÔNG TIN CỦA CHA",
       "1": "THÔNG TIN CỦA MẸ",
-      "2": "THÔNG TIN CỦA NGƯỜI THÂN"
+      "2": "THÔNG TIN CỦA NGƯỜI THÂN",
+      "father": "THÔNG TIN CỦA CHA",
+      "mother": "THÔNG TIN CỦA MẸ",
+      "relative": "THÔNG TIN CỦA NGƯỜI THÂN"
     },
     "relative": {
       "name": "Họ và tên người thân",

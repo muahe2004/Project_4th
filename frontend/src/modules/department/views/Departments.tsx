@@ -22,10 +22,9 @@ import { useGetDepartment } from "../apis/getDepartments";
 import dayjs from "dayjs";
 import Loading from "../../../components/Loading/Loading";
 import { getStatusColor } from "../../../utils/status/status-color";
-import { getStatusDisplay } from "../../../utils/status/status-display";
+import { getStatusDisplay, getStatusOptions } from "../../../utils/status/status-i18n";
 import type { IDepartments } from "../types";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
-import { STATUS_OPTIONS } from "../../../constants/status";
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
@@ -35,6 +34,7 @@ import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 
 export function Departments() {
     const { t } = useTranslation();
+    const statusOptions = getStatusOptions();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("");
@@ -113,7 +113,7 @@ export function Departments() {
                 <StatusFilter
                     value={status}
                     onChange={setStatus}
-                    options={STATUS_OPTIONS}
+                    options={statusOptions}
                 />
                 
                 <SearchEngine 

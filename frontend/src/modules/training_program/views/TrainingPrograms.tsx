@@ -10,7 +10,7 @@ import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
-import { STATUS_OPTIONS } from "../../../constants/status";
+import { getStatusOptions } from "../../../utils/status/status-i18n";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useGetTrainingPrograms } from "../apis/getTrainingPrograms";
 import { useDeleteTrainingProgram } from "../apis/deleteTrainingProgram";
@@ -130,7 +130,7 @@ export function TrainingPrograms() {
             setStatus(value);
             setPage(1);
           }}
-          options={STATUS_OPTIONS}
+          options={getStatusOptions()}
         />
 
         <SearchEngine
