@@ -111,6 +111,9 @@ class TeacherUpdate(BaseModel):
     status: Optional[str] = Field(
         default=None, sa_column=Column(String(50), nullable=True)
     )
+    password: Optional[str] = Field(
+        default=None, sa_column=Column(String(100), nullable=True)
+    )
     department_id: Optional[UUID_TYPE] = Field(
         default=None, sa_column=Column(PG_UUID(as_uuid=True), nullable=True)
     )

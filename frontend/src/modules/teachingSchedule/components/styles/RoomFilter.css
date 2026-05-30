@@ -2,9 +2,9 @@
   width: 100%;
   max-width: 320px;
   padding: 18px 18px 20px;
-  height: 100%;
-  min-height: 0;
-  max-height: none;
+  height: auto;
+  min-height: unset;
+  max-height: min(36vh, calc(100vh - 340px));
   border-radius: 16px;
   background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -59,9 +59,9 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: none;
-  flex: 1 1 auto;
-  min-height: 0;
+  max-height: min(28vh, calc(100vh - 420px));
+  flex: 0 1 auto;
+  min-height: 120px;
   overflow: auto;
 }
 
@@ -100,6 +100,7 @@
     max-width: 100%;
     padding: 12px;
     border-radius: 12px;
+    max-height: min(34vh, calc(100vh - 300px));
   }
 
   .room-filter__header {
@@ -118,6 +119,7 @@
 
   .room-filter__list {
     gap: 8px;
+    max-height: min(24vh, calc(100vh - 360px));
   }
 
   .room-filter__item {

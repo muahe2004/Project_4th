@@ -475,6 +475,8 @@ class StudentServices:
             exclude_unset=True,
             exclude={"student_information", "student_relatives", "class_id"},
         )
+        if "password" in update_data and update_data["password"]:
+            update_data["password"] = hash_password(update_data["password"])
         for field, value in update_data.items():
             setattr(student, field, value)
 

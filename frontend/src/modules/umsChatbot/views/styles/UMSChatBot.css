@@ -50,6 +50,10 @@
   gap: 8px;
 }
 
+.ums-chatbot__sidebar--mobile-panel {
+  display: none;
+}
+
 .ums-chatbot__new-btn {
   text-transform: none !important;
   background: var(--primary-color) !important;
@@ -150,6 +154,7 @@
   }
 
   .ums-chatbot__sidebar--mobile-panel {
+    display: flex;
     position: absolute;
     top: 0;
     left: 0;

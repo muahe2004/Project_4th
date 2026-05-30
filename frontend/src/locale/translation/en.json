@@ -355,7 +355,8 @@
       "tabs": {
         "basic": "Basic Information",
         "other": "Other Information",
-        "relative": "Relative Information"
+        "relative": "Relative Information",
+        "password": "Change Password"
       },
       "teacherCode": "Teacher Code",
       "teacherName": "Full Name",
@@ -386,6 +387,9 @@
       "relativeEthnicity": "Ethnicity",
       "relativeReligion": "Religion",
       "relativeNationality": "Nationality",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "passwordChangedSuccess": "Password changed successfully",
       "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
       "errors": {
         "teacherCodeRequired": "Teacher code is required",
@@ -393,7 +397,9 @@
         "teacherNameRequired": "Teacher name is required",
         "emailRequired": "Email is required",
         "emailInvalid": "Email format is invalid",
-        "phoneInvalid": "Invalid phone number format"
+        "phoneInvalid": "Invalid phone number format",
+        "passwordRequired": "Please enter both new password and confirmation",
+        "passwordMismatch": "Password confirmation does not match"
       },
       "relativeSections": {
         "father": "FATHER INFORMATION",
@@ -1347,7 +1353,8 @@
     "tabs": {
       "basic": "Basic Information",
       "other": "Other Information",
-      "relatives": "Relatives Information"
+      "relatives": "Relatives Information",
+      "password": "Change Password"
     },
     "table": {
       "studentCode": "Student Code",
@@ -1381,13 +1388,18 @@
       "selectClass": "Select class",
       "trainingProgram": "Training Program",
       "course": "Course",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "passwordChangedSuccess": "Password changed successfully",
       "errors": {
         "studentCodeRequired": "Please enter student code",
         "studentCodeInvalid": "Student code must start with 02 and contain digits after that",
         "studentNameRequired": "Please enter student name",
         "emailRequired": "Please enter email",
         "emailInvalid": "Invalid email format",
-        "phoneInvalid": "Invalid phone number format"
+        "phoneInvalid": "Invalid phone number format",
+        "passwordRequired": "Please enter both new password and confirmation",
+        "passwordMismatch": "Password confirmation does not match"
       }
     },
     "other": {

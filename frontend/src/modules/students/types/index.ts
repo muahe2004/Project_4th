@@ -77,6 +77,7 @@ export interface IStudentUpdate {
     training_program?: string | null;
     course?: string | null;
     status?: string | null;
+    password?: string;
     student_information?: IStudentInformationCreate | null;
     student_relatives?: IStudentRelativesCreate[];
 }

@@ -746,6 +746,8 @@ class TeacherServices:
             exclude_unset=True,
             exclude={"teacher_information", "teacher_relatives"},
         )
+        if "password" in update_data and update_data["password"]:
+            update_data["password"] = hash_password(update_data["password"])
         for field, value in update_data.items():
             setattr(teacher, field, value)
         if teacher_data.teacher_information:

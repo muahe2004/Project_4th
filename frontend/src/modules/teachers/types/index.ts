@@ -101,6 +101,7 @@ export interface ITeacherUpdate {
   address?: string | null;
   academic_rank?: string | null;
   status?: string | null;
+  password?: string | null;
   department_id?: string | null;
   updated_at?: string;
   teacher_information?: ITeacherInformationCreate | null;

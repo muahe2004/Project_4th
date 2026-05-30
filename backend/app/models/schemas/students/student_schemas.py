@@ -108,6 +108,9 @@ class StudentUpdate(BaseModel):
     status: Optional[str] = Field(
         default=None, sa_column=Column(String(50), nullable=True)
     )
+    password: Optional[str] = Field(
+        default=None, sa_column=Column(String(100), nullable=True)
+    )
     updated_at: datetime = Field(
         default_factory=datetime.now, sa_column=Column(DateTime, nullable=False)
     )

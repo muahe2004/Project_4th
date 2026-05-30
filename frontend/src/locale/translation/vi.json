@@ -355,7 +355,8 @@
       "tabs": {
         "basic": "Thông tin cơ bản",
         "other": "Thông tin khác",
-        "relative": "Thông tin người thân"
+        "relative": "Thông tin người thân",
+        "password": "Đổi mật khẩu"
       },
       "teacherCode": "Mã giảng viên",
       "teacherName": "Họ và tên",
@@ -386,6 +387,9 @@
       "relativeEthnicity": "Dân tộc",
       "relativeReligion": "Tôn giáo",
       "relativeNationality": "Quốc tịch",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu mới",
+      "passwordChangedSuccess": "Đổi mật khẩu thành công",
       "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
       "errors": {
         "teacherCodeRequired": "Mã giảng viên là bắt buộc",
@@ -393,7 +397,9 @@
         "teacherNameRequired": "Tên giảng viên là bắt buộc",
         "emailRequired": "Email là bắt buộc",
         "emailInvalid": "Email không đúng định dạng",
-        "phoneInvalid": "Số điện thoại không đúng định dạng"
+        "phoneInvalid": "Số điện thoại không đúng định dạng",
+        "passwordRequired": "Vui lòng nhập đầy đủ mật khẩu mới và xác nhận mật khẩu",
+        "passwordMismatch": "Xác nhận mật khẩu không khớp"
       },
       "relativeSections": {
         "father": "THÔNG TIN CỦA CHA",
@@ -1347,7 +1353,8 @@
     "tabs": {
       "basic": "Thông tin cơ bản",
       "other": "Thông tin khác",
-      "relatives": "Thông tin người thân"
+      "relatives": "Thông tin người thân",
+      "password": "Đổi mật khẩu"
     },
     "table": {
       "studentCode": "Mã sinh viên",
@@ -1381,13 +1388,18 @@
       "selectClass": "Chọn lớp",
       "trainingProgram": "Chương trình đào tạo",
       "course": "Niên khoá",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu mới",
+      "passwordChangedSuccess": "Đổi mật khẩu thành công",
       "errors": {
         "studentCodeRequired": "Vui lòng nhập mã sinh viên",
         "studentCodeInvalid": "Mã sinh viên phải bắt đầu bằng 02 và theo sau là các chữ số",
         "studentNameRequired": "Vui lòng nhập tên sinh viên",
         "emailRequired": "Vui lòng nhập email",
         "emailInvalid": "Email không đúng định dạng",
-        "phoneInvalid": "Số điện thoại không đúng định dạng"
+        "phoneInvalid": "Số điện thoại không đúng định dạng",
+        "passwordRequired": "Vui lòng nhập đầy đủ mật khẩu mới và xác nhận mật khẩu",
+        "passwordMismatch": "Xác nhận mật khẩu không khớp"
       }
     },
     "other": {

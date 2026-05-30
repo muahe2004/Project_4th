@@ -5,12 +5,17 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  FormControl,
+  IconButton,
+  InputAdornment,
   MenuItem,
+  OutlinedInput,
   Select,
   Tab,
   Tabs,
   TextField,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import React, { type ReactNode, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -184,6 +189,11 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [relativePhoneErrors, setRelativePhoneErrors] = useState<Record<number, string>>({});
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { showSnackbar } = useSnackbar();
 
@@ -330,6 +340,20 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
     return true;
   };
 
+  const validatePasswordTab = (): { valid: boolean; message: string } => {
+    if (mode !== "edit") return { valid: true, message: "" };
+    if (!newPassword && !confirmPassword) return { valid: true, message: "" };
+    if (!newPassword || !confirmPassword) {
+      setValue(3);
+      return { valid: false, message: t("teachers.form.errors.passwordRequired") };
+    }
+    if (newPassword !== confirmPassword) {
+      setValue(3);
+      return { valid: false, message: t("teachers.form.errors.passwordMismatch") };
+    }
+    return { valid: true, message: "" };
+  };
+
   const handleSubmitClick = async () => {
     if (!validateBasicInfo()) {
       return;
@@ -337,6 +361,13 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
     if (!validateAllRelativePhones()) {
       return;
     }
+    const passwordValidation = validatePasswordTab();
+    if (!passwordValidation.valid) {
+      setPasswordError(passwordValidation.message);
+      showSnackbar(passwordValidation.message, "error");
+      return;
+    }
+    setPasswordError("");
 
     const teacher_information: ITeacherInformationCreate = {
       citizen_id: normalizeNullableText(teacher.teacher_information?.citizen_id),
@@ -381,6 +412,7 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
       teacher_information,
       teacher_relatives,
       updated_at: dayjs().toISOString(),
+      ...(mode === "edit" && newPassword ? { password: newPassword } : {}),
     };
 
     try {
@@ -403,6 +435,9 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
         await createTeacher(createPayload);
       } else if (mode === "edit" && initialValues?.id) {
         await updateTeacher({ id: initialValues.id, data: basePayload });
+        if (newPassword) {
+          showSnackbar(t("teachers.form.passwordChangedSuccess"), "success");
+        }
       }
 
       showSnackbar(
@@ -466,6 +501,9 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
         <Tab classes={{ selected: "active-tab" }} label={t("teachers.form.tabs.basic")} />
         <Tab classes={{ selected: "active-tab" }} label={t("teachers.form.tabs.other")} />
         <Tab classes={{ selected: "active-tab" }} label={t("teachers.form.tabs.relative")} />
+        {mode === "edit" && (
+          <Tab classes={{ selected: "active-tab" }} label={t("teachers.form.tabs.password")} />
+        )}
       </Tabs>
 
       <DialogContent className="primary-dialog-content">
@@ -909,6 +947,67 @@ const TeacherFormModel: React.FC<TeacherFormModelProps> = ({
             })}
           </Grid>
         </TabPanel>
+
+        {mode === "edit" && (
+          <TabPanel value={value} index={3}>
+            <Grid container spacing={2} className="myprofile-form">
+              <Grid size={6}>
+                <LabelPrimary value={t("teachers.form.newPassword")} />
+                <FormControl fullWidth variant="outlined" className="main-text__field">
+                  <OutlinedInput
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(event) => {
+                      setNewPassword(event.target.value);
+                      setPasswordError("");
+                    }}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label={showNewPassword ? t("signIn.passwordAria.hide") : t("signIn.passwordAria.show")}
+                          onClick={() => setShowNewPassword((prev) => !prev)}
+                          edge="end"
+                        >
+                          {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid size={6}>
+                <LabelPrimary value={t("teachers.form.confirmPassword")} />
+                <FormControl fullWidth variant="outlined" className="main-text__field">
+                  <OutlinedInput
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(event) => {
+                      setConfirmPassword(event.target.value);
+                      setPasswordError("");
+                    }}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label={showConfirmPassword ? t("signIn.passwordAria.hide") : t("signIn.passwordAria.show")}
+                          onClick={() => setShowConfirmPassword((prev) => !prev)}
+                          edge="end"
+                        >
+                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+                {passwordError && (
+                  <Box sx={{ color: "#d32f2f", fontSize: "0.75rem", mt: 0.5, ml: 1.75 }}>
+                    {passwordError}
+                  </Box>
+                )}
+              </Grid>
+            </Grid>
+          </TabPanel>
+        )}
       </DialogContent>
 
       <DialogActions className="primary-dialog-actions">
