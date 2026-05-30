@@ -61,6 +61,7 @@
     "setting": "Setting",
     "selectStatus": "Select status",
     "none": "None",
+    "noMatchingOptions": "No matching results",
     "male": "Male",
     "female": "Female",
     "other": "Other",

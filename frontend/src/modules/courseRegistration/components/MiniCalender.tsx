@@ -66,7 +66,7 @@ export function MiniCalender({
     onChangeDate,
     className,
 }: MiniCalenderProps) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [uncontrolledSelectedDate, setUncontrolledSelectedDate] = useState<Date | null>(new Date());
 
     const parsedDates = useMemo(
@@ -125,6 +125,11 @@ export function MiniCalender({
                         views={["day"]}
                         disableFuture={false}
                         className="mini-calender__calendar"
+                        slotProps={{
+                            calendarHeader: {
+                                format: i18n.language === "vi" ? "MM yyyy" : "MMM yyyy",
+                            },
+                        }}
                         slots={{
                             day: CalendarDay,
                         }}

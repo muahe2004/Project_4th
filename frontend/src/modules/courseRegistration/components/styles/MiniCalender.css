@@ -52,8 +52,8 @@
 
 .mini-calender__calendar .MuiPickersArrowSwitcher-root button {
     color: rgba(15, 23, 42, 0.72);
-    pointer-events: none;
-    opacity: 0.5;
+    pointer-events: auto;
+    opacity: 1;
 }
 
 .mini-calender__calendar .MuiDayCalendar-header {
@@ -107,7 +107,8 @@
 }
 
 .mini-calender__day--outside {
-    color: rgba(15, 23, 42, 0.34);
+    color: rgba(15, 23, 42, 0.34) !important;
+    -webkit-text-fill-color: rgba(15, 23, 42, 0.34) !important;
 }
 
 .mini-calender__day--selected {
@@ -131,4 +132,9 @@
 .mini-calender__calendar .mini-calender__day--scheduled.Mui-disabled {
     color: #343d60 !important;
     -webkit-text-fill-color: #343d60 !important;
+}
+
+.mini-calender__calendar .mini-calender__day--outside.Mui-disabled {
+    color: rgba(15, 23, 42, 0.34) !important;
+    -webkit-text-fill-color: rgba(15, 23, 42, 0.34) !important;
 }

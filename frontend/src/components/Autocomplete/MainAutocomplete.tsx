@@ -1,5 +1,6 @@
 import { Autocomplete, TextField } from "@mui/material";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 
 interface MainAutocompleteProps<T> {
     options: T[];
@@ -34,6 +35,7 @@ function MainAutocomplete<T>({
     onBlur,
     onFocus,
 }: MainAutocompleteProps<T>) {
+    const { t } = useTranslation();
     const safeOptions = Array.isArray(options) ? options : [];
 
     const currentValue =
@@ -42,10 +44,11 @@ function MainAutocomplete<T>({
             : safeOptions.find((opt) => getOptionId(opt) === value) || null;
 
     return (
-        <Autocomplete<T, false, false, true>
+        <Autocomplete<T, false, false, false>
             className={clsx("main-auto-complete", className)}
-            freeSolo
             options={safeOptions}
+            noOptionsText={t("common.noMatchingOptions")}
+            openOnFocus
             value={currentValue as any}
             disabled={disabled}
             getOptionLabel={(option) =>
