@@ -14,6 +14,22 @@
   min-width: 920px;
 }
 
+.tuition-status {
+  font-weight: 600;
+}
+
+.tuition-status--none {
+  color: #6b7280;
+}
+
+.tuition-status--unpaid {
+  color: #dc2626;
+}
+
+.tuition-status--paid {
+  color: #16a34a;
+}
+
 @media (max-width: 767px) {
   .student-tuition-fees__table-container .sticky-table {
     min-width: 980px;

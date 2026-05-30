@@ -42,6 +42,7 @@ def get_students_with_tuition_fees(
         session=session,
         skip=query.skip,
         limit=query.limit,
+        status=query.status,
         search=query.search,
         student_id=query.student_id,
     )

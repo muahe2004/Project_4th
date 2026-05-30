@@ -610,6 +610,11 @@
     "studentView": "Xem sinh viên",
     "studentTitle": "Sinh viên có học phí",
     "studentSearchPlaceholder": "Tìm theo mã sinh viên, tên, email...",
+    "statusFilter": {
+      "none": "Chưa có học phí",
+      "unpaid": "Chưa đóng",
+      "paid": "Đã đóng"
+    },
     "backToTuitionFees": "Quay lại học phí",
     "table": {
       "name": "Tên học phí",

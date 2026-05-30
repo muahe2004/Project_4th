@@ -9,6 +9,7 @@ export interface StudentTuitionFeeQueryParams {
   skip: number;
   search?: string;
   student_id?: string;
+  status?: string;
 }
 
 const getStudentsWithTuitionFees = async (

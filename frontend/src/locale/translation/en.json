@@ -610,6 +610,11 @@
     "studentView": "Student View",
     "studentTitle": "Students with Tuition Fees",
     "studentSearchPlaceholder": "Search by student code, name, email...",
+    "statusFilter": {
+      "none": "No tuition fee",
+      "unpaid": "Unpaid",
+      "paid": "Paid"
+    },
     "backToTuitionFees": "Back to Tuition Fees",
     "table": {
       "name": "Tuition Fee Name",

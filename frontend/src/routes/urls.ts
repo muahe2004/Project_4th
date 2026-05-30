@@ -34,6 +34,7 @@ export const examinationScheduleUrl = "examination-schedules";
 export const trainingProgramUrl = "training-programs";
 export const tuitionFeeUrl = "tuition-fees";
 export const studentTuitionFeeUrl = "student-tuition-fees";
+export const studentTuitionFeeDetailsUrl = "student-tuition-fee-details";
 export const managementScoreUrl = "management-score";
 export const scoreDetailsUrl = "score-details";
 export const teacherManagementScoreUrl = "teacher-management-score";

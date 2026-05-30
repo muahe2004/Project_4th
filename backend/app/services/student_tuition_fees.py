@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from fastapi import HTTPException
 from sqlmodel import Session, select, func
-from sqlalchemy import or_
+from sqlalchemy import or_, exists
 from starlette import status
 
 from app.models.models import (
@@ -297,6 +297,7 @@ class StudentTuitionFeeServices:
         limit: int = 10,
         search: str | None = None,
         student_id: uuid.UUID | None = None,
+        status: str | None = None,
     ) -> StudentWithTuitionFeesListResponse:
         conditions = [
             or_(
@@ -313,6 +314,39 @@ class StudentTuitionFeeServices:
                     Students.student_code.ilike(search_pattern),
                     Students.name.ilike(search_pattern),
                     Students.email.ilike(search_pattern),
+                )
+            )
+        if status == "none":
+            conditions.append(
+                ~exists(
+                    select(StudentTuitionFees.id).where(
+                        StudentTuitionFees.student_id == Students.id
+                    )
+                )
+            )
+        elif status == "unpaid":
+            conditions.append(
+                exists(
+                    select(StudentTuitionFees.id).where(
+                        StudentTuitionFees.student_id == Students.id
+                    )
+                )
+            )
+            conditions.append(
+                ~exists(
+                    select(StudentTuitionFees.id).where(
+                        StudentTuitionFees.student_id == Students.id,
+                        StudentTuitionFees.paid_amount > 0,
+                    )
+                )
+            )
+        elif status == "paid":
+            conditions.append(
+                exists(
+                    select(StudentTuitionFees.id).where(
+                        StudentTuitionFees.student_id == Students.id,
+                        StudentTuitionFees.paid_amount > 0,
+                    )
                 )
             )
 
