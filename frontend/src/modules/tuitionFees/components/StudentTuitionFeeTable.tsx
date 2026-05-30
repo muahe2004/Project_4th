@@ -5,6 +5,7 @@ import { formatVndAmount } from "../../../utils/formatCurrency";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useCreateVnpayPaymentUrl } from "../apis/createVnpayPaymentUrl";
 import type { IStudentTuitionFeeListResponse } from "../types/studentTuitionFee";
+import { getTuitionErrorMessage } from "../utils/errorMessage";
 
 interface StudentTuitionFeeTableProps {
   studentsWithTuitionFees?: IStudentTuitionFeeListResponse;
@@ -31,13 +32,13 @@ export default function StudentTuitionFeeTable({
       });
 
       if (!response?.payment_url) {
-        showSnackbar("Không tạo được link thanh toán", "error");
+        showSnackbar(t("vnpay.errors.payment_url_missing"), "error");
         return;
       }
 
       window.location.href = response.payment_url;
-    } catch (error) {
-      showSnackbar("Không thể tạo link thanh toán VNPAY", "error");
+    } catch (error: unknown) {
+      showSnackbar(getTuitionErrorMessage(error, t, "vnpay.errors.create_payment_failed"), "error");
     } finally {
       setProcessingId(null);
     }

@@ -669,7 +669,8 @@
       "errors": {
         "pricePerCreditRequired": "Giá / tín chỉ là bắt buộc",
         "pricePerCredit": "Giá / tín chỉ không hợp lệ",
-        "departmentRequired": "Khoa là bắt buộc"
+        "departmentRequired": "Khoa là bắt buộc",
+        "invalidDateRange": "Ngày bắt đầu không được sau ngày kết thúc."
       },
       "confirmExit": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
       "confirmSaveTitle": "Xác nhận lưu",
@@ -683,6 +684,43 @@
     "details": {
       "missingStudentInfo": "Thiếu thông tin sinh viên",
       "noTuitionFees": "Sinh viên chưa có khoản học phí nào"
+    }
+  },
+  "tuition_fees": {
+    "errors": {
+      "invalid_academic_year_format": "Niên khóa không đúng định dạng.",
+      "invalid_academic_year_range": "Khoảng niên khóa không hợp lệ.",
+      "current_date_outside_academic_year": "Thời điểm hiện tại không thuộc niên khóa đã chọn.",
+      "department_not_found": "Không tìm thấy khoa.",
+      "department_has_no_majors": "Khoa chưa có ngành.",
+      "department_has_no_specializations": "Khoa chưa có chuyên ngành.",
+      "no_eligible_training_programs": "Không có chương trình đào tạo phù hợp.",
+      "invalid_date_range": "Ngày bắt đầu không được sau ngày kết thúc.",
+      "duplicate_records": "Học phí đã tồn tại.",
+      "empty_create_list": "Danh sách học phí trống.",
+      "not_found": "Không tìm thấy học phí.",
+      "training_program_not_found": "Không tìm thấy chương trình đào tạo.",
+      "specialization_not_found": "Không tìm thấy chuyên ngành.",
+      "major_not_found": "Không tìm thấy ngành."
+    }
+  },
+  "student_tuition_fees": {
+    "errors": {
+      "paid_amount_must_be_greater_than_zero": "Số tiền thanh toán phải lớn hơn 0.",
+      "student_not_found": "Không tìm thấy sinh viên.",
+      "tuition_fee_not_found": "Không tìm thấy học phí.",
+      "duplicate": "Bản ghi học phí sinh viên đã tồn tại.",
+      "empty_department_ids": "Vui lòng chọn ít nhất một khoa.",
+      "department_not_found": "Không tìm thấy khoa.",
+      "no_department_tuition_fees": "Các khoa đã chọn chưa có học phí.",
+      "no_matching_tuition_fee_terms": "Không có học phí phù hợp với học kỳ.",
+      "no_students_with_classes": "Không có sinh viên phù hợp trong các khoa đã chọn."
+    }
+  },
+  "vnpay": {
+    "errors": {
+      "payment_url_missing": "Không tạo được liên kết thanh toán.",
+      "create_payment_failed": "Không thể tạo liên kết thanh toán VNPAY."
     }
   },
   "pagination": {

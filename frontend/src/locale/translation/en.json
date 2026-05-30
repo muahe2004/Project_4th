@@ -669,7 +669,8 @@
       "errors": {
         "pricePerCreditRequired": "Price / credit is required",
         "pricePerCredit": "Price / credit is invalid",
-        "departmentRequired": "Department is required"
+        "departmentRequired": "Department is required",
+        "invalidDateRange": "Start date must not be after end date."
       },
       "confirmExit": "Are you sure you want to exit? Entered data will not be saved.",
       "confirmSaveTitle": "Confirm Save",
@@ -683,6 +684,43 @@
     "details": {
       "missingStudentInfo": "Missing student information",
       "noTuitionFees": "This student has no tuition fees"
+    }
+  },
+  "tuition_fees": {
+    "errors": {
+      "invalid_academic_year_format": "Invalid academic year format.",
+      "invalid_academic_year_range": "Invalid academic year range.",
+      "current_date_outside_academic_year": "Current date is outside the selected academic year.",
+      "department_not_found": "Department not found.",
+      "department_has_no_majors": "The department has no majors.",
+      "department_has_no_specializations": "The department has no specializations.",
+      "no_eligible_training_programs": "No eligible training programs found.",
+      "invalid_date_range": "Start date must not be after end date.",
+      "duplicate_records": "Tuition fee already exists.",
+      "empty_create_list": "Tuition fee list is empty.",
+      "not_found": "Tuition fee not found.",
+      "training_program_not_found": "Training program not found.",
+      "specialization_not_found": "Specialization not found.",
+      "major_not_found": "Major not found."
+    }
+  },
+  "student_tuition_fees": {
+    "errors": {
+      "paid_amount_must_be_greater_than_zero": "Paid amount must be greater than zero.",
+      "student_not_found": "Student not found.",
+      "tuition_fee_not_found": "Tuition fee not found.",
+      "duplicate": "Student tuition fee already exists.",
+      "empty_department_ids": "Please select at least one department.",
+      "department_not_found": "Department not found.",
+      "no_department_tuition_fees": "Selected departments do not have tuition fees.",
+      "no_matching_tuition_fee_terms": "No matching tuition fees by term.",
+      "no_students_with_classes": "No eligible students with classes in selected departments."
+    }
+  },
+  "vnpay": {
+    "errors": {
+      "payment_url_missing": "Failed to create payment URL.",
+      "create_payment_failed": "Could not create VNPAY payment URL."
     }
   },
   "pagination": {

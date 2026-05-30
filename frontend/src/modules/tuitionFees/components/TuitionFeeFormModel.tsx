@@ -28,6 +28,7 @@ import type { IDepartmentsDropDown } from "../../department/types";
 import { useCreateTuitionFee } from "../apis/addTuitionFee";
 import { useUpdateTuitionFee } from "../apis/updateTuitionFee";
 import { getRequiredError } from "../../../utils/validation/fieldErrors";
+import { getTuitionErrorMessage } from "../utils/errorMessage";
 import type {
   ITuitionFee,
   TuitionFeeCreatePayload,
@@ -73,6 +74,7 @@ export function TuitionFeeFormModel({
   >(null);
   const [pricePerCreditError, setPricePerCreditError] = useState("");
   const [departmentError, setDepartmentError] = useState("");
+  const [endDateError, setEndDateError] = useState("");
 
   const trainingProgramParams = {
     limit: 20,
@@ -123,6 +125,7 @@ export function TuitionFeeFormModel({
     setIsChanged(false);
     setPricePerCreditError("");
     setDepartmentError("");
+    setEndDateError("");
   }, [mode, initialValues, open]);
 
   useEffect(() => {
@@ -180,11 +183,16 @@ export function TuitionFeeFormModel({
       mode === "add"
         ? getRequiredError(departmentId, t("tuitionFees.form.errors.departmentRequired"))
         : "";
+    const invalidDateRangeError =
+      startDate && endDate && dayjs(startDate).isAfter(dayjs(endDate))
+        ? t("tuitionFees.form.errors.invalidDateRange")
+        : "";
 
     setPricePerCreditError(priceRequiredError || priceInvalidError);
     setDepartmentError(deptRequiredError);
+    setEndDateError(invalidDateRangeError);
 
-    return !(priceRequiredError || priceInvalidError || deptRequiredError);
+    return !(priceRequiredError || priceInvalidError || deptRequiredError || invalidDateRangeError);
   };
 
   const handleSubmitClick = () => {
@@ -242,7 +250,7 @@ export function TuitionFeeFormModel({
       onClose();
     } catch (error) {
       console.error(error);
-      showSnackbar(t("tuitionFees.messages.genericError"), "error");
+      showSnackbar(getTuitionErrorMessage(error, t, "tuitionFees.messages.genericError"), "error");
     }
   };
 
@@ -345,7 +353,10 @@ export function TuitionFeeFormModel({
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
             value={startDate}
-            onChange={(newValue) => setStartDate(newValue)}
+            onChange={(newValue) => {
+              setStartDate(newValue);
+              if (endDateError) setEndDateError("");
+            }}
             className="main-text__field primary-dialog-input"
             slotProps={{ textField: { fullWidth: true } }}
           />
@@ -355,9 +366,12 @@ export function TuitionFeeFormModel({
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
             value={endDate}
-            onChange={(newValue) => setEndDate(newValue)}
+            onChange={(newValue) => {
+              setEndDate(newValue);
+              if (endDateError) setEndDateError("");
+            }}
             className="main-text__field primary-dialog-input"
-            slotProps={{ textField: { fullWidth: true } }}
+            slotProps={{ textField: { fullWidth: true, error: Boolean(endDateError), helperText: endDateError } }}
           />
         </LocalizationProvider>
 

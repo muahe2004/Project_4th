@@ -32,6 +32,15 @@ from app.constants.payment_status import PAID, PARTIALLY_PAID, UNPAID
 
 
 class StudentTuitionFeeServices:
+    ERR_PAID_AMOUNT_INVALID = "student_tuition_fees.errors.paid_amount_must_be_greater_than_zero"
+    ERR_STUDENT_NOT_FOUND = "student_tuition_fees.errors.student_not_found"
+    ERR_TUITION_FEE_NOT_FOUND = "student_tuition_fees.errors.tuition_fee_not_found"
+    ERR_DUPLICATE = "student_tuition_fees.errors.duplicate"
+    ERR_EMPTY_DEPARTMENT_IDS = "student_tuition_fees.errors.empty_department_ids"
+    ERR_DEPARTMENT_NOT_FOUND = "student_tuition_fees.errors.department_not_found"
+    ERR_NO_DEPARTMENT_TUITION_FEES = "student_tuition_fees.errors.no_department_tuition_fees"
+    ERR_NO_MATCHING_TERMS = "student_tuition_fees.errors.no_matching_tuition_fee_terms"
+    ERR_NO_STUDENTS_WITH_CLASSES = "student_tuition_fees.errors.no_students_with_classes"
     @staticmethod
     def _derive_payment_status(*, payable_amount: float, debt_amount: float, paid_amount: float) -> str:
         if paid_amount <= 0:
@@ -58,7 +67,7 @@ class StudentTuitionFeeServices:
         if paid_amount <= 0:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Paid amount must be greater than 0",
+                detail=StudentTuitionFeeServices.ERR_PAID_AMOUNT_INVALID,
             )
 
         total_paid = (student_tuition_fee.paid_amount or 0) + paid_amount
@@ -91,14 +100,14 @@ class StudentTuitionFeeServices:
         if not student:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Student does not exist",
+                detail=StudentTuitionFeeServices.ERR_STUDENT_NOT_FOUND,
             )
 
         tuition_fee = session.get(TuitionFees, student_tuition_fee.tuition_fee_id)
         if not tuition_fee:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Tuition fee does not exist",
+                detail=StudentTuitionFeeServices.ERR_TUITION_FEE_NOT_FOUND,
             )
 
         duplicate = session.exec(
@@ -110,7 +119,7 @@ class StudentTuitionFeeServices:
         if duplicate:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Student tuition fee already exists",
+                detail=StudentTuitionFeeServices.ERR_DUPLICATE,
             )
 
         payable_amount, debt_amount, surplus = StudentTuitionFeeServices._calculate_amounts(
@@ -144,7 +153,7 @@ class StudentTuitionFeeServices:
         if not payload.department_ids:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="department_ids is empty",
+                detail=StudentTuitionFeeServices.ERR_EMPTY_DEPARTMENT_IDS,
             )
 
         departments = session.exec(
@@ -153,7 +162,7 @@ class StudentTuitionFeeServices:
         if not departments:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Department does not exist",
+                detail=StudentTuitionFeeServices.ERR_DEPARTMENT_NOT_FOUND,
             )
 
         department_ids = [department.id for department in departments]
@@ -167,7 +176,7 @@ class StudentTuitionFeeServices:
         if not tuition_fee_rows:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Selected departments do not have tuition fees",
+                detail=StudentTuitionFeeServices.ERR_NO_DEPARTMENT_TUITION_FEES,
             )
 
         tuition_fee_map: dict[tuple[uuid.UUID, int], list[uuid.UUID]] = {}
@@ -183,7 +192,7 @@ class StudentTuitionFeeServices:
         if not tuition_fee_map:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Selected departments do not have matching tuition fee terms",
+                detail=StudentTuitionFeeServices.ERR_NO_MATCHING_TERMS,
             )
 
         student_rows = session.exec(
@@ -209,7 +218,7 @@ class StudentTuitionFeeServices:
         if not student_rows:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Selected departments do not have students with classes",
+                detail=StudentTuitionFeeServices.ERR_NO_STUDENTS_WITH_CLASSES,
             )
 
         student_ids = [row[0] for row in student_rows]

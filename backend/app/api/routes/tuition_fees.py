@@ -65,6 +65,6 @@ def update_tuition_fee(
     response_model=TuitionFeeDeleteResponse,
 )
 def delete_tuition_fee(
-    session: SessionDep, tuition_fee_id: uuid.UUID
-) -> List[TuitionFeeDeleteResponse]:
-    return TuitionFeeServices.delete(session=session, tuition_fee_id=tuition_fee_id)
+    session: SessionDep, id: uuid.UUID
+) -> TuitionFeeDeleteResponse:
+    return TuitionFeeServices.delete(session=session, tuition_fee_id=id)

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
-import axios from "axios";
 import { useTranslation } from "react-i18next";
 
 import Button from "../../../components/Button/Button";
@@ -10,6 +9,7 @@ import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { STATUS } from "../../../constants/status";
 import { useDepartmentsDropDown } from "../../department/apis/getDepartmentsDropDown";
 import { useBulkStudentTuitionFeeByDepartment } from "../apis/bulkByTuitionFee";
+import { getTuitionErrorMessage } from "../utils/errorMessage";
 import "./styles/AllocateTuitionFeeFormModel.css";
 
 interface AllocateTuitionFeeFormModelProps {
@@ -50,8 +50,7 @@ export default function AllocateTuitionFeeFormModel({
         onClose();
       })
       .catch((error) => {
-        const detail = axios.isAxiosError(error) ? error.response?.data?.detail : undefined;
-        showSnackbar(detail || t("tuitionFees.allocate.genericError"), "error");
+        showSnackbar(getTuitionErrorMessage(error, t, "tuitionFees.allocate.genericError"), "error");
       });
   };
 

@@ -32,13 +32,35 @@ from app.enums.status import StatusEnum
 
 
 class TuitionFeeServices:
+    ERR_INVALID_ACADEMIC_YEAR_FORMAT = "tuition_fees.errors.invalid_academic_year_format"
+    ERR_INVALID_ACADEMIC_YEAR_RANGE = "tuition_fees.errors.invalid_academic_year_range"
+    ERR_CURRENT_DATE_OUTSIDE_ACADEMIC_YEAR = "tuition_fees.errors.current_date_outside_academic_year"
+    ERR_DEPARTMENT_NOT_FOUND = "tuition_fees.errors.department_not_found"
+    ERR_DEPARTMENT_NO_MAJORS = "tuition_fees.errors.department_has_no_majors"
+    ERR_DEPARTMENT_NO_SPECIALIZATIONS = "tuition_fees.errors.department_has_no_specializations"
+    ERR_NO_ELIGIBLE_TRAINING_PROGRAMS = "tuition_fees.errors.no_eligible_training_programs"
+    ERR_DUPLICATE_CREATE = "tuition_fees.errors.duplicate_records"
+    ERR_EMPTY_CREATE_LIST = "tuition_fees.errors.empty_create_list"
+    ERR_NOT_FOUND = "tuition_fees.errors.not_found"
+    ERR_TRAINING_PROGRAM_NOT_FOUND = "tuition_fees.errors.training_program_not_found"
+    ERR_SPECIALIZATION_NOT_FOUND = "tuition_fees.errors.specialization_not_found"
+    ERR_MAJOR_NOT_FOUND = "tuition_fees.errors.major_not_found"
+    ERR_INVALID_DATE_RANGE = "tuition_fees.errors.invalid_date_range"
+
+    @staticmethod
+    def _validate_date_range(*, start_date: datetime | None, end_date: datetime | None) -> None:
+        if start_date and end_date and start_date > end_date:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=TuitionFeeServices.ERR_INVALID_DATE_RANGE,
+            )
     @staticmethod
     def _parse_academic_year(academic_year: str) -> tuple[int, int]:
         parts = [part.strip() for part in academic_year.split("-")]
         if len(parts) != 2:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid academic_year format: {academic_year}",
+                detail=TuitionFeeServices.ERR_INVALID_ACADEMIC_YEAR_FORMAT,
             )
 
         try:
@@ -47,13 +69,13 @@ class TuitionFeeServices:
         except ValueError as exc:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid academic_year format: {academic_year}",
+                detail=TuitionFeeServices.ERR_INVALID_ACADEMIC_YEAR_FORMAT,
             ) from exc
 
         if end_year < start_year:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid academic_year range: {academic_year}",
+                detail=TuitionFeeServices.ERR_INVALID_ACADEMIC_YEAR_RANGE,
             )
 
         return start_year, end_year
@@ -82,9 +104,7 @@ class TuitionFeeServices:
         if not (start_year <= current_date.year <= end_year):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=(
-                    f"Current date {current_date.date()} is outside academic year {academic_year}"
-                ),
+                detail=TuitionFeeServices.ERR_CURRENT_DATE_OUTSIDE_ACADEMIC_YEAR,
             )
 
         term = max(2, (current_date.year - start_year) * 2)
@@ -96,11 +116,15 @@ class TuitionFeeServices:
     def _create_for_department(
         *, session: Session, tuition_fee: TuitionFeeCreate
     ) -> list[TuitionFees]:
+        TuitionFeeServices._validate_date_range(
+            start_date=tuition_fee.start_date,
+            end_date=tuition_fee.end_date,
+        )
         department = session.get(Departments, tuition_fee.department_id)
         if not department:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Department does not exist",
+                detail=TuitionFeeServices.ERR_DEPARTMENT_NOT_FOUND,
             )
 
         major_ids = session.exec(
@@ -109,7 +133,7 @@ class TuitionFeeServices:
         if not major_ids:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Department does not have any majors",
+                detail=TuitionFeeServices.ERR_DEPARTMENT_NO_MAJORS,
             )
 
         specialization_ids = session.exec(
@@ -118,7 +142,7 @@ class TuitionFeeServices:
         if not specialization_ids:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Department does not have any specializations",
+                detail=TuitionFeeServices.ERR_DEPARTMENT_NO_SPECIALIZATIONS,
             )
 
         training_programs = session.exec(
@@ -135,7 +159,7 @@ class TuitionFeeServices:
         if not eligible_programs:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="No eligible training programs found for this major",
+                detail=TuitionFeeServices.ERR_NO_ELIGIBLE_TRAINING_PROGRAMS,
             )
 
         created_fees: list[TuitionFees] = []
@@ -174,7 +198,7 @@ class TuitionFeeServices:
         if not created_fees:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="No tuition fee was created because matching records already exist",
+                detail=TuitionFeeServices.ERR_DUPLICATE_CREATE,
             )
 
         session.commit()
@@ -373,34 +397,34 @@ class TuitionFeeServices:
         if not tuition_fee:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Tuition fee does not exist",
+                detail=TuitionFeeServices.ERR_NOT_FOUND,
             )
         training_program = session.get(TrainingProgram, tuition_fee.training_program_id)
         if not training_program:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Training program does not exist",
+                detail=TuitionFeeServices.ERR_TRAINING_PROGRAM_NOT_FOUND,
             )
 
         specialization = session.get(Specializations, training_program.specialization_id)
         if not specialization:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Specialization does not exist",
+                detail=TuitionFeeServices.ERR_SPECIALIZATION_NOT_FOUND,
             )
 
         major = session.get(Majors, specialization.major_id)
         if not major:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Major does not exist",
+                detail=TuitionFeeServices.ERR_MAJOR_NOT_FOUND,
             )
 
         department = session.get(Departments, major.department_id)
         if not department:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Department does not exist",
+                detail=TuitionFeeServices.ERR_DEPARTMENT_NOT_FOUND,
             )
 
         return TuitionFeePublicDetail(
@@ -447,7 +471,7 @@ class TuitionFeeServices:
         if not tuition_fees:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Tuition fee list is empty",
+                detail=TuitionFeeServices.ERR_EMPTY_CREATE_LIST,
             )
 
         new_tuition_fees: list[TuitionFees] = []
@@ -468,10 +492,18 @@ class TuitionFeeServices:
         tuition_fee = session.get(TuitionFees, tuition_fee_id)
         if not tuition_fee:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Tuition fee not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=TuitionFeeServices.ERR_NOT_FOUND,
             )
 
         update_data = tuition_fee_data.model_dump(exclude_unset=True, exclude={"updated_at"})
+        next_start_date = update_data.get("start_date", tuition_fee.start_date)
+        next_end_date = update_data.get("end_date", tuition_fee.end_date)
+        TuitionFeeServices._validate_date_range(
+            start_date=next_start_date,
+            end_date=next_end_date,
+        )
+
         for field, value in update_data.items():
             setattr(tuition_fee, field, value)
 
@@ -497,7 +529,8 @@ class TuitionFeeServices:
         tuition_fee = session.get(TuitionFees, tuition_fee_id)
         if not tuition_fee:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Tuition fee not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=TuitionFeeServices.ERR_NOT_FOUND,
             )
 
         # check relations
