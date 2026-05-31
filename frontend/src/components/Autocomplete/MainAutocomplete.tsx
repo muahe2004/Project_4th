@@ -69,8 +69,13 @@ function MainAutocomplete<T>({
                 if (reason === "clear") {
                     onChange?.("");
                     onResetPage?.();
+                    onSearchChange?.("");
+                    return;
                 }
-                onSearchChange?.(inputValue);
+
+                if (reason === "input") {
+                    onSearchChange?.(inputValue);
+                }
             }}
             renderInput={(params) => (
                 <TextField
@@ -82,11 +87,7 @@ function MainAutocomplete<T>({
                     helperText={helperText}
                     disabled={disabled}
                     onBlur={onBlur}
-                    onFocus={() => {
-                        onSearchChange?.("");
-                        onResetPage?.();
-                        onFocus?.();
-                    }}
+                    onFocus={onFocus}
                 />
             )}
         />

@@ -63,8 +63,8 @@ const TRAINING_PROGRAM_TYPE_LABELS: Record<string, string> = {
 
 const getAcademicYearOptions = () => {
   const currentYear = new Date().getFullYear();
-  return Array.from({ length: 6 }, (_, index) => {
-    const startYear = currentYear + index;
+  return Array.from({ length: 12 }, (_, index) => {
+    const startYear = currentYear - 6 + index;
     return {
       value: `${startYear} - ${startYear + 1}`,
       label: `${startYear} - ${startYear + 1}`,
