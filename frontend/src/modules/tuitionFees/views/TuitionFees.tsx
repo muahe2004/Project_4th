@@ -113,9 +113,6 @@ export function TuitionFees() {
           setSelectedTuitionFee(tuitionFee);
           setOpenForm(true);
         }}
-        onDelete={(tuitionFee) => {
-          console.log("delete tuition fee", tuitionFee);
-        }}
       />
 
       <PaginationUniCore

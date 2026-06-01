@@ -59,6 +59,7 @@ const ImportFormModelDialog = ({
     limit: 10,
     skip: 0,
     search: subjectSearch || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedSubjects = [] } = useSubjectDropDownByIds(
     selectedSubjectId ? { ids: [selectedSubjectId] } : { ids: [] }
@@ -86,6 +87,7 @@ const ImportFormModelDialog = ({
     limit: 10,
     skip: 0,
     search: roomSearch || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedRooms = [] } = useRoomDropDownByIds(
     selectedRoomId ? { ids: [selectedRoomId] } : { ids: [] }

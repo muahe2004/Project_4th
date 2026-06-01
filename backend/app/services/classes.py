@@ -32,7 +32,6 @@ from app.models.schemas.classes.student_class_schemas import (
     StudentClassPublic,
     StudentClassRegisterRequest,
 )
-from app.models.models import Students
 
 from app.enums.status import StatusEnum
 from app.services.teachers import get_all_teachers
@@ -614,7 +613,7 @@ class ClassServices:
                 continue
 
             students = session.exec(
-                select(Students).where(Students.class_id == class_id)
+                select(StudentClass).where(StudentClass.class_id == class_id)
             ).all()
             if students:
                 results.append(
@@ -636,6 +635,36 @@ class ClassServices:
             results.append(ClassDeleteResponse(id=str(class_id), message=message))
 
         return results
+
+    @staticmethod
+    def delete_one(
+        *, session: Session, class_id: uuid.UUID
+    ) -> ClassDeleteResponse:
+        class_ = session.get(Classes, class_id)
+        if not class_:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="classes.messages.notFound",
+            )
+
+        students = session.exec(
+            select(StudentClass).where(StudentClass.class_id == class_id)
+        ).all()
+        if students:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="classes.messages.hasStudents",
+            )
+
+        if class_.status == StatusEnum.ACTIVE:
+            class_.status = StatusEnum.INACTIVE
+            message = "classes.messages.deleteSuccess"
+        else:
+            session.delete(class_)
+            message = "classes.messages.deleteSuccess"
+
+        session.commit()
+        return ClassDeleteResponse(id=str(class_id), message=message)
 
     @staticmethod
     def register_course_section(

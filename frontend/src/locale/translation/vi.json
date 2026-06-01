@@ -443,6 +443,14 @@
     "title": "Lớp",
     "searchPlaceholder": "Tìm theo tên lớp, mã lớp...",
     "addClass": "Thêm lớp",
+    "confirmDelete": {
+      "title": "Xác nhận xoá",
+      "message": "Bạn có chắc muốn xoá lớp này không?"
+    },
+    "common": {
+      "cancel": "Hủy",
+      "delete": "Xóa"
+    },
     "filters": {
       "specialization": "Lọc theo chuyên ngành"
     },
@@ -455,6 +463,11 @@
       "status": "Trạng thái"
     },
     "messages": {
+      "missingId": "Không tìm thấy mã lớp để xoá",
+      "notFound": "Không tìm thấy lớp.",
+      "hasStudents": "Lớp đang có sinh viên nên không thể xoá.",
+      "deleteSuccess": "Đổi trạng thái lớp sang ngừng hoạt động thành công",
+      "deleteFailed": "Cập nhật trạng thái lớp thất bại",
       "addSuccess": "Thêm lớp thành công!",
       "updateSuccess": "Cập nhật lớp thành công!",
       "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
@@ -492,7 +505,14 @@
     "title": "Phòng học",
     "searchPlaceholder": "Tìm theo số phòng, loại phòng...",
     "addRoom": "Thêm phòng",
-    "confirmDelete": "Bạn có chắc muốn xoá phòng này không?",
+    "confirmDelete": {
+      "title": "Xác nhận xoá",
+      "message": "Bạn có chắc muốn xoá phòng này không?"
+    },
+    "common": {
+      "cancel": "Hủy",
+      "delete": "Xóa"
+    },
     "messages": {
       "missingId": "Không tìm thấy mã phòng để xoá",
       "deleteSuccess": "Xoá phòng thành công",
@@ -1409,12 +1429,22 @@
     "common": {
       "cancel": "Huỷ",
       "save": "Lưu",
-      "add": "Thêm"
+      "add": "Thêm",
+      "delete": "Xóa"
     },
     "confirm": {
       "exitTitle": "Xác nhận thoát",
       "exitMessage": "Bạn có chắc muốn thoát? Dữ liệu đang nhập sẽ không được lưu.",
       "importExitMessage": "Bạn có chắc muốn thoát form import?"
+    },
+    "confirmDelete": {
+      "title": "Xác nhận xoá",
+      "message": "Bạn có chắc muốn xoá sinh viên này không?"
+    },
+    "messages": {
+      "missingId": "Không tìm thấy mã sinh viên để xoá",
+      "deleteSuccess": "Đổi trạng thái sinh viên sang ngừng hoạt động thành công",
+      "deleteFailed": "Cập nhật trạng thái sinh viên thất bại"
     },
     "tabs": {
       "basic": "Thông tin cơ bản",

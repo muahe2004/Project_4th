@@ -132,6 +132,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
     limit: 5,
     skip: (classPage - 1) * 5,
     search: searchClass || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedClasses = [] } = useClassesDropDownByIds(
     formValues.classId ? { ids: [formValues.classId] } : { ids: [] }
@@ -153,6 +154,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
     limit: 5,
     skip: (roomPage - 1) * 5,
     search: searchRoom || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedRooms = [] } = useRoomDropDownByIds(
     formValues.roomId ? { ids: [formValues.roomId] } : { ids: [] }
@@ -162,6 +164,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
     limit: 5,
     skip: (subjectPage - 1) * 5,
     search: searchSubject || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedSubjects = [] } = useSubjectDropDownByIds(
     formValues.subjectId ? { ids: [formValues.subjectId] } : { ids: [] }

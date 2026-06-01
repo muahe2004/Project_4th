@@ -12,15 +12,16 @@ import { getStatusOptions } from "../../../utils/status/status-i18n";
 import Button from "../../../components/Button/Button";
 import StudentFormModel from "../components/StudentFormModel";
 import ImportFormModel from "../components/ImportFormModel";
-import { useDeleteStudent } from "../apis/deleteStudent";
 import { useExportExampleFile } from "../apis/exportExampleFile";
 import { useImportStudents } from "../apis/importStudents";
 import { useUploadStudent } from "../apis/uploadStudent";
+import { useUpdateStudent } from "../apis/updateStudent";
 import type { IStudentUploadResponse, IStudentsResponse } from "../types";
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import type { AxiosError } from "axios";
 import { STATUS } from "../../../constants/status";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import "./styles/Students.css";
 
 export function Students() {
@@ -39,6 +40,7 @@ export function Students() {
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
     const [selectedStudent, setSelectedStudent] = useState<IStudentsResponse | undefined>(undefined);
+    const [studentToDelete, setStudentToDelete] = useState<IStudentsResponse | undefined>(undefined);
     // const [selectedDepartment, setSelectedDepartment] = useState<IDepartments | undefined>(undefined); 
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -54,10 +56,10 @@ export function Students() {
     };
 
     const { data: students } = useGetStudents(Params);
-    const { mutateAsync: deleteStudents } = useDeleteStudent({});
     const { mutateAsync: exportExampleFile, isPending: isExportingExampleFile } = useExportExampleFile({});
     const { mutateAsync: importStudents, isPending: isImportingStudents } = useImportStudents({});
     const { mutateAsync: uploadStudentFile, isPending: isUploadingStudentFile } = useUploadStudent({});
+    const { mutateAsync: updateStudent } = useUpdateStudent({});
 
     const handleOpenImportFilePicker = () => {
         fileInputRef.current?.click();
@@ -79,6 +81,35 @@ export function Students() {
             setOpenImportFormModel(false);
         } finally {
             event.target.value = "";
+        }
+    };
+
+    const handleDeleteStudent = (student: IStudentsResponse) => {
+        if (!student.id) {
+            showSnackbar(t("students.messages.missingId", "Student not found for deletion"), "error");
+            return;
+        }
+
+        setStudentToDelete(student);
+    };
+
+    const confirmDeleteStudent = async () => {
+        if (!studentToDelete?.id) {
+            setStudentToDelete(undefined);
+            return;
+        }
+
+        try {
+            await updateStudent({
+                studentId: studentToDelete.id,
+                data: { status: STATUS.INACTIVE },
+            });
+            showSnackbar(t("students.messages.deleteSuccess", "Student set to inactive successfully"), "success");
+        } catch (error: any) {
+            const detail = error?.response?.data?.detail ?? t("students.messages.deleteFailed", "Failed to update student status");
+            showSnackbar(detail, "error");
+        } finally {
+            setStudentToDelete(undefined);
         }
     };
 
@@ -143,13 +174,7 @@ export function Students() {
             <StudentTable
                 students={students}
                 onEdit={handleEditStudent}
-                onDelete={(student) => {
-                    if (!student.id) {
-                        return;
-                    }
-
-                    deleteStudents([student.id]);
-                }}
+                onDelete={handleDeleteStudent}
             />
             <PaginationUniCore
                 totalItems={students?.total || 0}
@@ -200,6 +225,16 @@ export function Students() {
                         );
                     }
                 }}
+            />
+
+            <ConfirmDialog
+                open={Boolean(studentToDelete)}
+                title={t("students.confirmDelete.title")}
+                message={t("students.confirmDelete.message")}
+                confirmLabel={t("students.common.delete")}
+                cancelLabel={t("students.common.cancel")}
+                onConfirm={() => void confirmDeleteStudent()}
+                onCancel={() => setStudentToDelete(undefined)}
             />
         </main>
     )

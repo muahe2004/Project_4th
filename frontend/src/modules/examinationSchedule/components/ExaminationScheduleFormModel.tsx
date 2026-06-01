@@ -122,6 +122,7 @@ export function ExaminationScheduleFormModel({
     limit: 10,
     skip: 0,
     search: classSearch || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedClasses = [] } = useClassesDropDownByIds(
     formValues.classId ? { ids: [formValues.classId] } : { ids: [] }
@@ -133,6 +134,7 @@ export function ExaminationScheduleFormModel({
     limit: 10,
     skip: 0,
     search: subjectSearch || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedSubjects = [] } = useSubjectDropDownByIds(
     formValues.subjectId ? { ids: [formValues.subjectId] } : { ids: [] }
@@ -142,6 +144,7 @@ export function ExaminationScheduleFormModel({
     limit: 10,
     skip: 0,
     search: roomSearch || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedRooms = [] } = useRoomDropDownByIds(
     formValues.roomId ? { ids: [formValues.roomId] } : { ids: [] }

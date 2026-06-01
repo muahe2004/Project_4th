@@ -16,13 +16,16 @@ import EditSquareIcon from "@mui/icons-material/EditSquare";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import Button from "../../../components/Button/Button";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import MainAutocomplete from "../../../components/Autocomplete/MainAutocomplete";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import ClassForm from "../components/ClassFormModel";
+import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 
 import { useGetClasses } from "../apis/getClasses";
+import { useDeleteClass } from "../apis/deleteClass";
 import type { IClassesResponse } from "../types";
 
 import { getStatusColor } from "../../../utils/status/status-color";
@@ -37,6 +40,7 @@ import { dashBoardUrl } from "../../../routes/urls";
 
 export function Classes() {
     const { t } = useTranslation();
+    const { showSnackbar } = useSnackbar();
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -49,6 +53,8 @@ export function Classes() {
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"add" | "edit">("add");
     const [selectedClass, setSelectedClass] = useState<IClassesResponse>();
+    const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | undefined>(undefined);
 
     const Params = {
         limit: rowsPerPage,
@@ -76,6 +82,35 @@ export function Classes() {
         error: errorSpecializations,
     } = useSpecializationsDropDown(ParamsSpecialization);
     const specializationOptions = Array.isArray(specializations) ? specializations : [];
+    const { mutateAsync: deleteClass } = useDeleteClass({});
+
+    const handleDeleteClass = (classItem?: IClassesResponse) => {
+        if (!classItem?.id) {
+            return;
+        }
+
+        setPendingDeleteId(classItem.id);
+        setOpenDeleteConfirm(true);
+    };
+
+    const confirmDeleteClass = async () => {
+        if (!pendingDeleteId) {
+            setOpenDeleteConfirm(false);
+            return;
+        }
+
+        try {
+            const response = await deleteClass(pendingDeleteId);
+            showSnackbar(t(response.message || "classes.messages.deleteSuccess"), "success");
+        } catch (error: any) {
+            const detailKey = error?.response?.data?.detail ?? "classes.messages.deleteFailed";
+            const detail = t(detailKey);
+            showSnackbar(detail, "error");
+        } finally {
+            setOpenDeleteConfirm(false);
+            setPendingDeleteId(undefined);
+        }
+    };
 
     return (
         <main className="admin-main-container">
@@ -189,7 +224,10 @@ export function Classes() {
                                     >
                                         <EditSquareIcon/>
                                     </IconButton>
-                                    <IconButton className="primary-tcell__button--icon primary-tcell__button--delete">
+                                    <IconButton
+                                        className="primary-tcell__button--icon primary-tcell__button--delete"
+                                        onClick={() => handleDeleteClass(row)}
+                                    >
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>
@@ -215,6 +253,19 @@ export function Classes() {
                 mode={mode} 
                 initialValues={selectedClass}
                 onClose={() => setOpen(false)}
+            />
+
+            <ConfirmDialog
+                open={openDeleteConfirm}
+                title={t("classes.confirmDelete.title")}
+                message={t("classes.confirmDelete.message")}
+                confirmLabel={t("classes.common.delete")}
+                cancelLabel={t("classes.common.cancel")}
+                onConfirm={() => void confirmDeleteClass()}
+                onCancel={() => {
+                    setOpenDeleteConfirm(false);
+                    setPendingDeleteId(undefined);
+                }}
             />
         </main>
     );

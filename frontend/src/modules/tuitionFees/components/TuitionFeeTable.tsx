@@ -9,7 +9,6 @@ import {
   TableRow,
 } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 
 import { getStatusColor } from "../../../utils/status/status-color";
@@ -20,10 +19,9 @@ import type { ITuitionFee, TuitionFeeListResponse } from "../types";
 interface TuitionFeeTableProps {
   tuitionFees?: TuitionFeeListResponse;
   onEdit?: (tuitionFee: ITuitionFee) => void;
-  onDelete?: (tuitionFee: ITuitionFee) => void;
 }
 
-export function TuitionFeeTable({ tuitionFees, onEdit, onDelete }: TuitionFeeTableProps) {
+export function TuitionFeeTable({ tuitionFees, onEdit }: TuitionFeeTableProps) {
   const { t } = useTranslation();
   const normalizeStatus = (status?: string | null) => status || "";
 
@@ -92,12 +90,6 @@ export function TuitionFeeTable({ tuitionFees, onEdit, onDelete }: TuitionFeeTab
                   onClick={() => onEdit?.(row)}
                 >
                   <EditSquareIcon />
-                </IconButton>
-                <IconButton
-                  className="primary-tcell__button--icon primary-tcell__button--delete"
-                  onClick={() => onDelete?.(row)}
-                >
-                  <DeleteIcon />
                 </IconButton>
               </TableCell>
             </TableRow>

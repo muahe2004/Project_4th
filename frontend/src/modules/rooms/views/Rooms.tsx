@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import Button from "../../../components/Button/Button";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import Loading from "../../../components/Loading/Loading";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
@@ -28,6 +29,8 @@ export function Rooms() {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [selectedRoom, setSelectedRoom] = useState<IRoom | undefined>(undefined);
+  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | undefined>(undefined);
 
   const { showSnackbar } = useSnackbar();
   const deleteRoomMutation = useDeleteRoom({});
@@ -47,11 +50,17 @@ export function Rooms() {
       return;
     }
 
-    if (!window.confirm(t("rooms.confirmDelete"))) {
+    setPendingDeleteId(room.id);
+    setOpenDeleteConfirm(true);
+  };
+
+  const confirmDeleteRoom = () => {
+    if (!pendingDeleteId) {
+      setOpenDeleteConfirm(false);
       return;
     }
 
-    deleteRoomMutation.mutate(room.id, {
+    deleteRoomMutation.mutate(pendingDeleteId, {
       onSuccess: (response) => {
         showSnackbar(response?.message ?? t("rooms.messages.deleteSuccess"), "success");
         void refetch();
@@ -59,6 +68,10 @@ export function Rooms() {
       onError: (error: any) => {
         const detail = error?.response?.data?.detail ?? t("rooms.messages.deleteFailed");
         showSnackbar(detail, "error");
+      },
+      onSettled: () => {
+        setOpenDeleteConfirm(false);
+        setPendingDeleteId(undefined);
       },
     });
   };
@@ -136,6 +149,19 @@ export function Rooms() {
         mode={mode}
         initialValues={selectedRoom}
         onClose={() => setOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={openDeleteConfirm}
+        title={t("rooms.confirmDelete.title")}
+        message={t("rooms.confirmDelete.message")}
+        confirmLabel={t("rooms.common.delete")}
+        cancelLabel={t("rooms.common.cancel")}
+        onConfirm={confirmDeleteRoom}
+        onCancel={() => {
+          setOpenDeleteConfirm(false);
+          setPendingDeleteId(undefined);
+        }}
       />
     </main>
   );

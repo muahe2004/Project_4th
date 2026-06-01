@@ -124,6 +124,15 @@ def update_class(session: SessionDep, id: uuid.UUID, data: ClassUpdate) -> Class
     return ClassServices.update(session=session, class_id=id, class_data=data)
 
 
+# =========================== delete class ===========================
+@router.delete(
+    "/{id}",
+    response_model=ClassDeleteResponse,
+)
+def delete_class(session: SessionDep, id: uuid.UUID) -> ClassDeleteResponse:
+    return ClassServices.delete_one(session=session, class_id=id)
+
+
 # =========================== delete classes ===========================
 @router.delete(
     "",
