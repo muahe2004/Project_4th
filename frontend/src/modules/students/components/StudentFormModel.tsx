@@ -195,6 +195,7 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
 
     useEffect(() => {
         if (mode === "edit" && initialValues) {
+            const parsedDateOfBirth = initialValues.date_of_birth ? dayjs(initialValues.date_of_birth) : null;
             setStudent({
                 ...DEFAULT_STUDENT,
                 ...initialValues,
@@ -206,7 +207,7 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
                 },
                 student_relative: buildRelatives(initialValues.student_relative),
             });
-            setDateOfBirth(initialValues.date_of_birth ? new Date(initialValues.date_of_birth) : null);
+            setDateOfBirth(parsedDateOfBirth && parsedDateOfBirth.isValid() ? parsedDateOfBirth.toDate() : null);
         } else {
             setStudent({ ...DEFAULT_STUDENT, student_relative: buildRelatives() });
             setDateOfBirth(null);
@@ -220,9 +221,10 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
 
     const handleDateChange = (newValue: Date | null) => {
         setDateOfBirth(newValue);
+        const parsedDate = newValue ? dayjs(newValue) : null;
         setStudent((prev) => ({
             ...prev,
-            date_of_birth: newValue ? dayjs(newValue).toISOString() : null,
+            date_of_birth: parsedDate && parsedDate.isValid() ? parsedDate.toISOString() : null,
         }));
     };
 

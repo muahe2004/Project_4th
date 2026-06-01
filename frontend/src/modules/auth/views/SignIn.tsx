@@ -147,13 +147,13 @@ export function SignIn() {
           <Box className="sign-in__box sign-in__box--flex">
             <LanguageSwitcher className="language-switch__sign--in" />
 
-            <Button
+            {/* <Button
               variant='text'
               disableRipple
               className="button-variant__text sign-button__forget"
             >
               {t('signIn.forgetPassword')}
-            </Button>
+            </Button> */}
           </Box>
         </Paper>
       </Container>

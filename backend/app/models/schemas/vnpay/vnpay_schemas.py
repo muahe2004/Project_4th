@@ -18,3 +18,8 @@ class VnpayCreatePaymentResponse(SQLModel):
 class VnpayIpnResponse(SQLModel):
     RspCode: str
     Message: str
+
+
+class VnpayReturnResponse(SQLModel):
+    success: bool
+    message: str

@@ -54,14 +54,22 @@ class VnpayPaymentService:
         return payment_url, txn_ref
 
     @staticmethod
-    def handle_ipn(*, session: Session, query_params: dict[str, str]) -> tuple[str, str]:
+    def verify_callback(*, query_params: dict[str, str]) -> tuple[bool, str]:
         secure_hash = query_params.get("vnp_SecureHash")
         if not secure_hash or not settings.VNPAY_HASH_SECRET:
-            return "97", "Invalid signature"
+            return False, "Invalid signature"
 
         payload = {k: v for k, v in query_params.items() if k not in {"vnp_SecureHash", "vnp_SecureHashType"}}
         expected = VnpayService.sign(params=payload, hash_secret=settings.VNPAY_HASH_SECRET)
         if expected.lower() != secure_hash.lower():
+            return False, "Invalid signature"
+
+        return query_params.get("vnp_ResponseCode") == "00" and query_params.get("vnp_TransactionStatus") == "00", "Confirm Success"
+
+    @staticmethod
+    def handle_ipn(*, session: Session, query_params: dict[str, str]) -> tuple[str, str]:
+        is_valid, message = VnpayPaymentService.verify_callback(query_params=query_params)
+        if not is_valid and message == "Invalid signature":
             return "97", "Invalid signature"
 
         if query_params.get("vnp_ResponseCode") != "00":

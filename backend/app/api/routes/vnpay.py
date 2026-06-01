@@ -5,6 +5,7 @@ from app.models.schemas.vnpay.vnpay_schemas import (
     VnpayCreatePaymentRequest,
     VnpayCreatePaymentResponse,
     VnpayIpnResponse,
+    VnpayReturnResponse,
 )
 from app.services.vnpay_payment import VnpayPaymentService
 
@@ -30,3 +31,11 @@ def vnpay_ipn(session: SessionDep, request: Request):
         query_params={k: v for k, v in request.query_params.items()},
     )
     return VnpayIpnResponse(RspCode=rsp_code, Message=message)
+
+
+@router.get("/return", response_model=VnpayReturnResponse)
+def vnpay_return(request: Request):
+    success, message = VnpayPaymentService.verify_callback(
+        query_params={k: v for k, v in request.query_params.items()},
+    )
+    return VnpayReturnResponse(success=success, message=message)

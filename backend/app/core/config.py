@@ -49,8 +49,8 @@ class Settings(BaseSettings):
     VNPAY_TMN_CODE: str | None = None
     VNPAY_HASH_SECRET: str | None = None
     VNPAY_PAYMENT_URL: str = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
-    VNPAY_RETURN_URL: str = "http://localhost:8000/unicore/api/student_tuition_fees/vnpay/return"
-    VNPAY_IPN_URL: str = "http://localhost:8000/unicore/api/student_tuition_fees/vnpay/ipn"
+    VNPAY_RETURN_URL: str = "http://localhost:8000/unicore/api/vnpay/return"
+    VNPAY_IPN_URL: str = "http://localhost:8000/unicore/api/vnpay/ipn"
     VNPAY_VERSION: str = "2.1.0"
     VNPAY_COMMAND: str = "pay"
     VNPAY_CURRENCY_CODE: str = "VND"
