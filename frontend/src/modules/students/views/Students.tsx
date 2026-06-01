@@ -20,13 +20,15 @@ import type { IStudentUploadResponse, IStudentsResponse } from "../types";
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import type { AxiosError } from "axios";
+import { STATUS } from "../../../constants/status";
+import "./styles/Students.css";
 
 export function Students() {
     const { t } = useTranslation();
     const { showSnackbar } = useSnackbar();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState(STATUS.ACTIVE);
 
     const handleEditStudent = (student: IStudentsResponse) => {
         setMode("edit");
@@ -90,7 +92,7 @@ export function Students() {
                 ]}
             />
 
-            <Box className="admin-main-box">
+            <Box className="admin-main-box students-toolbar">
                 <StatusFilter
                     value={status}
                     onChange={setStatus}

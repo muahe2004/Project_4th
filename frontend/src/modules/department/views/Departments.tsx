@@ -31,13 +31,14 @@ import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { useDeleteDepartment } from "../apis/deleteDepartment";
 import { useTranslation } from "react-i18next";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
+import { STATUS } from "../../../constants/status";
 
 export function Departments() {
     const { t } = useTranslation();
     const statusOptions = getStatusOptions();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState(STATUS.ACTIVE);
 
     const { showSnackbar } = useSnackbar();
     const deleteDepartmentMutation = useDeleteDepartment();
@@ -218,7 +219,7 @@ export function Departments() {
             <ConfirmDialog
                 open={openDeleteConfirm}
                 message={t("departments.confirmDelete")}
-                confirmLabel={t("departments.common.delete", "Xóa")}
+                confirmLabel={t("departments.common.delete", "Delete")}
                 cancelLabel={t("departments.common.cancel")}
                 onConfirm={confirmDeleteDepartment}
                 onCancel={() => {

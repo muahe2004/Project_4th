@@ -18,16 +18,18 @@ import { useExportExampleFile } from "../apis/exportExampleFile";
 import { useGetTeachers } from "../apis/getTeachers";
 import { useImportTeacher } from "../apis/importTeacher";
 import { useUploadTeacher } from "../apis/uploadTeacher";
+import { STATUS } from "../../../constants/status";
 import ImportFormModel from "../components/ImportFormModel";
 import TeacherFormModel from "../components/TeacherFormModel";
 import TeacherTable from "../components/TeachetTable";
 import type { ITeacherResponse, ITeacherUploadResponse } from "../types";
+import "./styles/Teachers.css";
 
 export function Teachers() {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(STATUS.ACTIVE);
 
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
@@ -131,7 +133,7 @@ export function Teachers() {
         ]}
       />
 
-      <Box className="admin-main-box">
+      <Box className="admin-main-box teachers-toolbar">
         <StatusFilter
           value={status}
           onChange={(value) => {

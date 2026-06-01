@@ -10,6 +10,7 @@ import Loading from "../../../components/Loading/Loading";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
+import { STATUS } from "../../../constants/status";
 import { getStatusOptions } from "../../../utils/status/status-i18n";
 import { dashBoardUrl, layOutAdminUrl, studentTuitionFeeUrl } from "../../../routes/urls";
 import { useGetTuitionFees } from "../apis/getTuitionFees";
@@ -25,7 +26,7 @@ export function TuitionFees() {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(STATUS.ACTIVE);
   const [openForm, setOpenForm] = useState(false);
   const [openAllocateForm, setOpenAllocateForm] = useState(false);
   const [selectedTuitionFee, setSelectedTuitionFee] = useState<ITuitionFee | undefined>(
@@ -59,7 +60,7 @@ export function TuitionFees() {
         ]}
       />
 
-      <Box className="admin-main-box">
+      <Box className="admin-main-box tuition-fees-toolbar">
         <StatusFilter
           value={status}
           onChange={(value) => {

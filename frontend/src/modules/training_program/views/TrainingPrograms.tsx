@@ -9,6 +9,7 @@ import Loading from "../../../components/Loading/Loading";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
+import { STATUS } from "../../../constants/status";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import { getStatusOptions } from "../../../utils/status/status-i18n";
 import { dashBoardUrl } from "../../../routes/urls";
@@ -32,7 +33,7 @@ export function TrainingPrograms() {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(STATUS.ACTIVE);
   const [openImport, setOpenImport] = useState(false);
   const [openForm, setOpenForm] = useState(false);
   const [mode, setMode] = useState<"add" | "edit">("add");

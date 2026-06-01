@@ -1,9 +1,11 @@
 @import url("../../assets/styles/theme.css");
 
 .search-engine__input {
-    min-width: 280px !important;
-    max-width: 420px !important;
-    margin-left: 10px !important;
+    width: 100%;
+    min-width: 360px !important;
+    max-width: 520px !important;
+    margin-left: 0 !important;
+    flex: 1 1 360px;
 }
 
 .search-engine__input .MuiInputBase-input {

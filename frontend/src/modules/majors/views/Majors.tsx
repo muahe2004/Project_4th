@@ -24,6 +24,7 @@ import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay, getStatusOptions } from "../../../utils/status/status-i18n";
+import { STATUS } from "../../../constants/status";
 
 import { useGetMajor } from "../apis/getMajors";
 import { useGetDepartment } from "../../department/apis/getDepartments";
@@ -51,7 +52,7 @@ export function Majors() {
     const [pendingDeleteId, setPendingDeleteId] = useState<string | undefined>(undefined);
 
     const [departmentId, setDepartmentId] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState(STATUS.ACTIVE);
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -238,7 +239,7 @@ export function Majors() {
             <ConfirmDialog
                 open={openDeleteConfirm}
                 message={t("majors.confirmDelete")}
-                confirmLabel={t("majors.common.delete", "Xóa")}
+                confirmLabel={t("majors.common.delete", "Delete")}
                 cancelLabel={t("majors.common.cancel")}
                 onConfirm={confirmDeleteMajor}
                 onCancel={() => {

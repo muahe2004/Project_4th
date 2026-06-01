@@ -1,5 +1,9 @@
 @import url("../../../../assets/styles/theme.css");
 
+.tuition-fees-toolbar {
+  margin-top: 10px;
+}
+
 .subject-name-tcell {
   width: 35%;
 }

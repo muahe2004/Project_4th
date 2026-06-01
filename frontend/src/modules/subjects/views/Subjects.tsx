@@ -8,6 +8,7 @@ import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import StatusFilter from "../../../components/StatusFilter/StatusFilter";
+import { STATUS } from "../../../constants/status";
 import { getStatusOptions } from "../../../utils/status/status-i18n";
 import { dashBoardUrl } from "../../../routes/urls";
 import { useDeleteSubject } from "../apis/deleteSubject";
@@ -25,7 +26,7 @@ export function Subjects() {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(STATUS.ACTIVE);
 
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
@@ -163,7 +164,7 @@ export function Subjects() {
       <ConfirmDialog
         open={openDeleteConfirm}
         message={t("subjects.confirmDelete")}
-        confirmLabel={t("subjects.common.delete", "Xóa")}
+        confirmLabel={t("subjects.common.delete", "Delete")}
         cancelLabel={t("subjects.common.cancel")}
         onConfirm={confirmDeleteSubject}
         onCancel={() => {

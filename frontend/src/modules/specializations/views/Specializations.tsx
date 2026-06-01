@@ -25,6 +25,7 @@ import StatusFilter from "../../../components/StatusFilter/StatusFilter";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 import { getStatusOptions } from "../../../utils/status/status-i18n";
+import { STATUS } from "../../../constants/status";
 
 import { useGetSpecialization } from "../apis/getSpecializations";
 import type { ISpecializations } from "../types";
@@ -51,7 +52,7 @@ export function Specializations() {
     const [pendingDeleteId, setPendingDeleteId] = useState<string | undefined>(undefined);
 
     const [majorId, setMajorId] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState(STATUS.ACTIVE);
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -238,7 +239,7 @@ export function Specializations() {
             <ConfirmDialog
                 open={openDeleteConfirm}
                 message={t("specializations.confirmDelete")}
-                confirmLabel={t("specializations.common.delete", "Xóa")}
+                confirmLabel={t("specializations.common.delete", "Delete")}
                 cancelLabel={t("specializations.common.cancel")}
                 onConfirm={confirmDeleteSpecialization}
                 onCancel={() => {

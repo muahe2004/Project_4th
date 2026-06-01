@@ -28,6 +28,7 @@ import type { IClassesResponse } from "../types";
 import { getStatusColor } from "../../../utils/status/status-color";
 import { getStatusDisplay } from "../../../utils/status/status-display";
 import { getStatusOptions } from "../../../utils/status/status-i18n";
+import { STATUS } from "../../../constants/status";
 
 import "./styles/Classes.css";
 import { useSpecializationsDropDown } from "../../specializations/apis/getSpecializationDropDown";
@@ -42,7 +43,7 @@ export function Classes() {
     const [search, setSearch] = useState("");
     const [searchSpecialization, setSearchSpecialization] = useState("");
 
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState(STATUS.ACTIVE);
     const [specializationId, setSpecializationId] = useState("");
 
     const [open, setOpen] = useState(false);

@@ -13,6 +13,7 @@ import { useEditDepartment } from "../apis/editDepartment";
 import { useSnackbar } from "../../../components/SnackBar/SnackBar";
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import { useConfirmCloseForm } from "../../../hooks/useConfirm";
+import { hasObjectChanged } from "../../../utils/checkChangeValues";
 import { useTranslation } from "react-i18next";
 import { getRequiredError } from "../../../utils/validation/fieldErrors";
 
@@ -36,6 +37,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
     const [departmentNameError, setDepartmentNameError] = useState("");
 
     const [openConfirmSave, setOpenConfirmSave] = useState(false);
+    const [isChanged, setIsChanged] = useState(false);
 
     const { mutateAsync: createDepartment } = useCreateDepartment({});
     const { mutateAsync: editDepartment } = useEditDepartment({});
@@ -53,7 +55,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
         } else {
             setDepartmentCode("");
             setDepartmentName("");
-            setEstablishedDate(new Date());
+            setEstablishedDate(null);
             setDescription("");
         }
         setDepartmentCodeError("");
@@ -83,10 +85,34 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
         description,
     };
 
+    useEffect(() => {
+        if (mode === "edit" && initialValues) {
+            const payload: IDepartments = {
+                department_code: departmentCode,
+                name: departmentName,
+                established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
+                status: STATUS.ACTIVE,
+                description,
+                updated_at: dayjs().format("YYYY-MM-DD"),
+            };
+
+            const hasChanges = hasObjectChanged(payload, initialValues, ["established_date"], ["updated_at"]);
+            setIsChanged(hasChanges);
+        } else {
+            const today = dayjs(new Date()).format("YYYY-MM-DD");
+            const hasInput =
+                currentValues.department_code !== "" ||
+                currentValues.name !== "" ||
+                currentValues.description !== "" ||
+                (currentValues.established_date !== null && currentValues.established_date !== today);
+
+            setIsChanged(hasInput);
+        }
+    }, [departmentCode, departmentName, establishedDate, description, mode, initialValues]);
+
     const { openConfirm, setOpenConfirm, handleCloseClick } = useConfirmCloseForm({
         mode,
-        initialValues,
-        currentValues,
+        isChanged,
         onClose,
     });
 
@@ -94,6 +120,8 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
         if (!validateRequiredFields()) {
             return;
         }
+
+        const safeEstablishedDate = establishedDate ? dayjs(establishedDate) : dayjs();
 
         if (mode === "add") {
             void handleConfirmSave();
@@ -103,7 +131,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
         const payload: IDepartments = {
             department_code: departmentCode,
             name: departmentName,
-            established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
+            established_date: safeEstablishedDate.format("YYYY-MM-DD"),
             status: STATUS.ACTIVE,
             description,
             updated_at: dayjs().format("YYYY-MM-DD"),
@@ -125,10 +153,11 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
 
     const handleConfirmSave = async () => {
         try {
+            const safeEstablishedDate = establishedDate ? dayjs(establishedDate) : dayjs();
             const payload: IDepartments = {
                 department_code: departmentCode,
                 name: departmentName,
-                established_date: dayjs(establishedDate).format("YYYY-MM-DD"),
+                established_date: safeEstablishedDate.format("YYYY-MM-DD"),
                 status: STATUS.ACTIVE,
                 description,
                 updated_at: dayjs().format("YYYY-MM-DD"),
@@ -232,7 +261,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ open, mode, initialValu
                 <Button onClick={handleCloseClick} className="button-cancel">
                     {t("departments.common.cancel")}
                 </Button>
-                <Button onClick={handleSubmitClick} variant="contained">
+                <Button onClick={handleSubmitClick} variant="contained" disabled={!isChanged}>
                     {mode === "add" ? t("departments.common.add") : t("departments.common.save")}
                 </Button>
             </DialogActions>
