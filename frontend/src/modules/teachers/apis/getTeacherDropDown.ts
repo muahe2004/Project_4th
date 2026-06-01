@@ -8,6 +8,7 @@ export interface Params {
     skip: number;
     department_id?: string;
     search?: string;
+    status?: string;
 }
 
 const getTeacherDropdown = async (params: Params): Promise<TeacherDropDown[]> => {

@@ -143,6 +143,7 @@ const TeachingSchedulesFormModel: React.FC<TeachingSchedulesFormProps> = ({
     limit: 5,
     skip: (teacherPage - 1) * 5,
     search: searchTeacher || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedTeachers = [] } = useTeacherDropdownByIds(
     formValues.teacherId ? { ids: [formValues.teacherId] } : { ids: [] }

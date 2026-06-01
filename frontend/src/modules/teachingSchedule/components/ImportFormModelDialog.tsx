@@ -11,6 +11,7 @@ import { useRoomDropDown } from "../apis/getRoomDropDown";
 import { useRoomDropDownByIds } from "../apis/getRoomDropDownByIds";
 import { useTeacherDropdown } from "../../teachers/apis/getTeacherDropDown";
 import { useTeacherDropdownByIds } from "../../teachers/apis/getTeacherDropDownByIds";
+import { STATUS } from "../../../constants/status";
 
 type EditableTeachingSchedule = IUploadTeachingCalenderItem & {
   subject_name?: string | null;
@@ -71,6 +72,7 @@ const ImportFormModelDialog = ({
     limit: 10,
     skip: 0,
     search: teacherSearch || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedTeachers = [] } = useTeacherDropdownByIds(
     selectedTeacherId ? { ids: [selectedTeacherId] } : { ids: [] }

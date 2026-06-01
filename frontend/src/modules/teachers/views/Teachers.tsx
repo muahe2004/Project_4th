@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import BreadCrumb from "../../../components/BreadCrumb/BreadCrumb";
 import Button from "../../../components/Button/Button";
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog";
 import Loading from "../../../components/Loading/Loading";
 import PaginationUniCore from "../../../components/Pagination/Pagination";
 import SearchEngine from "../../../components/SearchEngine/SearchEngine";
@@ -35,6 +36,7 @@ export function Teachers() {
   );
   const [importPreview, setImportPreview] = useState<ITeacherUploadResponse | null>(null);
   const [openImportFormModel, setOpenImportFormModel] = useState(false);
+  const [teacherToDelete, setTeacherToDelete] = useState<ITeacherResponse | undefined>(undefined);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { t } = useTranslation();
 
@@ -86,19 +88,27 @@ export function Teachers() {
       return;
     }
 
-    if (!window.confirm(t("teachers.confirmDelete"))) {
+    setTeacherToDelete(teacher);
+  };
+
+  const confirmDeleteTeacher = () => {
+    if (!teacherToDelete?.id) {
+      setTeacherToDelete(undefined);
+      showSnackbar(t("teachers.messages.notFoundToDelete"), "error");
       return;
     }
 
-    deleteTeacherMutation.mutate([teacher.id], {
+    deleteTeacherMutation.mutate([teacherToDelete.id], {
       onSuccess: (responses) => {
         const message = responses?.[0]?.message ?? t("teachers.messages.deleteSuccess");
         showSnackbar(message, "success");
+        setTeacherToDelete(undefined);
         void refetch();
       },
       onError: (error: any) => {
         const detail = error?.response?.data?.detail ?? t("teachers.messages.deleteFailed");
         showSnackbar(detail, "error");
+        setTeacherToDelete(undefined);
       },
     });
   };
@@ -202,6 +212,16 @@ export function Teachers() {
         mode={mode}
         initialValues={selectedTeacher}
         onClose={() => setOpen(false)}
+      />
+
+      <ConfirmDialog
+        open={Boolean(teacherToDelete)}
+        title={t("common.confirmDeleteTitle", "Confirm Delete")}
+        message={t("teachers.confirmDelete")}
+        confirmLabel={t("common.delete", "Delete")}
+        cancelLabel={t("common.cancel", "Cancel")}
+        onConfirm={confirmDeleteTeacher}
+        onCancel={() => setTeacherToDelete(undefined)}
       />
 
       <ImportFormModel

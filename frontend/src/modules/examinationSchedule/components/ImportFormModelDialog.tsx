@@ -115,6 +115,7 @@ const ImportFormModelDialog = ({
     limit: 10,
     skip: 0,
     search: teacherSearch || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedTeachers = [] } = useTeacherDropdownByIds(
     selectedTeacher1Id || selectedTeacher2Id

@@ -151,6 +151,7 @@ export function ExaminationScheduleFormModel({
     limit: 10,
     skip: 0,
     search: teacherSearch || undefined,
+    status: STATUS.ACTIVE,
   });
   const { data: selectedTeachers = [] } = useTeacherDropdownByIds(
     formValues.invigilator1Id || formValues.invigilator2Id
