@@ -470,6 +470,7 @@
       "deleteFailed": "Failed to update class status",
       "addSuccess": "Class added successfully!",
       "updateSuccess": "Class updated successfully!",
+      "classCodeExists": "Class code already exists.",
       "genericError": "An error occurred, please try again!"
     },
     "form": {

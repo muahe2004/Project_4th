@@ -470,6 +470,7 @@
       "deleteFailed": "Cập nhật trạng thái lớp thất bại",
       "addSuccess": "Thêm lớp thành công!",
       "updateSuccess": "Cập nhật lớp thành công!",
+      "classCodeExists": "Mã lớp đã tồn tại.",
       "genericError": "Có lỗi xảy ra, vui lòng thử lại!"
     },
     "form": {

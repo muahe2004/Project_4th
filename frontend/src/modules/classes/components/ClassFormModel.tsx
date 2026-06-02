@@ -409,9 +409,18 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
             setConfirm({ ...confirm, save: false, pendingPayload: null });
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            showSnackbar(t("classes.messages.genericError"), "error");
+            const status = error?.response?.status;
+            const detail = error?.response?.data?.detail;
+            const message =
+                status === 409
+                    ? t("classes.messages.classCodeExists")
+                    : typeof detail === "string" &&
+                        /class code|mã lớp|already exists|duplicate/i.test(detail)
+                      ? t("classes.messages.classCodeExists")
+                      : detail || t("classes.messages.genericError");
+            showSnackbar(message, "error");
         }
     };
 
