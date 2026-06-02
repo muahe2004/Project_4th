@@ -7,6 +7,6 @@ export const getGenderDisplay = (gender: string): string => {
         case GENDER.FEMALE:
             return "Nữ";
         default:
-            return "Unknown";
+            return "Khác";
     }
 }

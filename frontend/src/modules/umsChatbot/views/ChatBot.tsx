@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Container,
@@ -18,6 +18,7 @@ const CHATBOT_HISTORY_KEY = "ums_chatbot_history";
 export default function ChatBot() {
   const user = useAuthStore((state) => state.user);
   const [text, setText] = useState("");
+  const sendLockRef = useRef(false);
   const role = useMemo(() => {
     const normalizedRole = (user?.role ?? "").trim().toLowerCase();
     if (normalizedRole === "teacher" || normalizedRole === "student") {
@@ -53,28 +54,37 @@ export default function ChatBot() {
   }, []);
 
   const handleSubmit = async () => {
+    if (sendLockRef.current || mutation.isPending) {
+      return;
+    }
+
     const question = text.trim();
     if (!question) {
       return;
     }
 
+    sendLockRef.current = true;
     const nextHistory = [...history, { role: "user", content: question }];
 
-    const result = await mutation.mutateAsync({
-      payload: {
-        message: question,
-      },
-    });
+    try {
+      const result = await mutation.mutateAsync({
+        payload: {
+          message: question,
+        },
+      });
 
-    const resolvedTimeScope = result.time_scope ?? "today";
-    const assistantSummary = `intent: ${result.intent}, time_scope: ${resolvedTimeScope}`;
-    const updatedHistory = [
-      ...nextHistory,
-      { role: "assistant", content: assistantSummary, meta: result },
-    ];
-    localStorage.setItem(CHATBOT_HISTORY_KEY, JSON.stringify(updatedHistory));
-    setHistory(updatedHistory);
-    setText("");
+      const resolvedTimeScope = result.time_scope ?? "today";
+      const assistantSummary = `intent: ${result.intent}, time_scope: ${resolvedTimeScope}`;
+      const updatedHistory = [
+        ...nextHistory,
+        { role: "assistant", content: assistantSummary, meta: result },
+      ];
+      localStorage.setItem(CHATBOT_HISTORY_KEY, JSON.stringify(updatedHistory));
+      setHistory(updatedHistory);
+      setText("");
+    } finally {
+      sendLockRef.current = false;
+    }
   };
 
   return (

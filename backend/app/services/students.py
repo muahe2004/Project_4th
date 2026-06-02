@@ -638,6 +638,7 @@ class StudentServices:
 
         parsed_rows: list[StudentFileData] = []
         invalid_rows: list[StudentFileInvalidRow] = []
+        seen_student_codes: set[str] = set()
 
         # parse each data row below header row
         for row_index, row_values in enumerate(rows[header_row_index:], start=header_row_index + 1):
@@ -718,6 +719,26 @@ class StudentServices:
                 row_errors.append(StudentServices._build_error("students.import.errorReasons.emailRequired"))
             if not class_code:
                 row_errors.append(StudentServices._build_error("students.import.errorReasons.classCodeRequired"))
+
+            if student_code:
+                if student_code in seen_student_codes:
+                    row_errors.append(
+                        StudentServices._build_error(
+                            "students.import.errorReasons.studentCodeDuplicateInFile"
+                        )
+                    )
+                else:
+                    seen_student_codes.add(student_code)
+
+                existed_student = session.exec(
+                    select(Students).where(Students.student_code == student_code)
+                ).first()
+                if existed_student:
+                    row_errors.append(
+                        StudentServices._build_error(
+                            "students.import.errorReasons.studentCodeExists"
+                        )
+                    )
 
             if row_errors:
                 invalid_rows.append(

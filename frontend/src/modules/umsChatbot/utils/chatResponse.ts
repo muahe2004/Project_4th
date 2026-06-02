@@ -8,6 +8,7 @@ interface ChatResponseParams {
   timeScope?: string | null;
   language?: ChatLanguage;
   mode?: "default" | "no_data";
+  role?: "student" | "teacher" | "";
 }
 
 interface ChatResponseResult {
@@ -38,12 +39,17 @@ function normalizeTimeScope(timeScope?: string | null): string {
   return String(timeScope ?? "").trim().toLowerCase();
 }
 
-export function chatResponse({ intent, timeScope, language = "vi", mode = "default" }: ChatResponseParams): ChatResponseResult {
+export function chatResponse({ intent, timeScope, language = "vi", mode = "default", role = "" }: ChatResponseParams): ChatResponseResult {
   const normalizedIntent = normalizeIntent(intent);
   const normalizedTimeScope = normalizeTimeScope(timeScope);
+  const normalizedRole = String(role ?? "").trim().toLowerCase();
   const safeLanguage = language === "en" ? "en" : "vi";
-  const keyBase = `chatbot.response.${normalizedIntent || "fallback"}`;
-  const shouldIgnoreTimeScope = NO_TIME_SCOPE_INTENTS.has(normalizedIntent);
+  const resolvedIntent =
+    normalizedIntent === "learning_schedule" && normalizedRole === "teacher"
+      ? "teaching_schedule"
+      : normalizedIntent;
+  const keyBase = `chatbot.response.${resolvedIntent || "fallback"}`;
+  const shouldIgnoreTimeScope = NO_TIME_SCOPE_INTENTS.has(resolvedIntent);
 
   if (shouldIgnoreTimeScope || !normalizedTimeScope) {
     const suffix = mode === "no_data" ? "no_data_no_time_scope" : "no_time_scope";

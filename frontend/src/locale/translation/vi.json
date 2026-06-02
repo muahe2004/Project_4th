@@ -335,14 +335,14 @@
       "exporting": "Đang xuất file...",
       "exportSample": "Xuất file mẫu",
       "importing": "Đang nhập...",
-      "import": "Import giảng viên"
+      "import": "Nhập DS giảng viên"
     },
     "messages": {
       "notFoundToDelete": "Không tìm thấy mã giảng viên để xoá",
       "deleteSuccess": "Xoá giảng viên thành công",
       "deleteFailed": "Xoá giảng viên thất bại",
-      "importSuccess": "Import giảng viên thành công",
-      "importFailed": "Import giảng viên thất bại",
+      "importSuccess": "Nhập DS giảng viên thành công",
+      "importFailed": "Nhập DS giảng viên thất bại",
       "createSuccess": "Thêm giảng viên thành công!",
       "updateSuccess": "Cập nhật giảng viên thành công!",
       "genericError": "Có lỗi xảy ra, vui lòng thử lại"
@@ -414,7 +414,7 @@
       }
     },
     "import": {
-      "title": "Xem trước import giảng viên",
+      "title": "Xem trước nhập danh sách giảng viên",
       "editTitle": "Chỉnh sửa giảng viên import",
       "noData": "Không có dữ liệu import.",
       "fileName": "Tên file",
@@ -1425,7 +1425,7 @@
     "addStudent": "Thêm sinh viên",
     "exportTemplate": "Xuất file mẫu",
     "exporting": "Đang xuất file...",
-    "importStudent": "Import sinh viên",
+    "importStudent": "Nhập DS sinh viên",
     "uploading": "Đang import...",
     "common": {
       "cancel": "Huỷ",
@@ -1445,7 +1445,9 @@
     "messages": {
       "missingId": "Không tìm thấy mã sinh viên để xoá",
       "deleteSuccess": "Đổi trạng thái sinh viên sang ngừng hoạt động thành công",
-      "deleteFailed": "Cập nhật trạng thái sinh viên thất bại"
+      "deleteFailed": "Cập nhật trạng thái sinh viên thất bại",
+      "createSuccess": "Thêm sinh viên thành công",
+      "updateSuccess": "Cập nhật sinh viên thành công"
     },
     "tabs": {
       "basic": "Thông tin cơ bản",
@@ -1532,7 +1534,7 @@
       "nationality": "Quốc tịch"
     },
     "import": {
-      "title": "Xem trước import sinh viên",
+      "title": "Xem trước nhập danh sách sinh viên",
       "noData": "Không có dữ liệu import.",
       "fileName": "Tên file",
       "invalidRows": "Có {{count}} dòng lỗi, vui lòng sửa trước khi import.",
@@ -1545,6 +1547,8 @@
         "classCodeRequired": "Mã lớp là bắt buộc.",
         "requiredFields": "Mã sinh viên, họ tên, giới tính và email là bắt buộc.",
         "genderInvalid": "Giới tính phải là một trong các giá trị: 1, 2, 3.",
+        "studentCodeExists": "Mã sinh viên đã tồn tại.",
+        "studentCodeDuplicateInFile": "Mã sinh viên bị trùng trong file.",
         "studentExists": "Sinh viên đã tồn tại: {{student_code}} / {{email}}"
       },
       "editTitle": "Chỉnh sửa môn học import",
@@ -1561,8 +1565,8 @@
         "errorReason": "Lý do lỗi",
         "actions": "Thao tác"
       },
-      "success": "Import sinh viên thành công.",
-      "failed": "Import sinh viên thất bại."
+      "success": "Nhập DS sinh viên thành công.",
+      "failed": "Nhập DS sinh viên thất bại."
     },
     "importEdit": {
       "title": "Sửa sinh viên import",
@@ -1620,6 +1624,12 @@
         "with_time_scope": "Lịch học {{timeScope}} của bạn là:",
         "no_data_no_time_scope": "Bạn không có lịch học.",
         "no_data_with_time_scope": "{{timeScope}} bạn không có lịch học."
+      },
+      "teaching_schedule": {
+        "no_time_scope": "Lịch dạy của bạn là:",
+        "with_time_scope": "Lịch dạy {{timeScope}} của bạn là:",
+        "no_data_no_time_scope": "Bạn không có lịch dạy.",
+        "no_data_with_time_scope": "{{timeScope}} bạn không có lịch dạy."
       },
       "examination_schedule": {
         "no_time_scope": "Lịch thi của bạn là:",
@@ -1681,7 +1691,8 @@
     "askPlaceholder": "Hỏi UMS ChatBot...",
     "quickActions": {
       "todaySchedule": "Cho tôi xem lịch học hôm nay",
-      "studyResults": "Xem kết quả học tập"
+      "studyResults": "Xem kết quả học tập",
+      "todayTeachingSchedule": "Cho tôi xem lịch dạy hôm nay"
     },
     "labels": {
       "student": "Sinh viên",
@@ -1691,12 +1702,34 @@
       "score": "Điểm",
       "type": "Loại",
       "schedule": "Lịch học",
+      "trainingProgram": "Chương trình đào tạo",
       "period": "Tiết",
       "room": "Phòng",
       "class": "Lớp",
       "examRecords": "{{count}} bản ghi lịch thi",
       "exam": "Lịch thi",
       "time": "Giờ"
+    },
+    "tableColumns": {
+      "departmentCode": "Mã khoa",
+      "departmentName": "Tên khoa",
+      "establishedDate": "Ngày thành lập",
+      "majorCode": "Mã ngành",
+      "majorName": "Tên ngành",
+      "specializationCode": "Mã chuyên ngành",
+      "specializationName": "Tên chuyên ngành",
+      "programType": "Loại CTĐT",
+      "trainingProgramName": "Tên CTĐT",
+      "academicYear": "Niên khoá",
+      "subjectCode": "Mã học phần",
+      "subjectName": "Tên học phần",
+      "credits": "Số tín chỉ",
+      "amount": "Số tiền",
+      "pricePerCredit": "Đơn giá/tín chỉ",
+      "type": "Loại",
+      "d1": "Đ1",
+      "d2": "Đ2",
+      "finalScore": "Thi"
     }
   },
   "paymentResult": {

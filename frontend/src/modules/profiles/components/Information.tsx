@@ -324,13 +324,18 @@ export default function Information() {
         {isStudent && (
           <Grid size={4} className="myprofile-form__group">
             <LabelPrimary value={t("myprofile.fields.trainingProgram")} />
-            <TextField
+            <Select
               value={trainingProgram}
               onChange={(e) => setTrainingProgram(e.target.value)}
               fullWidth
               variant="outlined"
               className="main-text__field"
-            />
+              MenuProps={{ disableScrollLock: true }}
+            >
+              <MenuItem value="1">{t("students.trainingProgram.fullTime")}</MenuItem>
+              <MenuItem value="2">{t("students.trainingProgram.transfer")}</MenuItem>
+              <MenuItem value="3">{t("students.trainingProgram.secondDegree")}</MenuItem>
+            </Select>
           </Grid>
         )}
 

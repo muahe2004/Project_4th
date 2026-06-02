@@ -267,11 +267,11 @@
     "table": {
       "studentCode": "Student Code",
       "studentName": "Student Name",
-      "rank4": "Rank H4",
-      "rank10": "Rank H10",
-      "gpa4": "GPA H4",
-      "gpaAccum4": "Accum. GPA H4",
-      "gpaAccum10": "Accum. GPA H10"
+      "rank4": "4-point Rank",
+      "rank10": "10-point Rank",
+      "gpa4": "4-point GPA",
+      "gpaAccum4": "Cumulative GPA (4-point)",
+      "gpaAccum10": "Cumulative GPA (10-point)"
     },
     "import": {
       "missingFileContext": "Missing academic_term_id or subject_id from uploaded file."
@@ -1445,7 +1445,9 @@
     "messages": {
       "missingId": "Student not found for deletion",
       "deleteSuccess": "Student set to inactive successfully",
-      "deleteFailed": "Failed to update student status"
+      "deleteFailed": "Failed to update student status",
+      "createSuccess": "Student added successfully",
+      "updateSuccess": "Student updated successfully"
     },
     "tabs": {
       "basic": "Basic Information",
@@ -1545,6 +1547,8 @@
         "classCodeRequired": "Class code is required.",
         "requiredFields": "Student code, name, gender, and email are required.",
         "genderInvalid": "Gender must be one of: 1, 2, 3.",
+        "studentCodeExists": "Student code already exists.",
+        "studentCodeDuplicateInFile": "Student code is duplicated in the file.",
         "studentExists": "Student already exists: {{student_code}} / {{email}}"
       },
       "editTitle": "Edit Imported Subject",
@@ -1609,6 +1613,12 @@
         "no_data_no_time_scope": "You have no learning schedule.",
         "no_data_with_time_scope": "You have no learning schedule for {{timeScope}}."
       },
+      "teaching_schedule": {
+        "no_time_scope": "Your teaching schedule is:",
+        "with_time_scope": "Your teaching schedule for {{timeScope}} is:",
+        "no_data_no_time_scope": "You have no teaching schedule.",
+        "no_data_with_time_scope": "You have no teaching schedule for {{timeScope}}."
+      },
       "examination_schedule": {
         "no_time_scope": "Your exam schedule is:",
         "with_time_scope": "Your exam schedule for {{timeScope}} is:",
@@ -1669,7 +1679,8 @@
     "askPlaceholder": "Ask UMS ChatBot...",
     "quickActions": {
       "todaySchedule": "Show my schedule today",
-      "studyResults": "Show study results"
+      "studyResults": "Show study results",
+      "todayTeachingSchedule": "Show my teaching schedule today"
     },
     "labels": {
       "student": "Student",
@@ -1679,12 +1690,34 @@
       "score": "Score",
       "type": "Type",
       "schedule": "Schedule",
+      "trainingProgram": "Training program",
       "period": "Period",
       "room": "Room",
       "class": "Class",
       "examRecords": "{{count}} exam record(s)",
       "exam": "Exam",
       "time": "Time"
+    },
+    "tableColumns": {
+      "departmentCode": "Department Code",
+      "departmentName": "Department Name",
+      "establishedDate": "Established Date",
+      "majorCode": "Major Code",
+      "majorName": "Major Name",
+      "specializationCode": "Specialization Code",
+      "specializationName": "Specialization Name",
+      "programType": "Program Type",
+      "trainingProgramName": "Training Program",
+      "academicYear": "Academic Year",
+      "subjectCode": "Subject Code",
+      "subjectName": "Subject Name",
+      "credits": "Credits",
+      "amount": "Amount",
+      "pricePerCredit": "Price per Credit",
+      "type": "Type",
+      "d1": "D1",
+      "d2": "D2",
+      "finalScore": "Final"
     }
   },
   "paymentResult": {

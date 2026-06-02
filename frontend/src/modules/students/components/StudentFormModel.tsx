@@ -417,11 +417,13 @@ const StudentFormModel: React.FC<StudentFormModelProps> = ({ open, mode, initial
                 password: student.student_code,
             };
             await createStudent(createPayload);
+            showSnackbar(t("students.messages.createSuccess"), "success");
         } else if (mode === "edit" && initialValues?.id) {
             await updateStudent({
                 studentId: initialValues.id,
                 data: basePayload,
             });
+            showSnackbar(t("students.messages.updateSuccess"), "success");
             if (newPassword) {
                 showSnackbar(t("students.form.passwordChangedSuccess"), "success");
             }

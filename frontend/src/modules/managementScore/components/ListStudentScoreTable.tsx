@@ -56,12 +56,13 @@ const WEIGHT_PERCENT_DIVISOR = 100;
 const MIN_WEIGHT = 0;
 const ROUNDING_DECIMALS = 2;
 const SCORE_SCALE_THRESHOLDS = [
+  { min: 9.0, avg4: 4.0, letter: LETTER_GRADE.A_PLUS },
   { min: 8.5, avg4: 4.0, letter: LETTER_GRADE.A },
-  { min: 8.0, avg4: 3.5, letter: LETTER_GRADE.B_PLUS },
+  { min: 8.0, avg4: 3.0, letter: LETTER_GRADE.B_PLUS },
   { min: 7.0, avg4: 3.0, letter: LETTER_GRADE.B },
-  { min: 6.5, avg4: 2.5, letter: LETTER_GRADE.C_PLUS },
+  { min: 6.0, avg4: 2.0, letter: LETTER_GRADE.C_PLUS },
   { min: 5.5, avg4: 2.0, letter: LETTER_GRADE.C },
-  { min: 5.0, avg4: 1.5, letter: LETTER_GRADE.D_PLUS },
+  { min: 5.0, avg4: 1.0, letter: LETTER_GRADE.D_PLUS },
   { min: 4.0, avg4: 1.0, letter: LETTER_GRADE.D },
 ];
 
@@ -250,7 +251,6 @@ export function ListStudentScoreTable({
             <TableCell className="primary-thead__cell" rowSpan={2} align="left">{t("managementScore.studentTable.studentCode")}</TableCell>
             <TableCell className="primary-thead__cell" rowSpan={2} align="left">{t("managementScore.studentTable.studentName")}</TableCell>
             <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("managementScore.studentTable.componentScores")}</TableCell>
-            <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("managementScore.studentTable.retakeScores")}</TableCell>
             <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("managementScore.studentTable.average")}</TableCell>
           </TableRow>
           <TableRow className="primary-trow">
@@ -263,15 +263,6 @@ export function ListStudentScoreTable({
             <TableCell className="primary-thead__cell" align="center">
               {getComponentLabel(rows?.[0]?.scores?.find((item) => !isRetakeScore(item) && isFinalComponent(item.score_component.component_type))?.score_component.component_type, t("managementScore.studentTable.final"))}
             </TableCell>
-            <TableCell className="primary-thead__cell" align="center">
-              {getComponentLabel(rows?.[0]?.scores?.find((item) => isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))?.score_component.component_type, t("managementScore.studentTable.mid1"))}
-            </TableCell>
-            <TableCell className="primary-thead__cell" align="center">
-              {getComponentLabel(rows?.[0]?.scores?.filter((item) => isRetakeScore(item) && isMidtermComponent(item.score_component.component_type))[1]?.score_component.component_type, t("managementScore.studentTable.mid2"))}
-            </TableCell>
-            <TableCell className="primary-thead__cell" align="center">
-              {getComponentLabel(rows?.[0]?.scores?.find((item) => isRetakeScore(item) && isFinalComponent(item.score_component.component_type))?.score_component.component_type, t("managementScore.studentTable.final"))}
-            </TableCell>
             <TableCell className="primary-thead__cell" align="center">{t("managementScore.studentTable.system10")}</TableCell>
             <TableCell className="primary-thead__cell" align="center">{t("managementScore.studentTable.system4")}</TableCell>
             <TableCell className="primary-thead__cell" align="center">{t("managementScore.studentTable.letter")}</TableCell>
@@ -281,7 +272,7 @@ export function ListStudentScoreTable({
         <TableBody className="primary-tbody">
           {(rows ?? []).length === 0 ? (
             <TableRow className="primary-trow">
-              <TableCell className="primary-tcell" colSpan={12} align="center">
+              <TableCell className="primary-tcell" colSpan={9} align="center">
                 {t("managementScore.studentTable.noData")}
               </TableCell>
             </TableRow>
@@ -290,13 +281,11 @@ export function ListStudentScoreTable({
               const grouped = buildStudentScoreRow(row.scores);
 
               const officialMid = sortScorePoints(grouped.officialMid).slice(0, MAX_MIDTERM_COMPONENTS);
-              const retakeMid = sortScorePoints(grouped.retakeMid).slice(0, MAX_MIDTERM_COMPONENTS);
               const officialFinal = pickLatestScorePoint(grouped.officialFinal);
-              const retakeFinal = pickLatestScorePoint(grouped.retakeFinal);
 
-              const selectedMid1 = retakeMid[0] ?? officialMid[0] ?? null;
-              const selectedMid2 = retakeMid[1] ?? officialMid[1] ?? null;
-              const selectedFinal = retakeFinal ?? officialFinal ?? null;
+              const selectedMid1 = officialMid[0] ?? null;
+              const selectedMid2 = officialMid[1] ?? null;
+              const selectedFinal = officialFinal ?? null;
               const finalDraftKey = `${row.student_info.id}:final`;
 
               const avg =
@@ -370,16 +359,6 @@ export function ListStudentScoreTable({
                     ) : (
                       formatScore(officialFinal?.score)
                     )}
-                  </TableCell>
-
-                  <TableCell className="primary-tcell" align="center">
-                    {formatScore(retakeMid[0]?.score)}
-                  </TableCell>
-                  <TableCell className="primary-tcell" align="center">
-                    {formatScore(retakeMid[1]?.score)}
-                  </TableCell>
-                  <TableCell className="primary-tcell" align="center">
-                    {formatScore(retakeFinal?.score)}
                   </TableCell>
 
                   <TableCell className="primary-tcell" align="center">

@@ -42,12 +42,13 @@ const ROUNDING_DECIMALS = 2;
 const LOADING_SPINNER_SIZE = 28;
 
 const SCORE_SCALE_THRESHOLDS: ScoreScaleThreshold[] = [
+  { min: 9.0, avg4: 4.0, letter: LETTER_GRADE.A_PLUS },
   { min: 8.5, avg4: 4.0, letter: LETTER_GRADE.A },
-  { min: 8.0, avg4: 3.5, letter: LETTER_GRADE.B_PLUS },
+  { min: 8.0, avg4: 3.0, letter: LETTER_GRADE.B_PLUS },
   { min: 7.0, avg4: 3.0, letter: LETTER_GRADE.B },
-  { min: 6.5, avg4: 2.5, letter: LETTER_GRADE.C_PLUS },
+  { min: 6.0, avg4: 2.0, letter: LETTER_GRADE.C_PLUS },
   { min: 5.5, avg4: 2.0, letter: LETTER_GRADE.C },
-  { min: 5.0, avg4: 1.5, letter: LETTER_GRADE.D_PLUS },
+  { min: 5.0, avg4: 1.0, letter: LETTER_GRADE.D_PLUS },
   { min: 4.0, avg4: 1.0, letter: LETTER_GRADE.D },
 ];
 
@@ -443,6 +444,7 @@ export function ScoreDetails() {
               rows={scoreRows}
               editable={isEditable}
               onEditRow={(row) => setEditingRow(row)}
+              hideWeight
             />
           </Box>
           <EditScoreDialog

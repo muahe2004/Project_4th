@@ -24,10 +24,11 @@ function formatScore(value: number | null, digits = 2): string {
   return value.toFixed(digits);
 }
 
-export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTableProps) {
+export function ScoresTable({ rows, editable = false, onEditRow, hideWeight = false }: ScoresTableProps) {
   const { t } = useTranslation();
   const showActions = editable && typeof onEditRow === "function";
   const lastColumnLabel = showActions ? t("grades.table.actions") : t("grades.table.note");
+  const baseColSpan = hideWeight ? 11 : 12;
 
   return (
     <Box className="grades-student__information">
@@ -39,10 +40,11 @@ export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTablePr
               <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.subjectCode")}</TableCell>
               <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.subjectName")}</TableCell>
               <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.credits")}</TableCell>
-              <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.weight")}</TableCell>
+              {!hideWeight && (
+                <TableCell className="primary-thead__cell" rowSpan={2} align="center">{t("grades.table.weight")}</TableCell>
+              )}
 
               <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("grades.table.componentScores")}</TableCell>
-              <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("grades.table.retakeScores")}</TableCell>
               <TableCell className="primary-thead__cell" colSpan={3} align="center">{t("grades.table.average")}</TableCell>
 
               <TableCell className="primary-thead__cell" rowSpan={2} align="center">
@@ -51,9 +53,6 @@ export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTablePr
             </TableRow>
 
             <TableRow className="primary-trow">
-              <TableCell className="primary-thead__cell" align="center">{t("grades.table.d1")}</TableCell>
-              <TableCell className="primary-thead__cell" align="center">{t("grades.table.d2")}</TableCell>
-              <TableCell className="primary-thead__cell" align="center">{t("grades.table.final")}</TableCell>
               <TableCell className="primary-thead__cell" align="center">{t("grades.table.d1")}</TableCell>
               <TableCell className="primary-thead__cell" align="center">{t("grades.table.d2")}</TableCell>
               <TableCell className="primary-thead__cell" align="center">{t("grades.table.final")}</TableCell>
@@ -66,7 +65,7 @@ export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTablePr
           <TableBody className="primary-tbody">
             {rows.length === 0 ? (
               <TableRow className="primary-trow">
-                <TableCell className="primary-tcell" colSpan={15} align="center">
+                <TableCell className="primary-tcell" colSpan={baseColSpan} align="center">
                   {t("grades.messages.noData")}
                 </TableCell>
               </TableRow>
@@ -77,15 +76,13 @@ export function ScoresTable({ rows, editable = false, onEditRow }: ScoresTablePr
                   <TableCell className="primary-tcell" align="center">{row.subject_code}</TableCell>
                   <TableCell className="primary-tcell" align="left">{row.subject_name}</TableCell>
                   <TableCell className="primary-tcell" align="center">{row.credits}</TableCell>
-                  <TableCell className="primary-tcell" align="center">{formatScore(row.weight)}</TableCell>
+                  {!hideWeight && (
+                    <TableCell className="primary-tcell" align="center">{formatScore(row.weight)}</TableCell>
+                  )}
 
                   <TableCell className="primary-tcell" align="center">{formatScore(row.exam1)}</TableCell>
                   <TableCell className="primary-tcell" align="center">{formatScore(row.exam2)}</TableCell>
                   <TableCell className="primary-tcell" align="center">{formatScore(row.exam3)}</TableCell>
-
-                  <TableCell className="primary-tcell" align="center">{formatScore(row.recheck1)}</TableCell>
-                  <TableCell className="primary-tcell" align="center">{formatScore(row.recheck2)}</TableCell>
-                  <TableCell className="primary-tcell" align="center">{formatScore(row.recheck3)}</TableCell>
 
                   <TableCell className="primary-tcell" align="center">{formatScore(row.avg10)}</TableCell>
                   <TableCell className="primary-tcell" align="center">{formatScore(row.avg4)}</TableCell>

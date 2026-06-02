@@ -42,6 +42,36 @@ const COLUMN_ALIASES: Record<string, string[]> = {
   credits: ["credits", "credit", "number_of_credits", "subject_credit"],
 };
 
+const HIDDEN_COLUMNS = new Set([
+  "id",
+  "training_program_id",
+  "department_id",
+  "major_id",
+  "specialization_id",
+]);
+
+const COLUMN_LABEL_KEYS: Record<string, string> = {
+  department_code: "departmentCode",
+  department_name: "departmentName",
+  established_date: "establishedDate",
+  major_code: "majorCode",
+  major_name: "majorName",
+  specialization_code: "specializationCode",
+  specialization_name: "specializationName",
+  program_type: "programType",
+  training_program_name: "trainingProgramName",
+  academic_year: "academicYear",
+  subject_code: "subjectCode",
+  subject_name: "subjectName",
+  credits: "credits",
+  amount: "amount",
+  price_per_credit: "pricePerCredit",
+  type: "type",
+  d1: "d1",
+  d2: "d2",
+  thi: "finalScore",
+};
+
 function toDisplayValue(value: unknown): string {
   if (value === null || value === undefined || value === "") {
     return "-";
@@ -52,7 +82,28 @@ function toDisplayValue(value: unknown): string {
   return String(value);
 }
 
-function toLabel(key: string): string {
+function formatDateValue(value: unknown, language: string): string {
+  if (typeof value !== "string" || value.trim() === "") {
+    return toDisplayValue(value);
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toLocaleDateString(language === "en" ? "en-US" : "vi-VN");
+}
+
+function getColumnLabel(t: (key: string) => string, key: string): string {
+  const labelKey = COLUMN_LABEL_KEYS[key];
+  if (labelKey) {
+    const translated = t(`umsChatbot.tableColumns.${labelKey}`);
+    if (translated !== `umsChatbot.tableColumns.${labelKey}`) {
+      return translated;
+    }
+  }
+
   return key
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -90,7 +141,7 @@ function hasValueForColumn(rows: Array<Record<string, unknown>>, column: string)
 }
 
 export default function ChatResponData({ meta }: ChatResponDataProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const normalizedIntent = String(meta?.intent ?? "").trim().toLowerCase();
 
   if (!meta?.service_name || !Array.isArray(meta.service_data) || meta.service_data.length === 0) {
@@ -169,9 +220,9 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
             <TableHead className="primary-thead">
               <TableRow className="primary-trow">
                 <TableCell className="primary-thead__cell" align="center">{t("umsChatbot.labels.subject")}</TableCell>
-                <TableCell className="primary-thead__cell" align="center">D1</TableCell>
-                <TableCell className="primary-thead__cell" align="center">D2</TableCell>
-                <TableCell className="primary-thead__cell" align="center">Thi</TableCell>
+                <TableCell className="primary-thead__cell" align="center">{t("umsChatbot.tableColumns.d1")}</TableCell>
+                <TableCell className="primary-thead__cell" align="center">{t("umsChatbot.tableColumns.d2")}</TableCell>
+                <TableCell className="primary-thead__cell" align="center">{t("umsChatbot.tableColumns.finalScore")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody className="sticky-tbody">
@@ -266,7 +317,7 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
     (item) => item && typeof item === "object" && !Array.isArray(item)
   ) as Array<Record<string, unknown>>;
   if (tableRows.length > 0) {
-    const rowKeys = Object.keys(tableRows[0] ?? {});
+    const rowKeys = Object.keys(tableRows[0] ?? {}).filter((key) => !HIDDEN_COLUMNS.has(key));
     const mappedColumns = (BASIC_COLUMNS_BY_INTENT[normalizedIntent] ?? []).filter((key) =>
       hasValueForColumn(tableRows, key)
     );
@@ -279,7 +330,7 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
             <TableRow className="primary-trow">
               {columns.map((column) => (
                 <TableCell key={column} className="primary-thead__cell" align="center">
-                  {toLabel(column)}
+                  {getColumnLabel(t, column)}
                 </TableCell>
               ))}
             </TableRow>
@@ -293,7 +344,9 @@ export default function ChatResponData({ meta }: ChatResponDataProps) {
                     className="sticky-tcell chat-response-data__td"
                     align={column.endsWith("_name") ? "left" : "center"}
                   >
-                    {toDisplayValue(getValueByAliases(row, column))}
+                    {column === "established_date"
+                      ? formatDateValue(getValueByAliases(row, column), i18n.language)
+                      : toDisplayValue(getValueByAliases(row, column))}
                   </TableCell>
                 ))}
               </TableRow>

@@ -118,6 +118,7 @@ export interface ScoresTableProps {
   rows: ScoreTableRow[];
   editable?: boolean;
   onEditRow?: (row: ScoreTableRow) => void;
+  hideWeight?: boolean;
 }
 
 export interface ScoreScaleResult {
@@ -161,6 +162,7 @@ export const RANKING = {
 };
 
 export const LETTER_GRADE = {
+  A_PLUS: "A+",
   A: "A",
   B_PLUS: "B+",
   B: "B",

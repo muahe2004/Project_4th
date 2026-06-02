@@ -436,7 +436,7 @@ export function ListStudentScoreSubject() {
             flexWrap: "wrap",
           }}
         >
-          <Button onClick={handleImportClick} className="btn-spacing-left" disabled={isUploadingScoreFile || isScoreLocked}>
+          {/* <Button onClick={handleImportClick} className="btn-spacing-left" disabled={isUploadingScoreFile || isScoreLocked}>
             {isUploadingScoreFile ? t("managementScore.actions.uploading") : t("managementScore.actions.import")}
           </Button>
           <input
@@ -445,7 +445,7 @@ export function ListStudentScoreSubject() {
             accept=".xlsx"
             hidden
             onChange={(event) => void handleFileChange(event)}
-          />
+          /> */}
 
           {canLockScore && !isScoreLocked && (
             <Button onClick={() => setOpenLockConfirm(true)} className="" disabled={isUpdatingScoreStatusBulk}>

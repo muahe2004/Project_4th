@@ -178,6 +178,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
   const [activeConversationId, setActiveConversationId] = useState<string>("");
   const [openHistory, setOpenHistory] = useState(false);
   const viewportRef = useRef<HTMLDivElement | null>(null);
+  const sendLockRef = useRef(false);
   const mutation = usePredictIntent();
   const response = mutation.data;
   const isTabletAndDown = useMediaQuery(MEDIA_QUERY.tabletAndDown);
@@ -258,6 +259,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
                 intent: resolvedIntent,
                 timeScope: resolvedTimeScope,
                 language: i18n.language === "en" ? "en" : "vi",
+                role,
                 mode:
                   hasMeaningfulServiceData(resolvedIntent, result.service_data) ? "default" : "no_data",
               });
@@ -360,11 +362,16 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
   }, [history, response, open]);
 
   const handleSend = async () => {
+    if (sendLockRef.current || mutation.isPending) {
+      return;
+    }
+
     const question = text.trim();
     if (!question) {
       return;
     }
 
+    sendLockRef.current = true;
     const currentConversationId = activeConversationId || `conv-${Date.now()}`;
     const nextHistory: ChatMessage[] = [...history, { role: "user", content: question }];
     upsertConversation(currentConversationId, nextHistory);
@@ -387,6 +394,7 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
         intent: resolvedIntent,
         timeScope: resolvedTimeScope,
         language: i18n.language === "en" ? "en" : "vi",
+        role,
         mode:
           hasMeaningfulServiceData(resolvedIntent, result.service_data) ? "default" : "no_data",
       });
@@ -406,13 +414,18 @@ export default function UMSChatBot({ open, onClose }: UMSChatBotProps) {
     } catch {
       upsertConversation(currentConversationId, nextHistory);
       setSelectedTimeScope(null);
+    } finally {
+      sendLockRef.current = false;
     }
   };
 
-  const quickActions = [
-    t("umsChatbot.quickActions.todaySchedule"),
-    t("umsChatbot.quickActions.studyResults"),
-  ];
+  const quickActions =
+    role === "teacher"
+      ? [t("umsChatbot.quickActions.todayTeachingSchedule")]
+      : [
+          t("umsChatbot.quickActions.todaySchedule"),
+          t("umsChatbot.quickActions.studyResults"),
+        ];
   const startNewChat = () => {
     const conversationId = `conv-${Date.now()}`;
     const conversation: ChatConversation = {
